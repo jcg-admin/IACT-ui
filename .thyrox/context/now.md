@@ -39,7 +39,14 @@ Phase 5 STRATEGY completada. Esperando gate SP-03 (aprobación para avanzar a Ph
 Completado. 27/27 tareas. TDD 140 tests. `ApiErrorToast`, `ServerErrorBanner`,
 4 error pages, `errorHandlingMiddleware`, `errorLoggingMiddleware`, `errorSlice`.
 
+## WP en pausa — spinner-components-audit
+
+`2026-05-05-22-50-40-spinner-components-audit` — Phase 1 DISCOVER completa.
+Esperando cierre del WP `ui-feedback-naming-and-loading` antes de continuar.
+Análisis preliminar documentado en `discover/spinner-components-audit-analysis.md`.
+
 ## WP en pausa — requirements-gap-analysis
 
 `2026-05-05-15-07-47-requirements-gap-analysis` — Phase 10 IMPLEMENT.
 Pendientes: T-033, T-044, T-045, T-054, T-069, T-091, T-047, T-055, T-070, T-092.
+stage_sync_required: true
