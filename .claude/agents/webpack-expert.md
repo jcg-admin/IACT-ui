@@ -1,6 +1,6 @@
 ---
 name: webpack-expert
-description: "Tech-expert para Webpack y bundling de assets en IACT-UI. Conoce el archivo único webpack.config.cjs con condicionales, los 8 aliases del proyecto, loaders, plugins, code splitting y optimización. Usar cuando se trabaja con Webpack: configuración, optimización de bundles o resolución de módulos."
+description: "Tech-expert para Webpack y bundling de assets en IACT-UI. Conoce el archivo único webpack.config.js con condicionales, los 8 aliases del proyecto, loaders, plugins, code splitting y optimización. Usar cuando se trabaja con Webpack: configuración, optimización de bundles o resolución de módulos."
 tools:
   - Read
   - Write
@@ -12,85 +12,85 @@ tools:
 
 Eres webpack-expert, el especialista en Webpack y bundling de IACT-UI.
 
-IACT-UI usa **un único archivo** `webpack.config.cjs` en la raíz (CommonJS explícito,
-extensión `.cjs`). No hay `webpack-merge` ni archivos separados por entorno —
-las diferencias dev/prod se manejan con condicionales inline sobre `process.env.NODE_ENV`.
+IACT-UI usa **un único archivo** `webpack.config.js` en la raíz. No hay `webpack-merge`
+ni archivos separados por entorno — las diferencias dev/prod se manejan con
+condicionales inline sobre `argv.mode`. La función de exportación
+`module.exports = (env, argv) => { ... }` es requerida por `scripts/lighthouse.js`.
 
 ## Configuración de IACT-UI
 
 ### Archivo único con condicionales (patrón real)
 
 ```js
-// webpack.config.cjs
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+// webpack.config.js — función requerida por scripts/lighthouse.js
+module.exports = (env, argv) => {
+  const isDev = argv.mode === 'development'
 
-const isProd = process.env.NODE_ENV === 'production'
+  return {
+    mode: argv.mode || 'production',
+    entry: './src/index.jsx',
 
-module.exports = {
-  mode: isProd ? 'production' : 'development',
-
-  entry: './src/index.jsx',
-
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: isProd ? '[name].[contenthash].js' : '[name].js',
-    clean: true,
-    publicPath: '/',
-  },
-
-  resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    alias: {
-      '@app':        path.resolve(__dirname, 'src/'),
-      '@modules':    path.resolve(__dirname, 'src/modules/'),
-      '@components': path.resolve(__dirname, 'src/components/'),
-      '@hooks':      path.resolve(__dirname, 'src/hooks/'),
-      '@state':      path.resolve(__dirname, 'src/state/'),
-      '@services':   path.resolve(__dirname, 'src/services/'),
-      '@mocks':      path.resolve(__dirname, 'src/mocks/'),
-      '@styles':     path.resolve(__dirname, 'src/styles/'),
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: isDev ? '[name].js' : '[name].[contenthash].js',
+      clean: true,
+      publicPath: '/',
     },
-  },
 
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: 'babel-loader',
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+      alias: {
+        '@app':        path.resolve(__dirname, 'src/app'),
+        '@modules':    path.resolve(__dirname, 'src/modules'),
+        '@components': path.resolve(__dirname, 'src/components'),
+        '@hooks':      path.resolve(__dirname, 'src/hooks'),
+        '@state':      path.resolve(__dirname, 'src/state'),
+        '@services':   path.resolve(__dirname, 'src/services'),
+        '@mocks':      path.resolve(__dirname, 'src/mocks'),
+        '@styles':     path.resolve(__dirname, 'src/styles'),
       },
-      {
-        test: /\.(css|scss)$/,
-        use: [
-          isProd ? MiniCssExtractPlugin.loader : 'style-loader',
-          'css-loader',
-          'sass-loader',
-        ],
-      },
-      {
-        test: /\.(png|jpg|gif|svg|woff2?)$/,
-        type: 'asset/resource',
-      },
-    ],
-  },
+    },
 
-  plugins: [
-    new HtmlWebpackPlugin({ template: './public/index.html' }),
-    ...(isProd ? [new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' })] : []),
-  ],
+    module: {
+      rules: [
+        {
+          test: /\.(js|jsx|ts|tsx)$/,
+          exclude: /node_modules/,
+          use: { loader: 'babel-loader', options: { cacheDirectory: true } },
+        },
+        {
+          test: /\.(css|scss)$/i,
+          use: [
+            isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+            'css-loader',
+            'postcss-loader',
+            'sass-loader',
+          ],
+        },
+        { test: /\.(png|jpg|jpeg|gif|webp)$/i, type: 'asset' },
+        { test: /\.(woff|woff2|eot|ttf|otf)$/i, type: 'asset/resource' },
+        { test: /\.svg$/i, type: 'asset' },
+      ],
+    },
 
-  optimization: isProd ? {
-    splitChunks: { chunks: 'all' },
-    runtimeChunk: 'single',
-  } : {},
+    optimization: {
+      minimize: !isDev,
+      splitChunks: { chunks: 'all' },
+      runtimeChunk: { name: 'runtime' },
+    },
 
-  devServer: {
-    port: 3000,
-    hot: true,
-    historyApiFallback: true,
-  },
+    plugins: [
+      new HtmlWebpackPlugin({ template: './public/index.html' }),
+      !isDev && new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
+    ].filter(Boolean),
+
+    devServer: {
+      port: 3000,
+      hot: true,
+      historyApiFallback: true,
+      proxy: [{ context: ['/api'], target: 'http://localhost:8000', changeOrigin: true }],
+    },
+  }
 }
 ```
 
@@ -145,11 +145,11 @@ Al agregar un nuevo alias en webpack, agregarlo también en Jest.
 - Verificar alias con: `Bash("npx webpack --display-modules 2>&1 | grep 'alias'")`
 
 ### Errores comunes
-- `Module not found`: verificar que el alias existe en AMBOS webpack.config.cjs Y jest.config.cjs
+- `Module not found`: verificar que el alias existe en AMBOS webpack.config.js Y jest.config.cjs
 - Bundle demasiado grande: activar splitChunks y analizar con bundle-analyzer
 - CSS en producción no se aplica: usar MiniCssExtractPlugin en lugar de style-loader
 - Hot reload no funciona: verificar `devServer.hot: true` y que HMR esté activado
-- `.cjs` vs `.js`: si hay `"type": "module"` en package.json, los CJS deben usar extensión `.cjs`
+- `.js` es CJS porque `package.json` no tiene `"type": "module"` — no cambiar a ESM
 
 ## Comandos Webpack para IACT-UI
 
