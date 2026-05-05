@@ -27,7 +27,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'warn',
     'no-unused-vars': 'warn',
-    'no-console': 'warn',
+    'no-console': ['warn', { allow: ['error', 'warn'] }],
   },
   overrides: [
     {
@@ -44,6 +44,7 @@ module.exports = {
       files: ['**/*.test.js', '**/*.test.jsx', '**/*.spec.js', '**/*.spec.jsx'],
       rules: {
         'react/display-name': 'off',
+        'react/prop-types': 'off',
       },
     },
   ],

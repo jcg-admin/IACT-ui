@@ -59,7 +59,7 @@ module.exports = (env, argv) => {
 
   return {
     mode: argv.mode || 'production',
-    entry: './src/index.jsx',
+    entry: './src/index.js',
 
     cache: {
       type: 'filesystem',
