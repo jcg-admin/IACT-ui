@@ -5,7 +5,7 @@ project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
 current_work: .thyrox/context/work/2026-05-05-22-24-51-ui-feedback-naming-and-loading
-phase: Phase 3 — DIAGNOSE
+phase: Phase 5 — STRATEGY
 blockers: []
 ```
 
@@ -19,19 +19,20 @@ blockers: []
 
 ## WP activo — ui-feedback-naming-and-loading
 
-Phase 3 DIAGNOSE completada. Esperando gate SP-02 (aprobación para avanzar a Phase 5 STRATEGY).
+Phase 5 STRATEGY completada. Esperando gate SP-03 (aprobación para avanzar a Phase 8 PLAN EXECUTION).
 
-**Decisiones de diseño definidas:**
-- Naming: `ApiErrorToast` → `ApiErrorAlert` (role="alert" correcto, sin colisión con ToastContext)
-- Loading: Opción C — `loadingMiddleware` intercepta `*/pending` por prefijo de contexto
-- `loadingSlice`: `contexts: { logs: 2, access: 1 }` contadores, selector `selectIsLoading('ctx')`
-- `SILENT_CONTEXTS = Set(['auth', 'session'])` — no disparan spinner
-- Criterio documentado: `LoadingSpinner` inline; `AnimatedLoadingSpinner` transición de página
-- Scope piloto: `LogsPage` + `ETLLogsPage` (slices existentes sin tocar)
+**Artefactos de estrategia:**
+- `strategy/ui-feedback-naming-and-loading-solution-strategy.md` — Key Ideas, ADRs, scope confirmado
+- `strategy/loading-complete-migration-analysis.md` — análisis de migración completa (9 slices, 25 páginas, 6 fases)
 
-**Riesgos:** R-002 mitigado, R-003 cerrado, R-004 mitigado. Solo R-001 abierto.
+**Decisiones definitivas:**
+- D-001: `ApiErrorToast` → `ApiErrorAlert` (6 archivos, commit atómico)
+- D-002: `loadingMiddleware` Opción C (prefijo de contexto, `SILENT_CONTEXTS = ['auth', 'session']`)
+- D-003: `loadingSlice` con contadores serializables por contexto
+- D-004: Scope piloto = `LogsPage` + `ETLLogsPage`
+- D-005: Migración completa = WP de deuda técnica futuro (6 fases, 25 páginas)
 
-**Próximo:** Phase 5 STRATEGY — confirmar decisiones con ejecutor
+**Próximo:** Phase 8 PLAN EXECUTION — descomponer en tareas T-NNN
 
 ## WP cerrado — http-error-handling ✓
 
