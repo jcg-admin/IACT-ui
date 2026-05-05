@@ -41,7 +41,7 @@ export const assignFunction = createAsyncThunk(
     // This is NOT the codename used for runtime authorization checks.
     async ({ userId, catalogId, expiresAt }, { rejectWithValue }) => {
         try {
-            const response = await accessService.assignFunction(userId, catalogId, expiresAt);
+            const response = await accessService.assignFunctions(userId, [catalogId], expiresAt);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -53,9 +53,9 @@ export const revokeFunction = createAsyncThunk(
     'access/revokeFunction',
     // catalogId = numeric PK of the function in the RBAC catalog (UC_ACC_02 revocation).
     // This is NOT the codename used for runtime authorization checks.
-    async ({ userId, catalogId }, { rejectWithValue }) => {
+    async ({ userId, catalogId, revokeReason }, { rejectWithValue }) => {
         try {
-            const response = await accessService.revokeFunction(userId, catalogId);
+            const response = await accessService.revokeFunctions(userId, [catalogId], revokeReason);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);

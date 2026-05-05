@@ -38,22 +38,22 @@ describe('accessSlice — initial state', () => {
 });
 
 describe('assignFunction thunk — catalogId invariant', () => {
-    it('passes catalogId (not undefined) to accessService.assignFunction', async () => {
-        accessService.assignFunction.mockResolvedValue({ newFunction: { id: 7 } });
+    it('passes catalogId as array to accessService.assignFunctions', async () => {
+        accessService.assignFunctions.mockResolvedValue({ assigned: 1 });
         const store = buildStore();
         await store.dispatch(assignFunction({ userId: 1, catalogId: 7, expiresAt: null }));
-        expect(accessService.assignFunction).toHaveBeenCalledWith(1, 7, null);
+        expect(accessService.assignFunctions).toHaveBeenCalledWith(1, [7], null);
     });
 
     it('sets loading true while pending', () => {
-        accessService.assignFunction.mockReturnValue(new Promise(() => {}));
+        accessService.assignFunctions.mockReturnValue(new Promise(() => {}));
         const store = buildStore();
         store.dispatch(assignFunction({ userId: 1, catalogId: 5 }));
         expect(selectLoading(store.getState())).toBe(true);
     });
 
     it('sets success true on fulfilled', async () => {
-        accessService.assignFunction.mockResolvedValue({ newFunction: {} });
+        accessService.assignFunctions.mockResolvedValue({ assigned: 1 });
         const store = buildStore();
         await store.dispatch(assignFunction({ userId: 1, catalogId: 3 }));
         expect(selectSuccess(store.getState())).toBe(true);
@@ -61,7 +61,7 @@ describe('assignFunction thunk — catalogId invariant', () => {
     });
 
     it('sets error on rejected', async () => {
-        accessService.assignFunction.mockRejectedValue(new Error('Server error'));
+        accessService.assignFunctions.mockRejectedValue(new Error('Server error'));
         const store = buildStore();
         await store.dispatch(assignFunction({ userId: 1, catalogId: 2 }));
         expect(selectError(store.getState())).toBe('Server error');
@@ -70,19 +70,19 @@ describe('assignFunction thunk — catalogId invariant', () => {
 });
 
 describe('revokeFunction thunk — catalogId invariant', () => {
-    it('passes catalogId to accessService.revokeFunction', async () => {
-        accessService.revokeFunction.mockResolvedValue({});
+    it('passes catalogId as array to accessService.revokeFunctions', async () => {
+        accessService.revokeFunctions.mockResolvedValue({});
         const store = buildStore();
         await store.dispatch(revokeFunction({ userId: 2, catalogId: 10 }));
-        expect(accessService.revokeFunction).toHaveBeenCalledWith(2, 10);
+        expect(accessService.revokeFunctions).toHaveBeenCalledWith(2, [10], undefined);
     });
 
-    it('does NOT call service with undefined catalogId', async () => {
-        accessService.revokeFunction.mockResolvedValue({});
+    it('does NOT call service with undefined catalogId array element', async () => {
+        accessService.revokeFunctions.mockResolvedValue({});
         const store = buildStore();
         await store.dispatch(revokeFunction({ userId: 2, catalogId: 10 }));
-        const [, passedCatalogId] = accessService.revokeFunction.mock.calls[0];
-        expect(passedCatalogId).not.toBeUndefined();
+        const [, passedIds] = accessService.revokeFunctions.mock.calls[0];
+        expect(passedIds[0]).not.toBeUndefined();
     });
 });
 
