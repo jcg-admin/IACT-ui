@@ -9,19 +9,12 @@ updated_at: 2026-05-05 (sesión 2)
 
 ## Alta prioridad
 
-### TD-001 — 37 test suites fallando por paths incorrectos
-- **Origen:** Merge con `develop`
-- **Síntoma:** Tests en `__tests__/` y `tests/` importan rutas que no existen
-  - Ejemplo: `common/Sidebar/SidebarNav` → archivo en `navigation/Sidebar/SidebarNav.jsx`
-  - Ejemplo: `@hooks/useJobs` → archivo en `src/hooks/domain/useJobs.js`
-- **Impacto:** 37 suites no corren, cobertura global artificialmente baja
-- **Acción:** Corregir imports o reorganizar estructura de directorios
+### ~~TD-001~~ — RESUELTO — 37 test suites fallando por paths incorrectos
+- **Estado:** Resuelto en sesiones anteriores. 110/110 suites GREEN.
 
-### TD-002 — Sin `tsconfig.json`
-- **Origen:** TypeScript añadido via Babel sin configuración de TS
-- **Síntoma:** No hay type-checking real; errores de tipos pasan silenciosos
-- **Impacto:** Los archivos `.ts`/`.tsx` no tienen verificación estática
-- **Acción:** Crear `tsconfig.json` con `strict: true` e integrar `tsc --noEmit` en CI
+### ~~TD-002~~ — RESUELTO — Sin `tsconfig.json`
+- **Estado:** `tsconfig.json` creado con strict:true, @types/react/@types/node instalados,
+  errores de tipo corregidos en permisos-client.ts y api.config.ts. `npm run type-check` → 0 errores.
 
 ## Media prioridad
 
@@ -70,7 +63,7 @@ updated_at: 2026-05-05 (sesión 2)
 | ✅ | Cobertura < 80% | RESUELTO → 80%+ |
 | ✅ | `coverage/` no en `.gitignore` | RESUELTO |
 | ✅ | Configs duplicadas del merge | RESUELTO |
-| ✅ | TD-005 — Routing sin implementar | RESUELTO — AppRouter completo con lazy imports reales |
+| ✅ | TD-005 — Routing sin implementar | RESUELTO — AppRouter completo; todas las páginas implementadas |
 | ✅ | TD-007 — `no-console` warnings en hooks TS | RESUELTO — ESLint permite console.error/warn |
 | ✅ | TD-008 — `react/prop-types` en test | RESUELTO — prop-types desactivado en test files |
 | ✅ | TD-004 — Redux slice duplicado | NO APLICA — src/state/slices/homeSlice.js no existe; solo hay 1 homeSlice en modules/ |
