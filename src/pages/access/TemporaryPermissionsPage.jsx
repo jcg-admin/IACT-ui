@@ -6,9 +6,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFunctions, assignFunction, selectLoading, selectError, selectSuccess } from '../../redux/slices/accessSlice';
+import { fetchAllFunctions, assignFunction, revokeFunction, selectLoading, selectError, selectSuccess } from '../../redux/slices/accessSlice';
 
 export default function TemporaryPermissionsPage() {
+    const [activeTab, setActiveTab] = useState('assign');
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedFunction, setSelectedFunction] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -114,6 +115,13 @@ export default function TemporaryPermissionsPage() {
         return '#10b981';
     };
 
+    const handleRevoke = (perm) => {
+        dispatch(revokeFunction({
+            userId: perm.userId,
+            catalogId: perm.catalogId,
+        }));
+    };
+
     return (
         <div style={{ padding: '24px' }}>
             {/* Header */}
@@ -126,6 +134,138 @@ export default function TemporaryPermissionsPage() {
                 </p>
             </div>
 
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: '0', marginBottom: '24px', borderBottom: '1px solid #374151' }}>
+                {[
+                    { key: 'assign', label: 'Asignar permiso' },
+                    { key: 'active', label: 'Permisos activos' },
+                ].map(tab => (
+                    <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        style={{
+                            padding: '10px 20px',
+                            border: 'none',
+                            borderBottom: activeTab === tab.key ? '2px solid #0ea5e9' : '2px solid transparent',
+                            backgroundColor: 'transparent',
+                            color: activeTab === tab.key ? '#0ea5e9' : '#9ca3af',
+                            fontWeight: activeTab === tab.key ? 600 : 400,
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                        }}
+                    >
+                        {tab.label}
+                        {tab.key === 'active' && (
+                            <span style={{
+                                marginLeft: '8px',
+                                backgroundColor: '#374151',
+                                color: '#fff',
+                                borderRadius: '10px',
+                                padding: '1px 7px',
+                                fontSize: '12px',
+                            }}>
+                                {temporaryPermissions.length}
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* Tab: Permisos activos */}
+            {activeTab === 'active' && (
+                <div style={{
+                    backgroundColor: '#111827',
+                    borderRadius: '8px',
+                    border: '1px solid #374151',
+                    overflow: 'hidden',
+                }}>
+                    <div style={{
+                        padding: '16px',
+                        backgroundColor: '#0f172a',
+                        borderBottom: '1px solid #374151',
+                    }}>
+                        <h2 style={{ margin: 0, color: '#fff' }}>
+                            Permisos Temporales Activos
+                            <span style={{ fontSize: '14px', color: '#9ca3af', marginLeft: '8px' }}>
+                                ({temporaryPermissions.length})
+                            </span>
+                        </h2>
+                    </div>
+
+                    {error && (
+                        <div className="error-banner" style={{ margin: '16px' }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                        {temporaryPermissions.length > 0 ? (
+                            temporaryPermissions.map(perm => {
+                                const timeRemaining = calculateTimeRemaining(perm.expiresAt);
+                                const urgencyColor = getUrgencyColor(timeRemaining.hours);
+
+                                return (
+                                    <div
+                                        key={perm.id}
+                                        style={{
+                                            padding: '12px',
+                                            borderBottom: '1px solid #374151',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ color: '#fff', fontWeight: 600, fontSize: '14px' }}>
+                                                {perm.user}
+                                            </div>
+                                            <div style={{ color: '#9ca3af', fontSize: '12px', marginTop: '4px' }}>
+                                                {perm.function} - {perm.functionName}
+                                            </div>
+                                            <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '4px' }}>
+                                                Exp: {perm.expiresAt}
+                                            </div>
+                                        </div>
+
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-end',
+                                            gap: '8px',
+                                        }}>
+                                            <div style={{
+                                                backgroundColor: urgencyColor,
+                                                color: '#fff',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                fontSize: '12px',
+                                                fontWeight: 600,
+                                            }}>
+                                                {timeRemaining.days}d {timeRemaining.hours}h
+                                            </div>
+                                            <button
+                                                onClick={() => handleRevoke(perm)}
+                                                disabled={loading}
+                                                className="btn btn-secondary"
+                                                style={{ fontSize: '12px', padding: '4px 8px' }}
+                                            >
+                                                {loading ? 'Revocando...' : 'Revocar'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="empty-state">
+                                No hay permisos temporales activos
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Tab: Asignar permiso */}
+            {activeTab === 'assign' && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                 {/* Formulario */}
                 <div style={{
@@ -284,100 +424,8 @@ export default function TemporaryPermissionsPage() {
                     )}
                 </div>
 
-                {/* Lista de temporales activos */}
-                <div style={{
-                    backgroundColor: '#111827',
-                    borderRadius: '8px',
-                    border: '1px solid #374151',
-                    overflow: 'hidden',
-                }}>
-                    <div style={{
-                        padding: '16px',
-                        backgroundColor: '#0f172a',
-                        borderBottom: '1px solid #374151',
-                    }}>
-                        <h2 style={{ margin: 0, color: '#fff' }}>
-                            Permisos Temporales Activos
-                            <span style={{ fontSize: '14px', color: '#9ca3af', marginLeft: '8px' }}>
-                                ({temporaryPermissions.length})
-                            </span>
-                        </h2>
-                    </div>
-
-                    <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                        {temporaryPermissions.length > 0 ? (
-                            temporaryPermissions.map(perm => {
-                                const timeRemaining = calculateTimeRemaining(perm.expiresAt);
-                                const urgencyColor = getUrgencyColor(timeRemaining.hours);
-
-                                return (
-                                    <div
-                                        key={perm.id}
-                                        style={{
-                                            padding: '12px',
-                                            borderBottom: '1px solid #374151',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ color: '#fff', fontWeight: 600, fontSize: '14px' }}>
-                                                {perm.user}
-                                            </div>
-                                            <div style={{ color: '#9ca3af', fontSize: '12px', marginTop: '4px' }}>
-                                                {perm.function} - {perm.functionName}
-                                            </div>
-                                            <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '4px' }}>
-                                                Exp: {perm.expiresAt}
-                                            </div>
-                                        </div>
-
-                                        <div style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-end',
-                                            gap: '8px',
-                                        }}>
-                                            <div style={{
-                                                backgroundColor: urgencyColor,
-                                                color: '#fff',
-                                                padding: '4px 8px',
-                                                borderRadius: '4px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                            }}>
-                                                {timeRemaining.days}d {timeRemaining.hours}h
-                                            </div>
-                                            <button
-                                                style={{
-                                                    padding: '4px 8px',
-                                                    backgroundColor: '#374151',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    color: '#fff',
-                                                    cursor: 'pointer',
-                                                    fontSize: '12px',
-                                                }}
-                                            >
-                                                Revocar
-                                            </button>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <div style={{
-                                padding: '24px',
-                                textAlign: 'center',
-                                color: '#9ca3af',
-                            }}>
-                                No hay permisos temporales activos
-                            </div>
-                        )}
-                    </div>
-                </div>
             </div>
+            )}
         </div>
     );
 }

@@ -88,6 +88,66 @@ export const fetchAccessAudit = createAsyncThunk(
     }
 );
 
+export const createGroup = createAsyncThunk(
+    'access/createGroup',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await accessService.createGroup(data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const updateGroup = createAsyncThunk(
+    'access/updateGroup',
+    async ({ id, data }, { rejectWithValue }) => {
+        try {
+            const response = await accessService.updateGroup(id, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const deactivateGroup = createAsyncThunk(
+    'access/deactivateGroup',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await accessService.deactivateGroup(id);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const fetchGroupFunctions = createAsyncThunk(
+    'access/fetchGroupFunctions',
+    async (groupId, { rejectWithValue }) => {
+        try {
+            const response = await accessService.getGroupFunctions(groupId);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const assignFunctionsToGroup = createAsyncThunk(
+    'access/assignFunctionsToGroup',
+    async ({ groupId, functionIds }, { rejectWithValue }) => {
+        try {
+            const response = await accessService.assignFunctionsToGroup(groupId, functionIds);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 /**
  * Initial State
  */
@@ -97,6 +157,8 @@ const initialState = {
     userPermissions: {},
     separationConflicts: [],
     auditLog: [],
+    groups: [],
+    groupFunctions: [],
     loading: false,
     error: null,
     success: false,
@@ -230,6 +292,109 @@ const accessSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
+
+        /**
+         * Create Group
+         */
+        builder
+            .addCase(createGroup.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(createGroup.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                state.groups.push(action.payload);
+            })
+            .addCase(createGroup.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.success = false;
+            });
+
+        /**
+         * Update Group
+         */
+        builder
+            .addCase(updateGroup.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(updateGroup.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                const idx = state.groups.findIndex(g => g.id === action.payload.id);
+                if (idx !== -1) {
+                    state.groups[idx] = action.payload;
+                }
+            })
+            .addCase(updateGroup.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.success = false;
+            });
+
+        /**
+         * Deactivate Group
+         */
+        builder
+            .addCase(deactivateGroup.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(deactivateGroup.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                const idx = state.groups.findIndex(g => g.id === action.payload.id);
+                if (idx !== -1) {
+                    state.groups[idx] = action.payload;
+                }
+            })
+            .addCase(deactivateGroup.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.success = false;
+            });
+
+        /**
+         * Fetch Group Functions
+         */
+        builder
+            .addCase(fetchGroupFunctions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchGroupFunctions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.groupFunctions = action.payload;
+            })
+            .addCase(fetchGroupFunctions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
+        /**
+         * Assign Functions To Group
+         */
+        builder
+            .addCase(assignFunctionsToGroup.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(assignFunctionsToGroup.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                state.groupFunctions = action.payload;
+            })
+            .addCase(assignFunctionsToGroup.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.success = false;
+            });
     },
 });
 
@@ -241,6 +406,8 @@ export const selectFunctions = (state) => state.access.functions;
 export const selectUserPermissions = (state) => state.access.userPermissions;
 export const selectSeparationConflicts = (state) => state.access.separationConflicts;
 export const selectAuditLog = (state) => state.access.auditLog;
+export const selectGroups = (state) => state.access.groups;
+export const selectGroupFunctions = (state) => state.access.groupFunctions;
 export const selectLoading = (state) => state.access.loading;
 export const selectError = (state) => state.access.error;
 export const selectSuccess = (state) => state.access.success;

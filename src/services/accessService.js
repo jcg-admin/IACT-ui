@@ -153,22 +153,6 @@ class AccessService {
     }
 
     /**
-     * Obtener grupos de acceso (AGR)
-     */
-    async getFunctionGroups() {
-        const response = await fetch(`${API_BASE_URL}/access/function-groups`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch function groups');
-        }
-
-        return response.json();
-    }
-
-    /**
      * UC-ACC-04: Asignar grupo de acceso (AGR) a un usuario.
      * POST /users/{userId}/access-groups/
      */
@@ -221,6 +205,118 @@ class AccessService {
 
         if (!response.ok) {
             throw new Error('Failed to assign segment');
+        }
+
+        return response.json();
+    }
+
+    // Gestión de grupos/AGRs
+
+    /**
+     * Crear grupo de acceso (AGR).
+     * POST /api/access/groups/
+     */
+    async createGroup(data) {
+        const response = await fetch(`${API_BASE_URL}/access/groups/`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to create group');
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Actualizar grupo de acceso (AGR).
+     * PATCH /api/access/groups/{id}/
+     */
+    async updateGroup(id, data) {
+        const response = await fetch(`${API_BASE_URL}/access/groups/${id}/`, {
+            method: 'PATCH',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to update group');
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Desactivar grupo de acceso (AGR).
+     * PATCH /api/access/groups/{id}/ con { active: false }
+     */
+    async deactivateGroup(id) {
+        const response = await fetch(`${API_BASE_URL}/access/groups/${id}/`, {
+            method: 'PATCH',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify({ active: false }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to deactivate group');
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Asignar funciones a un grupo (AGR).
+     * POST /api/access/groups/{groupId}/functions/
+     */
+    async assignFunctionsToGroup(groupId, functionIds) {
+        const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/functions/`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify({ function_ids: functionIds }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to assign functions to group');
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Obtener funciones de un grupo (AGR).
+     * GET /api/access/groups/{groupId}/functions/
+     */
+    async getGroupFunctions(groupId) {
+        const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/functions/`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch group functions');
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Obtener todos los grupos de acceso (AGR).
+     * GET /api/access/groups/
+     */
+    async getFunctionGroups() {
+        const response = await fetch(`${API_BASE_URL}/access/groups/`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch function groups');
         }
 
         return response.json();
