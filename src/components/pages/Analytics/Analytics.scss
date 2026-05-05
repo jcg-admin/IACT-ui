@@ -17,7 +17,7 @@
     display: flex;
     gap: $spacing-md;
     margin-bottom: $spacing-xl;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid $gray-200;
 
     .tab {
       padding: $spacing-md $spacing-lg;
@@ -168,7 +168,7 @@
     select {
       width: 100%;
       padding: $spacing-sm 0.75rem;
-      border: 1px solid #d1d5db;
+      border: 1px solid $gray-300;
       border-radius: 0.375rem;
       font-size: 1rem;
       font-family: inherit;

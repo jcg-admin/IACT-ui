@@ -119,7 +119,9 @@ module.exports = (env, argv) => {
               loader: 'sass-loader',
               options: {
                 // Auto-inject variables so every .scss file can use $primary-color, $spacing-*, etc.
-                additionalData: `@import "${path.resolve(__dirname, 'src/styles/abstracts/_variables.scss')}";`,
+                // Use @use (not @import) — @import is deprecated in Dart Sass 1.99 and removed in 3.0.
+                additionalData: (content) =>
+                  `@use "${path.resolve(__dirname, 'src/styles/abstracts/_variables.scss')}" as *;\n${content}`,
               },
             },
           ],

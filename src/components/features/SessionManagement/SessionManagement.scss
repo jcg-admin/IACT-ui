@@ -66,7 +66,7 @@
 
   .session-card {
     background: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid $gray-200;
     border-radius: 0.5rem;
     padding: $spacing-lg;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -102,7 +102,7 @@
         display: flex;
         justify-content: space-between;
         padding: $spacing-sm 0;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid $gray-200;
         font-size: 0.875rem;
 
         &:last-child {
@@ -136,8 +136,8 @@
   overflow: hidden;
 
   thead {
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
+    background: $gray-50;
+    border-bottom: 1px solid $gray-200;
 
     th {
       padding: $spacing-md;
@@ -150,10 +150,10 @@
 
   tbody {
     tr {
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid $gray-200;
 
       &:hover {
-        background: #f9fafb;
+        background: $gray-50;
       }
 
       &.status-success {
