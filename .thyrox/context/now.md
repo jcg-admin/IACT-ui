@@ -4,7 +4,7 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: 2026-05-05-15-07-47-requirements-gap-analysis
+current_work: .thyrox/context/work/2026-05-05-15-07-47-requirements-gap-analysis
 phase: Phase 1 — DISCOVER
 blockers: []
 ```
