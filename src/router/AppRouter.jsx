@@ -39,18 +39,18 @@ const DashboardPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@components/features/Settings/SettingsPage').then(m => ({ default: m.default }))
 )
-const ProfilePage = lazy(() => Promise.resolve({
-  default: () => <div><h1>Profile</h1></div>
-}))
-const AccessPage = lazy(() => Promise.resolve({
-  default: () => <div><h1>Access Control</h1></div>
-}))
-const AuditPage = lazy(() => Promise.resolve({
-  default: () => <div><h1>Audit Log</h1></div>
-}))
-const AlertsPage = lazy(() => Promise.resolve({
-  default: () => <div><h1>Alerts</h1></div>
-}))
+const ProfilePage = lazy(() =>
+  import('@components/pages/Profile/ProfilePage').then(m => ({ default: m.default }))
+)
+const AccessPage = lazy(() =>
+  import('@components/pages/Access/AccessPage').then(m => ({ default: m.default }))
+)
+const AuditPage = lazy(() =>
+  import('@components/pages/Audit/AuditPage').then(m => ({ default: m.default }))
+)
+const AlertsPage = lazy(() =>
+  import('@components/pages/Alerts/AlertsPage').then(m => ({ default: m.default }))
+)
 
 const UserManagementPage = lazy(() =>
   import('@components/pages/UserManagement').then(m => ({ default: m.UserManagement }))
