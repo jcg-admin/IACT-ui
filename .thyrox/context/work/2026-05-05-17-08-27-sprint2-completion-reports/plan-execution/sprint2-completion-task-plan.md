@@ -62,32 +62,32 @@ URLs canónicas tomadas de IACT-docs (`discover/api-url-debt-analysis.md`).
 
 ## Grupo C — Reports service (T-020..T-024)
 
-- [ ] **T-020** Crear `src/services/reportsService.js` con métodos:
+- [x] **T-020** Crear `src/services/reportsService.js` con métodos:
   `getDashboardMetrics()`, `getAgentsReport(filters)`, `getQueuesReport(filters)`,
   `getCampaignsReport(filters)`, `scheduleReport(config)`,
   `getScheduledReports()`, `exportReport(type, format, filters)`.
   Patrón singleton como `accessService.js`. JSDoc en español.
   **Archivos:** `src/services/reportsService.js` (nuevo)
 
-- [ ] **T-021** Crear `src/redux/slices/reportsSlice.js`:
+- [x] **T-021** Crear `src/redux/slices/reportsSlice.js`:
   Thunks: `fetchDashboardMetrics`, `fetchScheduledReports`, `createScheduledReport`.
   Selectores: `selectMetrics`, `selectScheduledReports`, `selectReportsLoading`, `selectReportsError`.
   **Archivos:** `src/redux/slices/reportsSlice.js` (nuevo)
   **Deps:** T-020
 
-- [ ] **T-022** Conectar `AnalyticsDashboard.jsx` a `reportsSlice`:
+- [x] **T-022** Conectar `AnalyticsDashboard.jsx` a `reportsSlice`:
   Reemplazar `mockMetrics` con `useSelector(selectMetrics)`,
   dispatch `fetchDashboardMetrics` en mount.
   **Archivos:** `src/components/pages/Analytics/AnalyticsDashboard.jsx`
   **Deps:** T-021
 
-- [ ] **T-023** Integrar WebSocket en `AnalyticsDashboard.jsx`:
+- [x] **T-023** Integrar WebSocket en `AnalyticsDashboard.jsx`:
   Suscribir al canal `metrics` en mount, actualizar state con cada mensaje,
   desuscribir en unmount. Usar `websocketService` existente.
   **Archivos:** `src/components/pages/Analytics/AnalyticsDashboard.jsx`
   **Deps:** T-022
 
-- [ ] **T-024** Tests TDD para `reportsService.js` y `reportsSlice.js`:
+- [x] **T-024** Tests TDD para `reportsService.js` y `reportsSlice.js`:
   - reportsService: fetch calls, error handling, parámetros de endpoints
   - reportsSlice: thunks, selectores, estados loading/error
   **Archivos:** `src/services/__tests__/reportsService.test.js` (nuevo),
