@@ -4,8 +4,8 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: .thyrox/context/work/2026-05-05-16-31-59-rbac-naming-refactor
-phase: Phase 8 — PLAN EXECUTION
+current_work: .thyrox/context/work/2026-05-05-15-07-47-requirements-gap-analysis
+phase: Phase 10 — IMPLEMENT
 blockers: []
 ```
 
@@ -17,31 +17,34 @@ blockers: []
 **Branch:** `claude/project-analysis-N9IkV`
 **WP activo:** `2026-05-05-15-07-47-requirements-gap-analysis`
 
-## WP previo cerrado
+## WP cerrado (sub-refactor completado)
+
+`2026-05-05-16-31-59-rbac-naming-refactor` — CERRADO (Phase 11).
+RBAC v5.2.1 alineado: 9 hallazgos analizados, 6 críticos corregidos
+en 2 commits. 44/44 tests GREEN.
+
+## WP previos cerrados
 
 `2026-05-05-14-31-45-rbac-access-tdd-coverage` — COMPLETADO.
-105 suites / 852 tests, 4 clean code fixes, 1 TD aceptado.
+`2026-05-05-15-07-47-requirements-gap-analysis` — gap analysis realizado.
 
 ## WP actual (2026-05-05)
 
-**Objetivo:** Gap analysis — cuántos requisitos documentados en IACT-docs
-faltan por implementar en IACT-ui.
+**Objetivo:** Implementar Sprint 1+2 del gap analysis — rutas, userService,
+userSlice, reportes.
 
-**Fuente:** `/tmp/references/IACT-docs` rama `feature/solve-problem-docs`
+**Sprint 1 (T-001..T-006):** COMPLETO — rutas wired, FunctionCatalog extendido, logout.
+**Sprint 2 — TDD implementado:**
+- T-010: userService (13 tests) ✅
+- T-011: userSlice (13 tests) ✅
+- RBAC naming refactor: validateSoD → validateSeparationRules ✅
 
-**Resultado Phase 1 DISCOVER:**
-- 83 UCs documentados en 13 dominios
-- 121 FRs documentados
-- 16 UCs fully implemented (19%) — access, alerts, audit
-- 13 UCs scaffolded but not routed (auth, users parciales)
-- 49 UCs missing (logs, pipeline, operator, supervision, reports partial)
-- 5 UCs out-of-scope (caller — IVR side)
-
-**Próximo:** SP-01 gate — usuario decide scope de implementación.
+**Pendiente:**
+- T-012: Conectar UserManagement al userSlice real (reemplazar mockUsers)
+- T-013: Baja lógica en UserList/UserForm (badge ELIMINATED, botón "Dar de baja")
+- T-020..T-024: reportsService + reportsSlice TDD
 
 ## Para retomar
 
-Gap report en:
-`discover/requirements-gap-analysis.md`
-
-stage_sync_required: true
+Task plan en:
+`2026-05-05-15-07-47-requirements-gap-analysis/plan-execution/`
