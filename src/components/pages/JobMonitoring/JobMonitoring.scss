@@ -137,7 +137,7 @@
       &.progress-running   { background: linear-gradient(90deg, $primary-color, $info-color); }
       &.progress-completed { background: linear-gradient(90deg, $success-color, darken($success-color, 8%)); }
       &.progress-failed    { background: linear-gradient(90deg, $error-color, darken($error-color, 8%)); }
-      &.progress-queued    { background: linear-gradient(90deg, $warning-color, #f97316); }
+      &.progress-queued    { background: linear-gradient(90deg, $warning-color, $orange-color); }
     }
   }
 
