@@ -9,27 +9,27 @@
   animation: slideInRight 0.3s ease;
 
   &--success {
-    background-color: #065f46;
-    color: #d1fae5;
-    border-left: 4px solid #10b981;
+    background-color: darken($success-color, 25%);
+    color: lighten($success-color, 40%);
+    border-left: 4px solid $success-color;
   }
 
   &--error {
-    background-color: #7f1d1d;
-    color: #fee2e2;
-    border-left: 4px solid #ef4444;
+    background-color: darken($error-color, 25%);
+    color: rgba($error-color, 0.1);
+    border-left: 4px solid $error-color;
   }
 
   &--warning {
-    background-color: #78350f;
-    color: #fef3c7;
-    border-left: 4px solid #f59e0b;
+    background-color: darken($warning-color, 25%);
+    color: rgba($warning-color, 0.15);
+    border-left: 4px solid $warning-color;
   }
 
   &--info {
-    background-color: #0c4a6e;
-    color: #cffafe;
-    border-left: 4px solid #0ea5e9;
+    background-color: darken($info-color, 25%);
+    color: rgba($info-color, 0.15);
+    border-left: 4px solid $info-color;
   }
 }
 

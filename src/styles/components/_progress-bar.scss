@@ -57,7 +57,7 @@
 
   &--queued {
     .progress-bar__fill {
-      background: var(--color-gray);
+      background: $gray-300;
     }
   }
 
@@ -65,8 +65,8 @@
     .progress-bar__fill {
       background: linear-gradient(
         90deg,
-        var(--color-primary),
-        var(--color-primary-light)
+        $primary-color,
+        lighten($primary-color, 15%)
       );
       animation: progressPulse 2s ease-in-out infinite;
     }
@@ -74,7 +74,7 @@
 
   &--completed {
     .progress-bar__fill {
-      background: var(--color-success);
+      background: $success-color;
       animation: progressComplete 0.6s ease-out;
     }
   }
@@ -87,7 +87,7 @@
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: $secondary-color;
 }
 
 /* ====== CONTAINER ====== */
@@ -103,7 +103,7 @@
 .progress-bar__bar {
   flex: 1;
   height: 8px;
-  background: var(--color-bg-secondary);
+  background: $gray-50;
   border-radius: 4px;
   overflow: hidden;
   position: relative;
@@ -139,25 +139,25 @@
   min-width: 120px;
   text-align: right;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: $text-muted;
   white-space: nowrap;
 }
 
 .progress-bar__percent {
-  color: var(--color-text-primary);
+  color: $secondary-color;
   font-weight: 600;
 }
 
 .progress-bar__eta {
   font-size: 0.9em;
-  color: var(--color-text-secondary);
+  color: $text-muted;
 }
 
 /* ====== STATUS TEXT ====== */
 
 .progress-bar__status-text {
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
+  color: $text-muted;
   font-style: italic;
 }
 
@@ -177,10 +177,10 @@
 
 @keyframes progressComplete {
   0% {
-    box-shadow: 0 0 0 rgba(76, 175, 80, 0.7);
+    box-shadow: 0 0 0 rgba($success-color, 0.7);
   }
   100% {
-    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 10px rgba($success-color, 0);
   }
 }
 

@@ -10,7 +10,7 @@
   position: relative;
   overflow: hidden;
 
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  background: linear-gradient(135deg, $dark-bg 0%, $secondary-color 50%, $dark-bg 100%);
 
   &::before {
     content: '';
@@ -58,7 +58,7 @@
   &__logo {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    background: linear-gradient(135deg, $primary-color, darken($primary-color, 15%));
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -80,7 +80,7 @@
 
   &__subtitle {
     font-size: 0.95rem;
-    color: #94A3B8;
+    color: $text-muted;
     margin: 0;
     font-weight: 400;
   }
@@ -122,7 +122,7 @@
   &__submit {
     width: 100%;
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    background: linear-gradient(135deg, $primary-color, darken($primary-color, 8%));
     color: white;
     border: none;
     border-radius: 10px;
@@ -139,7 +139,7 @@
     &:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
-      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      background: linear-gradient(135deg, darken($primary-color, 8%), darken($primary-color, 15%));
     }
 
     &:active:not(:disabled) {
@@ -188,29 +188,29 @@
 
     input {
       cursor: pointer;
-      accent-color: #3B82F6;
+      accent-color: $primary-color;
     }
 
     label {
       font-size: 0.9rem;
-      color: #94A3B8;
+      color: $text-muted;
       cursor: pointer;
       @include transition-color();
 
       &:hover {
-        color: #CBD5E1;
+        color: $text-secondary;
       }
     }
   }
 
   &__forgot-password {
     font-size: 0.9rem;
-    color: #3B82F6;
+    color: $primary-color;
     text-decoration: none;
     @include transition-color();
 
     &:hover {
-      color: #60A5FA;
+      color: lighten($primary-color, 12%);
       text-decoration: underline;
     }
   }
@@ -227,7 +227,7 @@
   &__footer-title {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #94A3B8;
+    color: $text-muted;
     margin: 0 0 0.75rem 0;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -241,11 +241,11 @@
 
   &__demo-item {
     font-size: 0.9rem;
-    color: #E2E8F0;
+    color: $text-secondary;
     font-family: 'Courier New', monospace;
     padding: 0.5rem;
     background: rgba(59, 130, 246, 0.05);
-    border-left: 2px solid #3B82F6;
+    border-left: 2px solid $primary-color;
     border-radius: 4px;
     padding-left: 0.75rem;
   }
@@ -259,7 +259,7 @@
     display: flex;
     gap: 0.75rem;
     animation: slideDown 0.3s ease-out;
-    color: #FCA5A5;
+    color: lighten($error-color, 20%);
   }
 
   &__error-icon {
@@ -277,7 +277,7 @@
   &__error-close {
     background: none;
     border: none;
-    color: #FCA5A5;
+    color: lighten($error-color, 20%);
     cursor: pointer;
     font-size: 1.2rem;
     padding: 0;
@@ -287,7 +287,7 @@
     @include transition-color();
 
     &:hover {
-      color: #FECACA;
+      color: lighten($error-color, 25%);
     }
   }
 }
@@ -394,14 +394,14 @@
 
 @media (prefers-color-scheme: light) {
   .login-page {
-    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #F8FAFC 100%);
+    background: linear-gradient(135deg, $gray-50 0%, $text-color 50%, $gray-50 100%);
 
     &__title {
-      color: #0F172A;
+      color: $dark-bg;
     }
 
     &__subtitle {
-      color: #64748B;
+      color: $gray-500;
     }
 
     &__card {
@@ -410,7 +410,7 @@
     }
 
     &__demo-item {
-      color: #1E293B;
+      color: $secondary-color;
       background: rgba(59, 130, 246, 0.08);
     }
 
@@ -420,12 +420,12 @@
     }
 
     &__footer-title {
-      color: #64748B;
+      color: $gray-500;
     }
 
     &__error-banner {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.08));
-      color: #DC2626;
+      color: darken($error-color, 8%);
     }
   }
 }
