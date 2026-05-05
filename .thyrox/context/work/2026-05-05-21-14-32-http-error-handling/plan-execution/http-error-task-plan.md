@@ -18,25 +18,25 @@ status: Borrador
 
 ## Wave 1 — Corregir la foundation (bloqueante)
 
-- [ ] **T-001** Registrar adminReducer, logsReducer, savedFiltersReducer en `store.js`
-- [ ] **T-002** Wire `errorHandlingMiddleware` + `errorLoggingMiddleware` en `store.js`
-- [ ] **T-003** Commit Wave 1
+- [x] **T-001** Registrar adminReducer, logsReducer, savedFiltersReducer en `store.js`
+- [x] **T-002** Wire `errorHandlingMiddleware` + `errorLoggingMiddleware` en `store.js`
+- [x] **T-003** Commit Wave 1
 
 ---
 
 ## Wave 2 — Completar cobertura de status codes
 
-- [ ] **T-004** Agregar 11 clases de error a `apiErrors.js`:
+- [x] **T-004** Agregar 11 clases de error a `apiErrors.js`:
   `MethodNotAllowedError` (405), `RequestTimeoutError` (408), `GoneError` (410),
   `PreconditionFailedError` (412), `PayloadTooLargeError` (413),
   `UnsupportedMediaTypeError` (415), `PreconditionRequiredError` (428 RFC 6585),
   `RequestHeaderFieldsTooLargeError` (431 RFC 6585),
   `UnavailableForLegalReasonsError` (451), `NotImplementedError` (501),
   `NetworkAuthRequiredError` (511 RFC 6585)
-- [ ] **T-005** Actualizar `getErrorClassByStatusCode` con los 11 nuevos códigos
-- [ ] **T-006** Actualizar `isRetryableError` — agregar 408, 413 con retryAfter
-- [ ] **T-007** Mejorar middleware: 429 muestra retryAfter al usuario; 511 hace redirect a loginUrl
-- [ ] **T-008** Commit Wave 2
+- [x] **T-005** Actualizar `getErrorClassByStatusCode` con los 11 nuevos códigos
+- [x] **T-006** Actualizar `isRetryableError` — agregar 408, 413 con retryAfter
+- [x] **T-007** Mejorar middleware: 429 muestra retryAfter al usuario; 511 hace redirect a loginUrl
+- [x] **T-008** Commit Wave 2
 
 ---
 
@@ -59,7 +59,7 @@ status: Borrador
 | Red/timeout | Toast con botón "Reintentar" | `ApiErrorToast` |
 | 511 captive portal | Redirect inmediato | Middleware (sin componente) |
 
-- [ ] **T-009** Crear `src/components/feedback/ApiErrorToast.jsx`
+- [x] **T-009** Crear `src/components/feedback/ApiErrorToast.jsx`
   - Lee `state.error.global` via `selectGlobalError`
   - Variantes por tipo: info / success / warning / danger (siguiendo mx-template)
   - Ícono semántico por severidad: `info_outline` / `check` / `warning` / `error_outline`
@@ -68,24 +68,24 @@ status: Borrador
   - Para 429: muestra countdown `Retry-After` en segundos
   - Reemplaza/renombra `GlobalErrorToast` (que ya no se usa en ningún lugar)
 
-- [ ] **T-010** Crear `src/components/feedback/ServerErrorBanner.jsx`
+- [x] **T-010** Crear `src/components/feedback/ServerErrorBanner.jsx`
   - Banner fijo en top de página (no toast flotante)
   - Solo se muestra para 503 (Service Unavailable) y 502 (Bad Gateway)
   - Ícono `warning` + mensaje + botón dismiss manual
   - Lee `state.error.global` con filtro por statusCode
 
-- [ ] **T-011** Montar `ApiErrorToast` y `ServerErrorBanner` en `App.jsx` o layout raíz
+- [x] **T-011** Montar `ApiErrorToast` y `ServerErrorBanner` en `App.jsx` o layout raíz
   - Dentro del `<Provider>`, fuera de las rutas
   - Un solo punto de montaje para todo el árbol
 
-- [ ] **T-012** Crear `src/styles/components/_feedback.scss`
+- [x] **T-012** Crear `src/styles/components/_feedback.scss`
   - Estilos para `.api-error-toast` y `.server-error-banner`
   - Basado en variables SCSS del proyecto (`$error-color`, `$warning-color`, etc.)
   - Estructura inspirada en mx-template: icon + tipo en negrita + mensaje + close
   - Toast: posición fixed bottom-right, z-index: $z-index-tooltip
   - Banner: posición sticky top:0, z-index: $z-index-sticky
 
-- [ ] **T-013** Commit Wave 3
+- [x] **T-013** Commit Wave 3
 
 ---
 
@@ -94,26 +94,26 @@ status: Borrador
 > Actualmente solo existe `NotFound.jsx` sin estilos y `AccessDeniedPage` inline en AppRouter.
 > Referencia de diseño: mx-template `alert-danger`/`alert-warning` + iconografía Material Icons.
 
-- [ ] **T-014** Crear `src/pages/errors/NotFoundPage.jsx` (reemplaza `NotFound.jsx` y el inline)
+- [x] **T-014** Crear `src/pages/errors/NotFoundPage.jsx` (reemplaza `NotFound.jsx` y el inline)
   - Código de error grande (404), ícono, mensaje amigable, botón "Volver al inicio"
   - Usa variables SCSS: `$primary-color`, `$secondary-color`, `$gray-200`
 
-- [ ] **T-015** Crear `src/pages/errors/AccessDeniedPage.jsx` (extrae inline de AppRouter)
+- [x] **T-015** Crear `src/pages/errors/AccessDeniedPage.jsx` (extrae inline de AppRouter)
   - 403 con ícono `lock`, mensaje explicativo, botón "Volver" + link a soporte
 
-- [ ] **T-016** Crear `src/pages/errors/ServerErrorPage.jsx`
+- [x] **T-016** Crear `src/pages/errors/ServerErrorPage.jsx`
   - Genérico para 500 — ícono `error_outline`, "Error interno del servidor", botón reload
 
-- [ ] **T-017** Crear `src/pages/errors/ServiceUnavailablePage.jsx`
+- [x] **T-017** Crear `src/pages/errors/ServiceUnavailablePage.jsx`
   - 503 — ícono `build`, "Servicio en mantenimiento", Retry-After si disponible
 
-- [ ] **T-018** Crear `src/styles/components/_error-pages.scss`
+- [x] **T-018** Crear `src/styles/components/_error-pages.scss`
   - Estilos compartidos para las 4 páginas de error
   - Layout centrado, código de error tipografía grande, colores de la paleta IACT
 
-- [ ] **T-019** Actualizar `AppRouter.jsx` — usar páginas extraídas, agregar ruta 500 (para testing)
+- [x] **T-019** Actualizar `AppRouter.jsx` — usar páginas extraídas, agregar ruta 500 (para testing)
 
-- [ ] **T-020** Commit Wave 4
+- [x] **T-020** Commit Wave 4
 
 ---
 
@@ -124,30 +124,30 @@ Páginas de logs y admin usan RTK thunks → middleware (ya wired tras T-002)
 captura errores → `ApiErrorToast` los muestra. El `.error-banner` local duplica.
 Remover `{error && <div className="error-banner">...}` y el selector local de error.
 
-- [ ] **T-021** Quitar error-banner local de 9 páginas (logs + admin)
+- [x] **T-021** Quitar error-banner local de 9 páginas (logs + admin)
 
 ### T-022: Convertir report pages a thunks
 Las 6 páginas de reportes usan `reportsService.getXxx()` directo.
 Agregar thunks a `reportsSlice` + métodos a `reportsService` (transfers, ivr-menus, unique-clients).
 Actualizar páginas para usar dispatch + selector.
 
-- [ ] **T-022** Agregar thunks + métodos faltantes a reportsSlice/reportsService
-- [ ] **T-023** Actualizar 6 páginas de reportes a thunks, quitar try/catch + error local
+- [x] **T-022** Agregar thunks + métodos faltantes a reportsSlice/reportsService
+- [x] **T-023** Actualizar 6 páginas de reportes a thunks, quitar try/catch + error local
 
 ### T-024: BR_008 — logging de errores frontend
 BR_008 requiere registro de todo acceso incluyendo resultado (éxito/fallo).
 El `errorLoggingMiddleware` ya captura errores pero solo hace `console.error`.
 Extender para enviar a `auditService` cuando hay un error HTTP autenticado.
 
-- [ ] **T-024** Extender errorLoggingMiddleware para llamar auditService.logEvent en errores 4xx/5xx
+- [x] **T-024** Extender errorLoggingMiddleware para llamar auditService.logEvent en errores 4xx/5xx
 
-- [ ] **T-025** Commit Wave 5
+- [x] **T-025** Commit Wave 5
 
 ---
 
 ## Wave 6 — Documentación
 
-- [ ] **T-026** Crear `docs/guides/http-error-handling.md`
+- [x] **T-026** Crear `docs/guides/http-error-handling.md`
   Documentar:
   - Arquitectura (apiErrors → apiService → middleware → errorSlice → ApiErrorToast)
   - Tabla completa de status codes con clase, comportamiento y UX
@@ -156,7 +156,7 @@ Extender para enviar a `auditService` cuando hay un error HTTP autenticado.
   - Cómo leer errores por contexto (`selectContextError('logs')`)
   - Requisitos BR_008/BR_010 y cómo los cumple el sistema
 
-- [ ] **T-027** Commit Wave 6 + push final
+- [x] **T-027** Commit Wave 6 + push final
 
 ---
 

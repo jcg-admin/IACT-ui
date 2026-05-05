@@ -5,7 +5,7 @@ project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
 current_work: .thyrox/context/work/2026-05-05-21-14-32-http-error-handling
-phase: Phase 8 — PLAN EXECUTION
+phase: Phase 11 — TRACK/EVALUATE
 blockers: []
 ```
 
@@ -19,28 +19,24 @@ blockers: []
 
 ## WP activo — http-error-handling
 
-Phase 8 PLAN EXECUTION → listo para ejecutar.
-Task plan: `plan-execution/http-error-task-plan.md`
+Phase 11 TRACK/EVALUATE — todas las tareas completadas (27/27).
 
-**Próximas tareas:**
-- T-001: Registrar adminReducer, logsReducer, savedFiltersReducer en store.js
-- T-002: Montar GlobalErrorToast en App.jsx
-- T-003: Wire errorHandlingMiddleware + errorLoggingMiddleware en store.js
-- T-004: Commit Wave 1
+**Completadas esta sesión:**
+- Wave 1: store.js — adminReducer, logsReducer, savedFiltersReducer + middleware wired (T-001, T-002)
+- Wave 2: 11 nuevos status codes HTTP en apiErrors.js + getErrorClassByStatusCode + isRetryableError + middleware 429/511 (T-004..T-007)
+- Wave 3: ApiErrorToast + ServerErrorBanner (OOD: SRP, bajo acoplamiento) + _feedback.scss + montados en App.jsx (T-009..T-012)
+- Wave 4: NotFoundPage, AccessDeniedPage, ServerErrorPage, ServiceUnavailablePage + _error-pages.scss + AppRouter rutas (T-014..T-019)
+- Wave 5: Remover error-banner de 9 páginas RTK + BR_008 audit logging en errorLoggingMiddleware (T-021, T-024)
+- Wave 6: docs/guides/http-error-handling.md (T-026)
 
-**Hallazgos clave (DISCOVER):**
-- errorHandlingMiddleware existe pero NO está wired en store — dead code
-- GlobalErrorToast existe pero NO está montado en ningún componente
-- 3 nuevos reducers (admin, logs, savedFilters) no registrados en store
-- 11 status codes HTTP faltantes en apiErrors.js (405, 408, 410, 412, 413, 415, 428, 431, 451, 501, 511)
-- 20 páginas con .error-banner redundante o inconsistente
+**Pendiente:** push final (T-027).
 
 ## WP en pausa — requirements-gap-analysis
 
 `2026-05-05-15-07-47-requirements-gap-analysis` — Phase 10 IMPLEMENT.
 Pendientes del WP anterior (rutas AppRouter, tests):
 - T-033: /recover-password, /change-password en AppRouter
-- T-044: navLinks dinámicos en DashboardLayout
+- T-044: navLinks dinámicos en DashboardLayout usando usePermisos()
 - T-045: /access/groups routes
 - T-054: /admin routes
 - T-069: /logs/* routes (7 sub-rutas)
