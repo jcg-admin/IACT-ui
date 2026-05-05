@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchETLLogs, selectETLLogs, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import { fetchETLLogs, selectETLLogs, selectLogsLoading } from '../../redux/slices/logsSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const STATUS_BADGE = { success: 'badge-success', failed: 'badge-danger', running: 'badge-warning' }
@@ -9,7 +9,6 @@ export default function ETLLogsPage() {
   const dispatch = useDispatch()
   const etlLogs = useSelector(selectETLLogs)
   const loading = useSelector(selectLogsLoading)
-  const error = useSelector(selectLogsError)
 
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -49,8 +48,6 @@ export default function ETLLogsPage() {
         </div>
         <button className="btn btn-primary" onClick={handleApply}>Aplicar</button>
       </div>
-
-      {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
         <LoadingSpinner message="Cargando logs ETL..." />

@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { searchLogs, selectSearchResults, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import { searchLogs, selectSearchResults, selectLogsLoading } from '../../redux/slices/logsSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function LogSearchPage() {
   const dispatch = useDispatch()
   const results = useSelector(selectSearchResults)
   const loading = useSelector(selectLogsLoading)
-  const error = useSelector(selectLogsError)
 
   const [query, setQuery] = useState('')
   const [searched, setSearched] = useState(false)
@@ -35,8 +34,6 @@ export default function LogSearchPage() {
         />
         <button className="btn btn-primary" type="submit" disabled={loading}>Buscar</button>
       </form>
-
-      {error && <div className="error-banner">{error}</div>}
 
       {loading && <LoadingSpinner message="Buscando..." />}
 

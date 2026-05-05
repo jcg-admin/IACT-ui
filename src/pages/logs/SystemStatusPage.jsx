@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSystemStatus, selectSystemStatus, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import { fetchSystemStatus, selectSystemStatus, selectLogsLoading } from '../../redux/slices/logsSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const STATUS_BADGE = { UP: 'badge-success', DOWN: 'badge-danger', DEGRADED: 'badge-warning' }
@@ -9,7 +9,6 @@ export default function SystemStatusPage() {
   const dispatch = useDispatch()
   const systemStatus = useSelector(selectSystemStatus)
   const loading = useSelector(selectLogsLoading)
-  const error = useSelector(selectLogsError)
 
   useEffect(() => {
     dispatch(fetchSystemStatus())
@@ -22,8 +21,6 @@ export default function SystemStatusPage() {
       <div className="page-header">
         <h1>Estado del sistema</h1>
       </div>
-
-      {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
         <LoadingSpinner message="Cargando estado del sistema..." />

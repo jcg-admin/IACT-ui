@@ -245,6 +245,29 @@ class AuditService {
 
         return response.blob();
     }
+
+    /**
+     * BR_008: Log an error event to the audit trail.
+     * Append-only per BR_010 — no update/delete endpoint exists.
+     * Fire-and-forget: errors here must not interrupt the UI flow.
+     */
+    async logEvent(event) {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return; // Not authenticated — skip audit logging
+
+        try {
+            await fetch(`${API_BASE_URL}/audit/events`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(event),
+            });
+        } catch {
+            // Audit logging must never throw — it is observability, not business logic
+        }
+    }
 }
 
 export default new AuditService();

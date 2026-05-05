@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPerformanceMetrics, selectPerformanceMetrics, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import { fetchPerformanceMetrics, selectPerformanceMetrics, selectLogsLoading } from '../../redux/slices/logsSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function PerformanceMetricsPage() {
   const dispatch = useDispatch()
   const performanceMetrics = useSelector(selectPerformanceMetrics)
   const loading = useSelector(selectLogsLoading)
-  const error = useSelector(selectLogsError)
 
   useEffect(() => {
     dispatch(fetchPerformanceMetrics())
@@ -20,8 +19,6 @@ export default function PerformanceMetricsPage() {
       <div className="page-header">
         <h1>Métricas de performance</h1>
       </div>
-
-      {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
         <LoadingSpinner message="Cargando métricas..." />

@@ -72,6 +72,7 @@ function _extractContextFromAction(actionType) {
 
 /**
  * Middleware para logging de errores
+ * BR_008: Todo acceso/error autenticado se registra en el audit trail.
  */
 export const errorLoggingMiddleware = (store) => (next) => (action) => {
   if (action.type && action.type.endsWith('/rejected')) {
@@ -83,12 +84,12 @@ export const errorLoggingMiddleware = (store) => (next) => (action) => {
       timestamp,
       action: action.type,
       error: {
-        code: error.code,
-        message: error.message,
-        statusCode: error.statusCode,
-        stack: error.stack,
+        code: error?.code,
+        message: error?.message,
+        statusCode: error?.statusCode,
+        stack: error?.stack,
       },
-      retryable: isRetryableError(error),
+      retryable: isRetryableError(error ?? {}),
       state: {
         auth: {
           isAuthenticated: state.auth?.isAuthenticated,
@@ -102,11 +103,26 @@ export const errorLoggingMiddleware = (store) => (next) => (action) => {
     // Send to error tracking service (Sentry, etc)
     if (typeof window !== 'undefined' && window.errorTracker) {
       window.errorTracker.captureException(error, {
-        tags: {
-          action: action.type,
-          code: error.code,
-        },
+        tags: { action: action.type, code: error?.code },
         extra: errorLog,
+      });
+    }
+
+    // BR_008: log authenticated HTTP errors (4xx/5xx) to audit trail
+    const statusCode = error?.statusCode;
+    const isAuthenticated = state.auth?.isAuthenticated;
+    if (isAuthenticated && statusCode >= 400) {
+      import('../../services/auditService').then(({ default: auditService }) => {
+        auditService.logEvent({
+          event_type: 'HTTP_ERROR',
+          timestamp,
+          user_id: state.auth?.user?.id ?? null,
+          action: action.type,
+          status_code: statusCode,
+          error_code: error?.code ?? null,
+          message: error?.message ?? null,
+          retryable: isRetryableError(error ?? {}),
+        });
       });
     }
   }

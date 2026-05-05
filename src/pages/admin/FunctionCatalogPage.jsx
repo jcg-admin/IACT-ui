@@ -13,7 +13,6 @@ import {
   deactivateFunction,
   selectFunctions,
   selectAdminLoading,
-  selectAdminError,
 } from '../../redux/slices/adminSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
@@ -26,7 +25,6 @@ export default function FunctionCatalogPage() {
   const dispatch = useDispatch()
   const functions = useSelector(selectFunctions)
   const loading = useSelector(selectAdminLoading)
-  const error = useSelector(selectAdminError)
 
   const [search, setSearch] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -129,12 +127,6 @@ export default function FunctionCatalogPage() {
           Nueva función
         </button>
       </div>
-
-      {error && (
-        <div className="error-banner">
-          Error: {error}
-        </div>
-      )}
 
       {/* Barra de búsqueda */}
       <div className="search-bar">

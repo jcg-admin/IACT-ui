@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchInfraLogs, selectInfraLogs, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import { fetchInfraLogs, selectInfraLogs, selectLogsLoading } from '../../redux/slices/logsSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function InfraLogsPage() {
   const dispatch = useDispatch()
   const infraLogs = useSelector(selectInfraLogs)
   const loading = useSelector(selectLogsLoading)
-  const error = useSelector(selectLogsError)
 
   const [component, setComponent] = useState('')
 
@@ -37,8 +36,6 @@ export default function InfraLogsPage() {
         </div>
         <button className="btn btn-primary" onClick={handleApply}>Aplicar</button>
       </div>
-
-      {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
         <LoadingSpinner message="Cargando logs de infraestructura..." />
