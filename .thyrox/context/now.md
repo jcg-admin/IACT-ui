@@ -4,8 +4,8 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: 2026-05-05-14-08-34-rbac-access-alignment
-phase: Phase 10 — EXECUTE
+current_work: 2026-05-05-14-31-45-rbac-access-tdd-coverage
+phase: Phase 1 — DISCOVER
 blockers: []
 ```
 
@@ -15,25 +15,32 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**WP activo:** `2026-05-05-14-08-34-rbac-access-alignment`
+**WP activo:** `2026-05-05-14-31-45-rbac-access-tdd-coverage`
 
 ## WP actual (2026-05-05)
 
-**Objetivo:** Alinear módulo RBAC/Access con decisiones de diseño CIA-RBAC-002/CNST-033.
+**Objetivo:** Cubrir con TDD los 8 archivos modificados en rbac-access-alignment.
+Aplicar clean code como principio transversal.
 
-**Implementado (independiente del backend):**
-- H-01/H-02 — `FunctionSelector.jsx`: SoD predicados sobre codenames + categorías en inglés
-- H-04 — `accessSlice.js`: `functionId` → `catalogId` con comentario de invariante
-- H-05 — `accessService.js`: `groupers` → `function_groups`, endpoints actualizados
-- H-06 — `AppRouter.jsx`: ProtectedRoute + rutas módulos ITER4/5/6 + FunctionCatalog
+**Phase 1 DISCOVER — completada:**
+- Inventario de 8 archivos sin suite de tests
+- 5 smells de clean code detectados
+- R-001..R-004 en risk register
+- SP-01 gate: esperando aprobación para Phase 8 PLAN EXECUTION
 
-**Pendiente (requiere backend Django):**
-- `permissions.json` + `PermissionsService.js` — cambio de contrato de campos español→inglés
-- Verificación de codenames SoD contra catálogo real de funciones
+**Scope:**
+- `src/components/access/FunctionSelector.jsx`
+- `src/redux/slices/accessSlice.js`
+- `src/services/accessService.js`
+- `src/permissions/catalog.js`
+- `src/router/AppRouter.jsx`
+- `src/pages/access/AssignFunctionsPage.jsx`
+- `src/pages/access/PermissionsPage.jsx`
+- `src/pages/access/TemporaryPermissionsPage.jsx`
 
-**Tests:** 97/97 passing (771/771) ✓
+**Tests baseline:** 97 suites / 771 tests (no romper)
 
 ## Para retomar
 
 Al iniciar sesión: leer `focus.md` y `project-state.md`.
-WP activo con cambios commiteados y pusheados.
+SP-01 pendiente — DISCOVER ya aprobado → continuar con Phase 8 PLAN EXECUTION.
