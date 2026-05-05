@@ -2,7 +2,7 @@
 type: Registro de Deuda Técnica
 project: IACT-UI
 version: 1.0
-updated_at: 2026-05-05
+updated_at: 2026-05-05 (sesión 2)
 ```
 
 # Deuda Técnica — IACT-UI
@@ -70,6 +70,14 @@ updated_at: 2026-05-05
 | ✅ | Cobertura < 80% | RESUELTO → 80%+ |
 | ✅ | `coverage/` no en `.gitignore` | RESUELTO |
 | ✅ | Configs duplicadas del merge | RESUELTO |
+| ✅ | TD-005 — Routing sin implementar | RESUELTO — AppRouter completo con lazy imports reales |
+| ✅ | TD-007 — `no-console` warnings en hooks TS | RESUELTO — ESLint permite console.error/warn |
+| ✅ | TD-008 — `react/prop-types` en test | RESUELTO — prop-types desactivado en test files |
+| ✅ | TD-004 — Redux slice duplicado | NO APLICA — src/state/slices/homeSlice.js no existe; solo hay 1 homeSlice en modules/ |
+| ✅ | reportsSlice/dashboardSlice/errorSlice no registrados | RESUELTO — 3 slices agregados a src/redux/store.js |
+| ✅ | webpack entry apuntaba a index.jsx (legacy) | RESUELTO — cambiado a index.js (app completa) |
+| ✅ | store.js.backup anti-pattern | RESUELTO — eliminado |
+| ✅ | TD-ACC-01..04 — URLs incorrectas en accessService | RESUELTO — URLs canónicas implementadas |
 
 ### TD-ACC-01..05 — URLs incorrrrectas en accessService.js (REVISADO)
 
