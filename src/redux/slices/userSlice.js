@@ -70,14 +70,19 @@ const usersSlice = createSlice({
     loading: false,
     error: null,
     total: 0,
+    isAuthenticated: false,
+    user: null,
   },
   reducers: {
-    // Mantenidos para retrocompatibilidad con código existente
     setUser: (state, action) => {
+      state.isAuthenticated = true
+      state.user = action.payload
       const idx = state.users.findIndex(u => u.id === action.payload.id)
       if (idx >= 0) state.users[idx] = action.payload
     },
     logout: (state) => {
+      state.isAuthenticated = false
+      state.user = null
       state.users = []
       state.total = 0
     },

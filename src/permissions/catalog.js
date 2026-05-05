@@ -57,7 +57,7 @@ export const FunctionCatalog = {
     VIEW_LOGS:              'sistema.observabilidad.logs.ver',
 
     // Real-time metrics
-    VIEW_REALTIME_METRICS:  'sistema.analisis.metricas.tiemporeal.ver',
+    VIEW_REALTIME_METRICS:  'sistema.analisis.metricas_tiempo_real.ver',
 
     // Super-admin — unrestricted system access
     SUPER_ADMIN:            'sistema.administracion.sistema.superadmin',
