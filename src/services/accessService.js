@@ -90,10 +90,10 @@ class AccessService {
 
     /**
      * Valida reglas de separación de funciones antes de asignar (UC-043 / CNST-005).
-     * Equivalente frontend de validate_separation_rules del backend (v5.2.1).
+     * POST /access/separation-rules/validate — recurso "separation-rules", acción "validate".
      */
     async validateSeparationRules(userId, functionId) {
-        const response = await fetch(`${API_BASE_URL}/access/validate-sod`, {
+        const response = await fetch(`${API_BASE_URL}/access/separation-rules/validate`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
             body: JSON.stringify({

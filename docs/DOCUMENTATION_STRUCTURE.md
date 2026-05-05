@@ -44,6 +44,7 @@ docs/
 │   ├── permisos.md                    ← RBAC permissions guide
 │   ├── quickstart-scss.md             ← Quick start post-Tailwind removal (SCSS utilities)
 │   ├── rbac-naming-standard.md        ← RBAC v5.2.1 naming standard (inglés, sin acrónimos)
+│   ├── rest-api-conventions.md        ← Convenciones OAS3/REST para URLs de endpoints
 │   ├── responsive-bootstrap.md        ← Bootstrap responsive utilities
 │   ├── responsive-guide.md            ← Responsive utilities guide
 │   ├── responsive-usage.md            ← Responsive utilities usage

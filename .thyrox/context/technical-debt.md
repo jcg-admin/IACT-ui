@@ -70,3 +70,17 @@ updated_at: 2026-05-05
 | ✅ | Cobertura < 80% | RESUELTO → 80%+ |
 | ✅ | `coverage/` no en `.gitignore` | RESUELTO |
 | ✅ | Configs duplicadas del merge | RESUELTO |
+
+### TD-ACC-01..05 — URLs con verbos en paths (módulo access)
+
+- **Origen:** Diseño inicial sin aplicar convenciones REST/OAS3
+- **Síntoma:** Verbos como path segments en lugar de HTTP methods:
+  - `POST /access/functions/assign` → debe ser `POST /access/function-assignments`
+  - `POST /access/functions/revoke` → debe ser `DELETE /access/function-assignments/{id}`
+  - `POST /access/audit/export` → debe ser `POST /access/audit-exports`
+  - `POST /access/function-groups/assign` → debe ser `POST /access/function-group-assignments`
+  - `POST /access/segments/assign` → debe ser `POST /access/segment-assignments`
+- **Impacto:** Inconsistencia con OAS3 + naming standard; dificulta generación de cliente desde OpenAPI spec
+- **Acción:** Coordinar con equipo backend antes de cambiar — requiere cambio en ambos lados
+- **Referencia:** `docs/guides/rest-api-conventions.md` tabla "Mapa de URLs correctas"
+- **NO resuelto:** `POST /access/validate-sod` → ya corregido a `POST /access/separation-rules/validate`

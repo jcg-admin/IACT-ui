@@ -63,11 +63,10 @@ identificadores de código.
 
 /**
  * Valida reglas de separación de funciones antes de asignar (UC-043).
- * @param {number} userId - ID del usuario
- * @param {number} functionId - PK de la función en el catálogo RBAC
+ * POST /access/separation-rules/validate — recurso "separation-rules", acción "validate".
  */
 async validateSeparationRules(userId, functionId) {
-    const response = await fetch(`${API_BASE_URL}/access/validate-sod`, {
+    const response = await fetch(`${API_BASE_URL}/access/separation-rules/validate`, {
         method: 'POST',
         body: JSON.stringify({ userId, functionId }),
     });
@@ -75,8 +74,12 @@ async validateSeparationRules(userId, functionId) {
 }
 ```
 
-Nota: la URL del endpoint (`validate-sod`) puede usar la abreviación del dominio
-porque es una URL de API externa, no un identificador de código JavaScript.
+Las URLs de API siguen las mismas convenciones que los identificadores de código:
+- Sustantivos como recursos: `/separation-rules`, no `/validate-sod`
+- Sin acrónimos de dominio: `separation-rules` no `sod`
+- Acciones via HTTP method: `POST /separation-rules/validate`, no `GET /validate-sod`
+
+Ver `docs/guides/rest-api-conventions.md` para las reglas completas de diseño de URLs.
 
 ---
 
