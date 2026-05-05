@@ -1,7 +1,7 @@
 /**
  * Sidebar Component
  * Main sidebar/navigation container with collapsible/drawer features
- * 
+ *
  * Features:
  * - Fixed sidebar on desktop (250px width, can collapse to 60px)
  * - Mobile drawer (full screen, translateX)
@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import styles from './Sidebar.module.scss'
+import './Sidebar.scss'
 
 export default function Sidebar({
   navLinks = [],
@@ -35,9 +35,9 @@ export default function Sidebar({
   }, [])
 
   const sidebarClasses = [
-    styles.sidebar,
-    isOpen && styles.open,
-    isCollapsed && !isMobile && styles.collapsed,
+    'sidebar',
+    isOpen && 'open',
+    isCollapsed && !isMobile && 'collapsed',
   ]
     .filter(Boolean)
     .join(' ')
@@ -60,7 +60,7 @@ export default function Sidebar({
       {/* Overlay (mobile only) */}
       {isMobile && isOpen && (
         <div
-          className={styles.overlay}
+          className="overlay"
           onClick={onClose}
           role="presentation"
           aria-hidden="true"
@@ -76,9 +76,9 @@ export default function Sidebar({
       >
         {/* Header/Close Button */}
         {isMobile && (
-          <div className={styles.header}>
+          <div className="header">
             <button
-              className={styles.closeButton}
+              className="closeButton"
               onClick={onClose}
               aria-label="Close sidebar"
             >
@@ -88,21 +88,19 @@ export default function Sidebar({
         )}
 
         {/* Navigation */}
-        <nav className={styles.nav}>
-          <ul className={styles.navList}>
+        <nav className="nav">
+          <ul className="navList">
             {navLinks.map((link) => (
-              <li key={link.id} className={styles.navItem}>
+              <li key={link.id} className="navItem">
                 <button
-                  className={`${styles.navLink} ${
-                    currentPage === link.label ? styles.active : ''
-                  }`}
+                  className={`navLink${currentPage === link.label ? ' active' : ''}`}
                   onClick={() => handleNavClick(link)}
                   aria-current={currentPage === link.label ? 'page' : undefined}
                   title={isCollapsed && !isMobile ? link.label : undefined}
                 >
-                  <span className={styles.icon}>{link.icon}</span>
+                  <span className="icon">{link.icon}</span>
                   {(!isCollapsed || isMobile) && (
-                    <span className={styles.label}>{link.label}</span>
+                    <span className="label">{link.label}</span>
                   )}
                 </button>
               </li>
@@ -111,9 +109,9 @@ export default function Sidebar({
         </nav>
 
         {/* Footer */}
-        <div className={styles.footer}>
+        <div className="footer">
           <button
-            className={styles.footerButton}
+            className="footerButton"
             aria-label="More options"
             title={isCollapsed && !isMobile ? 'More' : undefined}
           >

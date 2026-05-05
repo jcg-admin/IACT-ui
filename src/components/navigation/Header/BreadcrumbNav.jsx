@@ -5,23 +5,23 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './BreadcrumbNav.module.scss'
+import './BreadcrumbNav.scss'
 
 export default function BreadcrumbNav({
   currentPage = 'Dashboard',
   basePath = 'Dashboard',
 }) {
   return (
-    <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-      <ol className={styles.breadcrumbList}>
+    <nav className="breadcrumb" aria-label="Breadcrumb">
+      <ol className="breadcrumbList">
         <li>
-          <a href="/" className={styles.link}>{basePath}</a>
+          <a href="/" className="link">{basePath}</a>
         </li>
         {currentPage !== basePath && (
           <>
-            <li className={styles.separator}>/</li>
+            <li className="separator">/</li>
             <li>
-              <span className={styles.current}>{currentPage}</span>
+              <span className="current">{currentPage}</span>
             </li>
           </>
         )}

@@ -1,0 +1,44 @@
+.container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 8px;
+    color: $secondary-color;
+  }
+
+  p {
+    margin-bottom: 24px;
+    color: $gray-500;
+  }
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid $gray-200;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    margin-bottom: 8px;
+    color: $secondary-color;
+  }
+
+  p {
+    color: $gray-500;
+    margin: 0;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease-out;
+  }
+}

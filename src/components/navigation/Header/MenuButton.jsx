@@ -5,7 +5,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './MenuButton.module.scss'
+import './MenuButton.scss'
 
 export default function MenuButton({
   isOpen = false,
@@ -13,14 +13,14 @@ export default function MenuButton({
 }) {
   return (
     <button
-      className={`${styles.menuButton} ${isOpen ? styles.open : ''}`}
+      className={`menuButton${isOpen ? ' open' : ''}`}
       onClick={onClick}
       aria-label="Toggle sidebar menu"
       aria-expanded={isOpen}
     >
-      <span className={styles.line} />
-      <span className={styles.line} />
-      <span className={styles.line} />
+      <span className="line" />
+      <span className="line" />
+      <span className="line" />
     </button>
   )
 }

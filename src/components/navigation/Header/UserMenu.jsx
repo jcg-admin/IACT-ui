@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import styles from './UserMenu.module.scss'
+import './UserMenu.scss'
 
 export default function UserMenu({
   userInfo = { name: 'User', email: '' },
@@ -20,9 +20,9 @@ export default function UserMenu({
   }
 
   return (
-    <div className={styles.userMenu}>
+    <div className="userMenu">
       <button
-        className={styles.trigger}
+        className="trigger"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label="User menu"
@@ -31,20 +31,20 @@ export default function UserMenu({
       </button>
 
       {isOpen && (
-        <div className={styles.dropdown}>
-          <div className={styles.userInfo}>
-            <div className={styles.name}>{userInfo.name}</div>
-            {userInfo.email && <div className={styles.email}>{userInfo.email}</div>}
+        <div className="dropdown">
+          <div className="userInfo">
+            <div className="name">{userInfo.name}</div>
+            {userInfo.email && <div className="email">{userInfo.email}</div>}
           </div>
-          <div className={styles.divider} />
-          <button className={styles.option} onClick={onSettings}>
+          <div className="divider" />
+          <button className="option" onClick={onSettings}>
             ⚙️ Settings
           </button>
-          <button className={styles.option} onClick={() => setIsOpen(false)}>
+          <button className="option" onClick={() => setIsOpen(false)}>
             👁️ Profile
           </button>
-          <div className={styles.divider} />
-          <button className={styles.logoutBtn} onClick={handleLogout}>
+          <div className="divider" />
+          <button className="logoutBtn" onClick={handleLogout}>
             🚪 Logout
           </button>
         </div>

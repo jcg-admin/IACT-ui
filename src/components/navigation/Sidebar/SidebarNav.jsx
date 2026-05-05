@@ -5,7 +5,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './SidebarNav.module.scss'
+import './SidebarNav.scss'
 
 export default function SidebarNav({
   navLinks = [],
@@ -14,20 +14,18 @@ export default function SidebarNav({
   isCollapsed = false,
 }) {
   return (
-    <nav className={styles.sidebarNav}>
-      <ul className={styles.navList}>
+    <nav className="sidebarNav">
+      <ul className="navList">
         {navLinks.map((link) => (
-          <li key={link.id} className={styles.navItem}>
+          <li key={link.id} className="navItem">
             <button
-              className={`${styles.navLink} ${
-                currentPage === link.label ? styles.active : ''
-              }`}
+              className={`navLink${currentPage === link.label ? ' active' : ''}`}
               onClick={() => onNavigate(link)}
               aria-current={currentPage === link.label ? 'page' : undefined}
               title={isCollapsed ? link.label : undefined}
             >
-              {link.icon && <span className={styles.icon}>{link.icon}</span>}
-              {!isCollapsed && <span className={styles.label}>{link.label}</span>}
+              {link.icon && <span className="icon">{link.icon}</span>}
+              {!isCollapsed && <span className="label">{link.label}</span>}
             </button>
           </li>
         ))}

@@ -1,12 +1,11 @@
 /**
  * DashboardLayout Component
  * Main layout wrapper combining Header, Sidebar, and main content
- * 
+ *
  * Features:
  * - Sticky header at top
  * - Responsive sidebar (fixed desktop, drawer mobile)
  * - Main content area with outlet
- * - BMD (Bootstrap Material Design) layout system
  * - Full keyboard navigation
  * - Accessible structure
  */
@@ -19,7 +18,7 @@ import { Header, LogoBrand, MenuButton } from '@components/shared/Header'
 import { Sidebar } from '@components/shared/Sidebar'
 import { useMenuToggle } from '@hooks/useMenuToggle'
 import { logoutUser } from '@redux/slices/authSlice'
-import styles from './DashboardLayout.module.scss'
+import './DashboardLayout.scss'
 
 export default function DashboardLayout({
   navLinks = [],
@@ -47,7 +46,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className={styles.layoutCanvas}>
+    <div className="layoutCanvas">
       {/* Header */}
       <Header
         currentPage={currentPage}
@@ -58,7 +57,7 @@ export default function DashboardLayout({
         onLogout={handleLogout}
       />
 
-      <div className={styles.layoutContent}>
+      <div className="layoutContent">
         {/* Sidebar */}
         <Sidebar
           navLinks={navLinks}
@@ -71,19 +70,17 @@ export default function DashboardLayout({
 
         {/* Main Content Area */}
         <main
-          className={`${styles.main} ${
-            isCollapsed && !isMobile ? styles.mainCollapsed : ''
-          }`}
+          className={`main${isCollapsed && !isMobile ? ' mainCollapsed' : ''}`}
           role="main"
         >
-          <div className={styles.container}>
+          <div className="container">
             <Outlet />
           </div>
         </main>
       </div>
 
       {/* Accessibility: Skip to content link */}
-      <a href="#main-content" className={styles.skipLink}>
+      <a href="#main-content" className="skipLink">
         Skip to main content
       </a>
     </div>
