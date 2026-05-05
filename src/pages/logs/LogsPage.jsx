@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchLogs, selectLogs, selectLogsLoading } from '../../redux/slices/logsSlice'
+import { fetchLogs, selectLogs } from '../../redux/slices/logsSlice'
+import { selectIsLoading } from '../../redux/slices/loadingSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const BADGE_CLASS = { ERROR: 'badge-danger', WARNING: 'badge-warning', INFO: 'badge-info' }
@@ -8,7 +9,7 @@ const BADGE_CLASS = { ERROR: 'badge-danger', WARNING: 'badge-warning', INFO: 'ba
 export default function LogsPage() {
   const dispatch = useDispatch()
   const logs = useSelector(selectLogs)
-  const loading = useSelector(selectLogsLoading)
+  const loading = useSelector(selectIsLoading('logs'))
 
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
