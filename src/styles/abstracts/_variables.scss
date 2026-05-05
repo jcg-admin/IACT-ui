@@ -24,9 +24,20 @@ $text-color: #f1f5f9;           // Blanco texto (primary text)
 $text-secondary: #cbd5e1;       // Gris claro (secondary text)
 $text-muted: #94a3b8;           // Gris medio (muted text)
 
-$border-color: #374151;         // Gris oscuro (borders)
+$border-color: #374151;         // Gris oscuro (borders) — alias: $gray-700
 $background-color: #1f2937;     // Gris oscuro (cards, panels)
-$surface-color: #111827;        // Casi negro (hover states)
+$surface-color: #111827;        // Casi negro (hover states) — alias: $gray-900
+
+// Escala de grises UI (Tailwind gray) — para fondos, bordes y texto secundario
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: $border-color;      // = #374151
+$gray-900: $surface-color;     // = #111827
 
 // Colores deprecated (para compatibilidad)
 $color-text: $text-color;
