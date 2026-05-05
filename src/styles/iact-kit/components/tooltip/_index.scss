@@ -1,0 +1,76 @@
+/**
+ * IACT UI Kit - Tooltip Component (Adaptado de mx-template)
+ */
+
+.tooltip {
+  position: absolute;
+  z-index: 1070;
+  display: none;
+  padding: $padding-xs $padding-sm;
+  background-color: rgba($color-text-primary, 0.9);
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  font-size: $font-size-xs;
+  max-width: 100%;
+  word-wrap: break-word;
+  @include box-shadow-elevation(2);
+
+  &.show {
+    display: block;
+  }
+
+  &-inner {
+    padding: $padding-xs;
+  }
+
+  &-arrow {
+    position: absolute;
+    width: 0.8rem;
+    height: 0.4rem;
+
+    &::before {
+      position: absolute;
+      content: '';
+      border-color: transparent;
+      border-style: solid;
+    }
+  }
+
+  // Positioning
+  &.bs-tooltip-top,
+  &.bs-tooltip-auto[data-popper-placement^='top'] {
+    .tooltip-arrow::before {
+      bottom: 0;
+      border-width: 0.4rem 0.4rem 0;
+      border-top-color: rgba($color-text-primary, 0.9);
+    }
+  }
+
+  &.bs-tooltip-bottom,
+  &.bs-tooltip-auto[data-popper-placement^='bottom'] {
+    .tooltip-arrow::before {
+      top: 0;
+      border-width: 0 0.4rem 0.4rem;
+      border-bottom-color: rgba($color-text-primary, 0.9);
+    }
+  }
+
+  &.bs-tooltip-left,
+  &.bs-tooltip-auto[data-popper-placement^='left'] {
+    .tooltip-arrow::before {
+      right: 0;
+      border-width: 0.4rem 0 0.4rem 0.4rem;
+      border-left-color: rgba($color-text-primary, 0.9);
+    }
+  }
+
+  &.bs-tooltip-right,
+  &.bs-tooltip-auto[data-popper-placement^='right'] {
+    .tooltip-arrow::before {
+      left: 0;
+      border-width: 0.4rem 0.4rem 0.4rem 0;
+      border-right-color: rgba($color-text-primary, 0.9);
+    }
+  }
+}

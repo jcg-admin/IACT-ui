@@ -1,0 +1,217 @@
+/**
+ * IACT UI Kit - Grid System (Advanced)
+ * Basado en Bootstrap grid pero con helpers adicionales
+ * 
+ * Nomenclatura:
+ *   .col-{bp}-{fraction}    → .col-md-1-2 (50% en md+)
+ *   .col-{bp}-auto          → .col-md-auto (ancho automático en md+)
+ *   .col-{bp}-grow          → .col-md-grow (flex-grow: 1 en md+)
+ *   .offset-{bp}-{fraction} → .offset-md-1-4 (margen izquierdo 25% en md+)
+ */
+
+// ============================================================================
+// GRID COLUMN WIDTHS (Responsive)
+// ============================================================================
+// Genera: .col-{breakpoint-infix}-{fraction}
+// Ejemplo: .col-md-1-2 (width: 50% en md+)
+
+$col-fractions: (
+  "auto": auto,
+  "full": 100%,
+  "1-2": 50%,
+  "1-3": 33.333%,
+  "2-3": 66.666%,
+  "1-4": 25%,
+  "3-4": 75%,
+  "1-5": 20%,
+  "2-5": 40%,
+  "3-5": 60%,
+  "4-5": 80%,
+  "1-6": 16.666%,
+  "5-6": 83.333%
+) !default;
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $fraction, $width in $col-fractions {
+      .col#{$infix}-#{$fraction} {
+        flex: 0 0 $width !important;
+        max-width: $width !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// GRID COLUMN AUTO
+// ============================================================================
+// Genera: .col-{breakpoint-infix}-auto (tamaño automático)
+// Ejemplo: .col-md-auto (ancho según contenido en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .col#{$infix}-auto {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      max-width: 100% !important;
+    }
+  }
+}
+
+// ============================================================================
+// GRID COLUMN GROW
+// ============================================================================
+// Genera: .col-{breakpoint-infix}-grow (flex-grow: 1)
+// Ejemplo: .col-md-grow (ocupa espacio disponible en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .col#{$infix}-grow {
+      flex: 1 1 auto !important;
+      max-width: 100% !important;
+    }
+  }
+}
+
+// ============================================================================
+// COLUMN OFFSETS (Responsive)
+// ============================================================================
+// Genera: .offset-{breakpoint-infix}-{fraction}
+// Ejemplo: .offset-md-1-4 (margin-left: 25% en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $fraction, $width in $col-fractions {
+      @if $fraction != auto {
+        .offset#{$infix}-#{$fraction} {
+          margin-left: $width !important;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// ROW UTILITIES (Responsive)
+// ============================================================================
+// Genera: .row-{breakpoint-infix}-{direction}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    // Row direction
+    .row#{$infix}-wrap {
+      flex-wrap: wrap !important;
+    }
+    .row#{$infix}-nowrap {
+      flex-wrap: nowrap !important;
+    }
+
+    // Gutter control (gap alternative)
+    .row#{$infix}-dense {
+      margin-right: -0.25rem !important;
+      margin-left: -0.25rem !important;
+
+      > [class*="col"] {
+        padding-right: 0.25rem !important;
+        padding-left: 0.25rem !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// EJEMPLOS DE USO
+// ============================================================================
+
+/*
+
+1. GRID BÁSICO RESPONSIVE:
+   <div class="row gap-2 gap-md-3">
+     <div class="col-full col-md-1-2 col-lg-1-3">
+       25% → 50% → 33.333%
+     </div>
+     <div class="col-full col-md-1-2 col-lg-1-3">
+       25% → 50% → 33.333%
+     </div>
+     <div class="col-full col-md-1-2 col-lg-1-3">
+       25% → 50% → 33.333%
+     </div>
+   </div>
+
+2. CON AUTO:
+   <div class="flex gap-2">
+     <div class="col-auto">
+       Ancho según contenido
+     </div>
+     <div class="col-grow">
+       Ocupa espacio disponible
+     </div>
+   </div>
+
+3. CON OFFSET:
+   <div class="flex gap-2">
+     <div class="col-full col-md-1-3 offset-md-1-3">
+       Centrado con offset
+     </div>
+   </div>
+
+4. COMPLEJO RESPONSIVE:
+   <div class="row gap-2 gap-md-3 gap-lg-4">
+     <!-- Sidebar: 100% móvil, 25% desktop -->
+     <aside class="col-full col-lg-1-4">
+       Sidebar
+     </aside>
+     
+     <!-- Main: 100% móvil, 75% desktop -->
+     <main class="col-full col-lg-3-4">
+       <!-- Grid dentro -->
+       <div class="row gap-2 gap-md-3">
+         <div class="col-full col-md-1-2">Card 1</div>
+         <div class="col-full col-md-1-2">Card 2</div>
+       </div>
+     </main>
+   </div>
+
+5. CON GROW:
+   <div class="flex gap-2">
+     <div class="col-auto">Logo</div>
+     <div class="col-grow">
+       <!-- Ocupa espacio -->
+     </div>
+     <div class="col-auto">Menu</div>
+   </div>
+
+*/
+
+// ============================================================================
+// REFERENCIA DE FRACCIONES
+// ============================================================================
+
+/*
+auto   = ancho automático (según contenido)
+full   = 100%
+1-2    = 50%
+1-3    = 33.333%
+2-3    = 66.666%
+1-4    = 25%
+3-4    = 75%
+1-5    = 20%
+2-5    = 40%
+3-5    = 60%
+4-5    = 80%
+1-6    = 16.666%
+5-6    = 83.333%
+
+Nota: Se evitan fracciones equivalentes (2-4 = 50%, 2-6 = 33.333%, etc.)
+para prevenir claves duplicadas en mapas SCSS.
+*/ 

@@ -1,0 +1,392 @@
+/**
+ * src/styles/iact-kit/abstracts/_breakpoints.scss
+ * IACT v4.0 - Sistema de breakpoints en SCSS puro
+ * Reemplaza: Tailwind CSS (no lo necesitamos)
+ * Trabaja con: useBreakpoint Hook de React para lógica JS
+ */
+
+// ============================================================================
+// DEFINICIÓN DE BREAKPOINTS (Variables SCSS)
+// ============================================================================
+
+// Breakpoints estándar (alineados con responsive design moderno)
+$breakpoints: (
+  'xs': 0px,
+  'sm': 640px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1280px,
+  '2xl': 1536px,
+);
+
+// Nombres de breakpoints en orden
+$breakpoint-names: (xs, sm, md, lg, xl, 2xl);
+
+// ============================================================================
+// MIXINS PARA MEDIA QUERIES
+// ============================================================================
+
+/**
+ * mixin media-up($breakpoint)
+ * Aplica estilos DESDE un breakpoint hacia arriba
+ * 
+ * @example
+ *   @include media-up('md') {
+ *     .container { width: 800px; }
+ *   }
+ *   // Genera: @media (min-width: 768px) { .container { width: 800px; } }
+ */
+@mixin media-up($breakpoint) {
+  $value: map-get($breakpoints, $breakpoint);
+  
+  @if $value != null {
+    @if $value > 0 {
+      @media (min-width: $value) {
+        @content;
+      }
+    } @else {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint '#{$breakpoint}' no definido en $breakpoints";
+  }
+}
+
+/**
+ * mixin media-down($breakpoint)
+ * Aplica estilos HASTA un breakpoint hacia abajo
+ * 
+ * @example
+ *   @include media-down('md') {
+ *     .container { width: 100%; }
+ *   }
+ *   // Genera: @media (max-width: 767.98px) { .container { width: 100%; } }
+ */
+@mixin media-down($breakpoint) {
+  $value: map-get($breakpoints, $breakpoint);
+  
+  @if $value != null {
+    @media (max-width: ($value - 0.02px)) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint '#{$breakpoint}' no definido en $breakpoints";
+  }
+}
+
+/**
+ * mixin media-only($breakpoint)
+ * Aplica estilos SOLO en un rango específico de breakpoint
+ * 
+ * @example
+ *   @include media-only('md') {
+ *     .container { width: 800px; }
+ *   }
+ *   // Genera: @media (min-width: 768px) and (max-width: 1023.98px) { ... }
+ */
+@mixin media-only($breakpoint) {
+  $min: map-get($breakpoints, $breakpoint);
+  $next-name: null;
+  $max: null;
+  
+  // Encontrar el siguiente breakpoint para calcular max-width
+  $index: index($breakpoint-names, $breakpoint);
+  @if $index and $index < length($breakpoint-names) {
+    $next-name: nth($breakpoint-names, $index + 1);
+    $max: map-get($breakpoints, $next-name);
+  }
+  
+  @if $min != null {
+    @if $max != null {
+      @media (min-width: $min) and (max-width: ($max - 0.02px)) {
+        @content;
+      }
+    } @else {
+      @include media-up($breakpoint) {
+        @content;
+      }
+    }
+  }
+}
+
+/**
+ * mixin media-between($min-bp, $max-bp)
+ * Aplica estilos entre dos breakpoints
+ * 
+ * @example
+ *   @include media-between('sm', 'lg') {
+ *     .container { width: 600px; }
+ *   }
+ *   // Genera: @media (min-width: 640px) and (max-width: 1023.98px) { ... }
+ */
+@mixin media-between($min-breakpoint, $max-breakpoint) {
+  $min: map-get($breakpoints, $min-breakpoint);
+  $max: map-get($breakpoints, $max-breakpoint);
+  
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: ($max - 0.02px)) {
+      @content;
+    }
+  } @else {
+    @warn "Uno o ambos breakpoints no están definidos";
+  }
+}
+
+// ============================================================================
+// HELPERS PARA BREAKPOINTS
+// ============================================================================
+
+/**
+ * function breakpoint-value($name)
+ * Obtiene el valor de un breakpoint por nombre
+ * 
+ * @example
+ *   width: breakpoint-value('md');  // 768px
+ */
+@function breakpoint-value($name) {
+  @return map-get($breakpoints, $name);
+}
+
+/**
+ * function get-breakpoint-down($name)
+ * Obtiene el valor máximo de un breakpoint (para max-width)
+ * 
+ * @example
+ *   @media (max-width: get-breakpoint-down('md')) { ... }
+ */
+@function get-breakpoint-down($name) {
+  @return (breakpoint-value($name) - 0.02px);
+}
+
+// ============================================================================
+// ALIAS COMUNES (para escribir menos)
+// ============================================================================
+
+/**
+ * Alias cortos para media queries más legibles
+ */
+
+// Mobile-first: min-width media queries
+@mixin sm {
+  @include media-up('sm') { @content; }
+}
+
+@mixin md {
+  @include media-up('md') { @content; }
+}
+
+@mixin lg {
+  @include media-up('lg') { @content; }
+}
+
+@mixin xl {
+  @include media-up('xl') { @content; }
+}
+
+@mixin xxl {
+  @include media-up('2xl') { @content; }
+}
+
+// Max-width media queries
+@mixin max-sm {
+  @include media-down('sm') { @content; }
+}
+
+@mixin max-md {
+  @include media-down('md') { @content; }
+}
+
+@mixin max-lg {
+  @include media-down('lg') { @content; }
+}
+
+@mixin max-xl {
+  @include media-down('xl') { @content; }
+}
+
+// ============================================================================
+// EJEMPLOS DE USO
+// ============================================================================
+
+/**
+ * EJEMPLO 1: Usar media-up (Mobile-first)
+ * 
+ * .container {
+ *   width: 100%;
+ *   
+ *   @include media-up('md') {
+ *     width: 768px;
+ *   }
+ *   
+ *   @include media-up('lg') {
+ *     width: 1024px;
+ *   }
+ * }
+ */
+
+/**
+ * EJEMPLO 2: Usar media-down (Desktop-first)
+ * 
+ * .navbar {
+ *   display: flex;
+ *   
+ *   @include media-down('md') {
+ *     flex-direction: column;
+ *   }
+ * }
+ */
+
+/**
+ * EJEMPLO 3: Usar media-only (Solo un breakpoint)
+ * 
+ * .sidebar {
+ *   @include media-only('md') {
+ *     display: block;
+ *   }
+ * }
+ */
+
+/**
+ * EJEMPLO 4: Usar alias cortos (Más rápido)
+ * 
+ * .card {
+ *   display: block;
+ *   
+ *   @include md {
+ *     display: grid;
+ *     grid-template-columns: 1fr 1fr;
+ *   }
+ *   
+ *   @include lg {
+ *     grid-template-columns: 1fr 1fr 1fr;
+ *   }
+ * }
+ */
+
+/**
+ * EJEMPLO 5: Usar media-between
+ * 
+ * .tablet-menu {
+ *   @include media-between('sm', 'lg') {
+ *     display: block;
+ *   }
+ * }
+ */
+
+// ============================================================================
+// COMPARACIÓN: SCSS vs Tailwind CSS
+// ============================================================================
+
+/**
+ * ANTES (Tailwind CSS - NO NECESARIO):
+ * <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+ * 
+ * AHORA (SCSS puro - LO QUE USAMOS):
+ * 
+ * .grid {
+ *   display: grid;
+ *   grid-template-columns: 1fr;
+ *   
+ *   @include md {
+ *     grid-template-columns: 1fr 1fr;
+ *   }
+ *   
+ *   @include lg {
+ *     grid-template-columns: 1fr 1fr 1fr;
+ *   }
+ * }
+ */
+
+// ============================================================================
+// RESPONSIVE UTILITIES EN SCSS (Alternativa a Tailwind)
+// ============================================================================
+
+/**
+ * Generar clases responsive para propiedades comunes
+ * Esto reemplaza las utilities de Tailwind
+ */
+
+// Padding responsive
+@each $size, $value in (
+  0: 0,
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  6: 24px,
+  8: 32px,
+) {
+  .p-#{$size} {
+    padding: $value;
+  }
+  
+  @include md {
+    .md\:p-#{$size} {
+      padding: $value;
+    }
+  }
+  
+  @include lg {
+    .lg\:p-#{$size} {
+      padding: $value;
+    }
+  }
+}
+
+// Margin responsive
+@each $size, $value in (
+  0: 0,
+  1: 4px,
+  2: 8px,
+  4: 16px,
+  6: 24px,
+) {
+  .m-#{$size} {
+    margin: $value;
+  }
+  
+  @include md {
+    .md\:m-#{$size} {
+      margin: $value;
+    }
+  }
+}
+
+// Display responsive
+.d-none {
+  display: none;
+  
+  @include md {
+    &.md\:d-block {
+      display: block;
+    }
+  }
+  
+  @include lg {
+    &.lg\:d-flex {
+      display: flex;
+    }
+  }
+}
+
+// Width responsive
+@each $size, $value in (
+  25: 25%,
+  50: 50%,
+  75: 75%,
+  100: 100%,
+) {
+  .w-#{$size} {
+    width: $value;
+  }
+  
+  @include md {
+    .md\:w-#{$size} {
+      width: $value;
+    }
+  }
+}
+
+// ============================================================================
+// FIN DE BREAKPOINTS
+// ============================================================================

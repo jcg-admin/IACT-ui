@@ -1,0 +1,261 @@
+/**
+ * IACT UI Kit - Transform Utilities (Responsive)
+ * Scale, Rotate, Translate, Skew
+ * 
+ * Nomenclatura:
+ *   .scale{bp}-{value}     → .scale-md-75 (scaleX/Y 0.75 en md+)
+ *   .rotate{bp}-{value}    → .rotate-md-90 (rotate 90deg en md+)
+ *   .translate{bp}-{axis}  → .translate-x-md-4 (translateX 24px en md+)
+ */
+
+// ============================================================================
+// SCALE UTILITIES (Responsive)
+// ============================================================================
+// Genera: .scale{breakpoint-infix}-{value}
+// Ejemplo: .scale-md-75 (transform: scale(0.75) en md+)
+
+$scale-values: (
+  0: 0,
+  50: 0.5,
+  75: 0.75,
+  90: 0.9,
+  95: 0.95,
+  100: 1,
+  105: 1.05,
+  110: 1.1,
+  125: 1.25,
+  150: 1.5
+) !default;
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $value, $scale in $scale-values {
+      .scale#{$infix}-#{$value} {
+        transform: scale($scale) !important;
+      }
+
+      .scale-x#{$infix}-#{$value} {
+        transform: scaleX($scale) !important;
+      }
+
+      .scale-y#{$infix}-#{$value} {
+        transform: scaleY($scale) !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// ROTATE UTILITIES (Responsive)
+// ============================================================================
+// Genera: .rotate{breakpoint-infix}-{value}
+// Ejemplo: .rotate-md-90 (transform: rotate(90deg) en md+)
+
+$rotate-values: (
+  0: 0deg,
+  45: 45deg,
+  90: 90deg,
+  180: 180deg,
+  270: 270deg,
+  -45: -45deg,
+  -90: -90deg,
+  -180: -180deg
+) !default;
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $value, $rotation in $rotate-values {
+      .rotate#{$infix}-#{$value} {
+        transform: rotate($rotation) !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TRANSLATE UTILITIES (Responsive)
+// ============================================================================
+// Genera: .translate-{axis}{breakpoint-infix}-{spacing}
+// Ejemplo: .translate-x-md-4 (transform: translateX(24px) en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    // Translate X (horizontal)
+    @each $size, $length in $spacers {
+      .translate-x#{$infix}-#{$size} {
+        transform: translateX($length) !important;
+      }
+
+      .translate-x#{$infix}--#{$size} {
+        transform: translateX(-$length) !important;
+      }
+    }
+
+    // Translate Y (vertical)
+    @each $size, $length in $spacers {
+      .translate-y#{$infix}-#{$size} {
+        transform: translateY($length) !important;
+      }
+
+      .translate-y#{$infix}--#{$size} {
+        transform: translateY(-$length) !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// SKEW UTILITIES (Responsive - Optional)
+// ============================================================================
+// Genera: .skew-{axis}{breakpoint-infix}-{value}
+// Ejemplo: .skew-x-md-6 (skewX(6deg) en md+)
+
+$skew-values: (
+  0: 0deg,
+  3: 3deg,
+  6: 6deg,
+  12: 12deg,
+  -3: -3deg,
+  -6: -6deg,
+  -12: -12deg
+) !default;
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $value, $skew in $skew-values {
+      .skew-x#{$infix}-#{$value} {
+        transform: skewX($skew) !important;
+      }
+
+      .skew-y#{$infix}-#{$value} {
+        transform: skewY($skew) !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TRANSFORM TRANSITIONS
+// ============================================================================
+
+.transform-transition {
+  transition: transform 0.2s ease;
+}
+
+.transform-transition-slow {
+  transition: transform 0.5s ease;
+}
+
+// ============================================================================
+// TRANSFORM ORIGIN
+// ============================================================================
+// Origen de la transformación
+
+.origin-center {
+  transform-origin: center !important;
+}
+
+.origin-top {
+  transform-origin: top !important;
+}
+
+.origin-top-left {
+  transform-origin: top left !important;
+}
+
+.origin-top-right {
+  transform-origin: top right !important;
+}
+
+.origin-bottom {
+  transform-origin: bottom !important;
+}
+
+.origin-bottom-left {
+  transform-origin: bottom left !important;
+}
+
+.origin-bottom-right {
+  transform-origin: bottom right !important;
+}
+
+.origin-left {
+  transform-origin: left !important;
+}
+
+.origin-right {
+  transform-origin: right !important;
+}
+
+// ============================================================================
+// EJEMPLOS DE USO
+// ============================================================================
+
+/*
+
+1. SCALE RESPONSIVA:
+   <div class="scale-100 scale-md-110 scale-lg-125">
+     100% (móvil) → 110% (md) → 125% (lg)
+   </div>
+
+2. ROTATE:
+   <div class="rotate-0 rotate-md-45 rotate-lg-90">
+     0deg (móvil) → 45deg (md) → 90deg (lg)
+   </div>
+
+3. TRANSLATE:
+   <div class="translate-x-0 translate-x-md-4 translate-x-lg-5">
+     0px (móvil) → 24px (md) → 32px (lg)
+   </div>
+
+4. COMBINED TRANSFORM:
+   <div class="scale-100 scale-hover-110 rotate-0 translate-y-0 transform-transition">
+     Escala + Rotación con transición suave
+   </div>
+
+5. HOVER EFFECTS:
+   <div class="scale-100 hover:scale-110 transform-transition">
+     Aumenta tamaño al hacer hover
+   </div>
+
+6. SKEW:
+   <div class="skew-x-0 skew-x-md-6">
+     Sin sesgo (móvil) → 6deg (md+)
+   </div>
+
+7. WITH ORIGIN:
+   <div class="scale-100 hover:scale-125 origin-top-left transform-transition">
+     Escala desde la esquina superior izquierda
+   </div>
+
+*/
+
+// ============================================================================
+// TRANSFORM VALUES (Reference)
+// ============================================================================
+
+/*
+SCALE:
+  0, 50, 75, 90, 95, 100, 105, 110, 125, 150
+  Valores: 0 = invisible, 100 = normal, 150 = 50% más grande
+
+ROTATE:
+  0, 45, 90, 180, 270, -45, -90, -180
+  Valores en grados
+
+TRANSLATE:
+  Usa espacers: 0, 1 (4px), 2 (8px), 3 (16px), 4 (24px), 5 (32px)
+  Con - (negativo): -1, -2, -3, -4, -5
+
+SKEW:
+  0, 3, 6, 12, -3, -6, -12
+  Valores en grados
+*/

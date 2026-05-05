@@ -1,0 +1,50 @@
+/**
+ * IACT UI Kit - Section Component (Adaptado de mx-template)
+ */
+
+.section {
+  padding: $padding-xl;
+  margin-bottom: $spacing-xl;
+  background-color: $color-bg-secondary;
+  border-radius: 8px;
+  @include box-shadow-elevation(1);
+
+  &-title {
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  &-subtitle {
+    margin-bottom: $spacing-md;
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+
+  &-content {
+    margin-bottom: $spacing-lg;
+  }
+
+  &-footer {
+    padding-top: $spacing-lg;
+    border-top: 1px solid $color-border;
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+  }
+
+  &-primary {
+    background: linear-gradient(135deg, $primary-500 0%, $primary-600 100%);
+    color: white;
+
+    .section-title,
+    .section-subtitle {
+      color: white;
+    }
+  }
+
+  &-secondary {
+    background-color: $color-bg-tertiary;
+  }
+}

@@ -1,0 +1,356 @@
+/**
+ * IACT UI Kit - Layout Sections
+ * Secciones de layout reutilizables para dashboard
+ * 
+ * Patrones de layout comunes:
+ *   - Sidebar layout (izquierda/derecha)
+ *   - Full width
+ *   - Two column
+ *   - Three column grid
+ */
+
+// ============================================================================
+// LAYOUT CONTAINER
+// ============================================================================
+// Contenedor principal del layout
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  // Flex grow para llenar espacio
+  .layout-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// ============================================================================
+// SIDEBAR LAYOUT - LEFT
+// ============================================================================
+// Sidebar a la izquierda (responsive)
+
+.layout-sidebar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  @include media-breakpoint-up(lg) {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+
+  // Sidebar
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    order: 1; // Aparece abajo en móvil
+
+    @include media-breakpoint-up(lg) {
+      width: 280px;
+      min-width: 280px;
+      order: 0; // Aparece a la izquierda en desktop
+      flex-shrink: 0;
+    }
+  }
+
+  // Main content
+  .main {
+    width: 100%;
+    min-width: 0;
+    order: 0;
+
+    @include media-breakpoint-up(lg) {
+      order: 1;
+      flex: 1;
+    }
+  }
+}
+
+// ============================================================================
+// SIDEBAR LAYOUT - RIGHT
+// ============================================================================
+// Sidebar a la derecha (responsive)
+
+.layout-sidebar-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  @include media-breakpoint-up(lg) {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+
+  // Main content
+  .main {
+    width: 100%;
+    min-width: 0;
+    order: 0;
+
+    @include media-breakpoint-up(lg) {
+      flex: 1;
+    }
+  }
+
+  // Sidebar
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    order: 1;
+
+    @include media-breakpoint-up(lg) {
+      width: 280px;
+      min-width: 280px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ============================================================================
+// FULL WIDTH LAYOUT
+// ============================================================================
+// Layout de ancho completo
+
+.layout-full-width {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .main {
+    width: 100%;
+  }
+}
+
+// ============================================================================
+// TWO COLUMN LAYOUT
+// ============================================================================
+// Layout de dos columnas (responsive)
+
+.layout-two-column {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include media-breakpoint-up(lg) {
+    gap: 2rem;
+  }
+
+  // Columnas iguales
+  .column {
+    min-width: 0;
+  }
+}
+
+// ============================================================================
+// THREE COLUMN LAYOUT
+// ============================================================================
+// Layout de tres columnas (responsive)
+
+.layout-three-column {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @include media-breakpoint-up(2xl) {
+    gap: 2rem;
+  }
+
+  // Columnas iguales
+  .column {
+    min-width: 0;
+  }
+}
+
+// ============================================================================
+// HEADER - MAIN - FOOTER
+// ============================================================================
+// Layout vertical clásico
+
+.layout-vertical {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  // Header (fijo arriba)
+  .layout-header {
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  // Main (crece)
+  .layout-main {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  // Footer (fijo abajo)
+  .layout-footer {
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================================
+// HEADER - SIDEBAR - MAIN
+// ============================================================================
+// Layout dashboard común
+
+.layout-dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  // Header (fijo arriba)
+  .layout-header {
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  // Body (header + main)
+  .layout-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+
+    @include media-breakpoint-down(lg) {
+      flex-direction: column;
+    }
+
+    @include media-breakpoint-up(lg) {
+      flex-direction: row;
+    }
+  }
+
+  // Sidebar (izquierda)
+  .layout-sidebar {
+    flex-shrink: 0;
+    overflow-y: auto;
+    z-index: 50;
+
+    @include media-breakpoint-down(lg) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 280px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+
+      // Visible cuando está abierto
+      &.active {
+        transform: translateX(0);
+      }
+    }
+
+    @include media-breakpoint-up(lg) {
+      position: static;
+      width: 280px;
+      transform: none;
+    }
+  }
+
+  // Main (contenido principal)
+  .layout-main {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    @include media-breakpoint-down(lg) {
+      margin-left: 0;
+    }
+
+    @include media-breakpoint-up(lg) {
+      margin-left: 0;
+    }
+  }
+
+  // Footer
+  .layout-footer {
+    flex-shrink: 0;
+    grid-column: 1 / -1; // Span all columns
+  }
+}
+
+// ============================================================================
+// EXAMPLES
+// ============================================================================
+
+/*
+
+1. SIDEBAR LEFT:
+   <div class="layout-sidebar-left">
+     <aside class="sidebar p-3 bg-light">
+       Navegación
+     </aside>
+     <main class="main p-3">
+       Contenido principal
+     </main>
+   </div>
+
+2. SIDEBAR RIGHT:
+   <div class="layout-sidebar-right">
+     <main class="main p-3">
+       Contenido principal
+     </main>
+     <aside class="sidebar p-3 bg-light">
+       Sidebar derecho
+     </aside>
+   </div>
+
+3. TWO COLUMN:
+   <div class="layout-two-column">
+     <div class="column">Columna 1</div>
+     <div class="column">Columna 2</div>
+   </div>
+
+4. THREE COLUMN:
+   <div class="layout-three-column">
+     <div class="column">Columna 1</div>
+     <div class="column">Columna 2</div>
+     <div class="column">Columna 3</div>
+   </div>
+
+5. FULL WIDTH:
+   <div class="layout-full-width">
+     <main class="main">
+       Contenido ancho completo
+     </main>
+   </div>
+
+6. DASHBOARD:
+   <div class="layout-dashboard">
+     <header class="layout-header">
+       Header aquí
+     </header>
+     
+     <div class="layout-body">
+       <aside class="layout-sidebar">
+         Navegación
+       </aside>
+       
+       <main class="layout-main">
+         Contenido principal
+       </main>
+     </div>
+     
+     <footer class="layout-footer">
+       Footer aquí
+     </footer>
+   </div>
+
+*/

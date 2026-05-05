@@ -1,0 +1,134 @@
+/**
+ * IACT UI Kit - Dropdown Component (Adaptado de mx-template)
+ */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+
+  &-toggle {
+    @include flex-center();
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      display: inline-block;
+      margin-left: $spacing-sm;
+      vertical-align: 0.255em;
+      border-top: 0.3em solid currentColor;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent;
+      @include transition-all(0.2s);
+    }
+
+    &.show::after {
+      @include transform-rotate(180deg);
+    }
+  }
+
+  &-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    min-width: 160px;
+    padding: $spacing-sm 0;
+    margin: $spacing-sm 0 0;
+    background-color: $color-bg-secondary;
+    border: 1px solid $color-border;
+    border-radius: 4px;
+    @include box-shadow-elevation(4);
+    @include transition-all(0.2s);
+
+    &.show {
+      display: block;
+    }
+
+    &-right {
+      right: 0;
+      left: auto;
+    }
+
+    &-up {
+      top: auto;
+      bottom: 100%;
+      margin: 0 0 $spacing-sm;
+    }
+  }
+
+  &-item {
+    display: block;
+    width: 100%;
+    padding: $padding-sm $padding-lg;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    color: $color-text-primary;
+    cursor: pointer;
+    font-size: $font-size-sm;
+    @include transition-all(0.2s);
+
+    &:hover,
+    &:focus {
+      background-color: rgba($primary-500, 0.1);
+      color: $primary-500;
+      outline: none;
+    }
+
+    &.active,
+    &:active {
+      background-color: rgba($primary-500, 0.2);
+      color: $primary-500;
+    }
+
+    &.disabled {
+      color: $color-text-tertiary;
+      cursor: not-allowed;
+      opacity: 0.5;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  &-divider {
+    height: 0;
+    margin: $spacing-sm 0;
+    overflow: hidden;
+    border-top: 1px solid $color-border;
+  }
+
+  &-header {
+    padding: $padding-sm $padding-lg;
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+  }
+
+  // Variants
+  &-primary {
+    .dropdown-toggle {
+      background-color: $primary-500;
+      color: white;
+
+      &:hover {
+        background-color: $primary-600;
+      }
+    }
+  }
+
+  &-secondary {
+    .dropdown-toggle {
+      background-color: $gray-400;
+      color: white;
+
+      &:hover {
+        background-color: $gray-500;
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+/**
+ * IACT UI Kit - Form Component
+ */
+
+.form {
+  &-group {
+    margin-bottom: $spacing-lg;
+  }
+
+  &-label {
+    display: block;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+  }
+
+  &-input,
+  &-select,
+  &-textarea {
+    width: 100%;
+    padding: $padding-sm $padding-md;
+    font-size: $font-size-sm;
+    border: 1px solid $color-border;
+    border-radius: 6px;
+    background-color: $color-bg-secondary;
+    color: $color-text-primary;
+    @include transition(border-color);
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    }
+
+    &:disabled {
+      background-color: $color-bg-tertiary;
+      cursor: not-allowed;
+    }
+  }
+
+  &-textarea {
+    resize: vertical;
+  }
+
+  &-error {
+    color: $color-error;
+    font-size: $font-size-xs;
+    margin-top: $spacing-xs;
+  }
+}

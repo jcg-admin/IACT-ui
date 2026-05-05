@@ -1,0 +1,95 @@
+/**
+ * IACT UI Kit - Popover Component (Adaptado de mx-template)
+ */
+
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1070;
+  display: none;
+  max-width: 276px;
+  padding: $padding-md;
+  background-color: $color-bg-secondary;
+  background-clip: padding-box;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  @include box-shadow-elevation(4);
+
+  &.show {
+    display: block;
+  }
+
+  &-header {
+    padding-bottom: $padding-sm;
+    margin-bottom: $padding-sm;
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &-body {
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+  }
+
+  // Arrows
+  &-arrow {
+    position: absolute;
+    width: 1rem;
+    height: 0.5rem;
+
+    &::before,
+    &::after {
+      position: absolute;
+      display: block;
+      content: '';
+      border-color: transparent;
+      border-style: solid;
+    }
+  }
+
+  // Positioning
+  &.bs-popover-top,
+  &.bs-popover-auto[data-popper-placement^='top'] {
+    margin-bottom: 0.5rem;
+
+    .popover-arrow {
+      bottom: -0.5rem;
+
+      &::before {
+        bottom: 0;
+        border-width: 0.5rem 0.5rem 0;
+        border-top-color: $color-border;
+      }
+
+      &::after {
+        bottom: 0.1rem;
+        border-width: 0.5rem 0.5rem 0;
+        border-top-color: $color-bg-secondary;
+      }
+    }
+  }
+
+  &.bs-popover-bottom,
+  &.bs-popover-auto[data-popper-placement^='bottom'] {
+    margin-top: 0.5rem;
+
+    .popover-arrow {
+      top: -0.5rem;
+
+      &::before {
+        top: 0;
+        border-width: 0 0.5rem 0.5rem 0.5rem;
+        border-bottom-color: $color-border;
+      }
+
+      &::after {
+        top: 0.1rem;
+        border-width: 0 0.5rem 0.5rem 0.5rem;
+        border-bottom-color: $color-bg-secondary;
+      }
+    }
+  }
+}

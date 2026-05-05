@@ -1,0 +1,129 @@
+/**
+ * IACT UI Kit - Shadow Utilities (Responsive)
+ * Basado en Material Design elevation
+ * 
+ * Nomenclatura:
+ *   .shadow{breakpoint-infix}-{size}    → .shadow-md-lg
+ *   .shadow-{bp}-none                   → .shadow-md-none (remover sombra)
+ *   .shadow-{bp}-inset                  → .shadow-md-inset (sombra interna)
+ */
+
+// ============================================================================
+// SHADOW VALUES (Material Design Elevations)
+// ============================================================================
+
+$shadows: (
+  none: none,
+  sm: (
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06)
+  ),
+  base: (
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06)
+  ),
+  md: (
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05)
+  ),
+  lg: (
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04)
+  ),
+  xl: (
+    0 25px 50px -12px rgba(0, 0, 0, 0.25)
+  ),
+  2xl: (
+    0 25px 50px -12px rgba(0, 0, 0, 0.25)
+  )
+) !default;
+
+$shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06) !default;
+
+// ============================================================================
+// RESPONSIVE SHADOWS
+// ============================================================================
+// Genera: .shadow{breakpoint-infix}-{size}
+// Ejemplo: .shadow-md-lg (sombra grande en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $size, $shadow-value in $shadows {
+      .shadow#{$infix}-#{$size} {
+        box-shadow: $shadow-value !important;
+      }
+    }
+
+    // Inset shadow
+    .shadow#{$infix}-inset {
+      box-shadow: $shadow-inset !important;
+    }
+  }
+}
+
+// ============================================================================
+// SHADOW HOVER STATES (Optional)
+// ============================================================================
+// Sombra que aumenta en hover
+
+.shadow-hover {
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  }
+}
+
+// ============================================================================
+// EJEMPLOS DE USO
+// ============================================================================
+
+/*
+
+1. SHADOW BASE (xs - sin breakpoint):
+   <div class="shadow-base">
+     Sombra base siempre
+   </div>
+
+2. SHADOW RESPONSIVA:
+   <div class="shadow-none shadow-md-sm shadow-lg-md">
+     Sin sombra (móvil)
+     Sombra pequeña (md+)
+     Sombra media (lg+)
+   </div>
+
+3. SHADOW CON HOVER:
+   <div class="shadow-base shadow-hover">
+     Sombra con transición en hover
+   </div>
+
+4. CARD RESPONSIVA:
+   <div class="p-2 p-md-3 shadow-sm shadow-md-base shadow-lg-md rounded">
+     Card con sombra progresiva
+   </div>
+
+5. SHADOW INSET (Depressed):
+   <div class="p-2 shadow-inset rounded">
+     Aspecto deprimido (como input)
+   </div>
+
+*/
+
+// ============================================================================
+// SHADOW SIZES (Reference)
+// ============================================================================
+
+/*
+none    = sin sombra
+sm      = muy sutil (elevación baja)
+base    = sutil (elevación 1)
+md      = media (elevación 4)
+lg      = prominente (elevación 8)
+xl      = muy prominente (elevación 12)
+2xl     = máximo (elevación 16)
+inset   = sombra interna (depressed)
+hover   = sombra con efecto hover
+*/

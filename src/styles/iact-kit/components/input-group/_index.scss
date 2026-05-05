@@ -1,0 +1,65 @@
+/**
+ * IACT UI Kit - Input Group Component (Adaptado de mx-template)
+ */
+
+.input-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  width: 100%;
+  gap: 0;
+
+  > .form-input,
+  > .form-select,
+  > .btn {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    margin-bottom: 0;
+    border-radius: 0;
+
+    &:focus {
+      z-index: 5;
+    }
+
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child {
+      border-radius: 0 4px 4px 0;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+  }
+
+  &-text {
+    display: flex;
+    align-items: center;
+    padding: $padding-sm $padding-md;
+    margin-bottom: 0;
+    color: $color-text-secondary;
+    text-align: center;
+    white-space: nowrap;
+    background-color: $color-bg-tertiary;
+    border: 1px solid $color-border;
+  }
+
+  &-sm {
+    > .form-input,
+    > .form-select {
+      padding: $padding-xs $padding-sm;
+      font-size: $font-size-xs;
+    }
+  }
+
+  &-lg {
+    > .form-input,
+    > .form-select {
+      padding: $padding-md $padding-lg;
+      font-size: $font-size-base;
+    }
+  }
+}

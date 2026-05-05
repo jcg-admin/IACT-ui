@@ -1,0 +1,8 @@
+/**
+ * IACT Frontend - Main SCSS
+ * Imports iact-ui-kit for all styling
+ * Includes WCAG AA accessibility styles
+ */
+
+@import 'iact-ui-kit';
+@import 'accessibility/index';

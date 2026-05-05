@@ -1,0 +1,149 @@
+// ═══════════════════════════════════════════════════════════════════════
+// CARDS - Component SCSS
+// ═══════════════════════════════════════════════════════════════════════
+// Adaptado del mx-template para IACT
+// ═══════════════════════════════════════════════════════════════════════
+
+.card {
+  @include card;
+  
+  // ─────────────────────────────────────────────────────────────────
+  // Card parts (header, body, footer)
+  // ─────────────────────────────────────────────────────────────────
+  
+  &-header {
+    padding: $spacing-lg;
+    background-color: darken($card-background-color, 5%);
+    border-bottom: $border-width-base solid $border-color;
+    
+    &:first-child {
+      border-radius: $card-border-radius $card-border-radius 0 0;
+    }
+  }
+  
+  &-body {
+    padding: $spacing-lg;
+    flex: 1 1 auto;
+  }
+  
+  &-footer {
+    padding: $spacing-lg;
+    background-color: darken($card-background-color, 2%);
+    border-top: $border-width-base solid $border-color;
+    
+    &:last-child {
+      border-radius: 0 0 $card-border-radius $card-border-radius;
+    }
+  }
+  
+  &-title {
+    margin-bottom: $spacing-md;
+    color: $text-color;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+  }
+  
+  &-subtitle {
+    margin-bottom: $spacing-md;
+    color: $text-muted;
+    font-size: $font-size-sm;
+  }
+  
+  &-text {
+    margin-bottom: $spacing-md;
+    color: $text-secondary;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Card with no border (flat style)
+// ─────────────────────────────────────────────────────────────────────
+
+.card-flat {
+  @include card-no-padding;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Card with custom colors
+// ─────────────────────────────────────────────────────────────────────
+
+.card-primary {
+  @include card-color($card-background-color, $primary-color);
+}
+
+.card-success {
+  @include card-color($card-background-color, $success-color);
+}
+
+.card-error,
+.card-danger {
+  @include card-color($card-background-color, $error-color);
+}
+
+.card-warning {
+  @include card-color($card-background-color, $warning-color);
+}
+
+.card-info {
+  @include card-color($card-background-color, $info-color);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Card Interactive (clickable)
+// ─────────────────────────────────────────────────────────────────────
+
+.card-interactive {
+  @include card;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Card with image header
+// ─────────────────────────────────────────────────────────────────────
+
+.card-image {
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: $card-border-radius $card-border-radius 0 0;
+    display: block;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Card Grid Layout
+// ─────────────────────────────────────────────────────────────────────
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $spacing-lg;
+  
+  @include media-md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @include media-lg {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @include media-xl {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// End of cards component
+// ═══════════════════════════════════════════════════════════════════════

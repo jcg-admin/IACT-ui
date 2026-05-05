@@ -1,0 +1,122 @@
+// ═══════════════════════════════════════════════════════════════════════
+// BUTTONS - Component SCSS
+// ═══════════════════════════════════════════════════════════════════════
+// Adaptado del mx-template para IACT
+// ═══════════════════════════════════════════════════════════════════════
+
+.btn {
+  @include btn;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Color Variants
+// ─────────────────────────────────────────────────────────────────────
+
+.btn-primary {
+  @include btn-variant($primary-color, #fff);
+}
+
+.btn-secondary {
+  @include btn-variant($secondary-color, $text-color);
+  border-color: $border-color;
+  
+  &:hover:not(:disabled):not(.disabled) {
+    background-color: lighten($secondary-color, 10%);
+    border-color: lighten($secondary-color, 10%);
+  }
+}
+
+.btn-success {
+  @include btn-variant($success-color, #fff);
+}
+
+.btn-danger {
+  @include btn-variant($error-color, #fff);
+}
+
+.btn-warning {
+  @include btn-variant($warning-color, #fff);
+}
+
+.btn-info {
+  @include btn-variant($info-color, #fff);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Outline Variants (Ghost buttons)
+// ─────────────────────────────────────────────────────────────────────
+
+.btn-outline-primary {
+  background-color: transparent;
+  color: $primary-color;
+  border: $border-width-thick solid $primary-color;
+  
+  &:hover:not(:disabled):not(.disabled) {
+    background-color: $primary-color;
+    color: #fff;
+  }
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  color: $text-color;
+  border: $border-width-thick solid $border-color;
+  
+  &:hover:not(:disabled):not(.disabled) {
+    background-color: $border-color;
+    color: $text-color;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Size Variants
+// ─────────────────────────────────────────────────────────────────────
+
+.btn-sm {
+  @include btn-size($btn-padding-y-sm, $btn-padding-x-sm, $font-size-sm);
+  border-radius: $border-radius-sm;
+}
+
+.btn-lg {
+  @include btn-size($btn-padding-y-lg, $btn-padding-x-lg, $font-size-lg);
+  border-radius: $border-radius-lg;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Block Button (full width)
+// ─────────────────────────────────────────────────────────────────────
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Loading State
+// ─────────────────────────────────────────────────────────────────────
+
+.btn.is-loading {
+  opacity: 0.75;
+  pointer-events: none;
+  
+  &::after {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: 8px;
+    border: 2px solid rgba(#fff, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// End of buttons component
+// ═══════════════════════════════════════════════════════════════════════

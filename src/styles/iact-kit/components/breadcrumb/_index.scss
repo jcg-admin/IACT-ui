@@ -1,0 +1,35 @@
+/**
+ * IACT UI Kit - Breadcrumb Component (Adaptado de mx-template)
+ */
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  padding: $padding-md 0;
+  margin-bottom: 0;
+  list-style: none;
+  gap: $spacing-sm;
+
+  .breadcrumb-item {
+    + .breadcrumb-item::before {
+      content: '/';
+      color: $color-text-tertiary;
+      margin: 0 $spacing-sm;
+    }
+
+    a {
+      color: $primary-500;
+      text-decoration: none;
+      @include transition-all(0.2s);
+
+      &:hover {
+        color: $primary-600;
+        text-decoration: underline;
+      }
+    }
+
+    &.active {
+      color: $color-text-secondary;
+    }
+  }
+}

@@ -1,0 +1,58 @@
+/**
+ * IACT UI Kit - Switches Component
+ */
+
+.form-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+input[type='checkbox'].form-switch-input {
+  width: 50px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: $color-bg-tertiary;
+  border: 2px solid $color-border;
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  @include transition-all(0.3s);
+  padding: 0;
+  margin: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    top: 50%;
+    left: 4px;
+    @include transform-translate-y(-50%);
+    @include transition-all(0.3s);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &:checked {
+    background-color: $primary-500;
+    border-color: $primary-500;
+
+    &::before {
+      left: 26px;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-500, 0.1);
+  }
+}

@@ -1,0 +1,80 @@
+/**
+ * IACT UI Kit - Tabs Component (Adaptado de mx-template)
+ */
+
+.nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  list-style: none;
+  border-bottom: 2px solid $color-border;
+  gap: $spacing-md;
+
+  .nav-link {
+    padding: $padding-md;
+    color: $color-text-secondary;
+    text-decoration: none;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    @include transition-all(0.2s);
+    position: relative;
+    bottom: -2px;
+
+    &:hover {
+      color: $primary-500;
+      border-bottom-color: rgba($primary-500, 0.3);
+    }
+
+    &.active {
+      color: $primary-500;
+      border-bottom-color: $primary-500;
+    }
+
+    &:disabled {
+      color: $color-text-tertiary;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}
+
+.nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  list-style: none;
+  gap: $spacing-sm;
+
+  .nav-link {
+    padding: $padding-sm $padding-md;
+    background-color: $color-bg-tertiary;
+    color: $color-text-primary;
+    text-decoration: none;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    @include transition-all(0.2s);
+
+    &:hover {
+      background-color: $primary-500;
+      color: white;
+    }
+
+    &.active {
+      background-color: $primary-500;
+      color: white;
+    }
+  }
+}
+
+.tab-content {
+  .tab-pane {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,61 @@
+/**
+ * IACT UI Kit - Table Component
+ */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  thead {
+    background-color: $color-bg-secondary;
+    border-bottom: 2px solid $color-border;
+  }
+
+  th {
+    padding: $padding-md;
+    text-align: left;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  td {
+    padding: $padding-md;
+    border-bottom: 1px solid $color-border;
+  }
+
+  tbody tr:hover {
+    background-color: $color-bg-secondary;
+  }
+
+  @include respond-below('md') {
+    display: block;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: block;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: $spacing-lg;
+      border: 1px solid $color-border;
+      border-radius: 6px;
+      background-color: $color-bg-secondary;
+    }
+
+    td {
+      display: block;
+      padding: $padding-md;
+      border: none;
+      border-bottom: 1px solid $color-border;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}

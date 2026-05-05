@@ -1,0 +1,153 @@
+// ═══════════════════════════════════════════════════════════════════════
+// TABS - Component SCSS
+// ═══════════════════════════════════════════════════════════════════════
+
+.tabs {
+  display: flex;
+  border-bottom: $border-width-base solid $border-color;
+  gap: 0;
+  margin-bottom: $spacing-lg;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: $spacing-md $spacing-lg;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $text-secondary;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all $transition-duration-fast;
+  
+  &:hover {
+    color: $text-color;
+  }
+  
+  &.active {
+    color: $primary-color;
+    border-bottom-color: $primary-color;
+  }
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn $transition-duration-fast;
+  
+  &.active {
+    display: block;
+  }
+}
+
+.tabs-vertical {
+  display: flex;
+  gap: 0;
+  border-bottom: none;
+  border-right: $border-width-base solid $border-color;
+  flex-direction: column;
+  
+  .tab-button {
+    border-bottom: none;
+    border-right: 3px solid transparent;
+    text-align: left;
+    width: 200px;
+    
+    &.active {
+      border-right-color: $primary-color;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PAGINATION - Component SCSS
+// ═══════════════════════════════════════════════════════════════════════
+
+.pagination {
+  display: flex;
+  list-style: none;
+  margin: $spacing-lg 0;
+  padding: 0;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.pagination-item {
+  margin: 0;
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: $spacing-sm $spacing-md;
+  border: $border-width-base solid $border-color;
+  border-radius: $border-radius-md;
+  color: $text-color;
+  text-decoration: none;
+  transition: all $transition-duration-fast;
+  cursor: pointer;
+  background: none;
+  
+  &:hover:not(.disabled):not(.ellipsis) {
+    background-color: $primary-color;
+    color: #fff;
+    border-color: $primary-color;
+  }
+  
+  &.active {
+    background-color: $primary-color;
+    color: #fff;
+    border-color: $primary-color;
+    cursor: default;
+  }
+  
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &.ellipsis {
+    border: none;
+    cursor: default;
+  }
+}
+
+.pagination-prev,
+.pagination-next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: $spacing-sm $spacing-md;
+  border: $border-width-base solid $border-color;
+  border-radius: $border-radius-md;
+  color: $text-color;
+  text-decoration: none;
+  transition: all $transition-duration-fast;
+  cursor: pointer;
+  background: none;
+  
+  &:hover:not(.disabled) {
+    background-color: $primary-color;
+    color: #fff;
+    border-color: $primary-color;
+  }
+  
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pagination-info {
+  color: $text-muted;
+  font-size: $font-size-sm;
+  margin: 0 $spacing-md;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// End of tabs & pagination component
+// ═══════════════════════════════════════════════════════════════════════

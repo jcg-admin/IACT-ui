@@ -1,0 +1,72 @@
+/**
+ * IACT UI Kit - Drawer Component
+ */
+
+.drawer {
+  position: fixed;
+  z-index: 1040;
+  background-color: $color-bg-secondary;
+  @include box-shadow-elevation(8);
+  @include transition-all(0.3s);
+
+  &-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1030;
+    display: none;
+    @include transition-all(0.3s);
+
+    &.show {
+      display: block;
+    }
+  }
+
+  &-left {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    max-width: 80vw;
+    @include transform-translate-x(-100%);
+
+    &.show {
+      @include transform-translate-x(0);
+    }
+  }
+
+  &-right {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    max-width: 80vw;
+    @include transform-translate-x(100%);
+
+    &.show {
+      @include transform-translate-x(0);
+    }
+  }
+
+  &-header {
+    padding: $padding-lg;
+    border-bottom: 1px solid $color-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &-title {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+  }
+
+  &-body {
+    padding: $padding-lg;
+    overflow-y: auto;
+  }
+}

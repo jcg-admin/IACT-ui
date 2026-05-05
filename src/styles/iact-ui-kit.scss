@@ -1,0 +1,99 @@
+/**
+ * IACT UI Kit v2.2 - Complete Professional UI System
+ * Adaptado de mx-template - 30+ Componentes + Utilities
+ * 
+ * @author IACT Team
+ * @version 2.2.0
+ * @description Enterprise-grade SCSS Organization
+ * @features Material Design, Dark Mode, Responsive, Accessible
+ */
+
+// ============================================================
+// 1. ABSTRACTS - Variables, Functions, Mixins
+// ============================================================
+
+@import 'iact-kit/abstracts/variables/index';
+@import 'iact-kit/abstracts/variables/colors-extended';
+@import 'iact-kit/abstracts/functions/index';
+@import 'iact-kit/abstracts/mixins/index';
+
+// ============================================================
+// 2. BASE - Resets and Defaults
+// ============================================================
+
+@import 'iact-kit/base/reboot/index';
+@import 'iact-kit/base/typography/index';
+
+// ============================================================
+// 3. COMPONENTS - Individual Component Styles (30+)
+// ============================================================
+
+// Forms & Inputs (7)
+@import 'iact-kit/components/button/index';
+@import 'iact-kit/components/form/index';
+@import 'iact-kit/components/input-group/index';
+@import 'iact-kit/components/checkboxes/index';
+@import 'iact-kit/components/radios/index';
+@import 'iact-kit/components/switches/index';
+@import 'iact-kit/components/select/index';
+
+// Data Display (6)
+@import 'iact-kit/components/table/index';
+@import 'iact-kit/components/list-group/index';
+@import 'iact-kit/components/pagination/index';
+@import 'iact-kit/components/progress/index';
+@import 'iact-kit/components/breadcrumb/index';
+@import 'iact-kit/components/badge/index';
+
+// Content Containers (4)
+@import 'iact-kit/components/card/index';
+@import 'iact-kit/components/alert/index';
+@import 'iact-kit/components/modal/index';
+@import 'iact-kit/components/toast/index';
+
+// Navigation (5)
+@import 'iact-kit/components/navbar/index';
+@import 'iact-kit/components/tabs/index';
+@import 'iact-kit/components/dropdown/index';
+@import 'iact-kit/components/nav/index';
+@import 'iact-kit/components/drawer/index';
+
+// Popovers & Tooltips (2)
+@import 'iact-kit/components/popover/index';
+@import 'iact-kit/components/tooltip/index';
+
+// Advanced Components (4)
+@import 'iact-kit/components/carousel/index';
+@import 'iact-kit/components/spinner/index';
+@import 'iact-kit/components/step/index';
+@import 'iact-kit/components/datepicker/index';
+
+// Media & Layout (4)
+@import 'iact-kit/components/media/index';
+@import 'iact-kit/components/section/index';
+@import 'iact-kit/components/header/index';
+@import 'iact-kit/components/footer/index';
+
+// ============================================================
+// 4. UTILITIES - Helper Classes
+// ============================================================
+
+@import 'iact-kit/utilities/index';
+
+// ============================================================
+// 5. SECTIONS - Page Layout
+// ============================================================
+
+@import 'iact-kit/sections/index';
+
+// ============================================================
+// 6. PLUGINS - Third-party Plugin Styles
+// ============================================================
+
+@import 'iact-kit/plugins/index';
+
+// ============================================================
+// 7. LIBS - External Libraries
+// ============================================================
+
+@import 'iact-kit/libs/index';

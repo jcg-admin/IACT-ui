@@ -1,0 +1,113 @@
+/**
+ * IACT UI Kit - Navbar Component (Adaptado de mx-template)
+ */
+
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: $padding-md $padding-lg;
+  background-color: $color-bg-secondary;
+  border-bottom: 1px solid $color-border;
+  @include box-shadow-elevation(2);
+
+  &-brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-right: auto;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $primary-500;
+    text-decoration: none;
+    @include transition-all(0.2s);
+
+    img {
+      height: 40px;
+      width: auto;
+    }
+
+    &:hover {
+      color: $primary-600;
+    }
+  }
+
+  &-nav {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    padding: 0;
+    gap: $spacing-lg;
+
+    .nav-link {
+      color: $color-text-primary;
+      text-decoration: none;
+      cursor: pointer;
+      @include transition-all(0.2s);
+      padding: $padding-sm $padding-md;
+      border-radius: 4px;
+
+      &:hover {
+        color: $primary-500;
+        background-color: rgba($primary-500, 0.1);
+      }
+
+      &.active {
+        color: $primary-500;
+        background-color: rgba($primary-500, 0.15);
+      }
+    }
+  }
+
+  &-collapse {
+    display: flex;
+    flex-basis: 100%;
+    
+    @include respond-to('md') {
+      flex-basis: auto;
+      display: flex;
+    }
+  }
+
+  &-toggler {
+    display: none;
+    background: none;
+    border: 1px solid $color-border;
+    padding: $padding-sm;
+    border-radius: 4px;
+    cursor: pointer;
+    color: $color-text-primary;
+
+    @include respond-below('md') {
+      display: block;
+    }
+
+    &:hover {
+      color: $primary-500;
+      border-color: $primary-500;
+    }
+  }
+
+  &-text {
+    margin-left: auto;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+  }
+
+  // Variants
+  &-dark {
+    background-color: $color-bg-primary;
+    border-color: $color-border;
+  }
+
+  &-light {
+    background-color: $color-bg-secondary;
+  }
+
+  &-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+  }
+}

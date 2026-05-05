@@ -1,0 +1,106 @@
+/**
+ * IACT UI Kit - List Group Component (Adaptado de mx-template)
+ */
+
+.list-group {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+  border-radius: 4px;
+  @include box-shadow-elevation(1);
+
+  &-item {
+    padding: $padding-md;
+    background-color: $color-bg-secondary;
+    border: 1px solid $color-border;
+    color: $color-text-primary;
+    cursor: pointer;
+    @include transition-all(0.2s);
+
+    &:first-child {
+      border-radius: 4px 4px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 4px 4px;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 0;
+    }
+
+    &:hover {
+      background-color: rgba($primary-500, 0.05);
+    }
+
+    &.active {
+      background-color: $primary-500;
+      border-color: $primary-500;
+      color: white;
+    }
+
+    &.disabled {
+      color: $color-text-tertiary;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    // Variants
+    &-primary {
+      background-color: rgba($primary-500, 0.1);
+      border-color: $primary-500;
+      color: $primary-500;
+    }
+
+    &-success {
+      background-color: rgba($success-500, 0.1);
+      border-color: $success-500;
+      color: $success-500;
+    }
+
+    &-danger {
+      background-color: rgba($error-500, 0.1);
+      border-color: $error-500;
+      color: $error-500;
+    }
+
+    &-warning {
+      background-color: rgba($warning-500, 0.1);
+      border-color: $warning-500;
+      color: $warning-500;
+    }
+  }
+
+  &-horizontal {
+    flex-direction: row;
+
+    .list-group-item {
+      &:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+
+      &:not(:last-child) {
+        border-right: 0;
+        border-bottom: 1px solid $color-border;
+      }
+    }
+  }
+
+  &-flush {
+    .list-group-item {
+      border: none;
+      border-bottom: 1px solid $color-border;
+      border-radius: 0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}

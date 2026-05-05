@@ -1,0 +1,420 @@
+/**
+ * IACT UI Kit - Responsive Utilities
+ * Basado en Bootstrap estándar - Genera utilities responsivas correctamente
+ * 
+ * Nomenclatura Bootstrap:
+ *   .{property}{breakpoint-infix}-{size}
+ *   
+ * Ejemplos:
+ *   .p-0, .p-1, .p-2, .p-3, .p-4, .p-5        (xs - sin infix)
+ *   .p-sm-0, .p-sm-1, .p-sm-2, etc.           (sm+)
+ *   .p-md-0, .p-md-1, .p-md-2, etc.           (md+)
+ *   .p-lg-0, .p-lg-1, .p-lg-2, etc.           (lg+)
+ *   
+ * Ventajas:
+ *   - NO se repiten nombres (.p-md-lg ❌)
+ *   - Bootstrap-compatible
+ *   - Estándar de la industria
+ *   - Más pequeño en tamaño
+ *   
+ * Mapeo de números a espacios:
+ *   0 = 0px
+ *   1 = 4px
+ *   2 = 8px
+ *   3 = 16px
+ *   4 = 24px
+ *   5 = 32px
+ */
+
+// ============================================================================
+// RESPONSIVE PADDING & MARGIN (Bootstrap-style)
+// ============================================================================
+// Genera: .p-{breakpoint-infix}-{size}, .m-{breakpoint-infix}-{size}
+// Ejemplo: .p-md-3 (padding: 16px en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $prop, $abbrev in (margin: m, padding: p) {
+      @each $size, $length in $spacers {
+
+        // All sides
+        .#{$abbrev}#{$infix}-#{$size} { #{$prop}: $length !important; }
+
+        // Top
+        .#{$abbrev}t#{$infix}-#{$size},
+        .#{$abbrev}y#{$infix}-#{$size} {
+          #{$prop}-top: $length !important;
+        }
+
+        // Right
+        .#{$abbrev}r#{$infix}-#{$size},
+        .#{$abbrev}x#{$infix}-#{$size} {
+          #{$prop}-right: $length !important;
+        }
+
+        // Bottom
+        .#{$abbrev}b#{$infix}-#{$size},
+        .#{$abbrev}y#{$infix}-#{$size} {
+          #{$prop}-bottom: $length !important;
+        }
+
+        // Left
+        .#{$abbrev}l#{$infix}-#{$size},
+        .#{$abbrev}x#{$infix}-#{$size} {
+          #{$prop}-left: $length !important;
+        }
+      }
+    }
+
+    // Special: Auto margins
+    .m#{$infix}-auto { margin: auto !important; }
+    .mt#{$infix}-auto,
+    .my#{$infix}-auto {
+      margin-top: auto !important;
+    }
+    .mr#{$infix}-auto,
+    .mx#{$infix}-auto {
+      margin-right: auto !important;
+    }
+    .mb#{$infix}-auto,
+    .my#{$infix}-auto {
+      margin-bottom: auto !important;
+    }
+    .ml#{$infix}-auto,
+    .mx#{$infix}-auto {
+      margin-left: auto !important;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE GAP (Bootstrap-style)
+// ============================================================================
+// Genera: .gap-{breakpoint-infix}-{size}
+// Ejemplo: .gap-md-3 (gap: 16px en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $size, $length in $spacers {
+      .gap#{$infix}-#{$size} {
+        gap: $length !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE DISPLAY (Bootstrap-style)
+// ============================================================================
+// Genera: .d-{breakpoint-infix}-{display}
+// Ejemplo: .d-md-flex (display: flex en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .d#{$infix}-none         { display: none !important; }
+    .d#{$infix}-inline       { display: inline !important; }
+    .d#{$infix}-inline-block { display: inline-block !important; }
+    .d#{$infix}-block        { display: block !important; }
+    .d#{$infix}-table        { display: table !important; }
+    .d#{$infix}-table-row    { display: table-row !important; }
+    .d#{$infix}-table-cell   { display: table-cell !important; }
+    .d#{$infix}-flex         { display: flex !important; }
+    .d#{$infix}-inline-flex  { display: inline-flex !important; }
+    .d#{$infix}-grid         { display: grid !important; }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE FLEXBOX (Bootstrap-style)
+// ============================================================================
+// Genera: .flex-{breakpoint-infix}-{direction}, .justify-{breakpoint-infix}-{value}, etc.
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    // Flex direction
+    .flex#{$infix}-row {
+      flex-direction: row !important;
+    }
+    .flex#{$infix}-column {
+      flex-direction: column !important;
+    }
+    .flex#{$infix}-wrap {
+      flex-wrap: wrap !important;
+    }
+    .flex#{$infix}-nowrap {
+      flex-wrap: nowrap !important;
+    }
+
+    // Justify content
+    .justify#{$infix}-start {
+      justify-content: flex-start !important;
+    }
+    .justify#{$infix}-end {
+      justify-content: flex-end !important;
+    }
+    .justify#{$infix}-center {
+      justify-content: center !important;
+    }
+    .justify#{$infix}-between {
+      justify-content: space-between !important;
+    }
+    .justify#{$infix}-around {
+      justify-content: space-around !important;
+    }
+
+    // Align items
+    .align#{$infix}-start {
+      align-items: flex-start !important;
+    }
+    .align#{$infix}-end {
+      align-items: flex-end !important;
+    }
+    .align#{$infix}-center {
+      align-items: center !important;
+    }
+    .align#{$infix}-baseline {
+      align-items: baseline !important;
+    }
+    .align#{$infix}-stretch {
+      align-items: stretch !important;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE TEXT ALIGN (Bootstrap-style)
+// ============================================================================
+// Genera: .text-{breakpoint-infix}-{align}
+// Ejemplo: .text-md-center (text-align: center en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .text#{$infix}-left {
+      text-align: left !important;
+    }
+    .text#{$infix}-center {
+      text-align: center !important;
+    }
+    .text#{$infix}-right {
+      text-align: right !important;
+    }
+    .text#{$infix}-justify {
+      text-align: justify !important;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE VISIBILITY (Bootstrap-style)
+// ============================================================================
+// Genera: .d-{breakpoint-infix}-none (ocultar), .d-{breakpoint-infix}-block (mostrar)
+// Ejemplo: .d-md-none (oculto en md+), .d-md-block (mostrar en md+)
+// NOTA: Ya está en RESPONSIVE DISPLAY, pero agregamos helpers semánticos
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .show#{$infix} {
+      display: block !important;
+    }
+    .hide#{$infix} {
+      display: none !important;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE SIZING - WIDTH (EXTENSIÓN CUSTOM - NO Bootstrap)
+// ============================================================================
+// Genera: .w-{breakpoint-infix}-{fraction}
+// Ejemplo: .w-md-50 (width: 50% en md+)
+// Nomenclatura: 0, 25, 50, 75, 100 (porcentajes)
+
+$sizes: (
+  0: 0%,
+  25: 25%,
+  50: 50%,
+  75: 75%,
+  100: 100%,
+  auto: auto
+) !default;
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $size, $length in $sizes {
+      .w#{$infix}-#{$size} {
+        width: $length !important;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE SIZING - HEIGHT (EXTENSIÓN CUSTOM - NO Bootstrap)
+// ============================================================================
+// Genera: .h-{breakpoint-infix}-{size}
+// Ejemplo: .h-md-100 (height: 100% en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .h#{$infix}-auto {
+      height: auto !important;
+    }
+    .h#{$infix}-100 {
+      height: 100% !important;
+    }
+    .h#{$infix}-screen {
+      height: 100vh !important;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE GRID - COLUMNS (EXTENSIÓN CUSTOM - NO Bootstrap)
+// ============================================================================
+// Genera: .grid-{breakpoint-infix}-{columns}
+// Ejemplo: .grid-md-2 (grid-template-columns: repeat(2, 1fr) en md+)
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .grid#{$infix}-1 {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr) !important;
+    }
+    .grid#{$infix}-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .grid#{$infix}-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+    .grid#{$infix}-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+  }
+}
+
+// ============================================================================
+// EJEMPLOS DE USO
+// ============================================================================
+
+/*
+
+1. PADDING RESPONSIVO (Bootstrap-style):
+   <div class="p-1 p-md-2 p-lg-3">
+     padding: 4px (base xs)
+     padding: 8px (md+)
+     padding: 16px (lg+)
+   </div>
+
+2. MARGIN RESPONSIVO:
+   <div class="mt-1 mt-md-3 mt-lg-4">
+     margin-top: 4px (base)
+     margin-top: 16px (md+)
+     margin-top: 24px (lg+)
+   </div>
+
+3. DISPLAY RESPONSIVO:
+   <div class="d-none d-md-block d-lg-flex">
+     display: none (xs-sm)
+     display: block (md)
+     display: flex (lg+)
+   </div>
+
+4. FLEXBOX RESPONSIVO:
+   <div class="flex flex-md-column flex-lg-row justify-lg-center align-lg-center">
+     flex (base)
+     flex-direction: column (md)
+     flex-direction: row (lg)
+     justify-content: center (lg)
+     align-items: center (lg)
+   </div>
+
+5. GAP RESPONSIVO:
+   <div class="flex gap-1 gap-md-2 gap-lg-3">
+     gap: 4px (base)
+     gap: 8px (md+)
+     gap: 16px (lg+)
+   </div>
+
+6. GRID RESPONSIVO (Custom):
+   <div class="grid-1 grid-md-2 grid-lg-3">
+     1 columna (base)
+     2 columnas (md+)
+     3 columnas (lg+)
+   </div>
+
+7. WIDTH RESPONSIVO (Custom):
+   <div class="w-100 w-md-50 w-lg-25">
+     width: 100% (base)
+     width: 50% (md+)
+     width: 25% (lg+)
+   </div>
+
+8. VISIBILITY:
+   <div class="d-none d-md-block">
+     Oculto en xs-sm, visible en md+
+   </div>
+
+*/
+
+// ============================================================================
+// ESPACIADO RESPONSIVO - MAPA DE NÚMEROS A VALORES
+// ============================================================================
+
+/*
+Mapeo de números a espacios (Bootstrap):
+
+0 = 0px      (sin espaciado)
+1 = 4px      (extra pequeño)
+2 = 8px      (pequeño)
+3 = 16px     (medio)
+4 = 24px     (grande)
+5 = 32px     (extra grande)
+
+Ejemplos:
+  .p-0       = padding: 0
+  .p-1       = padding: 4px
+  .p-2       = padding: 8px
+  .p-3       = padding: 16px
+  .p-4       = padding: 24px
+  .p-5       = padding: 32px
+  
+  .p-md-0    = padding: 0 en md+
+  .p-md-1    = padding: 4px en md+
+  .p-md-2    = padding: 8px en md+
+  .p-md-3    = padding: 16px en md+
+
+*/
+
+// ============================================================================
+// BREAKPOINTS
+// ============================================================================
+
+/*
+xs:  360px  (Mobile - breakpoint-infix = "")
+sm:  480px  (Small - breakpoint-infix = "-sm")
+md:  640px  (Tablet - breakpoint-infix = "-md")
+lg:  768px  (Desktop - breakpoint-infix = "-lg")
+xl:  1024px (Large - breakpoint-infix = "-xl")
+2xl: 1280px (XL - breakpoint-infix = "-2xl")
+*/

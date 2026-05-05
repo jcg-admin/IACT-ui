@@ -1,0 +1,75 @@
+/**
+ * IACT UI Kit - Animation Mixins (Adaptado de mx-template)
+ */
+
+// Transition timing functions
+$timing-fast: cubic-bezier(0.4, 0, 0.2, 1);
+$timing-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$timing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+$timing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+
+// Material Design animations
+@mixin animation-fast-out-slow-in($duration: 0.2s) {
+  transition-duration: $duration;
+  transition-timing-function: $timing-fast;
+}
+
+@mixin animation-standard($duration: 0.2s) {
+  transition-duration: $duration;
+  transition-timing-function: $timing-standard;
+}
+
+@mixin animation-decelerate($duration: 0.2s) {
+  transition-duration: $duration;
+  transition-timing-function: $timing-decelerate;
+}
+
+// Transform mixins
+@mixin transform-translate-x($value) {
+  -webkit-transform: translate3d($value, 0, 0);
+  -moz-transform: translate3d($value, 0, 0);
+  -ms-transform: translate3d($value, 0, 0);
+  transform: translate3d($value, 0, 0);
+}
+
+@mixin transform-translate-y($value) {
+  -webkit-transform: translate3d(0, $value, 0);
+  -moz-transform: translate3d(0, $value, 0);
+  -ms-transform: translate3d(0, $value, 0);
+  transform: translate3d(0, $value, 0);
+}
+
+@mixin transform-scale($value) {
+  -webkit-transform: scale($value);
+  -moz-transform: scale($value);
+  -ms-transform: scale($value);
+  transform: scale($value);
+}
+
+@mixin transform-rotate($value) {
+  -webkit-transform: rotate($value);
+  -moz-transform: rotate($value);
+  -ms-transform: rotate($value);
+  transform: rotate($value);
+}
+
+@mixin perspective($value) {
+  -webkit-perspective: $value;
+  -moz-perspective: $value;
+  perspective: $value;
+}
+
+@mixin backface-visibility($value: hidden) {
+  -webkit-backface-visibility: $value;
+  -moz-backface-visibility: $value;
+  backface-visibility: $value;
+}
+
+// Transition shorthand
+@mixin transition-all($duration: 0.3s, $timing: $timing-standard) {
+  transition: all $duration $timing;
+}
+
+@mixin transition-property($property, $duration: 0.3s, $timing: $timing-standard) {
+  transition: $property $duration $timing;
+}

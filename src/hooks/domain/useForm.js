@@ -1,0 +1,59 @@
+/**
+ * useForm Hook
+ * Form state management
+ */
+
+import { useState, useCallback } from 'react'
+
+export function useForm(_initialValues, _onSubmit) {
+  const [_values, setValues] = useState(_initialValues)
+  const [_errors, setErrors] = useState({})
+  const [_touched, setTouched] = useState({})
+  const [_isSubmitting, setIsSubmitting] = useState(false)
+
+  const _handleChange = useCallback((_e) => {
+    const { name, value, type, checked } = _e.target
+    setValues(_prev => ({
+      ..._prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+  }, [])
+
+  const _handleBlur = useCallback((_e) => {
+    const { name } = _e.target
+    setTouched(_prev => ({ ..._prev, [name]: true }))
+  }, [])
+
+  const _handleSubmit = useCallback(async (_e) => {
+    _e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      await _onSubmit(_values)
+    } catch (_error) {
+      setErrors({ submit: _error.message })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [_values, _onSubmit])
+
+  const _reset = useCallback(() => {
+    setValues(_initialValues)
+    setErrors({})
+    setTouched({})
+  }, [_initialValues])
+
+  return {
+    values: _values,
+    errors: _errors,
+    touched: _touched,
+    isSubmitting: _isSubmitting,
+    handleChange: _handleChange,
+    handleBlur: _handleBlur,
+    handleSubmit: _handleSubmit,
+    setValues,
+    setErrors,
+    reset: _reset
+  }
+}
+
+export default useForm

@@ -1,0 +1,47 @@
+/**
+ * IACT UI Kit - Radios Component
+ */
+
+input[type='radio'] {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: $color-bg-tertiary;
+  border: 2px solid $color-border;
+  border-radius: 50%;
+  @include transition-all(0.2s);
+
+  &:hover {
+    border-color: $primary-500;
+  }
+
+  &:checked {
+    border-color: $primary-500;
+    background: radial-gradient(circle, $primary-500 40%, $color-bg-tertiary 45%);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-500, 0.1);
+  }
+}
+
+// Size variants
+input[type='radio'].radio-sm {
+  width: 16px;
+  height: 16px;
+}
+
+input[type='radio'].radio-lg {
+  width: 24px;
+  height: 24px;
+}

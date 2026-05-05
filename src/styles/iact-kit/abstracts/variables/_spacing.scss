@@ -1,0 +1,46 @@
+/**
+ * IACT UI Kit - Spacing Variables
+ * Basado en Bootstrap estándar pero con valores custom
+ * 
+ * Nomenclatura Bootstrap:
+ *   0 = 0px
+ *   1 = 4px
+ *   2 = 8px
+ *   3 = 16px
+ *   4 = 24px
+ *   5 = 32px
+ */
+
+// Valores individuales (LEGACY - mantener por compatibilidad)
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+$padding-xs: $spacing-xs;
+$padding-sm: $spacing-sm;
+$padding-md: $spacing-md;
+$padding-lg: $spacing-lg;
+$padding-xl: $spacing-xl;
+
+$margin-xs: $spacing-xs;
+$margin-sm: $spacing-sm;
+$margin-md: $spacing-md;
+$margin-lg: $spacing-lg;
+$margin-xl: $spacing-xl;
+
+// MAPA BOOTSTRAP-STYLE (Números en lugar de nombres)
+// Usado para generar utilities responsivas
+$spacers: (
+  0: 0,
+  1: $spacing-xs,      // 4px
+  2: $spacing-sm,      // 8px
+  3: $spacing-md,      // 16px
+  4: $spacing-lg,      // 24px
+  5: $spacing-xl       // 32px
+) !default;
+
+// Alias para compatibilidad (por si algo usa $spacing-values)
+$spacing-values: $spacers;

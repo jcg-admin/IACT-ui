@@ -1,0 +1,465 @@
+// ═══════════════════════════════════════════════════════════════════════
+// MIXINS SCSS - IACT Dashboard
+// ═══════════════════════════════════════════════════════════════════════
+// Adaptados del mx-template para máxima reutilización
+// ═══════════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────────────────────────────────
+// 1. LAYOUT & FLEXBOX MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Flex container centered (both axes)
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/// Flex container with space-between (horizontal centering)
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/// Flex container with space-around
+@mixin flex-around {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/// Flex column
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 2. BUTTON MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Base button styling
+@mixin btn {
+  display: inline-block;
+  padding: $btn-padding-y $btn-padding-x;
+  border-radius: $btn-border-radius;
+  font-weight: $btn-font-weight;
+  font-size: $font-size-base;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: $btn-transition;
+  user-select: none;
+  outline: none;
+  
+  &:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+  
+  &:disabled,
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/// Button color variant
+@mixin btn-variant($bg-color, $text-color: #fff) {
+  background-color: $bg-color;
+  color: $text-color;
+  border: 1px solid $bg-color;
+  
+  &:hover:not(:disabled):not(.disabled) {
+    background-color: darken($bg-color, 10%);
+    border-color: darken($bg-color, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active:not(:disabled):not(.disabled) {
+    background-color: darken($bg-color, 15%);
+    transform: translateY(0);
+  }
+  
+  &:focus {
+    box-shadow: 0 0 0 3px rgba($bg-color, 0.25);
+  }
+}
+
+/// Button size variant
+@mixin btn-size($padding-y, $padding-x, $font-size: $font-size-base) {
+  padding: $padding-y $padding-x;
+  font-size: $font-size;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 3. CARD MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Base card styling
+@mixin card {
+  background-color: $card-background-color;
+  border: $border-width-base solid $card-border-color;
+  border-radius: $card-border-radius;
+  padding: $card-padding;
+  box-shadow: $card-box-shadow;
+  transition: $card-transition;
+  
+  &:hover {
+    border-color: $primary-color;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/// Card with no padding
+@mixin card-no-padding {
+  @include card;
+  padding: 0;
+}
+
+/// Card with custom color
+@mixin card-color($bg-color, $border-color: $primary-color) {
+  background-color: $bg-color;
+  border-color: $border-color;
+  
+  &:hover {
+    border-color: lighten($border-color, 10%);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 4. FORM MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Base form control styling (inputs, textareas, selects)
+@mixin form-control {
+  display: block;
+  width: 100%;
+  padding: $form-control-padding-y $form-control-padding-x;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+  color: $form-control-color;
+  background-color: $form-control-background-color;
+  border: $border-width-base solid $form-control-border-color;
+  border-radius: $form-control-border-radius;
+  transition: $form-control-transition;
+  appearance: none;
+  
+  &:focus {
+    color: $form-control-color;
+    background-color: $form-control-background-color;
+    border-color: $form-control-focus-border-color;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+  
+  &::placeholder {
+    color: $text-muted;
+    opacity: 1;
+  }
+  
+  &:disabled,
+  &[readonly] {
+    background-color: darken($form-control-background-color, 5%);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+/// Form group (label + input wrapper)
+@mixin form-group {
+  margin-bottom: $spacing-md;
+  
+  label {
+    display: block;
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-medium;
+    color: $text-color;
+  }
+}
+
+/// Form validation states
+@mixin form-validation($color) {
+  &.is-valid {
+    border-color: $color;
+    
+    &:focus {
+      border-color: $color;
+      box-shadow: 0 0 0 3px rgba($color, 0.1);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 5. ALERT MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Base alert styling
+@mixin alert($bg-color, $border-color, $text-color) {
+  padding: $alert-padding-y $alert-padding-x;
+  margin-bottom: $alert-margin-bottom;
+  border: $border-width-base solid $border-color;
+  border-radius: $alert-border-radius;
+  background-color: $bg-color;
+  color: $text-color;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  // Close button
+  .alert-close {
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity $transition-duration-fast;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 6. BADGE MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Base badge styling
+@mixin badge {
+  display: inline-block;
+  padding: $badge-padding-y $badge-padding-x;
+  font-size: $badge-font-size;
+  font-weight: $badge-font-weight;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: $badge-border-radius;
+  transition: $transition-default;
+}
+
+/// Badge color variant
+@mixin badge-variant($bg-color, $text-color: #fff) {
+  background-color: $bg-color;
+  color: $text-color;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 7. TEXT & TYPOGRAPHY MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Text truncate (ellipsis)
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/// Multiline text truncate
+@mixin text-truncate-lines($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/// Heading styles
+@mixin heading($size: $font-size-2xl, $weight: $font-weight-bold) {
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $line-height-tight;
+  margin-bottom: $spacing-md;
+  color: $text-color;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 8. RESPONSIVE & BREAKPOINT MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Media query - Small screens
+@mixin media-sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+/// Media query - Medium screens
+@mixin media-md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+/// Media query - Large screens
+@mixin media-lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+/// Media query - Extra large screens
+@mixin media-xl {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+/// Media query - 2XL screens
+@mixin media-2xl {
+  @media (min-width: $breakpoint-2xl) {
+    @content;
+  }
+}
+
+/// Generic media query
+@mixin media-query($breakpoint) {
+  @if $breakpoint == 'xs' {
+    @media (min-width: $breakpoint-xs) { @content; }
+  } @else if $breakpoint == 'sm' {
+    @media (min-width: $breakpoint-sm) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: $breakpoint-md) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: $breakpoint-lg) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: $breakpoint-xl) { @content; }
+  } @else if $breakpoint == '2xl' {
+    @media (min-width: $breakpoint-2xl) { @content; }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 9. ANIMATION MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Fade in animation
+@mixin fade-in($duration: $transition-duration-base) {
+  animation: fadeIn $duration ease-in forwards;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/// Slide down animation
+@mixin slide-down($duration: $transition-duration-base) {
+  animation: slideDown $duration ease-out forwards;
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/// Slide up animation
+@mixin slide-up($duration: $transition-duration-base) {
+  animation: slideUp $duration ease-out forwards;
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/// Scale animation
+@mixin scale-in($duration: $transition-duration-base) {
+  animation: scaleIn $duration ease-out forwards;
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 10. SHADOW & DEPTH MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Shadow elevation
+@mixin shadow-elevation($level: 'md') {
+  @if $level == 'xs' {
+    box-shadow: $box-shadow-xs;
+  } @else if $level == 'sm' {
+    box-shadow: $box-shadow-sm;
+  } @else if $level == 'md' {
+    box-shadow: $box-shadow-md;
+  } @else if $level == 'lg' {
+    box-shadow: $box-shadow-lg;
+  } @else if $level == 'xl' {
+    box-shadow: $box-shadow-xl;
+  }
+}
+
+/// Hover shadow effect
+@mixin hover-shadow-lift {
+  transition: box-shadow $transition-duration-fast;
+  
+  &:hover {
+    box-shadow: $box-shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// 11. UTILITY MIXINS
+// ─────────────────────────────────────────────────────────────────────
+
+/// Absolute centering
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/// Clearfix for floats
+@mixin clearfix {
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+/// Disable text selection
+@mixin no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/// Smooth transitions
+@mixin smooth-transition($properties: all, $duration: $transition-duration-base) {
+  transition: $properties $duration $transition-timing-ease;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Fin de mixins SCSS
+// ═══════════════════════════════════════════════════════════════════════

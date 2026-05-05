@@ -1,0 +1,116 @@
+/**
+ * Focus Indicators - WCAG AA Compliant
+ * 
+ * WCAG AA Requirements:
+ * - Visible focus indicator (minimum 3px)
+ * - High contrast (4.5:1 ratio minimum)
+ * - Not hidden by other content
+ * - Appears on all interactive elements
+ */
+
+// Focus indicator colors (WCAG AA compliant)
+$focus-color: #0ea5e9; // Cyan - high contrast on dark background
+$focus-outline-width: 3px;
+$focus-outline-offset: 2px;
+
+/**
+ * Base focus styles for all interactive elements
+ * WCAG AA: Clear, visible focus indicator
+ */
+button,
+a,
+input,
+select,
+textarea,
+[role='button'],
+[role='menuitem'],
+[role='tab'],
+[role='link'] {
+  // Remove default focus outline
+  outline: none;
+
+  // Add high-contrast focus outline
+  &:focus-visible {
+    outline: $focus-outline-width solid $focus-color;
+    outline-offset: $focus-outline-offset;
+    border-radius: 2px;
+  }
+
+  // Keyboard focus (Tab navigation)
+  &:focus {
+    outline: $focus-outline-width solid $focus-color;
+    outline-offset: $focus-outline-offset;
+    border-radius: 2px;
+  }
+}
+
+/**
+ * Button focus styles
+ * WCAG AA: Must be clearly visible
+ */
+.btn {
+  &:focus,
+  &:focus-visible {
+    outline: $focus-outline-width solid $focus-color;
+    outline-offset: $focus-outline-offset;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+  }
+
+  &:disabled {
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}
+
+/**
+ * Motion preferences respect
+ * WCAG AA: Don't animate if user prefers reduced motion
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * High contrast mode support
+ * WCAG AAA: Support high contrast preferences
+ */
+@media (prefers-contrast: more) {
+  button,
+  .btn {
+    border-width: 2px;
+
+    &:focus,
+    &:focus-visible {
+      outline-width: 4px;
+    }
+  }
+}
+
+/**
+ * Skip to main content link
+ * WCAG AAA: Must be keyboard accessible
+ */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #0ea5e9;
+  color: white;
+  padding: 8px 12px;
+  text-decoration: none;
+  z-index: 100;
+
+  &:focus {
+    top: 0;
+  }
+}

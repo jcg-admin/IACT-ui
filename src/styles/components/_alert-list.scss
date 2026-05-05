@@ -1,0 +1,16 @@
+.alert-list {
+  padding: 1.5rem;
+  background: var(--color-bg-primary);
+  border-radius: 8px;
+  
+  .alerts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  h3 {
+    margin-bottom: 1rem;
+  }
+}
