@@ -40,8 +40,10 @@ docs/
 │   ├── facade-pattern.md              ← Facade pattern guide
 │   ├── import-organization.md         ← Import organization guide
 │   ├── instalacion-componentes.md     ← Component installation guide
+│   ├── mock-interceptor-pattern.md    ← MockInterceptor: mocks en capa de red (no en componentes)
 │   ├── permisos.md                    ← RBAC permissions guide
 │   ├── quickstart-scss.md             ← Quick start post-Tailwind removal (SCSS utilities)
+│   ├── rbac-naming-standard.md        ← RBAC v5.2.1 naming standard (inglés, sin acrónimos)
 │   ├── responsive-bootstrap.md        ← Bootstrap responsive utilities
 │   ├── responsive-guide.md            ← Responsive utilities guide
 │   ├── responsive-usage.md            ← Responsive utilities usage
