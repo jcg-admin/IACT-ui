@@ -70,20 +70,27 @@ export default function FunctionSelector({
         Object.keys(FUNCTION_CATEGORIES)
     );
 
+    useEffect(() => {
+        if (selectedFunctionIds.length > 0 && allFunctions.length > 0) {
+            detectConflicts(selectedFunctionIds);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     /**
      * Detectar conflictos SoD
      */
     const detectConflicts = (newSelection) => {
         const conflictList = [];
 
-        const selectedCodes = newSelection.map(id => {
+        const selectedCodenames = newSelection.map(id => {
             const func = allFunctions.find(f => f.id === id);
             return func ? func.code : null;
         }).filter(Boolean);
 
         for (const [ruleCode, rule] of Object.entries(SOD_RULES)) {
-            const inSetA = selectedCodes.filter(code => rule.setA(code));
-            const inSetB = selectedCodes.filter(code => rule.setB(code));
+            const inSetA = selectedCodenames.filter(code => rule.setA(code));
+            const inSetB = selectedCodenames.filter(code => rule.setB(code));
 
             if (inSetA.length > 0 && inSetB.length > 0) {
                 conflictList.push({
@@ -139,7 +146,7 @@ export default function FunctionSelector({
     const getFilteredFunctions = () => {
         const filtered = {};
 
-        for (const [category, _] of Object.entries(FUNCTION_CATEGORIES)) {
+        for (const [category] of Object.entries(FUNCTION_CATEGORIES)) {
             filtered[category] = allFunctions.filter(func => {
                 const matchesSearch = !searchTerm ||
                     func.code.toLowerCase().includes(searchTerm.toLowerCase()) ||

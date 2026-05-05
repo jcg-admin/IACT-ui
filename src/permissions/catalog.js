@@ -45,10 +45,10 @@ export const FunctionCatalog = {
     VIEW_COMPLIANCE:    'sistema.auditoria.compliance.ver',
 
     // Alerts (ITER5)
-    VIEW_ALERTS:        'sistema.alertas.ver',
-    MANAGE_ALERTS:      'sistema.alertas.gestionar',
+    VIEW_ALERTS:        'sistema.alertas.notificaciones.ver',
+    MANAGE_ALERTS:      'sistema.alertas.notificaciones.gestionar',
 
     // Configuration
-    VIEW_CONFIG:        'sistema.configuracion.ver',
-    EDIT_CONFIG:        'sistema.configuracion.editar',
+    VIEW_CONFIG:        'sistema.configuracion.parametros.ver',
+    EDIT_CONFIG:        'sistema.configuracion.parametros.editar',
 };
