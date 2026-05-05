@@ -15,6 +15,8 @@ import type {
   GruposUsuarioResponse,
   PermisosCache,
   MenuCache,
+} from '../types/permisos.types';
+import {
   PermisosError,
   UnauthorizedError,
   ForbiddenError,
