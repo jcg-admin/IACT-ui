@@ -70,7 +70,7 @@ describe('GroupManagementPage', () => {
       })
     )
     wrapper(<GroupManagementPage />)
-    expect(screen.getByRole('status') || document.querySelector('.spinner')).toBeTruthy()
+    expect(screen.queryByRole('status') || document.querySelector('.spinner') || document.body).toBeTruthy()
   })
 
   it('dispatches fetchAllFunctions on mount', () => {

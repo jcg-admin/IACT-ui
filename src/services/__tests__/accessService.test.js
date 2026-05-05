@@ -30,10 +30,10 @@ describe('AccessService.getAuthHeaders', () => {
 });
 
 describe('AccessService.getFunctionGroups', () => {
-    it('calls GET /access/function-groups with auth header', async () => {
+    it('calls GET /access/groups/ with auth header', async () => {
         await accessService.getFunctionGroups();
         expect(mockFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/access/function-groups'),
+            expect.stringContaining('/access/groups/'),
             expect.objectContaining({
                 method: 'GET',
                 headers: expect.objectContaining({ Authorization: 'Bearer test-token-123' }),

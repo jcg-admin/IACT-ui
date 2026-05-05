@@ -30,7 +30,7 @@ describe('AgentsReportPage', () => {
   it('renders report table or filter form', () => {
     wrapper(<AgentsReportPage />)
     expect(
-      screen.getByRole('button') || screen.getByRole('table') || document.querySelector('form')
+      screen.getAllByRole('button').length > 0 || screen.queryByRole('table') || document.querySelector('form')
     ).toBeTruthy()
   })
 

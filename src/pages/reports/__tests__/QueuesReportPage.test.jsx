@@ -25,7 +25,7 @@ describe('QueuesReportPage', () => {
   it('renders report controls', () => {
     wrapper(<QueuesReportPage />)
     expect(
-      screen.getByRole('button') || document.querySelector('form')
+      screen.getAllByRole('button').length > 0 || document.querySelector('form')
     ).toBeTruthy()
   })
 })
