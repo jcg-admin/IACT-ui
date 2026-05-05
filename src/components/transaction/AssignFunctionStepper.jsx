@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import useTransaction from '@hooks/useTransaction'
 import FormStepper from './FormStepper'
-import SoDValidation from './content/SoDValidation'
+import SeparationRulesValidation from './content/SeparationRulesValidation'
 import ConflictResolver from './content/ConflictResolver'
 import ConfirmAssignment from './content/ConfirmAssignment'
 
@@ -36,9 +36,9 @@ function AssignFunctionStepper({ userId, onComplete }) {
   // Steps definition
   const _steps = [
     {
-      title: 'Validate SoD',
+      title: 'Validate Separation Rules',
       content: (
-        <SoDValidation
+        <SeparationRulesValidation
           conflicts={_tx.conflicts}
           onNext={() => handleNext()}
         />

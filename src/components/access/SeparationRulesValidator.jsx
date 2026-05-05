@@ -1,7 +1,7 @@
 /**
- * SoDValidator.jsx
+ * SeparationRulesValidator.jsx
  * IACT v4.0 - Access Module
- * Componente para visualizar conflictos SoD
+ * Componente para visualizar conflictos de separación de funciones
  */
 
 import React from 'react';
@@ -30,7 +30,7 @@ const SOD_RULES_INFO = {
     },
 };
 
-export default function SoDValidator({ conflicts = [], selectedFunctions = [] }) {
+export default function SeparationRulesValidator({ conflicts = [], selectedFunctions = [] }) {
     if (conflicts.length === 0) {
         return (
             <div style={{
@@ -43,7 +43,7 @@ export default function SoDValidator({ conflicts = [], selectedFunctions = [] })
                     Estado: Válido
                 </div>
                 <div style={{ color: '#86efac', fontSize: '14px' }}>
-                    No hay conflictos SoD. La combinación de funciones es válida.
+                    No hay conflictos de separación de funciones. La combinación es válida.
                 </div>
             </div>
         );
@@ -57,7 +57,7 @@ export default function SoDValidator({ conflicts = [], selectedFunctions = [] })
             borderRadius: '8px',
         }}>
             <div style={{ color: '#dc2626', fontWeight: 600, marginBottom: '12px', fontSize: '16px' }}>
-                Conflictos SoD Detectados ({conflicts.length})
+                Conflictos de Separación Detectados ({conflicts.length})
             </div>
 
             {conflicts.map((conflict, idx) => {
@@ -167,7 +167,7 @@ export default function SoDValidator({ conflicts = [], selectedFunctions = [] })
                 color: '#fca5a5',
                 textAlign: 'center',
             }}>
-                No se puede proceder con conflictos SoD activos.
+                No se puede proceder con conflictos de separación activos.
             </div>
         </div>
     );

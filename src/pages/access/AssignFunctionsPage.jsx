@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFunctions, assignFunction, validateSoD, selectLoading, selectError, selectSuccess, clearSuccess } from '../../redux/slices/accessSlice';
+import { fetchAllFunctions, assignFunction, validateSeparationRules, selectLoading, selectError, selectSuccess, clearSuccess } from '../../redux/slices/accessSlice';
 import FunctionSelector from '../../components/access/FunctionSelector';
 
 export default function AssignFunctionsPage() {
@@ -72,7 +72,7 @@ export default function AssignFunctionsPage() {
         }
 
         if (hasConflicts) {
-            alert('No se pueden asignar funciones con conflictos SoD');
+            alert('No se pueden asignar funciones con conflictos de separación de funciones');
             return;
         }
 
@@ -94,7 +94,7 @@ export default function AssignFunctionsPage() {
                     Asignar Funciones
                 </h1>
                 <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>
-                    UC_ACC_01 - Asignar funciones a usuarios con validación SoD
+                    UC_ACC_01 - Asignar funciones a usuarios con validación de separación de funciones
                 </p>
             </div>
 
@@ -188,7 +188,7 @@ export default function AssignFunctionsPage() {
                         </small>
                     </div>
 
-                    {/* Info de SoD */}
+                    {/* Reglas de separación */}
                     <div style={{
                         marginTop: '16px',
                         padding: '12px',
@@ -197,7 +197,7 @@ export default function AssignFunctionsPage() {
                         fontSize: '12px',
                         color: '#9ca3af',
                     }}>
-                        <strong style={{ color: '#fff' }}>Reglas SoD activas:</strong>
+                        <strong style={{ color: '#fff' }}>Reglas de separación activas:</strong>
                         <ul style={{ margin: '8px 0 0 16px', paddingLeft: '16px' }}>
                             <li>SOD-001: PIP-* incompatible con AUD-*</li>
                             <li>SOD-002: USR-* incompatible con AUD-*</li>

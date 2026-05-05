@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function SoDValidation({ conflicts, onNext }) {
+function SeparationRulesValidation({ conflicts, onNext }) {
   return (
-    <div className="content-sod-validation">
-      <h3>SoD Validation Results</h3>
+    <div className="content-separation-rules-validation">
+      <h3>Resultados de Validación de Separación de Funciones</h3>
       {conflicts && conflicts.length > 0 ? (
         <>
           <p>{conflicts.length} conflictos detectados:</p>
@@ -21,9 +21,9 @@ function SoDValidation({ conflicts, onNext }) {
   )
 }
 
-SoDValidation.propTypes = {
+SeparationRulesValidation.propTypes = {
   conflicts: PropTypes.array,
   onNext: PropTypes.func
 }
 
-export default SoDValidation
+export default SeparationRulesValidation

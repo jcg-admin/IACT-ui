@@ -1,7 +1,7 @@
 /**
- * SoDManagementPage.jsx
+ * SeparationRulesPage.jsx
  * IACT v4.0 - Access Module
- * UC_ACC_05: Gestionar reglas Separation of Duties
+ * UC_ACC_05: Gestionar reglas de separación de funciones
  */
 
 import React, { useState, useEffect } from 'react';
@@ -48,7 +48,7 @@ const SOD_RULES_DATA = [
     },
 ];
 
-export default function SoDManagementPage() {
+export default function SeparationRulesPage() {
     const [sodRules, setSodRules] = useState(SOD_RULES_DATA);
     const [selectedRule, setSelectedRule] = useState(null);
     const [showViolations, setShowViolations] = useState(false);
@@ -67,10 +67,10 @@ export default function SoDManagementPage() {
             {/* Header */}
             <div style={{ marginBottom: '24px' }}>
                 <h1 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '28px' }}>
-                    Gestión de Reglas SoD
+                    Gestión de Reglas de Separación
                 </h1>
                 <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>
-                    UC_ACC_05 - Configurar y monitorear restricciones Separation of Duties
+                    UC_ACC_05 - Configurar y monitorear restricciones de separación de funciones
                 </p>
             </div>
 
@@ -126,7 +126,7 @@ export default function SoDManagementPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                 {/* Panel izquierdo - Lista de reglas */}
                 <div>
-                    <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Reglas SoD Configuradas</h2>
+                    <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Reglas de Separación Configuradas</h2>
 
                     <div style={{ display: 'grid', gap: '12px' }}>
                         {sodRules.map(rule => (
@@ -366,11 +366,11 @@ export default function SoDManagementPage() {
                         borderRadius: '8px',
                     }}>
                         <h3 style={{ margin: '0 0 12px 0', color: '#fca5a5' }}>
-                            Violaciones de SoD Detectadas
+                            Violaciones de Separación de Funciones Detectadas
                         </h3>
                         <div style={{ color: '#dcfce7', fontSize: '13px' }}>
-                            <p>Se han detectado usuarios con funciones incompatibles según las reglas SoD.</p>
-                            <p>Estas violaciones deben resolverse para cumplir con las restricciones de separación de deberes.</p>
+                            <p>Se han detectado usuarios con funciones incompatibles según las reglas de separación.</p>
+                            <p>Estas violaciones deben resolverse para cumplir con las restricciones de separación de funciones.</p>
                             <p style={{ marginTop: '12px', color: '#fca5a5', fontWeight: 600 }}>
                                 Acciones recomendadas: Revisar AccessAuditPage y PermissionsPage para resolver violaciones.
                             </p>
@@ -389,7 +389,7 @@ export default function SoDManagementPage() {
                 color: '#86efac',
                 fontSize: '12px',
             }}>
-                <strong>Nota sobre SoD:</strong> Las reglas de Separation of Duties son críticas para la seguridad del sistema. Cada regla previene conflictos de intereses asignando roles incompatibles a diferentes usuarios.
+                <strong>Nota:</strong> Las reglas de separación de funciones son críticas para la seguridad del sistema. Cada regla previene conflictos de intereses asignando roles incompatibles a diferentes usuarios.
             </div>
         </div>
     );
