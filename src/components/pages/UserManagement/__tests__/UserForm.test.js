@@ -1,124 +1,112 @@
 /**
- * UserForm Tests
+ * UserForm Tests — UC-USR-04 baja lógica + state enum
  */
 
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import UserForm from '../UserForm'
 
-describe('UserForm Component', () => {
-  it('should render form for creating user', () => {
-    render(
-      <UserForm user={null} onSubmit={jest.fn()} onCancel={jest.fn()} />
-    )
+const mockUser = {
+  id: '1',
+  username: 'john_doe',
+  email: 'john@example.com',
+  first_name: 'John',
+  last_name: 'Doe',
+  role: 'Admin',
+  state: 'ACTIVE',
+}
 
-    expect(screen.getByText('Create New User')).toBeInTheDocument()
-    expect(screen.getByLabelText('Username')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeInTheDocument()
-    expect(screen.getByLabelText('Password')).toBeInTheDocument()
+describe('UserForm — modo creación', () => {
+  it('muestra título "Crear Nuevo Usuario"', () => {
+    render(<UserForm user={null} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    expect(screen.getByText(/Crear Nuevo Usuario/i)).toBeInTheDocument()
   })
 
-  it('should render form for editing user', () => {
-    const mockUser = {
-      id: '1',
-      username: 'john_doe',
-      email: 'john@example.com',
-      first_name: 'John',
-      last_name: 'Doe',
-      role: 'Admin',
-      status: 'Active'
-    }
+  it('muestra campos username, email y password', () => {
+    render(<UserForm user={null} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    expect(screen.getByLabelText(/username/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^contraseña$/i)).toBeInTheDocument()
+  })
 
-    render(
-      <UserForm user={mockUser} onSubmit={jest.fn()} onCancel={jest.fn()} />
-    )
+  it('no muestra botón "Dar de baja" en modo creación', () => {
+    render(<UserForm user={null} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    expect(screen.queryByText(/Dar de baja/i)).not.toBeInTheDocument()
+  })
 
-    expect(screen.getByText('Edit User')).toBeInTheDocument()
+  it('llama onSubmit con datos válidos', async () => {
+    const onSubmit = jest.fn()
+    render(<UserForm user={null} onSubmit={onSubmit} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'newuser' } })
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'new@example.com' } })
+    fireEvent.change(screen.getByLabelText(/^nombre$/i), { target: { value: 'New' } })
+    fireEvent.change(screen.getByLabelText(/^apellido$/i), { target: { value: 'User' } })
+    fireEvent.change(screen.getByLabelText(/^contraseña$/i), { target: { value: 'pass123' } })
+    fireEvent.change(screen.getByLabelText(/confirmar contraseña/i), { target: { value: 'pass123' } })
+    fireEvent.click(screen.getByText(/Crear Usuario/i))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+  })
+
+  it('llama onCancel al cancelar', () => {
+    const onCancel = jest.fn()
+    render(<UserForm user={null} onSubmit={jest.fn()} onCancel={onCancel} onDeactivate={jest.fn()} />)
+    fireEvent.click(screen.getByText(/Cancelar/i))
+    expect(onCancel).toHaveBeenCalled()
+  })
+
+  it('valida que contraseñas coincidan', async () => {
+    render(<UserForm user={null} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'u' } })
+    fireEvent.change(screen.getByLabelText(/^contraseña$/i), { target: { value: 'pass123' } })
+    fireEvent.change(screen.getByLabelText(/confirmar contraseña/i), { target: { value: 'other' } })
+    fireEvent.click(screen.getByText(/Crear Usuario/i))
+    await waitFor(() => expect(screen.getByText(/Las contraseñas no coinciden/i)).toBeInTheDocument())
+  })
+})
+
+describe('UserForm — modo edición', () => {
+  it('muestra título "Editar Usuario"', () => {
+    render(<UserForm user={mockUser} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    expect(screen.getByText(/Editar Usuario/i)).toBeInTheDocument()
+  })
+
+  it('muestra username pre-cargado', () => {
+    render(<UserForm user={mockUser} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
     expect(screen.getByDisplayValue('john_doe')).toBeInTheDocument()
   })
 
-  it('should validate required fields', async () => {
-    const mockOnSubmit = jest.fn()
-
-    render(
-      <UserForm user={null} onSubmit={mockOnSubmit} onCancel={jest.fn()} />
-    )
-
-    const submitButton = screen.getByText('Create User')
-    fireEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(mockOnSubmit).not.toHaveBeenCalled()
-    })
+  it('selector estado tiene opciones ACTIVE, INACTIVE, BLOCKED', () => {
+    render(<UserForm user={mockUser} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    const stateSelect = screen.getByLabelText(/Estado/i)
+    const options = Array.from(stateSelect.options).map(o => o.value)
+    expect(options).toContain('ACTIVE')
+    expect(options).toContain('INACTIVE')
+    expect(options).toContain('BLOCKED')
   })
 
-  it('should call onSubmit with valid data', async () => {
-    const mockOnSubmit = jest.fn()
-
-    render(
-      <UserForm user={null} onSubmit={mockOnSubmit} onCancel={jest.fn()} />
-    )
-
-    fireEvent.change(screen.getByLabelText('Username'), {
-      target: { value: 'newuser' }
-    })
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'new@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText('First Name'), {
-      target: { value: 'New' }
-    })
-    fireEvent.change(screen.getByLabelText('Last Name'), {
-      target: { value: 'User' }
-    })
-    fireEvent.change(screen.getByLabelText('Password'), {
-      target: { value: 'password123' }
-    })
-    fireEvent.change(screen.getByLabelText('Confirm Password'), {
-      target: { value: 'password123' }
-    })
-
-    const submitButton = screen.getByText('Create User')
-    fireEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalled()
-    })
+  it('muestra botón "Dar de baja" cuando state !== ELIMINATED', () => {
+    render(<UserForm user={{ ...mockUser, state: 'ACTIVE' }} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    expect(screen.getByText(/Dar de baja/i)).toBeInTheDocument()
   })
 
-  it('should call onCancel when cancel button clicked', () => {
-    const mockOnCancel = jest.fn()
-
-    render(
-      <UserForm user={null} onSubmit={jest.fn()} onCancel={mockOnCancel} />
-    )
-
-    const cancelButton = screen.getByText('Cancel')
-    fireEvent.click(cancelButton)
-
-    expect(mockOnCancel).toHaveBeenCalled()
+  it('oculta botón "Dar de baja" cuando state === ELIMINATED', () => {
+    render(<UserForm user={{ ...mockUser, state: 'ELIMINATED' }} onSubmit={jest.fn()} onCancel={jest.fn()} onDeactivate={jest.fn()} />)
+    expect(screen.queryByText(/Dar de baja/i)).not.toBeInTheDocument()
   })
 
-  it('should validate password match', async () => {
+  it('click en "Dar de baja" llama onDeactivate con user.id', () => {
+    const onDeactivate = jest.fn()
     render(
-      <UserForm user={null} onSubmit={jest.fn()} onCancel={jest.fn()} />
+      <UserForm
+        user={{ ...mockUser, id: '99', state: 'ACTIVE' }}
+        onSubmit={jest.fn()}
+        onCancel={jest.fn()}
+        onDeactivate={onDeactivate}
+      />
     )
-
-    fireEvent.change(screen.getByLabelText('Username'), {
-      target: { value: 'user' }
-    })
-    fireEvent.change(screen.getByLabelText('Password'), {
-      target: { value: 'password123' }
-    })
-    fireEvent.change(screen.getByLabelText('Confirm Password'), {
-      target: { value: 'different' }
-    })
-
-    const submitButton = screen.getByText('Create User')
-    fireEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
-    })
+    fireEvent.click(screen.getByText(/Dar de baja/i))
+    expect(onDeactivate).toHaveBeenCalledWith('99')
   })
 })
