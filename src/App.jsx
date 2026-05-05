@@ -9,7 +9,7 @@ import React, { Suspense } from 'react'
 import { AppRouter } from '@router'
 import { AppProviders } from './AppProviders'
 import ToastContainer from '@components/shared/Toast/ToastContainer'
-import ApiErrorToast from '@components/feedback/ApiErrorToast'
+import ApiErrorAlert from '@components/feedback/ApiErrorAlert'
 import ServerErrorBanner from '@components/feedback/ServerErrorBanner'
 import '@styles/main.scss'
 
@@ -47,7 +47,7 @@ export default function App() {
         <AppRouter />
       </Suspense>
       <ToastContainer />
-      <ApiErrorToast />
+      <ApiErrorAlert />
     </AppProviders>
   )
 }

@@ -26,7 +26,7 @@ const ICON_BY_SEVERITY = {
   danger: 'error_outline',
 }
 
-export default function ApiErrorToast() {
+export default function ApiErrorAlert() {
   const dispatch = useDispatch()
   const error = useSelector(selectGlobalError)
   const isRetryable = useSelector(selectGlobalErrorIsRetryable)
@@ -76,28 +76,28 @@ export default function ApiErrorToast() {
   const severityLabel = { info: 'Info', success: 'Éxito', warning: 'Advertencia', danger: 'Error' }[severity]
 
   return (
-    <div className={`api-error-toast api-error-toast--${severity}`} role="alert" aria-live="assertive">
-      <span className="api-error-toast__icon material-icons" aria-hidden="true">
+    <div className={`api-error-alert api-error-alert--${severity}`} role="alert" aria-live="assertive">
+      <span className="api-error-alert__icon material-icons" aria-hidden="true">
         {icon}
       </span>
-      <div className="api-error-toast__body">
-        <strong className="api-error-toast__label">{severityLabel}:</strong>{' '}
-        <span className="api-error-toast__message">{error.message}</span>
+      <div className="api-error-alert__body">
+        <strong className="api-error-alert__label">{severityLabel}:</strong>{' '}
+        <span className="api-error-alert__message">{error.message}</span>
         {countdown != null && (
-          <span className="api-error-toast__countdown"> Reintentar en {countdown}s</span>
+          <span className="api-error-alert__countdown"> Reintentar en {countdown}s</span>
         )}
       </div>
-      <div className="api-error-toast__actions">
+      <div className="api-error-alert__actions">
         {isRetryable && !countdown && (
           <button
-            className="api-error-toast__retry"
+            className="api-error-alert__retry"
             onClick={() => window.location.reload()}
           >
             Reintentar
           </button>
         )}
         <button
-          className="api-error-toast__close"
+          className="api-error-alert__close"
           aria-label="Cerrar"
           onClick={() => dispatch(clearGlobalError())}
         >

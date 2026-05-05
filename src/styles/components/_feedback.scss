@@ -1,10 +1,10 @@
 @use '../abstracts/variables' as *;
 
 // ============================================================================
-// ApiErrorToast — fixed bottom-right, transient dismissible errors
+// ApiErrorAlert — fixed bottom-right, transient dismissible errors
 // ============================================================================
 
-.api-error-toast {
+.api-error-alert {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -83,6 +83,7 @@
     .material-icons { font-size: 20px; }
   }
 }
+
 
 // ============================================================================
 // ServerErrorBanner — sticky top, persistent maintenance banner
