@@ -81,25 +81,32 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/redux/slices/userSlice.js`
   **Deps:** T-010
 
-- [ ] **T-012** Conectar `UserManagement.jsx` a `userSlice` via `useDispatch` /
-  `useSelector`. Eliminar array `mockUsers` hardcodeado. Usar `fetchUsers` en
-  `useEffect`. Manejar loading y error states.
-  **Archivos:** `src/components/pages/UserManagement/UserManagement.jsx`
-  **Deps:** T-011
+- [x] **T-012** Conectar `UserManagement.jsx` a `userSlice` via `useDispatch` /
+  `useSelector`. Los mocks se mantienen en la capa de red (`MockInterceptor`)
+  — el componente no cambia cuando el backend esté listo.
+  `fetchUsers` en `useEffect`, loading/error states, badges `state` UC-USR-01.
+  **Archivos:** `src/components/containers/UserManagement.jsx`
+  **Commit:** c8592bf
 
-- [ ] **T-013** Implementar baja lógica en `UserForm.jsx` y `UserList.jsx`:
-  botón "Dar de baja" dispara `deactivateUser` (status → INACTIVE), no DELETE.
-  Mostrar badge de estado (ACTIVE/INACTIVE) en la lista.
+- [ ] **T-013** Implementar baja lógica en `UserForm.jsx` y `UserList.jsx`
+  dentro de `src/components/pages/UserManagement/`:
+  botón "Dar de baja" dispara `deactivateUser` (state → ELIMINATED), no DELETE físico.
+  Mostrar badge estado (ACTIVE/INACTIVE/BLOCKED/ELIMINATED) en la lista.
+  **Nota:** `UserManagement.jsx` en containers ya tiene "Dar de baja" y badges —
+  este T-013 aplica al componente en `pages/UserManagement/`.
   **Archivos:** `src/components/pages/UserManagement/UserForm.jsx`,
   `src/components/pages/UserManagement/UserList.jsx`
   **Deps:** T-012
   **UC:** UC-USR-04
 
-- [ ] **T-014** Agregar tests para `userService.js` y thunks de `userSlice.js`.
-  Mínimo: fetch con filtros, create con validación, deactivate vs delete.
-  **Archivos:** `src/services/__tests__/userService.test.js` (nuevo),
-  `src/redux/slices/__tests__/userSlice.test.js` (nuevo)
-  **Deps:** T-013
+- [x] **T-014** Tests TDD para `userService.js` y `userSlice.js`.
+  13 tests en userService (DELETE vs PATCH, paginación, filtro `state`),
+  13 tests en userSlice (thunks, baja lógica, selectores),
+  7 tests en UserManagement (dispatch on mount, loading, error, badges).
+  **Archivos:** `src/services/__tests__/userService.test.js`,
+  `src/redux/slices/__tests__/userSlice.test.js`,
+  `src/components/containers/__tests__/UserManagement.test.jsx`
+  **Commits:** b0b04d4, c8592bf
 
 ### Grupo S2-REPORTS-SVC — Servicio de reportes
 
@@ -262,7 +269,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 - [ ] **T-054** Agregar ruta `/admin` protegida por `FunctionCatalog.SUPER_ADMIN`
   con sub-rutas: `/admin/functions`, `/admin/groups`, `/admin/sod`.
-  Reusar `SoDManagementPage` bajo `/admin/sod`.
+  Reusar `SeparationRulesPage` bajo `/admin/separation-rules`.
   **Archivos:** `src/router/AppRouter.jsx`
   **Deps:** T-052, T-053
   **UC:** UC-ADM-01, UC-ADM-02, UC-ADM-03
