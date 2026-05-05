@@ -44,13 +44,13 @@ export default function AuditPage() {
   const displayedLogs = searching && searchResults?.length ? searchResults : logs
 
   return (
-    <div className="audit-page">
+    <div className="audit-page page-container">
       <header className="page-header">
         <h1>Registro de Auditoría</h1>
         <p className="page-subtitle">Historial de actividad y cumplimiento normativo</p>
       </header>
 
-      <form className="audit-search" onSubmit={handleSearch} role="search">
+      <form className="search-bar" onSubmit={handleSearch} role="search">
         <input
           type="search"
           value={query}
@@ -77,7 +77,7 @@ export default function AuditPage() {
         <div className="loading-state" aria-busy="true">Cargando registros…</div>
       ) : (
         <div className="audit-table-wrapper">
-          <table className="audit-table" aria-label="Logs de auditoría">
+          <table className="table" aria-label="Logs de auditoría">
             <thead>
               <tr>
                 <th>Fecha</th>

@@ -22,7 +22,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="profile-page">
+    <div className="profile-page page-container">
       <header className="page-header">
         <h1>Perfil de Usuario</h1>
       </header>

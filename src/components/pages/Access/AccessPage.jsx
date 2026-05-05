@@ -44,7 +44,7 @@ export default function AccessPage() {
   }
 
   return (
-    <div className="access-page">
+    <div className="access-page page-container">
       <header className="page-header">
         <h1>Control de Acceso</h1>
         <p className="page-subtitle">Gestión de permisos y funciones del sistema</p>

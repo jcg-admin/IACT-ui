@@ -1,43 +1,18 @@
 /**
- * ProfilePage Styles
+ * ProfilePage — estilos específicos del card de perfil con avatar y grid de datos.
+ * Shared: page-container, page-header, status-badge → _pages-shared.scss
+ * Card base: .card → iact-kit/card
+ * Buttons/links: btn btn-secondary → iact-kit/button
  */
 
 .profile-page {
-  padding: 2rem;
   max-width: 800px;
-  margin: 0 auto;
-
-  .page-header {
-    margin-bottom: 2rem;
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1f2937;
-      margin: 0;
-    }
-  }
-
-  .profile-card,
-  .session-card {
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #1f2937;
-      margin: 0 0 1rem 0;
-    }
-  }
 
   .profile-card {
     display: flex;
     gap: 1.5rem;
     align-items: flex-start;
+    margin-bottom: 1.5rem;
   }
 
   .profile-avatar {
@@ -76,39 +51,14 @@
     }
   }
 
-  .status-badge {
-    display: inline-block;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
+  .session-card {
+    margin-bottom: 1.5rem;
 
-    &.status-active {
-      background: #dcfce7;
-      color: #166534;
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0 0 1rem 0;
     }
-
-    &.status-inactive {
-      background: #f3f4f6;
-      color: #6b7280;
-    }
-  }
-}
-
-.btn-secondary {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: #e5e7eb;
-  color: #374151;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #d1d5db;
   }
 }

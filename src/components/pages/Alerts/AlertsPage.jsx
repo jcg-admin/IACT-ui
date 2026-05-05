@@ -43,12 +43,12 @@ export default function AlertsPage() {
   const unreadCount = alerts?.filter((a) => a.status === 'active')?.length ?? 0
 
   return (
-    <div className="alerts-page">
+    <div className="alerts-page page-container">
       <header className="page-header">
         <h1>
           Alertas
           {unreadCount > 0 && (
-            <span className="badge-count" aria-label={`${unreadCount} alertas activas`}>
+            <span className="count-badge" aria-label={`${unreadCount} alertas activas`}>
               {unreadCount}
             </span>
           )}
@@ -70,7 +70,7 @@ export default function AlertsPage() {
             alerts.map((alert) => (
               <article key={alert.id} className={`alert-card alert-${alert.severity}`} role="listitem">
                 <div className="alert-card__header">
-                  <span className={`severity-badge severity-${alert.severity}`}>
+                  <span className={`badge badge-${alert.severity === 'critical' || alert.severity === 'high' ? 'danger' : alert.severity === 'medium' ? 'warning' : 'success'}`}>
                     {SEVERITY_LABEL[alert.severity] ?? alert.severity}
                   </span>
                   <span className="alert-card__time">
