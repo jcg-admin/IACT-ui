@@ -12,6 +12,9 @@ import accessReducer from './slices/accessSlice'
 import alertsReducer from './slices/alertsSlice'
 import auditReducer from './slices/auditSlice'
 import formReducer from './slices/formSlice'
+import reportsReducer from './slices/reportsSlice'
+import dashboardReducer from './slices/dashboardSlice'
+import errorReducer from './slices/errorSlice'
 
 const store = configureStore({
   reducer: {
@@ -23,6 +26,9 @@ const store = configureStore({
     alerts: alertsReducer,
     audit: auditReducer,
     form: formReducer,
+    reports: reportsReducer,
+    dashboard: dashboardReducer,
+    error: errorReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
