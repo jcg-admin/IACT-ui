@@ -14,6 +14,8 @@ import {
   NetworkAuthRequiredError,
   isRetryableError,
 } from '@utils/apiErrors';
+import { navigateTo } from '@utils/navigation';
+import auditService from '../../services/auditService';
 
 /**
  * Middleware para manejar errores de async thunks
@@ -40,7 +42,7 @@ export const errorHandlingMiddleware = (store) => (next) => (action) => {
     } else if (error instanceof NetworkAuthRequiredError) {
       // RFC 6585 §6: captive portal — redirect to the network login page
       if (error.loginUrl) {
-        window.location.href = error.loginUrl;
+        navigateTo(error.loginUrl);
       }
       return next(action);
     }
@@ -112,17 +114,15 @@ export const errorLoggingMiddleware = (store) => (next) => (action) => {
     const statusCode = error?.statusCode;
     const isAuthenticated = state.auth?.isAuthenticated;
     if (isAuthenticated && statusCode >= 400) {
-      import('../../services/auditService').then(({ default: auditService }) => {
-        auditService.logEvent({
-          event_type: 'HTTP_ERROR',
-          timestamp,
-          user_id: state.auth?.user?.id ?? null,
-          action: action.type,
-          status_code: statusCode,
-          error_code: error?.code ?? null,
-          message: error?.message ?? null,
-          retryable: isRetryableError(error ?? {}),
-        });
+      auditService.logEvent({
+        event_type: 'HTTP_ERROR',
+        timestamp,
+        user_id: state.auth?.user?.id ?? null,
+        action: action.type,
+        status_code: statusCode,
+        error_code: error?.code ?? null,
+        message: error?.message ?? null,
+        retryable: isRetryableError(error ?? {}),
       });
     }
   }

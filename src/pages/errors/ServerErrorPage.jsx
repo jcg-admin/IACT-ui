@@ -1,4 +1,5 @@
 import React from 'react'
+import { reloadPage } from '@utils/navigation'
 
 export default function ServerErrorPage() {
   return (
@@ -9,7 +10,7 @@ export default function ServerErrorPage() {
       <p className="error-page__description">
         Ocurrió un error inesperado. Nuestro equipo ha sido notificado.
       </p>
-      <button className="btn btn-primary" onClick={() => window.location.reload()}>
+      <button className="btn btn-primary" onClick={reloadPage}>
         Recargar página
       </button>
     </div>
