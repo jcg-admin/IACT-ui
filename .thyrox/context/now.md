@@ -4,8 +4,8 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: .thyrox/context/work/2026-05-05-21-14-32-http-error-handling
-phase: Phase 11 — TRACK/EVALUATE
+current_work: .thyrox/context/work/2026-05-05-22-24-51-ui-feedback-naming-and-loading
+phase: Phase 1 — DISCOVER
 blockers: []
 ```
 
@@ -15,35 +15,27 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**WP activo:** `2026-05-05-21-14-32-http-error-handling`
+**WP activo:** `2026-05-05-22-24-51-ui-feedback-naming-and-loading`
 
-## WP activo — http-error-handling
+## WP activo — ui-feedback-naming-and-loading
 
-Phase 11 TRACK/EVALUATE — todas las tareas completadas (27/27).
+Phase 1 DISCOVER completada. Esperando gate SP-01 (aprobación para avanzar a Phase 3 DIAGNOSE).
 
-**Completadas esta sesión:**
-- Wave 1: store.js — adminReducer, logsReducer, savedFiltersReducer + middleware wired (T-001, T-002)
-- Wave 2: 11 nuevos status codes HTTP en apiErrors.js + getErrorClassByStatusCode + isRetryableError + middleware 429/511 (T-004..T-007)
-- Wave 3: ApiErrorToast + ServerErrorBanner (OOD: SRP, bajo acoplamiento) + _feedback.scss + montados en App.jsx (T-009..T-012)
-- Wave 4: NotFoundPage, AccessDeniedPage, ServerErrorPage, ServiceUnavailablePage + _error-pages.scss + AppRouter rutas (T-014..T-019)
-- Wave 5: Remover error-banner de 9 páginas RTK + BR_008 audit logging en errorLoggingMiddleware (T-021, T-024)
-- Wave 6: docs/guides/http-error-handling.md (T-026)
+**Hallazgos clave:**
+- `ApiErrorToast` viola Clean Code cap. 2: "Toast" describe presentación, no intención
+- Dos sistemas de nombre similar pero responsabilidad distinta: `ApiErrorToast` (errores Redux) vs `ToastContext/Toast` (notificaciones UI)
+- 10 slices con `loading` local + 10 páginas con spinner manual → sin middleware de coordinación
+- `uiSlice` sin loading global; no existe `loadingSlice` ni `loadingMiddleware`
+- `LoadingSpinner` vs `AnimatedLoadingSpinner`: división implícita sin criterio documentado
 
-**Pendiente:** push final (T-027).
+**Próximo:** Phase 3 DIAGNOSE — análisis de alternativas de naming + diseño del loadingMiddleware
+
+## WP cerrado — http-error-handling ✓
+
+Completado. 27/27 tareas. TDD 140 tests. `ApiErrorToast`, `ServerErrorBanner`,
+4 error pages, `errorHandlingMiddleware`, `errorLoggingMiddleware`, `errorSlice`.
 
 ## WP en pausa — requirements-gap-analysis
 
 `2026-05-05-15-07-47-requirements-gap-analysis` — Phase 10 IMPLEMENT.
-Pendientes del WP anterior (rutas AppRouter, tests):
-- T-033: /recover-password, /change-password en AppRouter
-- T-044: navLinks dinámicos en DashboardLayout usando usePermisos()
-- T-045: /access/groups routes
-- T-054: /admin routes
-- T-069: /logs/* routes (7 sub-rutas)
-- T-091: /reports/* sub-rutas
-- T-047, T-055, T-070, T-092: tests pendientes
-
-## WP cerrado — scss-variables-audit ✓
-
-Completado. 29/29 tareas. Cero hex hardcodeados, CSS Modules eliminados,
-$orange-color como token de estado queued.
+Pendientes: T-033, T-044, T-045, T-054, T-069, T-091, T-047, T-055, T-070, T-092.
