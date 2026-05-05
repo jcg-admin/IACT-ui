@@ -96,7 +96,6 @@ module.exports = (env, argv) => {
         '@config':     path.resolve(__dirname, 'src/config'),
         '@layouts':    path.resolve(__dirname, 'src/layouts'),
         '@decorators': path.resolve(__dirname, 'src/decorators'),
-        '@hocs':       path.resolve(__dirname, 'src/hocs'),
       },
     },
 
