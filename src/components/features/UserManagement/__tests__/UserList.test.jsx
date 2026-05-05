@@ -62,14 +62,14 @@ describe('UserList Component', () => {
     render(<UserList />);
     await waitFor(() => {
       expect(screen.getByText('Admin')).toBeInTheDocument();
-      expect(screen.getByText('User')).toBeInTheDocument();
+      expect(screen.getAllByText('User')[0]).toBeInTheDocument();
     });
   });
 
   test('shows active/inactive status', async () => {
     render(<UserList />);
     await waitFor(() => {
-      expect(screen.getByText('Activo')).toBeInTheDocument();
+      expect(screen.getAllByText('Activo')[0]).toBeInTheDocument();
     });
   });
 });

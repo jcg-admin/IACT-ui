@@ -163,8 +163,7 @@ export const useExport = (data, config = {}) => {
         notify.error(result.message)
       }
 
-      // CSV is sync, so resolve immediately
-      setTimeout(() => setExporting(false), 100)
+      setExporting(false)
       return result
     } catch (error) {
       console.error('CSV export error:', error)

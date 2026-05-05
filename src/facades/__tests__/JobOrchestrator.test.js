@@ -39,12 +39,7 @@ describe('JobOrchestrator Facade', () => {
         .mockResolvedValueOnce(mockCompleted)
 
       const resultPromise = jobOrchestrator.startAndMonitor('export', { type: 'xlsx' })
-
-      // Advance timer to allow polling
-      jest.advanceTimersByTime(2000)
-      await Promise.resolve()
-      jest.advanceTimersByTime(2000)
-
+      await jest.runAllTimersAsync()
       const result = await resultPromise
 
       expect(jobService.start).toHaveBeenCalledWith('export', { type: 'xlsx' })
@@ -63,11 +58,7 @@ describe('JobOrchestrator Facade', () => {
         .mockResolvedValueOnce(mockCompleted)
 
       const resultPromise = jobOrchestrator.startAndMonitor('export', {}, { onProgress })
-
-      jest.advanceTimersByTime(2000)
-      await Promise.resolve()
-      jest.advanceTimersByTime(2000)
-
+      await jest.runAllTimersAsync()
       await resultPromise
 
       expect(onProgress).toHaveBeenCalled()
@@ -81,9 +72,7 @@ describe('JobOrchestrator Facade', () => {
       jobService.status.mockResolvedValue(mockFailed)
 
       const resultPromise = jobOrchestrator.startAndMonitor('export', {})
-
-      jest.advanceTimersByTime(2000)
-
+      await Promise.allSettled([resultPromise, jest.runAllTimersAsync()])
       await expect(resultPromise).rejects.toThrow('Job failed')
       expect(mockNotify.error).toHaveBeenCalled()
     })
@@ -104,9 +93,7 @@ describe('JobOrchestrator Facade', () => {
       jobService.download.mockResolvedValue(mockDownload)
 
       const resultPromise = jobOrchestrator.executeAndDownload('export', {})
-
-      jest.advanceTimersByTime(2000)
-
+      await jest.runAllTimersAsync()
       const result = await resultPromise
 
       expect(jobService.start).toHaveBeenCalled()
@@ -147,9 +134,7 @@ describe('JobOrchestrator Facade', () => {
       jobService.status.mockResolvedValue(mockCompleted)
 
       const resultPromise = jobOrchestrator.retryJob('job-1', 'export', {}, 1)
-
-      jest.advanceTimersByTime(2000)
-
+      await jest.runAllTimersAsync()
       const result = await resultPromise
 
       expect(result.retries).toBe(1)
@@ -161,11 +146,7 @@ describe('JobOrchestrator Facade', () => {
       jobService.start.mockRejectedValue(new Error('Service error'))
 
       const resultPromise = jobOrchestrator.retryJob('job-1', 'export', {}, 2)
-
-      // Advance through retry delays
-      jest.advanceTimersByTime(1000) // First retry delay
-      jest.advanceTimersByTime(2000) // Second retry delay
-
+      await Promise.allSettled([resultPromise, jest.runAllTimersAsync()])
       await expect(resultPromise).rejects.toThrow('failed after 2 retries')
       expect(mockNotify.error).toHaveBeenCalled()
     })

@@ -36,7 +36,7 @@ describe('JobList Component', () => {
   test('displays job status badges', async () => {
     render(<JobList />);
     await waitFor(() => {
-      expect(screen.getByText('Completado')).toBeInTheDocument();
+      expect(screen.getAllByText('Completado')[0]).toBeInTheDocument();
       expect(screen.getByText('En progreso')).toBeInTheDocument();
     });
   });

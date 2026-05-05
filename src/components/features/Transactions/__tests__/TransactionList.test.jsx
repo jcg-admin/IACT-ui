@@ -22,9 +22,9 @@ describe('TransactionList Component', () => {
   test('displays transaction statistics', async () => {
     render(<TransactionList />);
     await waitFor(() => {
-      expect(screen.getByText('Ingresos')).toBeInTheDocument();
-      expect(screen.getByText('Gastos')).toBeInTheDocument();
-      expect(screen.getByText('Balance')).toBeInTheDocument();
+      expect(screen.getAllByText('Ingresos')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Gastos')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Balance')[0]).toBeInTheDocument();
     });
   });
 

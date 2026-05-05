@@ -54,8 +54,9 @@ describe('MainLayout', () => {
       </MainLayout>
     );
 
-    const placeholder = await screen.findByTestId('menu-placeholder');
-    expect(placeholder).toHaveTextContent(/Menu no disponible/);
+    await waitFor(() => {
+      expect(screen.getByTestId('menu-placeholder')).toHaveTextContent(/Menu no disponible/);
+    });
   });
 
   it('renders children content', () => {

@@ -86,14 +86,14 @@ function JobList() {
       label: 'Progreso',
       render: (value) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
+          <div className="progress-bar-track" style={{
             flex: 1,
             height: '8px',
             backgroundColor: '#1f2937',
             borderRadius: '4px',
             overflow: 'hidden',
           }}>
-            <div style={{
+            <div className="progress-bar-fill" style={{
               height: '100%',
               width: `${value}%`,
               backgroundColor: '#0ea5e9',

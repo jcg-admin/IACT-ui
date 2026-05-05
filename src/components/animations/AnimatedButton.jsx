@@ -163,8 +163,7 @@ export default function AnimatedButton({
   )
 }
 
-/**
- * Export utilities for custom use
- */
+export const buttonVariants = getButtonVariants(false)
+
 export { getButtonVariants, getPrefersReducedMotion }
 
