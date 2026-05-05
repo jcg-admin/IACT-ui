@@ -89,9 +89,10 @@ class AccessService {
     }
 
     /**
-     * Validar SoD en frontend (llamar a backend)
+     * Valida reglas de separación de funciones antes de asignar (UC-043 / CNST-005).
+     * Equivalente frontend de validate_separation_rules del backend (v5.2.1).
      */
-    async validateSoD(userId, functionId) {
+    async validateSeparationRules(userId, functionId) {
         const response = await fetch(`${API_BASE_URL}/access/validate-sod`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
@@ -102,7 +103,7 @@ class AccessService {
         });
 
         if (!response.ok) {
-            throw new Error('SoD validation failed');
+            throw new Error('Separation rules validation failed');
         }
 
         return response.json();

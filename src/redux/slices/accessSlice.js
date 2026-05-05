@@ -63,12 +63,12 @@ export const revokeFunction = createAsyncThunk(
     }
 );
 
-export const validateSoD = createAsyncThunk(
-    'access/validateSoD',
-    // catalogId = numeric PK of the function being validated for SoD conflicts.
-    async ({ userId, catalogId }, { rejectWithValue }) => {
+export const validateSeparationRules = createAsyncThunk(
+    'access/validateSeparationRules',
+    // functionPk: PK de la función en el catálogo RBAC que se quiere asignar (UC-043).
+    async ({ userId, functionPk }, { rejectWithValue }) => {
         try {
-            const response = await accessService.validateSoD(userId, catalogId);
+            const response = await accessService.validateSeparationRules(userId, functionPk);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -95,7 +95,7 @@ export const fetchAccessAudit = createAsyncThunk(
 const initialState = {
     functions: [],
     userPermissions: {},
-    sodConflicts: [],
+    separationConflicts: [],
     auditLog: [],
     loading: false,
     error: null,
@@ -198,18 +198,18 @@ const accessSlice = createSlice({
             });
 
         /**
-         * Validate SoD
+         * Validate Separation Rules
          */
         builder
-            .addCase(validateSoD.pending, (state) => {
+            .addCase(validateSeparationRules.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(validateSoD.fulfilled, (state, action) => {
+            .addCase(validateSeparationRules.fulfilled, (state, action) => {
                 state.loading = false;
-                state.sodConflicts = action.payload.conflicts || [];
+                state.separationConflicts = action.payload.conflicts || [];
             })
-            .addCase(validateSoD.rejected, (state, action) => {
+            .addCase(validateSeparationRules.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
@@ -239,7 +239,7 @@ const accessSlice = createSlice({
 
 export const selectFunctions = (state) => state.access.functions;
 export const selectUserPermissions = (state) => state.access.userPermissions;
-export const selectSoDConflicts = (state) => state.access.sodConflicts;
+export const selectSeparationConflicts = (state) => state.access.separationConflicts;
 export const selectAuditLog = (state) => state.access.auditLog;
 export const selectLoading = (state) => state.access.loading;
 export const selectError = (state) => state.access.error;

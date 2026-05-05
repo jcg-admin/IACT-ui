@@ -4,7 +4,7 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: .thyrox/context/work/2026-05-05-15-07-47-requirements-gap-analysis
+current_work: .thyrox/context/work/2026-05-05-16-31-59-rbac-naming-refactor
 phase: Phase 8 — PLAN EXECUTION
 blockers: []
 ```
@@ -44,3 +44,4 @@ faltan por implementar en IACT-ui.
 Gap report en:
 `discover/requirements-gap-analysis.md`
 
+stage_sync_required: true

@@ -37,7 +37,7 @@ export const FunctionCatalog = {
     VIEW_ACCESS:        'sistema.administracion.acceso.ver',
     MANAGE_ACCESS:      'sistema.administracion.acceso.gestionar',
     ASSIGN_FUNCTIONS:   'sistema.administracion.acceso.asignar',
-    MANAGE_SOD:         'sistema.administracion.acceso.sod',
+    MANAGE_SEPARATION_RULES: 'sistema.administracion.acceso.sod',
 
     // Audit (ITER6)
     VIEW_AUDIT:         'sistema.auditoria.logs.ver',

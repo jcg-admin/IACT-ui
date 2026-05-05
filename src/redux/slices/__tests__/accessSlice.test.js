@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import accessReducer, {
     assignFunction,
     revokeFunction,
-    validateSoD,
+    validateSeparationRules,
     fetchAllFunctions,
     fetchUserPermissions,
     clearError,
@@ -12,7 +12,7 @@ import accessReducer, {
     selectSuccess,
     selectFunctions,
     selectUserPermissions,
-    selectSoDConflicts,
+    selectSeparationConflicts,
 } from '../accessSlice';
 import accessService from '../../../services/accessService';
 
@@ -33,7 +33,7 @@ describe('accessSlice — initial state', () => {
         expect(state.success).toBe(false);
         expect(state.functions).toEqual([]);
         expect(state.userPermissions).toEqual({});
-        expect(state.sodConflicts).toEqual([]);
+        expect(state.separationConflicts).toEqual([]);
     });
 });
 
@@ -86,20 +86,20 @@ describe('revokeFunction thunk — catalogId invariant', () => {
     });
 });
 
-describe('validateSoD thunk — catalogId invariant', () => {
-    it('passes catalogId to accessService.validateSoD', async () => {
-        accessService.validateSoD.mockResolvedValue({ conflicts: [] });
+describe('validateSeparationRules thunk — functionPk invariant', () => {
+    it('pasa functionPk a accessService.validateSeparationRules', async () => {
+        accessService.validateSeparationRules.mockResolvedValue({ conflicts: [] });
         const store = buildStore();
-        await store.dispatch(validateSoD({ userId: 3, catalogId: 15 }));
-        expect(accessService.validateSoD).toHaveBeenCalledWith(3, 15);
+        await store.dispatch(validateSeparationRules({ userId: 3, functionPk: 15 }));
+        expect(accessService.validateSeparationRules).toHaveBeenCalledWith(3, 15);
     });
 
-    it('stores conflicts in state on fulfilled', async () => {
+    it('almacena conflictos en separationConflicts al completarse', async () => {
         const conflicts = [{ rule: 'SOD-001' }];
-        accessService.validateSoD.mockResolvedValue({ conflicts });
+        accessService.validateSeparationRules.mockResolvedValue({ conflicts });
         const store = buildStore();
-        await store.dispatch(validateSoD({ userId: 1, catalogId: 5 }));
-        expect(selectSoDConflicts(store.getState())).toEqual(conflicts);
+        await store.dispatch(validateSeparationRules({ userId: 1, functionPk: 5 }));
+        expect(selectSeparationConflicts(store.getState())).toEqual(conflicts);
     });
 });
 
