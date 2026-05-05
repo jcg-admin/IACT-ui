@@ -34,6 +34,7 @@
       "nombre": "dashboards",
       "nombre_completo": "sistema.vistas.dashboards",
       "dominio": "vistas",
+      "icono": "dashboard",
       "orden_menu": 10
     },
     {
@@ -41,6 +42,7 @@
       "nombre": "llamadas",
       "nombre_completo": "sistema.operaciones.llamadas",
       "dominio": "operaciones",
+      "icono": "phone",
       "orden_menu": 20
     },
     {
@@ -48,6 +50,7 @@
       "nombre": "tickets",
       "nombre_completo": "sistema.operaciones.tickets",
       "dominio": "operaciones",
+      "icono": "ticket",
       "orden_menu": 30
     },
     {
@@ -55,6 +58,7 @@
       "nombre": "clientes",
       "nombre_completo": "sistema.operaciones.clientes",
       "dominio": "operaciones",
+      "icono": "people",
       "orden_menu": 40
     },
     {
@@ -62,6 +66,7 @@
       "nombre": "metricas",
       "nombre_completo": "sistema.analisis.metricas",
       "dominio": "analisis",
+      "icono": "bar_chart",
       "orden_menu": 60
     }
   ],

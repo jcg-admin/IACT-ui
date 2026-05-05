@@ -21,4 +21,11 @@ describe('useMockMetrics', () => {
     expect(result.current.summary.domainsUsingMock).toBe(1);
     expect(result.current.metrics.calls).toEqual({ api: 0, mock: 1 });
   });
+
+  it('handles empty metrics without crashing', () => {
+    const { result } = renderHook(() => useMockMetrics());
+
+    expect(result.current.summary.totalDomains).toBe(0);
+    expect(result.current.summary.domainsUsingMock).toBe(0);
+  });
 });

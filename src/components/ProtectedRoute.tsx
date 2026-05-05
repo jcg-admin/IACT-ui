@@ -80,23 +80,18 @@ export function ProtectedRoute({
 }: ProtectedRouteProps): React.ReactElement | null {
   const { hasPermission, loading } = usePermisos();
   const location = useLocation();
-
-  // Estado de carga
-  if (loading) {
-    return <>{loadingComponent}</>;
-  }
-
-  // Verificar permiso
   const granted = hasPermission(permission);
 
-  // Callback de analytics
   React.useEffect(() => {
     if (!loading && !granted && onAccessDenied) {
       onAccessDenied(permission, location.pathname);
     }
   }, [granted, loading, permission, location.pathname, onAccessDenied]);
 
-  // Redirigir si no tiene permiso
+  if (loading) {
+    return <>{loadingComponent}</>;
+  }
+
   if (!granted) {
     return (
       <Navigate
@@ -148,11 +143,6 @@ export function ProtectedRouteAny({
 }: ProtectedRouteAnyProps): React.ReactElement | null {
   const { hasPermission, loading } = usePermisos();
   const location = useLocation();
-
-  if (loading) {
-    return <>{loadingComponent}</>;
-  }
-
   const granted = permissions.some(p => hasPermission(p));
 
   React.useEffect(() => {
@@ -160,6 +150,10 @@ export function ProtectedRouteAny({
       onAccessDenied(permissions.join(', '), location.pathname);
     }
   }, [granted, loading, permissions, location.pathname, onAccessDenied]);
+
+  if (loading) {
+    return <>{loadingComponent}</>;
+  }
 
   if (!granted) {
     return (
@@ -212,11 +206,6 @@ export function ProtectedRouteAll({
 }: ProtectedRouteAllProps): React.ReactElement | null {
   const { hasPermission, loading } = usePermisos();
   const location = useLocation();
-
-  if (loading) {
-    return <>{loadingComponent}</>;
-  }
-
   const granted = permissions.every(p => hasPermission(p));
 
   React.useEffect(() => {
@@ -224,6 +213,10 @@ export function ProtectedRouteAll({
       onAccessDenied(permissions.join(', '), location.pathname);
     }
   }, [granted, loading, permissions, location.pathname, onAccessDenied]);
+
+  if (loading) {
+    return <>{loadingComponent}</>;
+  }
 
   if (!granted) {
     return (

@@ -92,16 +92,8 @@ export function PermissionGate({
   onAccessGranted,
 }: PermissionGateProps): React.ReactElement | null {
   const { hasPermission, loading } = usePermisos();
-
-  // Estado de carga
-  if (loading) {
-    return <>{loadingComponent}</>;
-  }
-
-  // Verificar permiso
   const granted = hasPermission(permission);
 
-  // Callback de analytics
   React.useEffect(() => {
     if (!loading) {
       if (granted && onAccessGranted) {
@@ -112,7 +104,10 @@ export function PermissionGate({
     }
   }, [granted, loading, permission, onAccessGranted, onAccessDenied]);
 
-  // Mostrar contenido o fallback
+  if (loading) {
+    return <>{loadingComponent}</>;
+  }
+
   if (granted) {
     return <>{children}</>;
   }
@@ -155,11 +150,6 @@ export function PermissionGateAny({
   onAccessGranted,
 }: PermissionGateAnyProps): React.ReactElement | null {
   const { hasPermission, loading } = usePermisos();
-
-  if (loading) {
-    return <>{loadingComponent}</>;
-  }
-
   const granted = permissions.some(p => hasPermission(p));
 
   React.useEffect(() => {
@@ -171,6 +161,10 @@ export function PermissionGateAny({
       }
     }
   }, [granted, loading, permissions, onAccessGranted, onAccessDenied]);
+
+  if (loading) {
+    return <>{loadingComponent}</>;
+  }
 
   if (granted) {
     return <>{children}</>;
@@ -215,11 +209,6 @@ export function PermissionGateAll({
   onAccessGranted,
 }: PermissionGateAllProps): React.ReactElement | null {
   const { hasPermission, loading } = usePermisos();
-
-  if (loading) {
-    return <>{loadingComponent}</>;
-  }
-
   const granted = permissions.every(p => hasPermission(p));
 
   React.useEffect(() => {
@@ -231,6 +220,10 @@ export function PermissionGateAll({
       }
     }
   }, [granted, loading, permissions, onAccessGranted, onAccessDenied]);
+
+  if (loading) {
+    return <>{loadingComponent}</>;
+  }
 
   if (granted) {
     return <>{children}</>;

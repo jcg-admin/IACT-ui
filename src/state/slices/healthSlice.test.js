@@ -28,6 +28,14 @@ describe('healthSlice', () => {
     expect(state.error).toBeNull();
   });
 
+  it('does not clear error when setChecking(false)', () => {
+    const withError = reducer(undefined, setError('previous error'));
+    const state = reducer(withError, setChecking(false));
+
+    expect(state.isChecking).toBe(false);
+    expect(state.error).toBe('previous error');
+  });
+
   it('stores health result and metadata', () => {
     const result = {
       status: 'ok',
@@ -41,6 +49,15 @@ describe('healthSlice', () => {
     expect(state.status).toBe('ok');
     expect(state.lastChecked).toBe(result.checkedAt);
     expect(state.source).toBe('api');
+    expect(state.error).toBeNull();
+  });
+
+  it('uses fallback values when setResult fields are missing', () => {
+    const state = reducer(undefined, setResult({}));
+
+    expect(state.status).toBe('unknown');
+    expect(state.lastChecked).toBeNull();
+    expect(state.source).toBe('unknown');
     expect(state.error).toBeNull();
   });
 
