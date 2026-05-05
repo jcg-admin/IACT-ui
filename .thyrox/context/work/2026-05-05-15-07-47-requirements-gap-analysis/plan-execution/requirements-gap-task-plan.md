@@ -173,7 +173,7 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-030
   **UC:** UC-AUTH-04
 
-- [ ] **T-033** Registrar rutas `/recover-password` y `/change-password` en
+- [x] **T-033** Registrar rutas `/recover-password` y `/change-password` en
   `AppRouter.jsx`. El link "Forgot Password" de `LoginForm` debe navegar a `/recover-password`.
   **Archivos:** `src/router/AppRouter.jsx`,
   `src/components/presentational/LoginForm.jsx`
@@ -214,14 +214,14 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-042
   **UC:** UC-PERM-06
 
-- [ ] **T-044** Hacer navLinks dinámicos en `DashboardLayout`: leer permisos
+- [x] **T-044** Hacer navLinks dinámicos en `DashboardLayout`: leer permisos
   del usuario vía `usePermisos` y filtrar la lista de nav según permisos efectivos.
   Cada navLink tiene un `permission` requerido; si el usuario no lo tiene, no aparece.
   **Archivos:** `src/layouts/DashboardLayout/` (componente principal)
   **Deps:** T-001
   **UC:** UC-PERM-08
 
-- [ ] **T-045** Registrar rutas `/access/groups` y `/access/groups/composition`
+- [x] **T-045** Registrar rutas `/access/groups` y `/access/groups/composition`
   en la sub-router de access. Agregar entradas en el nav de access.
   **Archivos:** `src/router/AppRouter.jsx` o sub-router de access
   **Deps:** T-041, T-043
@@ -232,7 +232,7 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/redux/slices/accessSlice.js`
   **Deps:** T-042
 
-- [ ] **T-047** Agregar tests para `GroupManagementPage` y `GroupCompositionPage`.
+- [x] **T-047** Agregar tests para `GroupManagementPage` y `GroupCompositionPage`.
   **Archivos:** `src/pages/access/__tests__/GroupManagementPage.test.jsx` (nuevo),
   `src/pages/access/__tests__/GroupCompositionPage.test.jsx` (nuevo)
   **Deps:** T-045
@@ -267,14 +267,14 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-051
   **UC:** UC-ADM-03
 
-- [ ] **T-054** Agregar ruta `/admin` protegida por `FunctionCatalog.SUPER_ADMIN`
+- [x] **T-054** Agregar ruta `/admin` protegida por `FunctionCatalog.SUPER_ADMIN`
   con sub-rutas: `/admin/functions`, `/admin/groups`, `/admin/sod`.
   Reusar `SeparationRulesPage` bajo `/admin/separation-rules`.
   **Archivos:** `src/router/AppRouter.jsx`
   **Deps:** T-052, T-053
   **UC:** UC-ADM-01, UC-ADM-02, UC-ADM-03
 
-- [ ] **T-055** Agregar tests para `FunctionCatalogPage` y `AGRCatalogPage`.
+- [x] **T-055** Agregar tests para `FunctionCatalogPage` y `AGRCatalogPage`.
   **Archivos:** `src/pages/admin/__tests__/FunctionCatalogPage.test.jsx` (nuevo),
   `src/pages/admin/__tests__/AGRCatalogPage.test.jsx` (nuevo)
   **Deps:** T-054
@@ -350,14 +350,14 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-061, T-067
   **UC:** UC-LOG-07
 
-- [ ] **T-069** Registrar ruta `/logs` con sub-rutas en `AppRouter.jsx`:
+- [x] **T-069** Registrar ruta `/logs` con sub-rutas en `AppRouter.jsx`:
   `/logs`, `/logs/etl`, `/logs/search`, `/logs/export`,
   `/logs/infra`, `/logs/status`, `/logs/metrics`.
   Proteger con `FunctionCatalog.VIEW_LOGS`. Agregar entrada en navLinks.
   **Archivos:** `src/router/AppRouter.jsx`
   **Deps:** T-062..T-068
 
-- [ ] **T-070** Agregar tests para `LogsPage`, `LogSearchPage`, `SystemStatusPage`.
+- [x] **T-070** Agregar tests para `LogsPage`, `LogSearchPage`, `SystemStatusPage`.
   **Archivos:** `src/pages/logs/__tests__/LogsPage.test.jsx` (nuevo),
   `src/pages/logs/__tests__/LogSearchPage.test.jsx` (nuevo),
   `src/pages/logs/__tests__/SystemStatusPage.test.jsx` (nuevo)
@@ -442,13 +442,13 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-082..T-087
   **UC:** UC-RPT-11
 
-- [ ] **T-091** Registrar sub-rutas de reportes en `/reports`:
+- [x] **T-091** Registrar sub-rutas de reportes en `/reports`:
   `/reports/agents`, `/reports/queues`, `/reports/campaigns`,
   `/reports/transfers`, `/reports/ivr-menus`, `/reports/unique-clients`.
   **Archivos:** `src/router/AppRouter.jsx`
   **Deps:** T-082..T-087
 
-- [ ] **T-092** Agregar tests para `AgentsReportPage`, `QueuesReportPage`,
+- [x] **T-092** Agregar tests para `AgentsReportPage`, `QueuesReportPage`,
   `ReportFilters`, `ReportTable`.
   **Archivos:** `src/pages/reports/__tests__/AgentsReportPage.test.jsx` (nuevo),
   `src/pages/reports/__tests__/QueuesReportPage.test.jsx` (nuevo),

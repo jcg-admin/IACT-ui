@@ -3,19 +3,22 @@
  * Configuración principal de rutas de la aplicación
  *
  * Rutas:
- * - /login            : LoginPage (pública; redirige a /dashboard si hay sesión)
- * - /                 : → /dashboard
- * - /dashboard        : Dashboard (requiere VIEW_DASHBOARD)
- * - /users            : Gestión de usuarios (requiere VIEW_USERS)
- * - /reports          : Analytics / reportes (requiere VIEW_REPORTS)
- * - /profile          : Perfil de usuario
- * - /profile/sessions : Gestión de sesiones activas
- * - /settings         : Configuración (requiere VIEW_CONFIG)
- * - /access/*         : Control de acceso ITER4 (requiere VIEW_ACCESS)
- * - /audit/*          : Auditoría ITER6 (requiere VIEW_AUDIT)
- * - /alerts/*         : Alertas ITER5 (requiere VIEW_ALERTS)
- * - /access-denied    : Página de acceso denegado
- * - *                 : 404 Not Found
+ * - /login                        : LoginPage (pública)
+ * - /recover-password             : RecoverPasswordPage (pública)
+ * - /change-password              : ChangePasswordPage (requiere sesión)
+ * - /                             : → /dashboard
+ * - /dashboard                    : Dashboard (VIEW_DASHBOARD)
+ * - /users                        : Gestión de usuarios (VIEW_USERS)
+ * - /reports/*                    : Reportes IVR (VIEW_REPORTS)
+ * - /profile, /profile/sessions   : Perfil de usuario
+ * - /settings                     : Configuración (VIEW_CONFIG)
+ * - /access/*                     : Control de acceso (VIEW_ACCESS)
+ * - /audit/*                      : Auditoría (VIEW_AUDIT)
+ * - /alerts/*                     : Alertas (VIEW_ALERTS)
+ * - /logs/*                       : Observabilidad (VIEW_LOGS)
+ * - /admin/*                      : Administración (SUPER_ADMIN)
+ * - /access-denied                : Página de acceso denegado
+ * - *                             : 404 Not Found
  */
 
 import React, { lazy, Suspense } from 'react'
@@ -27,6 +30,7 @@ import { PageTransition, AnimatedLoadingSpinner } from '@components/animations'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { FunctionCatalog } from '../permissions/catalog'
 import { selectIsAuthenticated } from '@redux/selectors'
+import { usePermisos } from '../hooks/usePermisos'
 
 // ── Lazy imports ────────────────────────────────────────────────────────────
 
@@ -67,6 +71,55 @@ const AccessDeniedPage = lazy(() => import('@pages/errors/AccessDeniedPage'))
 const ServerErrorPage = lazy(() => import('@pages/errors/ServerErrorPage'))
 const ServiceUnavailablePage = lazy(() => import('@pages/errors/ServiceUnavailablePage'))
 
+// ── Auth pages ───────────────────────────────────────────────────────────────
+const RecoverPasswordPage = lazy(() => import('@pages/auth/RecoverPasswordPage'))
+const ChangePasswordPage = lazy(() => import('@pages/auth/ChangePasswordPage'))
+
+// ── Logs pages ───────────────────────────────────────────────────────────────
+const LogsPage = lazy(() => import('@pages/logs/LogsPage'))
+const ETLLogsPage = lazy(() => import('@pages/logs/ETLLogsPage'))
+const LogSearchPage = lazy(() => import('@pages/logs/LogSearchPage'))
+const LogExportPage = lazy(() => import('@pages/logs/LogExportPage'))
+const InfraLogsPage = lazy(() => import('@pages/logs/InfraLogsPage'))
+const SystemStatusPage = lazy(() => import('@pages/logs/SystemStatusPage'))
+const PerformanceMetricsPage = lazy(() => import('@pages/logs/PerformanceMetricsPage'))
+
+// ── Reports pages ────────────────────────────────────────────────────────────
+const AgentsReportPage = lazy(() => import('@pages/reports/AgentsReportPage'))
+const QueuesReportPage = lazy(() => import('@pages/reports/QueuesReportPage'))
+const CampaignsReportPage = lazy(() => import('@pages/reports/CampaignsReportPage'))
+const TransfersReportPage = lazy(() => import('@pages/reports/TransfersReportPage'))
+const IVRMenusReportPage = lazy(() => import('@pages/reports/IVRMenusReportPage'))
+const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsReportPage'))
+
+// ── Access pages ─────────────────────────────────────────────────────────────
+const GroupManagementPage = lazy(() => import('@pages/access/GroupManagementPage'))
+const GroupCompositionPage = lazy(() => import('@pages/access/GroupCompositionPage'))
+
+// ── Admin pages ──────────────────────────────────────────────────────────────
+const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalogPage'))
+const AGRCatalogPage = lazy(() => import('@pages/admin/AGRCatalogPage'))
+
+// ── Nav config ───────────────────────────────────────────────────────────────
+
+const ALL_NAV_LINKS = [
+  { id: 1, label: 'Dashboard',     icon: 'grid-alt',  path: '/dashboard',  permission: FunctionCatalog.VIEW_DASHBOARD },
+  { id: 2, label: 'Usuarios',      icon: 'users',     path: '/users',      permission: FunctionCatalog.VIEW_USERS },
+  { id: 3, label: 'Reportes',      icon: 'chart-bar', path: '/reports',    permission: FunctionCatalog.VIEW_REPORTS },
+  { id: 4, label: 'Acceso',        icon: 'lock',      path: '/access',     permission: FunctionCatalog.VIEW_ACCESS },
+  { id: 5, label: 'Auditoría',     icon: 'history',   path: '/audit',      permission: FunctionCatalog.VIEW_AUDIT },
+  { id: 6, label: 'Alertas',       icon: 'bell',      path: '/alerts',     permission: FunctionCatalog.VIEW_ALERTS },
+  { id: 7, label: 'Logs',          icon: 'terminal',  path: '/logs',       permission: FunctionCatalog.VIEW_LOGS },
+  { id: 8, label: 'Admin',         icon: 'shield',    path: '/admin',      permission: FunctionCatalog.SUPER_ADMIN },
+  { id: 9, label: 'Ajustes',       icon: 'cog',       path: '/settings',   permission: FunctionCatalog.VIEW_CONFIG },
+]
+
+function useFilteredNavLinks() {
+  const { hasPermission, loading } = usePermisos()
+  if (loading) return ALL_NAV_LINKS.slice(0, 1)
+  return ALL_NAV_LINKS.filter(link => hasPermission(link.permission))
+}
+
 // ── Guards ───────────────────────────────────────────────────────────────────
 
 /** Redirige a /dashboard si el usuario ya tiene sesión activa. */
@@ -100,11 +153,12 @@ const RouteLoadingFallback = () => (
 
 function RoutesWithTransitions() {
   const location = useLocation()
+  const navLinks = useFilteredNavLinks()
 
   return (
     <PageTransition key={location.pathname}>
       <Routes>
-        {/* Ruta pública: login */}
+        {/* Rutas públicas */}
         <Route
           path="/login"
           element={
@@ -115,21 +169,23 @@ function RoutesWithTransitions() {
             </PublicOnlyRoute>
           }
         />
+        <Route
+          path="/recover-password"
+          element={
+            <PublicOnlyRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <RecoverPasswordPage />
+              </Suspense>
+            </PublicOnlyRoute>
+          }
+        />
 
         {/* Rutas protegidas dentro del layout principal */}
         <Route
           element={
             <AuthGuard>
               <DashboardLayout
-                navLinks={[
-                  { id: 1, label: 'Dashboard',  icon: 'grid-alt', path: '/dashboard' },
-                  { id: 2, label: 'Usuarios',    icon: 'users',    path: '/users' },
-                  { id: 3, label: 'Reportes',    icon: 'chart-bar',path: '/reports' },
-                  { id: 4, label: 'Acceso',      icon: 'lock',     path: '/access' },
-                  { id: 5, label: 'Auditoría',   icon: 'history',  path: '/audit' },
-                  { id: 6, label: 'Alertas',     icon: 'bell',     path: '/alerts' },
-                  { id: 7, label: 'Ajustes',     icon: 'cog',      path: '/settings' },
-                ]}
+                navLinks={navLinks}
                 userInfo={{
                   name: 'John Doe',
                   email: 'john.doe@example.com',
@@ -238,6 +294,198 @@ function RoutesWithTransitions() {
                 </Suspense>
               </ProtectedRoute>
             }
+          />
+
+          {/* Cambio de contraseña — requiere sesión (UC-AUTH-04) */}
+          <Route
+            path="/change-password"
+            element={
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <ChangePasswordPage />
+              </Suspense>
+            }
+          />
+
+          {/* Acceso — grupos y composición (UC-PERM-05, UC-PERM-06) */}
+          <Route
+            path="/access/groups"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_GROUPS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <GroupManagementPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/access/groups/composition"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_GROUPS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <GroupCompositionPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Observabilidad — logs (UC-LOG-01..07) */}
+          <Route
+            path="/logs"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <LogsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/etl"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ETLLogsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/search"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <LogSearchPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/export"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <LogExportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/infra"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <InfraLogsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/status"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SystemStatusPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/metrics"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <PerformanceMetricsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Reportes IVR — sub-rutas (UC-RPT-*) */}
+          <Route
+            path="/reports/agents"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AgentsReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/queues"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <QueuesReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/campaigns"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <CampaignsReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/transfers"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <TransfersReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/ivr-menus"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <IVRMenusReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/unique-clients"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <UniqueClientsReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Administración del sistema — SUPER_ADMIN (UC-ADM-01..03) */}
+          <Route
+            path="/admin/functions"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.SUPER_ADMIN}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <FunctionCatalogPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/groups"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.SUPER_ADMIN}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AGRCatalogPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={<Navigate to="/admin/functions" replace />}
           />
 
           <Route path="/access-denied" element={<AccessDeniedPage />} />
