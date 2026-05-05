@@ -115,7 +115,13 @@ module.exports = (env, argv) => {
             isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             'css-loader',
             'postcss-loader',
-            'sass-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                // Auto-inject variables so every .scss file can use $primary-color, $spacing-*, etc.
+                additionalData: `@import "${path.resolve(__dirname, 'src/styles/abstracts/_variables.scss')}";`,
+              },
+            },
           ],
         },
         {

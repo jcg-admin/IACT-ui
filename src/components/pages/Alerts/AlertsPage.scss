@@ -1,66 +1,63 @@
 /**
- * AlertsPage — estilos específicos de alert-card con color por severidad.
- * Shared: page-container, page-header, count-badge, loading-state,
- *         empty-state, error-banner → _pages-shared.scss
- * Severity badges: .badge .badge-danger/warning/success → iact-kit/badge
- * Buttons: btn btn-secondary → iact-kit/button
+ * AlertsPage — alert-card con color semántico por severidad.
+ * Variables disponibles vía sass-loader additionalData.
  */
 
 .alerts-page {
   .alerts-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: $spacing-md;
   }
 
   .alert-card {
     background: white;
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 1.25rem;
-    border-left: 4px solid #d1d5db;
+    padding: $spacing-lg;
+    border-left: 4px solid $border-color;
 
-    &.alert-critical { border-left-color: #dc2626; }
-    &.alert-high     { border-left-color: #f97316; }
-    &.alert-medium   { border-left-color: #eab308; }
-    &.alert-low      { border-left-color: #22c55e; }
+    &.alert-critical { border-left-color: $error-color; }
+    &.alert-high     { border-left-color: darken($warning-color, 10%); }
+    &.alert-medium   { border-left-color: $warning-color; }
+    &.alert-low      { border-left-color: $success-color; }
 
     &__header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: $spacing-sm;
     }
 
     &__title {
       font-size: 1rem;
       font-weight: 600;
-      color: #111827;
+      color: $secondary-color;
       margin: 0 0 0.375rem 0;
     }
 
     &__message {
       font-size: 0.875rem;
-      color: #6b7280;
-      margin: 0 0 0.75rem 0;
+      color: $text-muted;
+      margin: 0 0 $spacing-sm 0;
     }
 
     &__time {
       font-size: 0.75rem;
-      color: #9ca3af;
+      color: $text-secondary;
     }
   }
 
   .subscriptions-section {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $border-color;
 
     h2 {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #1f2937;
-      margin: 0 0 1rem 0;
+      color: $secondary-color;
+      margin: 0 0 $spacing-md 0;
     }
   }
 }

@@ -1,9 +1,6 @@
 /**
- * AuditPage — estilos específicos del wrapper scrollable de la tabla.
- * Shared: page-container, page-header, search-bar, loading-state,
- *         empty-state, error-banner, status-badge → _pages-shared.scss
- * Table: .table → iact-kit/table
- * Buttons: btn btn-primary/secondary → iact-kit/button
+ * AuditPage — contenedor scrollable de la tabla.
+ * Variables disponibles vía sass-loader additionalData.
  */
 
 .audit-page {

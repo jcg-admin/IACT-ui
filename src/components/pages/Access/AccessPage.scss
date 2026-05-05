@@ -1,17 +1,16 @@
 /**
- * AccessPage — estilos específicos de layout de pestañas.
- * Shared: page-container, page-header, error-banner → _pages-shared.scss
- * Buttons: btn btn-primary/secondary → iact-kit/button
+ * AccessPage — layout de pestañas.
+ * Variables disponibles vía sass-loader additionalData.
  */
 
 .access-page {
   .tab-nav {
     display: flex;
-    border-bottom: 2px solid #e5e7eb;
-    margin-bottom: 2rem;
+    border-bottom: 2px solid $border-color;
+    margin-bottom: $spacing-xl;
 
     .tab-btn {
-      padding: 0.75rem 1.5rem;
+      padding: $spacing-sm $spacing-lg;
       background: none;
       border: none;
       border-bottom: 2px solid transparent;
@@ -19,16 +18,16 @@
       cursor: pointer;
       font-size: 0.875rem;
       font-weight: 500;
-      color: #6b7280;
+      color: $text-muted;
       transition: color 0.2s, border-color 0.2s;
 
       &:hover {
-        color: #374151;
+        color: $secondary-color;
       }
 
       &.active {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
+        color: $primary-color;
+        border-bottom-color: $primary-color;
       }
     }
   }
