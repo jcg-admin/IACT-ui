@@ -4,8 +4,8 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: null
-phase: null
+current_work: 2026-05-05-14-08-34-rbac-access-alignment
+phase: Phase 10 — EXECUTE
 blockers: []
 ```
 
@@ -14,19 +14,26 @@ blockers: []
 ## Contexto actual
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
-**Branch:** `feature/project-structure-analysis`
-**WP activo:** ninguno (todos cerrados)
+**Branch:** `claude/project-analysis-N9IkV`
+**WP activo:** `2026-05-05-14-08-34-rbac-access-alignment`
 
-## Resumen de la última sesión (2026-05-05)
+## WP actual (2026-05-05)
 
-4 WPs completados y pusheados en esta sesión:
+**Objetivo:** Alinear módulo RBAC/Access con decisiones de diseño CIA-RBAC-002/CNST-033.
 
-1. `registry-audit-iact-ui` — agents react-expert, webpack-expert, redux-expert actualizados para IACT-UI
-2. `root-docs-reorganization` — 75 archivos raíz → docs/, webpack.config.js unificado
-3. `registry-skills-sync` — registry YMLs sincronizados con agents instalados
-4. `test-failures-fix` — 37 suites fallidas → 97/97 pasando (771/771 tests ✓)
+**Implementado (independiente del backend):**
+- H-01/H-02 — `FunctionSelector.jsx`: SoD predicados sobre codenames + categorías en inglés
+- H-04 — `accessSlice.js`: `functionId` → `catalogId` con comentario de invariante
+- H-05 — `accessService.js`: `groupers` → `function_groups`, endpoints actualizados
+- H-06 — `AppRouter.jsx`: ProtectedRoute + rutas módulos ITER4/5/6 + FunctionCatalog
+
+**Pendiente (requiere backend Django):**
+- `permissions.json` + `PermissionsService.js` — cambio de contrato de campos español→inglés
+- Verificación de codenames SoD contra catálogo real de funciones
+
+**Tests:** 97/97 passing (771/771) ✓
 
 ## Para retomar
 
 Al iniciar sesión: leer `focus.md` y `project-state.md`.
-No hay WP activo — próxima tarea a definir con el usuario.
+WP activo con cambios commiteados y pusheados.

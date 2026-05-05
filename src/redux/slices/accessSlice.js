@@ -37,9 +37,11 @@ export const fetchUserPermissions = createAsyncThunk(
 
 export const assignFunction = createAsyncThunk(
     'access/assignFunction',
-    async ({ userId, functionId, expiresAt }, { rejectWithValue }) => {
+    // catalogId = numeric PK of the function in the RBAC catalog (UC_ACC_01 assignment).
+    // This is NOT the codename used for runtime authorization checks.
+    async ({ userId, catalogId, expiresAt }, { rejectWithValue }) => {
         try {
-            const response = await accessService.assignFunction(userId, functionId, expiresAt);
+            const response = await accessService.assignFunction(userId, catalogId, expiresAt);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);

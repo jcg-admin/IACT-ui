@@ -8,17 +8,51 @@ import React, { useState, useEffect } from 'react';
 
 const FUNCTION_CATEGORIES = {
     PIPELINE: 'Pipeline',
-    USUARIO: 'Usuarios',
-    AUDITORIA: 'Auditoria',
-    ACCESO: 'Control de Acceso',
-    CONFIGURACION: 'Configuración',
+    USERS: 'Users',
+    AUDIT: 'Audit',
+    ACCESS: 'Access Control',
+    CONFIG: 'Configuration',
     DASHBOARD: 'Dashboard',
 };
 
+// SoD rules use predicate functions against codenames (e.g. 'view_pipeline_status').
+// Regex against function_id codes (PIP-*, AUD-*) was silently broken — those codes
+// never appear in func.code which carries the RBAC codename.
 const SOD_RULES = {
-    'SOD-001': { setA: /^PIP-/, setB: /^AUD-/, desc: 'Pipeline vs Auditoria' },
-    'SOD-002': { setA: /^USR-/, setB: /^AUD-/, desc: 'Usuario vs Auditoria' },
-    'SOD-003': { setA: /^ACC-/, setB: /^AUD-/, desc: 'Acceso vs Auditoria' },
+    'SOD-001': {
+        setA: (codename) =>
+            codename.startsWith('view_pipeline') ||
+            codename.startsWith('view_data') ||
+            codename.startsWith('request_pipeline'),
+        setB: (codename) =>
+            codename.startsWith('view_audit') ||
+            codename.startsWith('search_audit') ||
+            codename.startsWith('export_audit') ||
+            codename.startsWith('generate_compliance'),
+        desc: 'pipeline_audit_separation',
+    },
+    'SOD-002': {
+        setA: (codename) =>
+            codename.startsWith('manage_users') ||
+            codename.startsWith('create_user') ||
+            codename.startsWith('edit_user'),
+        setB: (codename) =>
+            codename.startsWith('view_audit') ||
+            codename.startsWith('search_audit') ||
+            codename.startsWith('export_audit'),
+        desc: 'users_audit_separation',
+    },
+    'SOD-003': {
+        setA: (codename) =>
+            codename.startsWith('manage_access') ||
+            codename.startsWith('assign_function') ||
+            codename.startsWith('revoke_function'),
+        setB: (codename) =>
+            codename.startsWith('view_audit') ||
+            codename.startsWith('search_audit') ||
+            codename.startsWith('export_audit'),
+        desc: 'access_audit_separation',
+    },
 };
 
 export default function FunctionSelector({
@@ -48,8 +82,8 @@ export default function FunctionSelector({
         }).filter(Boolean);
 
         for (const [ruleCode, rule] of Object.entries(SOD_RULES)) {
-            const inSetA = selectedCodes.filter(code => rule.setA.test(code));
-            const inSetB = selectedCodes.filter(code => rule.setB.test(code));
+            const inSetA = selectedCodes.filter(code => rule.setA(code));
+            const inSetB = selectedCodes.filter(code => rule.setB(code));
 
             if (inSetA.length > 0 && inSetB.length > 0) {
                 conflictList.push({

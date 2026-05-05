@@ -166,11 +166,11 @@ class AccessService {
     }
 
     /**
-     * Obtener agrupadores
+     * Obtener grupos de funciones
      */
-    async getGroupers() {
+    async getFunctionGroups() {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/access/groupers`, {
+        const response = await fetch(`${API_BASE_URL}/access/function-groups`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -179,18 +179,18 @@ class AccessService {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch groupers');
+            throw new Error('Failed to fetch function groups');
         }
 
         return response.json();
     }
 
     /**
-     * Asignar agrupador
+     * Asignar grupo de funciones
      */
-    async assignGrouper(userId, grouperId) {
+    async assignFunctionGroup(userId, functionGroupId) {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/access/groupers/assign`, {
+        const response = await fetch(`${API_BASE_URL}/access/function-groups/assign`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -198,12 +198,12 @@ class AccessService {
             },
             body: JSON.stringify({
                 userId,
-                grouperId,
+                functionGroupId,
             }),
         });
 
         if (!response.ok) {
-            throw new Error('Failed to assign grouper');
+            throw new Error('Failed to assign function group');
         }
 
         return response.json();
