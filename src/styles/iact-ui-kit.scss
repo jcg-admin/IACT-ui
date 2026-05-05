@@ -77,6 +77,12 @@
 // App-level shared patterns (page-container, page-header, status-badge, etc.)
 @import 'components/pages-shared';
 
+// Feedback components (ApiErrorToast, ServerErrorBanner)
+@import 'components/feedback';
+
+// Error pages (404, 403, 500, 503)
+@import 'components/error-pages';
+
 // ============================================================
 // 4. UTILITIES - Helper Classes
 // ============================================================

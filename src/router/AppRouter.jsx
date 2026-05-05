@@ -62,13 +62,10 @@ const ActiveSessionsPage = lazy(() =>
   import('@components/features/SessionManagement').then(m => ({ default: m.ActiveSessions }))
 )
 
-const AccessDeniedPage = () => (
-  <div>
-    <h1>Acceso Denegado</h1>
-    <p>No tiene permisos para ver esta página.</p>
-  </div>
-)
-const NotFoundPage = () => <div><h1>404 Not Found</h1></div>
+const NotFoundPage = lazy(() => import('@pages/errors/NotFoundPage'))
+const AccessDeniedPage = lazy(() => import('@pages/errors/AccessDeniedPage'))
+const ServerErrorPage = lazy(() => import('@pages/errors/ServerErrorPage'))
+const ServiceUnavailablePage = lazy(() => import('@pages/errors/ServiceUnavailablePage'))
 
 // ── Guards ───────────────────────────────────────────────────────────────────
 
@@ -244,6 +241,8 @@ function RoutesWithTransitions() {
           />
 
           <Route path="/access-denied" element={<AccessDeniedPage />} />
+          <Route path="/server-error" element={<ServerErrorPage />} />
+          <Route path="/service-unavailable" element={<ServiceUnavailablePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

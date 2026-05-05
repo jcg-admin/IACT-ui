@@ -179,6 +179,76 @@ export class ValidationError extends APIError {
 }
 
 /**
+ * 405 Method Not Allowed
+ * Ocurre cuando: Se usa un método HTTP no permitido para el endpoint
+ */
+export class MethodNotAllowedError extends APIError {
+  constructor(message = 'Method not allowed for this endpoint.') {
+    super(message, 'METHOD_NOT_ALLOWED', 405);
+    this.name = 'MethodNotAllowedError';
+  }
+}
+
+/**
+ * 408 Request Timeout (server-side)
+ * Ocurre cuando: El servidor no recibió la solicitud completa a tiempo
+ * Distinto a TimeoutError (client-side)
+ */
+export class RequestTimeoutError extends APIError {
+  constructor(message = 'The server timed out waiting for the request.') {
+    super(message, 'REQUEST_TIMEOUT', 408);
+    this.name = 'RequestTimeoutError';
+    this.retryAfter = 0;
+  }
+}
+
+/**
+ * 410 Gone
+ * Ocurre cuando: El recurso fue eliminado permanentemente (vs 404 no encontrado)
+ */
+export class GoneError extends APIError {
+  constructor(message = 'This resource has been permanently removed.') {
+    super(message, 'GONE', 410);
+    this.name = 'GoneError';
+  }
+}
+
+/**
+ * 412 Precondition Failed
+ * Ocurre cuando: Una condición de actualización condicional (If-Match) falla
+ */
+export class PreconditionFailedError extends APIError {
+  constructor(message = 'Precondition failed. The resource may have been modified.') {
+    super(message, 'PRECONDITION_FAILED', 412);
+    this.name = 'PreconditionFailedError';
+  }
+}
+
+/**
+ * 413 Payload Too Large
+ * Ocurre cuando: El cuerpo de la solicitud excede el límite del servidor
+ * Común en exportaciones y uploads de archivos grandes
+ */
+export class PayloadTooLargeError extends APIError {
+  constructor(message = 'Request payload is too large.') {
+    super(message, 'PAYLOAD_TOO_LARGE', 413);
+    this.name = 'PayloadTooLargeError';
+    this.retryAfter = 0;
+  }
+}
+
+/**
+ * 415 Unsupported Media Type
+ * Ocurre cuando: El Content-Type de la solicitud no es aceptado
+ */
+export class UnsupportedMediaTypeError extends APIError {
+  constructor(message = 'Unsupported media type. Check the Content-Type header.') {
+    super(message, 'UNSUPPORTED_MEDIA_TYPE', 415);
+    this.name = 'UnsupportedMediaTypeError';
+  }
+}
+
+/**
  * 429 Too Many Requests
  * Ocurre cuando: Rate limiting (demasiadas solicitudes)
  */
@@ -191,6 +261,39 @@ export class RateLimitError extends APIError {
     );
     this.name = 'RateLimitError';
     this.retryAfter = retryAfter;
+  }
+}
+
+/**
+ * 428 Precondition Required (RFC 6585 §3)
+ * Ocurre cuando: El servidor requiere que la solicitud sea condicional (If-Match)
+ */
+export class PreconditionRequiredError extends APIError {
+  constructor(message = 'This request must be conditional. Include an If-Match header.') {
+    super(message, 'PRECONDITION_REQUIRED', 428);
+    this.name = 'PreconditionRequiredError';
+  }
+}
+
+/**
+ * 431 Request Header Fields Too Large (RFC 6585 §5)
+ * Ocurre cuando: Los headers de la solicitud son demasiado grandes (e.g. JWT muy largo)
+ */
+export class RequestHeaderFieldsTooLargeError extends APIError {
+  constructor(message = 'Request headers are too large.') {
+    super(message, 'REQUEST_HEADER_FIELDS_TOO_LARGE', 431);
+    this.name = 'RequestHeaderFieldsTooLargeError';
+  }
+}
+
+/**
+ * 451 Unavailable For Legal Reasons (RFC 7725)
+ * Ocurre cuando: El contenido está bloqueado por razones legales
+ */
+export class UnavailableForLegalReasonsError extends APIError {
+  constructor(message = 'This resource is unavailable for legal reasons.') {
+    super(message, 'UNAVAILABLE_FOR_LEGAL_REASONS', 451);
+    this.name = 'UnavailableForLegalReasonsError';
   }
 }
 
@@ -247,6 +350,31 @@ export class GatewayTimeoutError extends APIError {
       504
     );
     this.name = 'GatewayTimeoutError';
+  }
+}
+
+/**
+ * 501 Not Implemented
+ * Ocurre cuando: El endpoint existe pero la funcionalidad no está implementada
+ */
+export class NotImplementedError extends APIError {
+  constructor(message = 'This feature is not yet implemented.') {
+    super(message, 'NOT_IMPLEMENTED', 501);
+    this.name = 'NotImplementedError';
+  }
+}
+
+/**
+ * 511 Network Authentication Required (RFC 6585 §6)
+ * Ocurre cuando: Un proxy intermediario (captive portal) requiere autenticación de red
+ * DISTINTO a 401 (autenticación de aplicación). Generado por el proxy, no el origin server.
+ * El cliente MUST redirect al usuario a la URL de login indicada en el body.
+ */
+export class NetworkAuthRequiredError extends APIError {
+  constructor(loginUrl = null, message = 'Network authentication required.') {
+    super(message, 'NETWORK_AUTH_REQUIRED', 511);
+    this.name = 'NetworkAuthRequiredError';
+    this.loginUrl = loginUrl;
   }
 }
 
@@ -365,13 +493,24 @@ export function getErrorClassByStatusCode(statusCode) {
     401: UnauthorizedError,
     403: ForbiddenError,
     404: NotFoundError,
+    405: MethodNotAllowedError,
+    408: RequestTimeoutError,
     409: ConflictError,
+    410: GoneError,
+    412: PreconditionFailedError,
+    413: PayloadTooLargeError,
+    415: UnsupportedMediaTypeError,
     422: ValidationError,
+    428: PreconditionRequiredError,
     429: RateLimitError,
+    431: RequestHeaderFieldsTooLargeError,
+    451: UnavailableForLegalReasonsError,
     500: InternalServerError,
+    501: NotImplementedError,
     502: BadGatewayError,
     503: ServiceUnavailableError,
     504: GatewayTimeoutError,
+    511: NetworkAuthRequiredError,
   };
 
   const ErrorClass = statusMap[statusCode] || ServerError;
@@ -421,6 +560,8 @@ export function isRetryableError(error) {
     'CONNECTION_ERROR',
     'NETWORK_ERROR',
     'RATE_LIMIT',
+    'REQUEST_TIMEOUT',
+    'PAYLOAD_TOO_LARGE',
     'SERVICE_UNAVAILABLE',
     'BAD_GATEWAY',
     'GATEWAY_TIMEOUT',
@@ -481,13 +622,24 @@ export default {
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
+  MethodNotAllowedError,
+  RequestTimeoutError,
   ConflictError,
+  GoneError,
+  PreconditionFailedError,
+  PayloadTooLargeError,
+  UnsupportedMediaTypeError,
   ValidationError,
+  PreconditionRequiredError,
   RateLimitError,
+  RequestHeaderFieldsTooLargeError,
+  UnavailableForLegalReasonsError,
   InternalServerError,
+  NotImplementedError,
   BadGatewayError,
   ServiceUnavailableError,
   GatewayTimeoutError,
+  NetworkAuthRequiredError,
   ServerError,
   ParseError,
   ContentTypeError,

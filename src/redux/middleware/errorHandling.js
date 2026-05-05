@@ -11,6 +11,7 @@ import {
 import {
   UnauthorizedError,
   RateLimitError,
+  NetworkAuthRequiredError,
   isRetryableError,
 } from '@utils/apiErrors';
 
@@ -29,11 +30,19 @@ export const errorHandlingMiddleware = (store) => (next) => (action) => {
 
     // Handle special error types
     if (error instanceof UnauthorizedError) {
-      // Dispatch logout event
       window.dispatchEvent(new CustomEvent('auth:unauthorized'));
     } else if (error instanceof RateLimitError) {
-      // Show rate limit message
-      console.warn('[API] Rate limit exceeded:', error.message);
+      // RFC 6585 §4: surface retryAfter so the UI can show a countdown
+      store.dispatch(handleAPIError({
+        ...error.toJSON(),
+        retryAfter: error.retryAfter,
+      }));
+    } else if (error instanceof NetworkAuthRequiredError) {
+      // RFC 6585 §6: captive portal — redirect to the network login page
+      if (error.loginUrl) {
+        window.location.href = error.loginUrl;
+      }
+      return next(action);
     }
 
     // Set error context

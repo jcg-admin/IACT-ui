@@ -15,6 +15,13 @@ import formReducer from './slices/formSlice'
 import reportsReducer from './slices/reportsSlice'
 import dashboardReducer from './slices/dashboardSlice'
 import errorReducer from './slices/errorSlice'
+import adminReducer from './slices/adminSlice'
+import logsReducer from './slices/logsSlice'
+import savedFiltersReducer from './slices/savedFiltersSlice'
+import {
+  errorHandlingMiddleware,
+  errorLoggingMiddleware,
+} from './middleware/errorHandling'
 
 const store = configureStore({
   reducer: {
@@ -29,14 +36,16 @@ const store = configureStore({
     reports: reportsReducer,
     dashboard: dashboardReducer,
     error: errorReducer,
+    admin: adminReducer,
+    logs: logsReducer,
+    savedFilters: savedFiltersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore certain actions if needed
         ignoredActions: ['persist/PERSIST'],
       },
-    }),
+    }).concat(errorLoggingMiddleware, errorHandlingMiddleware),
 })
 
 export default store

@@ -51,8 +51,8 @@ const errorSlice = createSlice({
     handleAPIError: (state, action) => {
       const error = action.payload;
 
-      // Don't set unauthorized as global error (handled separately)
-      if (error instanceof UnauthorizedError) {
+      // Don't set unauthorized as global error (handled by auth:unauthorized event)
+      if (error?.code === 'UNAUTHORIZED' || error instanceof UnauthorizedError) {
         return;
       }
 
@@ -60,7 +60,8 @@ const errorSlice = createSlice({
         code: error.code,
         message: error.message,
         statusCode: error.statusCode,
-        timestamp: error.timestamp,
+        timestamp: error.timestamp || new Date().toISOString(),
+        retryAfter: error.retryAfter ?? null,
       };
 
       _addToHistory(state, error);
@@ -114,11 +115,25 @@ export default errorSlice.reducer;
 // ============================================================================
 
 export const selectGlobalError = (state) => state.error?.global;
-export const selectContextError = (context) => (state) => 
+export const selectContextError = (context) => (state) =>
   state.error?.byContext?.[context];
 export const selectAllErrors = (state) => state.error?.byContext || {};
 export const selectErrorHistory = (state) => state.error?.requestErrors || [];
 export const selectIsErrorHandling = (state) => state.error?.isHandling || false;
+
+/** True when the global error has a retryAfter value (429 / 408 / 413) */
+export const selectGlobalErrorIsRetryable = (state) =>
+  state.error?.global?.retryAfter != null;
+
+/** Returns retryAfter seconds for rate-limit countdown UI */
+export const selectRetryAfter = (state) =>
+  state.error?.global?.retryAfter ?? null;
+
+/** True when the global error is a persistent maintenance error (502/503) */
+export const selectIsPersistentError = (state) => {
+  const code = state.error?.global?.statusCode;
+  return code === 502 || code === 503;
+};
 
 /**
  * Check if there are any errors
