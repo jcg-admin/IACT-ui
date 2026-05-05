@@ -116,9 +116,10 @@ export default function MiPagina() {
 
 ## Uso de variables SCSS
 
-**Las variables están disponibles en todos los SCSS sin necesidad de importarlas.**
-`webpack.config.js` configura `sass-loader.additionalData` para inyectar
-`src/styles/abstracts/_variables.scss` automáticamente en cada compilación.
+**Las variables están disponibles en todos los SCSS sin importarlas.**
+`webpack.config.js` inyecta `_variables.scss` mediante `sass-loader.additionalData`
+usando `@use ... as *` (módulo Dart Sass moderno). No agregar `@import` ni `@use`
+manuales en archivos de componente — ya están disponibles.
 
 ```scss
 // ❌ INCORRECTO: valores hardcodeados
@@ -128,7 +129,10 @@ export default function MiPagina() {
   border: 1px solid #374151;
 }
 
-// ✅ CORRECTO: variables del proyecto (disponibles sin @import)
+// ❌ INCORRECTO: @import manual (innecesario, ya inyectado)
+@import '../../styles/abstracts/variables';
+
+// ✅ CORRECTO: variables disponibles directamente
 .mi-componente {
   color: $secondary-color;
   padding: $spacing-lg;
@@ -136,7 +140,7 @@ export default function MiPagina() {
 }
 ```
 
-### Variables principales (`src/styles/abstracts/_variables.scss`)
+### Variables de color (`src/styles/abstracts/_variables.scss`)
 
 | Variable | Valor | Uso |
 |----------|-------|-----|
@@ -145,21 +149,43 @@ export default function MiPagina() {
 | `$success-color` | `#10b981` | Verde — estados positivos |
 | `$error-color` | `#ef4444` | Rojo — errores, peligro |
 | `$warning-color` | `#f59e0b` | Ámbar — advertencias |
+| `$info-color` | `#0ea5e9` | Cian — información |
 | `$text-muted` | `#94a3b8` | Gris — texto secundario/placeholder |
-| `$border-color` | `#374151` | Bordes |
-| `$spacing-xs` | `4px` | Micro spacing |
-| `$spacing-sm` | `8px` | Small |
-| `$spacing-md` | `16px` | Medium |
-| `$spacing-lg` | `24px` | Large |
-| `$spacing-xl` | `32px` | Extra large |
-| `$spacing-2xl` | `48px` | 2x Extra large |
+| `$text-secondary` | `#cbd5e1` | Gris claro |
+| `$border-color` | `#374151` | Bordes (`= $gray-700`) |
+| `$dark-bg` | `#0f172a` | Fondo muy oscuro |
+
+### Escala de grises (`$gray-*`)
+
+| Variable | Valor | Equivalente Tailwind |
+|----------|-------|----------------------|
+| `$gray-50` | `#f9fafb` | gray-50 |
+| `$gray-100` | `#f3f4f6` | gray-100 |
+| `$gray-200` | `#e5e7eb` | gray-200 |
+| `$gray-300` | `#d1d5db` | gray-300 |
+| `$gray-400` | `#9ca3af` | gray-400 |
+| `$gray-500` | `#6b7280` | gray-500 |
+| `$gray-600` | `#4b5563` | gray-600 |
+| `$gray-700` | `#374151` | gray-700 (`= $border-color`) |
+| `$gray-900` | `#111827` | gray-900 (`= $surface-color`) |
+
+### Variables de espaciado
+
+| Variable | Valor |
+|----------|-------|
+| `$spacing-xs` | `4px` |
+| `$spacing-sm` | `8px` |
+| `$spacing-md` | `16px` |
+| `$spacing-lg` | `24px` |
+| `$spacing-xl` | `32px` |
+| `$spacing-2xl` | `48px` |
 
 ### Funciones SCSS disponibles
 
 ```scss
-// darken / lighten (sass built-in)
-background: rgba($error-color, 0.1);        // transparencia
+background: rgba($error-color, 0.1);             // transparencia
 border-left-color: darken($warning-color, 10%);  // más oscuro
+color: lighten($primary-color, 12%);             // más claro
 ```
 
 ---
