@@ -235,6 +235,8 @@ class MockInterceptor {
    */
   _generateMockUsers(count) {
     const roles = ['admin', 'user', 'moderator'];
+    // UC-USR-01: campo state con enum ACTIVE/INACTIVE/BLOCKED/ELIMINATED
+    const states = ['ACTIVE', 'ACTIVE', 'ACTIVE', 'ACTIVE', 'INACTIVE', 'BLOCKED'];
     const users = [];
 
     for (let i = 0; i < count; i++) {
@@ -245,10 +247,10 @@ class MockInterceptor {
         first_name: `User${i + 1}`,
         last_name: `Test`,
         role: roles[i % roles.length],
+        state: states[i % states.length],
         date_joined: new Date(
           Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
         ).toISOString(),
-        is_active: Math.random() > 0.1,
       });
     }
 
@@ -412,7 +414,7 @@ class MockInterceptor {
       _conflicts.push({
         id: `conflict-${i}`,
         field: `Function-${i + 1}`,
-        message: `Conflicto SoD detectado`,
+        message: `Conflicto de separación de funciones detectado`,
         severity: 'warning',
         suggestion: 'Remover función conflictiva'
       });
