@@ -53,21 +53,23 @@ class UserService {
   }
 
   /**
-   * Baja lógica: cambia el estado del usuario a INACTIVE.
-   * No elimina el registro — cumple UC-USR-04.
+   * Baja lógica (UC-USR-04, BR-009): el backend cambia state → ELIMINATED
+   * y propaga los side-effects (cierra sesiones, revoca asignaciones AGR,
+   * notifica al usuario vía mailbox interno). El método HTTP es DELETE pero
+   * la semántica es una eliminación lógica, no física.
    * @param {number} id - ID del usuario a dar de baja
-   * @returns {Promise<Object>} Usuario con status INACTIVE
+   * @returns {Promise<Object>} Respuesta con state: 'ELIMINATED'
    */
   async deactivateUser(id) {
-    return apiService.patch(`/api/users/${id}/`, { status: 'INACTIVE' })
+    return apiService.delete(`/api/users/${id}/`)
   }
 
   /**
-   * Retorna únicamente los usuarios activos (status = ACTIVE).
-   * @returns {Promise<Array>} Lista de usuarios activos
+   * Retorna únicamente los usuarios activos (state = ACTIVE).
+   * @returns {Promise<Object>} Respuesta paginada con usuarios ACTIVE
    */
   async getActiveUsers() {
-    return this.getUsers({ status: 'ACTIVE' })
+    return this.getUsers({ state: 'ACTIVE' })
   }
 }
 

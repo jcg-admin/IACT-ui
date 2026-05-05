@@ -32,11 +32,17 @@ describe('userService', () => {
       })
     })
 
-    it('retorna la respuesta de la API', async () => {
-      const mockUsers = [{ id: 1, username: 'alice' }, { id: 2, username: 'bob' }]
-      apiService.get.mockResolvedValue(mockUsers)
+    it('retorna la respuesta paginada de la API', async () => {
+      const mockResponse = {
+        count: 2,
+        next: null,
+        previous: null,
+        results: [{ id: 1, username: 'alice' }, { id: 2, username: 'bob' }],
+      }
+      apiService.get.mockResolvedValue(mockResponse)
       const result = await userService.getUsers()
-      expect(result).toEqual(mockUsers)
+      expect(result.count).toBe(2)
+      expect(result.results).toHaveLength(2)
     })
 
     it('propaga el error cuando apiService falla', async () => {
@@ -90,31 +96,38 @@ describe('userService', () => {
     })
   })
 
-  // ── deactivateUser ────────────────────────────────────────────────────
-  // Baja lógica: PATCH status → INACTIVE, nunca DELETE (UC-USR-04)
+  // ── deactivateUser ───────────────────────────────────────────────────────
+  // UC-USR-04 / BR-009: DELETE con semántica lógica — backend cambia
+  // state → ELIMINATED y propaga side-effects (sesiones, AGRs, mailbox)
 
   describe('deactivateUser(id)', () => {
-    it('llama PATCH /api/users/{id}/ con status INACTIVE', async () => {
-      apiService.patch.mockResolvedValue({ id: 3, status: 'INACTIVE' })
+    it('llama DELETE /api/users/{id}/ (baja lógica por protocolo REST)', async () => {
+      apiService.delete.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
       await userService.deactivateUser(3)
-      expect(apiService.patch).toHaveBeenCalledWith('/api/users/3/', { status: 'INACTIVE' })
+      expect(apiService.delete).toHaveBeenCalledWith('/api/users/3/')
     })
 
-    it('NO llama DELETE — baja lógica, no física', async () => {
-      apiService.patch.mockResolvedValue({ id: 3, status: 'INACTIVE' })
+    it('NO llama PATCH — la eliminación lógica usa DELETE per UC-USR-04', async () => {
+      apiService.delete.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
       await userService.deactivateUser(3)
-      expect(apiService.delete).not.toHaveBeenCalled()
+      expect(apiService.patch).not.toHaveBeenCalled()
+    })
+
+    it('retorna respuesta con state ELIMINATED', async () => {
+      apiService.delete.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
+      const result = await userService.deactivateUser(3)
+      expect(result.state).toBe('ELIMINATED')
     })
   })
 
-  // ── getActiveUsers ───────────────────────────────────────────────────
+  // ── getActiveUsers ───────────────────────────────────────────────────────
 
   describe('getActiveUsers()', () => {
-    it('llama getUsers con filtro status ACTIVE', async () => {
-      apiService.get.mockResolvedValue([])
+    it('llama getUsers con filtro state ACTIVE (campo correcto según UC-USR-02)', async () => {
+      apiService.get.mockResolvedValue({ count: 0, results: [] })
       await userService.getActiveUsers()
       expect(apiService.get).toHaveBeenCalledWith('/api/users/', {
-        params: { status: 'ACTIVE' },
+        params: { state: 'ACTIVE' },
       })
     })
   })

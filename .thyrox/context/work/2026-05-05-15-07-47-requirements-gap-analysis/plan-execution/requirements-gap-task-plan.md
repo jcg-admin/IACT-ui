@@ -75,7 +75,7 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/services/userService.js` (nuevo)
   **Deps:** T-005
 
-- [ ] **T-011** Reescribir `userSlice.js` con thunks RTK (`createAsyncThunk`):
+- [x] **T-011** Reescribir `userSlice.js` con thunks RTK (`createAsyncThunk`):
   `fetchUsers`, `createUser`, `updateUser`, `deactivateUser`.
   Mantener `selectUsers`, `selectUsersLoading`, `selectUsersError` como selectores.
   **Archivos:** `src/redux/slices/userSlice.js`
