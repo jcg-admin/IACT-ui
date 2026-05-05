@@ -14,29 +14,29 @@
 
 .link {
   font-size: 14px;
-  color: #3b82f6;
+  color: $primary-color;
   text-decoration: none;
   transition: color 0.2s;
 
   &:hover {
-    color: #2563eb;
+    color: darken($primary-color, 8%);
     text-decoration: underline;
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid $primary-color;
     border-radius: 2px;
   }
 }
 
 .separator {
-  color: #d1d5db;
+  color: $gray-300;
   margin: 0 2px;
 }
 
 .current {
   font-size: 14px;
-  color: #6b7280;
+  color: $gray-500;
 }
 
 @media (max-width: 768px) {

@@ -3,15 +3,13 @@
  * Main layout container with header, sidebar, and main content
  */
 
-@import '../../styles/abstracts/variables';
-@import '../../styles/abstracts/mixins';
 
 .layoutCanvas {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  background-color: #f9fafb;
+  background-color: $gray-50;
 }
 
 .layoutContent {
@@ -27,7 +25,7 @@
   padding: 24px;
   margin-left: 250px;
   transition: margin-left 0.3s ease-out;
-  background-color: #f9fafb;
+  background-color: $gray-50;
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -54,8 +52,8 @@
   position: absolute;
   top: -40px;
   left: 0;
-  background-color: #1f2937;
-  color: #ffffff;
+  background-color: $secondary-color;
+  color: white;
   padding: 8px;
   text-decoration: none;
   z-index: 10000;
@@ -71,15 +69,15 @@
 }
 
 .main::-webkit-scrollbar-track {
-  background: #f9fafb;
+  background: $gray-50;
 }
 
 .main::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: $gray-300;
   border-radius: 4px;
 
   &:hover {
-    background: #9ca3af;
+    background: $gray-400;
   }
 }
 

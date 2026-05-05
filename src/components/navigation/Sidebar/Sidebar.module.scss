@@ -4,8 +4,6 @@
  * Responsive: desktop (250px fixed) to mobile (full screen drawer)
  */
 
-@import '../../../styles/abstracts/variables';
-@import '../../../styles/abstracts/mixins';
 
 .sidebar {
   position: fixed;
@@ -13,8 +11,8 @@
   top: 64px; /* Below header */
   bottom: 0;
   width: 250px;
-  background-color: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  background-color: white;
+  border-right: 1px solid $gray-200;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -83,7 +81,7 @@
 .header {
   display: none;
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid $gray-200;
 
   @media (max-width: 768px) {
     display: flex;
@@ -97,15 +95,15 @@
   font-size: 24px;
   cursor: pointer;
   padding: 8px;
-  color: #6b7280;
+  color: $gray-500;
   transition: color 0.2s;
 
   &:hover {
-    color: #1f2937;
+    color: $secondary-color;
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid $primary-color;
     border-radius: 4px;
   }
 }
@@ -137,31 +135,31 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
-  color: #6b7280;
+  color: $gray-500;
   text-align: left;
   transition: all 0.2s;
   position: relative;
 
   &:hover {
-    background-color: #f3f4f6;
-    color: #1f2937;
+    background-color: $gray-100;
+    color: $secondary-color;
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid $primary-color;
     outline-offset: -2px;
-    background-color: #f3f4f6;
+    background-color: $gray-100;
   }
 
   &.active {
-    background-color: #eff6ff;
-    color: #3b82f6;
+    background-color: rgba($primary-color, 0.05);
+    color: $primary-color;
     font-weight: 600;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid $primary-color;
     padding-left: 12px;
 
     .icon {
-      color: #3b82f6;
+      color: $primary-color;
     }
   }
 }
@@ -172,7 +170,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #d1d5db;
+  color: $gray-300;
   transition: color 0.2s;
 }
 
@@ -185,7 +183,7 @@
 
 .footer {
   padding: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid $gray-200;
   display: flex;
   gap: 8px;
 
@@ -197,21 +195,21 @@
 .footerButton {
   flex: 1;
   padding: 8px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: $gray-50;
+  border: 1px solid $gray-200;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  color: #6b7280;
+  color: $gray-500;
   transition: all 0.2s;
 
   &:hover {
-    background-color: #f3f4f6;
-    border-color: #d1d5db;
+    background-color: $gray-100;
+    border-color: $gray-300;
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid $primary-color;
     outline-offset: 2px;
   }
 }
@@ -226,11 +224,11 @@
 }
 
 .nav::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: $gray-300;
   border-radius: 3px;
 
   &:hover {
-    background: #9ca3af;
+    background: $gray-400;
   }
 }
 
@@ -317,10 +315,10 @@
 @keyframes highlightActive {
   from {
     background-color: transparent;
-    color: #6b7280;
+    color: $gray-500;
   }
   to {
-    background-color: #eff6ff;
-    color: #3b82f6;
+    background-color: rgba($primary-color, 0.05);
+    color: $primary-color;
   }
 }

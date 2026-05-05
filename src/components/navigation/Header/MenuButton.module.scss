@@ -10,18 +10,18 @@
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: $gray-100;
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid $primary-color;
   }
 }
 
 .line {
   width: 24px;
   height: 3px;
-  background-color: #1f2937;
+  background-color: $secondary-color;
   border-radius: 2px;
   transition: all 0.3s;
 }
