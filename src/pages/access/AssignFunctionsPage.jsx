@@ -77,10 +77,10 @@ export default function AssignFunctionsPage() {
         }
 
         // Asignar cada función seleccionada
-        for (const functionId of selectedFunctions) {
+        for (const catalogId of selectedFunctions) {
             await dispatch(assignFunction({
                 userId: parseInt(selectedUser),
-                functionId,
+                catalogId,
                 expiresAt: expiryDate || null,
             }));
         }

@@ -51,9 +51,11 @@ export const assignFunction = createAsyncThunk(
 
 export const revokeFunction = createAsyncThunk(
     'access/revokeFunction',
-    async ({ userId, functionId }, { rejectWithValue }) => {
+    // catalogId = numeric PK of the function in the RBAC catalog (UC_ACC_02 revocation).
+    // This is NOT the codename used for runtime authorization checks.
+    async ({ userId, catalogId }, { rejectWithValue }) => {
         try {
-            const response = await accessService.revokeFunction(userId, functionId);
+            const response = await accessService.revokeFunction(userId, catalogId);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -63,9 +65,10 @@ export const revokeFunction = createAsyncThunk(
 
 export const validateSoD = createAsyncThunk(
     'access/validateSoD',
-    async ({ userId, functionId }, { rejectWithValue }) => {
+    // catalogId = numeric PK of the function being validated for SoD conflicts.
+    async ({ userId, catalogId }, { rejectWithValue }) => {
         try {
-            const response = await accessService.validateSoD(userId, functionId);
+            const response = await accessService.validateSoD(userId, catalogId);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);

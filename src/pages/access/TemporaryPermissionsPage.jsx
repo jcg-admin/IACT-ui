@@ -87,7 +87,7 @@ export default function TemporaryPermissionsPage() {
         const expiryDateTime = `${expiryDate}T${expiryTime}`;
         await dispatch(assignFunction({
             userId: parseInt(selectedUser),
-            functionId: parseInt(selectedFunction),
+            catalogId: parseInt(selectedFunction),
             expiresAt: expiryDateTime,
         }));
 

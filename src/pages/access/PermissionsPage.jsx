@@ -41,15 +41,15 @@ export default function PermissionsPage() {
         }
     };
 
-    const handleRevoke = async (functionId) => {
-        if (revokeConfirm === functionId) {
+    const handleRevoke = async (catalogId) => {
+        if (revokeConfirm === catalogId) {
             await dispatch(revokeFunction({
                 userId: parseInt(selectedUser),
-                functionId,
+                catalogId,
             }));
             setRevokeConfirm(null);
         } else {
-            setRevokeConfirm(functionId);
+            setRevokeConfirm(catalogId);
         }
     };
 

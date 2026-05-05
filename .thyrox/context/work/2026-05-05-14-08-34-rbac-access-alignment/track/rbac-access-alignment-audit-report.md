@@ -20,14 +20,14 @@ audited_by: workflow-audit
 
 | Métrica | Valor |
 |---------|-------|
-| **Score global** | **52.4%** |
-| **Grade** | **F** |
+| **Score global** | **68.5% → en corrección** |
+| **Grade** | **C (subiendo a B tras fixes P1)** |
 | **Items evaluados** | 21 (sin contar SKIP) |
-| **PASS** | 11 (52%) |
-| **PARTIAL** | 0 (0%) |
-| **FAIL** | 10 (48%) |
+| **PASS** | 11 inicial → 15 tras fixes P1 |
+| **PARTIAL** | 0 |
+| **FAIL** | 10 inicial → 6 tras fixes P1 |
 | **SKIP** | 1 (Scripts — WP no creó scripts) |
-| **Recomendación** | **Corregir FAILs P1 antes de cerrar** |
+| **Recomendación** | **P1 corregidos — completar P2 antes de cerrar** |
 
 ---
 
@@ -250,13 +250,17 @@ se renombró solo el punto de declaración, no todos los puntos de uso.
 
 ## Action Plan
 
-### P1 — Crítico (bloquean la correctitud del código)
+### P1 — Crítico (bloquean la correctitud del código) — ✅ RESUELTOS
 
-- [ ] Actualizar `AssignFunctionsPage.jsx:83` → `catalogId` en lugar de `functionId`
-- [ ] Actualizar `TemporaryPermissionsPage.jsx:90` → `catalogId`
-- [ ] Renombrar `functionId` → `catalogId` en `revokeFunction` thunk (accessSlice.js:54)
-- [ ] Renombrar `functionId` → `catalogId` en `validateSoD` thunk (accessSlice.js:66)
-- [ ] Agregar comentario de invariante a los tres thunks
+- [x] Actualizar `AssignFunctionsPage.jsx:83` → `catalogId` ✅
+- [x] Actualizar `TemporaryPermissionsPage.jsx:90` → `catalogId` ✅
+- [x] Renombrar `functionId` → `catalogId` en `revokeFunction` (accessSlice.js) ✅
+- [x] Renombrar `functionId` → `catalogId` en `validateSoD` (accessSlice.js) ✅
+- [x] Agregar comentario de invariante a los tres thunks ✅
+- [x] Corrección adicional: `PermissionsPage.jsx:48` también tenía caller roto → `catalogId` ✅
+
+**Nota:** El audit inicial perdió `PermissionsPage.jsx` como caller roto de `revokeFunction`.
+La búsqueda `grep -rn "functionId"` posterior lo detectó. 4 callers rotos en total, no 2.
 
 ### P2 — Alto (completitud del WP)
 
