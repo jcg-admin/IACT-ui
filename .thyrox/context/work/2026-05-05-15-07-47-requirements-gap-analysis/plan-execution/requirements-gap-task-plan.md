@@ -67,7 +67,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S2-USERS-SVC — Servicio de usuarios
 
-- [ ] **T-010** Crear `src/services/userService.js` con métodos:
+- [x] **T-010** Crear `src/services/userService.js` con métodos:
   `getUsers(filters)`, `getUserById(id)`, `createUser(data)`,
   `updateUser(id, data)`, `deactivateUser(id)`, `getActiveUsers()`.
   Seguir patrón de `accessService.js` (instancia singleton exportada).
