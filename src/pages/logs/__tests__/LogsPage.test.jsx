@@ -14,13 +14,16 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
   useSelector: (selector) =>
-    selector({ logs: { loading: false, error: null, logs: LOGS, searchResults: [], systemStatus: null } }),
+    selector({ logs: { error: null, logs: LOGS, searchResults: [], systemStatus: null }, loading: { contexts: {} } }),
 }))
 
 jest.mock('../../../redux/slices/logsSlice', () => ({
   fetchLogs: () => ({ type: 'logs/fetchLogs' }),
   selectLogs: (s) => s.logs.logs,
-  selectLogsLoading: (s) => s.logs.loading,
+}))
+
+jest.mock('../../../redux/slices/loadingSlice', () => ({
+  selectIsLoading: (context) => (s) => (s.loading?.contexts[context] ?? 0) > 0,
 }))
 
 function wrapper(ui) {
@@ -54,7 +57,7 @@ describe('LogsPage', () => {
 
   it('shows spinner when loading', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
-      selector({ logs: { loading: true, error: null, logs: [], searchResults: [], systemStatus: null } })
+      selector({ logs: { error: null, logs: [], searchResults: [], systemStatus: null }, loading: { contexts: { logs: 1 } } })
     )
     wrapper(<LogsPage />)
     expect(document.querySelector('.spinner') || screen.queryByText(/cargando/i)).toBeTruthy()
