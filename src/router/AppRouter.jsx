@@ -33,12 +33,12 @@ import { selectIsAuthenticated } from '@redux/selectors'
 const LoginPage = lazy(() =>
   import('@components/containers/LoginPage').then(m => ({ default: m.default || m.LoginPage }))
 )
-const DashboardPage = lazy(() => Promise.resolve({
-  default: () => <div id="dashboard-page"><h1>Dashboard</h1></div>
-}))
-const SettingsPage = lazy(() => Promise.resolve({
-  default: () => <div><h1>Settings</h1></div>
-}))
+const DashboardPage = lazy(() =>
+  import('@components/containers/DashboardPage').then(m => ({ default: m.default }))
+)
+const SettingsPage = lazy(() =>
+  import('@components/features/Settings/SettingsPage').then(m => ({ default: m.default }))
+)
 const ProfilePage = lazy(() => Promise.resolve({
   default: () => <div><h1>Profile</h1></div>
 }))
