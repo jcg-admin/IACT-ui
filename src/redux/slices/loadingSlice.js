@@ -31,6 +31,6 @@ export const selectIsLoading = (context) => (state) =>
   (state.loading?.contexts[context] ?? 0) > 0
 
 export const selectAnyLoading = createSelector(
-  (state) => state.loading?.contexts ?? {},
+  (state) => state.loading.contexts,
   (contexts) => Object.values(contexts).some((count) => count > 0)
 )

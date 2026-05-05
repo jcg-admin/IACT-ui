@@ -46,8 +46,9 @@ describe('LogsPage', () => {
 
   it('renders level badges', () => {
     wrapper(<LogsPage />)
-    expect(screen.getByText('ERROR')).toBeInTheDocument()
-    expect(screen.getByText('INFO')).toBeInTheDocument()
+    // getAllByText because 'ERROR'/'INFO' also appear in the filter select options
+    expect(screen.getAllByText('ERROR').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('INFO').length).toBeGreaterThan(0)
   })
 
   it('dispatches fetchLogs on mount', () => {

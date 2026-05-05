@@ -6,11 +6,10 @@ import loadingReducer, {
   selectAnyLoading,
 } from '../loadingSlice'
 
-function buildStore(preloaded = {}) {
-  return configureStore({
-    reducer: { loading: loadingReducer },
-    preloadedState: { loading: preloaded },
-  })
+function buildStore(loadingState) {
+  const cfg = { reducer: { loading: loadingReducer } }
+  if (loadingState) cfg.preloadedState = { loading: loadingState }
+  return configureStore(cfg)
 }
 
 // ── incrementContext ──────────────────────────────────────────────────────────
