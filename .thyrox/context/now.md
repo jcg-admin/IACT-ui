@@ -5,7 +5,7 @@ project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
 current_work: .thyrox/context/work/2026-05-05-22-24-51-ui-feedback-naming-and-loading
-phase: Phase 1 — DISCOVER
+phase: Phase 3 — DIAGNOSE
 blockers: []
 ```
 
@@ -19,16 +19,19 @@ blockers: []
 
 ## WP activo — ui-feedback-naming-and-loading
 
-Phase 1 DISCOVER completada. Esperando gate SP-01 (aprobación para avanzar a Phase 3 DIAGNOSE).
+Phase 3 DIAGNOSE completada. Esperando gate SP-02 (aprobación para avanzar a Phase 5 STRATEGY).
 
-**Hallazgos clave:**
-- `ApiErrorToast` viola Clean Code cap. 2: "Toast" describe presentación, no intención
-- Dos sistemas de nombre similar pero responsabilidad distinta: `ApiErrorToast` (errores Redux) vs `ToastContext/Toast` (notificaciones UI)
-- 10 slices con `loading` local + 10 páginas con spinner manual → sin middleware de coordinación
-- `uiSlice` sin loading global; no existe `loadingSlice` ni `loadingMiddleware`
-- `LoadingSpinner` vs `AnimatedLoadingSpinner`: división implícita sin criterio documentado
+**Decisiones de diseño definidas:**
+- Naming: `ApiErrorToast` → `ApiErrorAlert` (role="alert" correcto, sin colisión con ToastContext)
+- Loading: Opción C — `loadingMiddleware` intercepta `*/pending` por prefijo de contexto
+- `loadingSlice`: `contexts: { logs: 2, access: 1 }` contadores, selector `selectIsLoading('ctx')`
+- `SILENT_CONTEXTS = Set(['auth', 'session'])` — no disparan spinner
+- Criterio documentado: `LoadingSpinner` inline; `AnimatedLoadingSpinner` transición de página
+- Scope piloto: `LogsPage` + `ETLLogsPage` (slices existentes sin tocar)
 
-**Próximo:** Phase 3 DIAGNOSE — análisis de alternativas de naming + diseño del loadingMiddleware
+**Riesgos:** R-002 mitigado, R-003 cerrado, R-004 mitigado. Solo R-001 abierto.
+
+**Próximo:** Phase 5 STRATEGY — confirmar decisiones con ejecutor
 
 ## WP cerrado — http-error-handling ✓
 
