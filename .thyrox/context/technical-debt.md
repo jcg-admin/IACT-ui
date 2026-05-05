@@ -71,16 +71,25 @@ updated_at: 2026-05-05
 | ✅ | `coverage/` no en `.gitignore` | RESUELTO |
 | ✅ | Configs duplicadas del merge | RESUELTO |
 
-### TD-ACC-01..05 — URLs con verbos en paths (módulo access)
+### TD-ACC-01..05 — URLs incorrrrectas en accessService.js (REVISADO)
 
-- **Origen:** Diseño inicial sin aplicar convenciones REST/OAS3
-- **Síntoma:** Verbos como path segments en lugar de HTTP methods:
-  - `POST /access/functions/assign` → debe ser `POST /access/function-assignments`
-  - `POST /access/functions/revoke` → debe ser `DELETE /access/function-assignments/{id}`
-  - `POST /access/audit/export` → debe ser `POST /access/audit-exports`
-  - `POST /access/function-groups/assign` → debe ser `POST /access/function-group-assignments`
-  - `POST /access/segments/assign` → debe ser `POST /access/segment-assignments`
-- **Impacto:** Inconsistencia con OAS3 + naming standard; dificulta generación de cliente desde OpenAPI spec
-- **Acción:** Coordinar con equipo backend antes de cambiar — requiere cambio en ambos lados
-- **Referencia:** `docs/guides/rest-api-conventions.md` tabla "Mapa de URLs correctas"
-- **NO resuelto:** `POST /access/validate-sod` → ya corregido a `POST /access/separation-rules/validate`
+- **Origen:** Diseño inicial sin referencia a los documentos de arquitectura IACT
+- **Análisis:** Revisado contra `/tmp/references/IACT-docs/source/` en WP sprint2-completion-reports
+- **Hallazgo:** La API IACT es **user-centric** (`/api/users/{id}/...`), no `/api/access/...`
+- **URLs canónicas (PROVEN):**
+
+| TD | URL actual (incorrecta) | URL canónica (IACT-docs) | Fuente |
+|----|------------------------|--------------------------|--------|
+| ACC-01 | `POST /access/functions/assign` | `POST /users/{id}/functions/` | UC-ACC-01 seq diagram |
+| ACC-02 | `POST /access/functions/revoke` | `DELETE /users/{id}/functions/` | UC-ACC-02 seq diagram |
+| ACC-03 | `POST /access/audit/export` | `POST /audit/export/` (async, 202+job_id) | UC-AUD-03 spec |
+| ACC-04 | `POST /access/function-groups/assign` | `POST /users/{id}/access-groups/` | UC-ACC-04 seq diagram |
+| ACC-05 | `POST /access/segments/assign` | `POST /users/{id}/segments/` | INFERRED |
+
+- **Cambios adicionales descubiertos:**
+  - ACC-01: body cambia a `{function_ids: [], expires_at}` (bulk, plural)
+  - ACC-02: body cambia a `{function_ids: [], revoke_reason}` (bulk + razón requerida)
+  - ACC-03: respuesta es `202 + {job_id}` no un blob (export es async)
+  - ACC-04: recurso se llama `access-groups` (AGR), no `function-groups`
+- **Acción:** Implementar en WP `2026-05-05-17-08-27-sprint2-completion-reports`
+- **Referencia análisis:** `context/work/2026-05-05-17-08-27-sprint2-completion-reports/discover/api-url-debt-analysis.md`
