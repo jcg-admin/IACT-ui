@@ -18,10 +18,12 @@ import errorReducer from './slices/errorSlice'
 import adminReducer from './slices/adminSlice'
 import logsReducer from './slices/logsSlice'
 import savedFiltersReducer from './slices/savedFiltersSlice'
+import loadingReducer from './slices/loadingSlice'
 import {
   errorHandlingMiddleware,
   errorLoggingMiddleware,
 } from './middleware/errorHandling'
+import { loadingMiddleware } from './middleware/loadingMiddleware'
 
 const store = configureStore({
   reducer: {
@@ -39,13 +41,14 @@ const store = configureStore({
     admin: adminReducer,
     logs: logsReducer,
     savedFilters: savedFiltersReducer,
+    loading: loadingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
       },
-    }).concat(errorLoggingMiddleware, errorHandlingMiddleware),
+    }).concat(loadingMiddleware, errorLoggingMiddleware, errorHandlingMiddleware),
 })
 
 export default store
