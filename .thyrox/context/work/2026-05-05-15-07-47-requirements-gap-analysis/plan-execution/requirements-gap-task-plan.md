@@ -18,7 +18,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S1-AUTH — Rutas de autenticación
 
-- [ ] **T-001** Agregar `VIEW_USERS`, `MANAGE_USERS`, `VIEW_LOGS`, `VIEW_REALTIME_METRICS`,
+- [x] **T-001** Agregar `VIEW_USERS`, `MANAGE_USERS`, `VIEW_LOGS`, `VIEW_REALTIME_METRICS`,
   `MANAGE_GROUPS`, `MANAGE_CATALOG`, `SUPER_ADMIN` al `FunctionCatalog` en
   `src/permissions/catalog.js` con formato `sistema.{dominio}.{recurso}.{accion}`
   — prerequisito de todos los `ProtectedRoute` nuevos

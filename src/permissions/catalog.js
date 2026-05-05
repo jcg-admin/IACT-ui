@@ -28,9 +28,10 @@ export const FunctionCatalog = {
     VIEW_CLIENTS:       'sistema.operaciones.clientes.ver',
 
     // User administration
-    VIEW_USERS:         'sistema.administracion.usuarios.ver',
-    EDIT_USERS:         'sistema.administracion.usuarios.editar',
-    DELETE_USERS:       'sistema.administracion.usuarios.eliminar',
+    VIEW_USERS:             'sistema.administracion.usuarios.ver',
+    MANAGE_USERS:           'sistema.administracion.usuarios.gestionar',
+    EDIT_USERS:             'sistema.administracion.usuarios.editar',
+    DELETE_USERS:           'sistema.administracion.usuarios.eliminar',
 
     // Access control (RBAC management — ITER4)
     VIEW_ACCESS:        'sistema.administracion.acceso.ver',
@@ -47,6 +48,19 @@ export const FunctionCatalog = {
     // Alerts (ITER5)
     VIEW_ALERTS:        'sistema.alertas.notificaciones.ver',
     MANAGE_ALERTS:      'sistema.alertas.notificaciones.gestionar',
+
+    // Groups & catalog administration (RBAC groups, AGRs, permission catalog)
+    MANAGE_GROUPS:          'sistema.administracion.grupos.gestionar',
+    MANAGE_CATALOG:         'sistema.administracion.catalogo.gestionar',
+
+    // Observability — logs
+    VIEW_LOGS:              'sistema.observabilidad.logs.ver',
+
+    // Real-time metrics
+    VIEW_REALTIME_METRICS:  'sistema.analisis.metricas.tiemporeal.ver',
+
+    // Super-admin — unrestricted system access
+    SUPER_ADMIN:            'sistema.administracion.sistema.superadmin',
 
     // Configuration
     VIEW_CONFIG:        'sistema.configuracion.parametros.ver',
