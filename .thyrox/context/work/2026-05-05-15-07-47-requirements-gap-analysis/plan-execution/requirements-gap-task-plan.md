@@ -88,7 +88,7 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/components/containers/UserManagement.jsx`
   **Commit:** c8592bf
 
-- [ ] **T-013** Implementar baja lógica en `UserForm.jsx` y `UserList.jsx`
+- [x] **T-013** Implementar baja lógica en `UserForm.jsx` y `UserList.jsx`
   dentro de `src/components/pages/UserManagement/`:
   botón "Dar de baja" dispara `deactivateUser` (state → ELIMINATED), no DELETE físico.
   Mostrar badge estado (ACTIVE/INACTIVE/BLOCKED/ELIMINATED) en la lista.
@@ -110,7 +110,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S2-REPORTS-SVC — Servicio de reportes
 
-- [ ] **T-020** Crear `src/services/reportsService.js` con métodos:
+- [x] **T-020** Crear `src/services/reportsService.js` con métodos:
   `getDashboardMetrics()`, `getAgentsReport(filters)`, `getQueuesReport(filters)`,
   `getCampaignsReport(filters)`, `getTransfersReport(filters)`,
   `getIVRMenusReport(filters)`, `getUniqueClientsReport(filters)`,
@@ -118,13 +118,13 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/services/reportsService.js` (nuevo)
   **Deps:** T-006
 
-- [ ] **T-021** Crear `src/redux/slices/reportsSlice.js` con thunks:
+- [x] **T-021** Crear `src/redux/slices/reportsSlice.js` con thunks:
   `fetchDashboardMetrics`, `fetchScheduledReports`, `createScheduledReport`.
   Selectores: `selectMetrics`, `selectScheduledReports`, `selectReportsLoading`.
   **Archivos:** `src/redux/slices/reportsSlice.js` (nuevo)
   **Deps:** T-020
 
-- [ ] **T-022** Conectar `AnalyticsDashboard.jsx` a `reportsSlice`:
+- [x] **T-022** Conectar `AnalyticsDashboard.jsx` a `reportsSlice`:
   reemplazar `mockMetrics` con `useSelector(selectMetrics)`, dispatch
   `fetchDashboardMetrics` en mount. Conectar `ScheduledReports` a slice.
   **Archivos:** `src/components/pages/Analytics/AnalyticsDashboard.jsx`,
@@ -132,14 +132,14 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-021
   **UC:** UC-RPT-01, UC-RPT-07, UC-RPT-08
 
-- [ ] **T-023** Integrar `websocketService` en `AnalyticsDashboard.jsx` para
+- [x] **T-023** Integrar `websocketService` en `AnalyticsDashboard.jsx` para
   métricas en tiempo real: suscribirse al canal `metrics` en mount,
   actualizar state con cada mensaje, desuscribirse en unmount.
   **Archivos:** `src/components/pages/Analytics/AnalyticsDashboard.jsx`
   **Deps:** T-022
   **UC:** UC-RPT-02
 
-- [ ] **T-024** Agregar tests para `reportsService.js` y `reportsSlice.js`.
+- [x] **T-024** Agregar tests para `reportsService.js` y `reportsSlice.js`.
   **Archivos:** `src/services/__tests__/reportsService.test.js` (nuevo),
   `src/redux/slices/__tests__/reportsSlice.test.js` (nuevo)
   **Deps:** T-023
@@ -150,7 +150,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S3-AUTH-PAGES — Páginas de contraseña
 
-- [ ] **T-030** Agregar thunk `recoverPassword(username)` en `authSlice.js`
+- [x] **T-030** Agregar thunk `recoverPassword(username)` en `authSlice.js`
   que llama `POST /api/password/recover/`. Agregar `changePassword(currentPw, newPw)`
   que llama `POST /api/password/change/`.
   **Archivos:** `src/redux/slices/authSlice.js`,
@@ -158,14 +158,14 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-002
   **UC:** UC-AUTH-03, UC-AUTH-04
 
-- [ ] **T-031** Crear `src/pages/auth/RecoverPasswordPage.jsx`:
+- [x] **T-031** Crear `src/pages/auth/RecoverPasswordPage.jsx`:
   campo username, submit dispara `recoverPassword`, muestra mensaje de confirmación.
   Sin ProtectedRoute — acceso público.
   **Archivos:** `src/pages/auth/RecoverPasswordPage.jsx` (nuevo)
   **Deps:** T-030
   **UC:** UC-AUTH-03
 
-- [ ] **T-032** Crear `src/pages/auth/ChangePasswordPage.jsx`:
+- [x] **T-032** Crear `src/pages/auth/ChangePasswordPage.jsx`:
   campos contraseña actual + nueva + confirmación, usa `PasswordStrength` existente,
   dispara `changePassword`, redirige a `/dashboard` al completar.
   Protegida — requiere sesión activa.
@@ -179,35 +179,35 @@ Convención: código en inglés, comentarios/UI en español.
   `src/components/presentational/LoginForm.jsx`
   **Deps:** T-031, T-032
 
-- [ ] **T-034** Agregar tests para `RecoverPasswordPage` y `ChangePasswordPage`.
+- [x] **T-034** Agregar tests para `RecoverPasswordPage` y `ChangePasswordPage`.
   **Archivos:** `src/pages/auth/__tests__/RecoverPasswordPage.test.jsx` (nuevo),
   `src/pages/auth/__tests__/ChangePasswordPage.test.jsx` (nuevo)
   **Deps:** T-033
 
 ### Grupo S3-PERM — Gestión de permisos y grupos
 
-- [ ] **T-040** Agregar tab "Permisos temporales activos" en
+- [x] **T-040** Agregar tab "Permisos temporales activos" en
   `TemporaryPermissionsPage.jsx` que liste permisos temporales vigentes con
   botón "Revocar" por cada uno. Reusar `revokeFunction` thunk existente.
   **Archivos:** `src/pages/access/TemporaryPermissionsPage.jsx`
   **Deps:** ninguna (usa accessSlice existente)
   **UC:** UC-PERM-04
 
-- [ ] **T-041** Crear `src/pages/access/GroupManagementPage.jsx`:
+- [x] **T-041** Crear `src/pages/access/GroupManagementPage.jsx`:
   CRUD de grupos/AGRs del catálogo. Operaciones: crear grupo, editar nombre/descripción,
   desactivar grupo. Usa `getFunctionGroups` + nuevos endpoints de `accessService`.
   **Archivos:** `src/pages/access/GroupManagementPage.jsx` (nuevo)
   **Deps:** T-042
   **UC:** UC-PERM-05
 
-- [ ] **T-042** Extender `accessService.js` con métodos de gestión de catálogo:
+- [x] **T-042** Extender `accessService.js` con métodos de gestión de catálogo:
   `createGroup(data)`, `updateGroup(id, data)`, `deactivateGroup(id)`,
   `assignFunctionsToGroup(groupId, functionIds)`, `getGroupFunctions(groupId)`.
   **Archivos:** `src/services/accessService.js`
   **Deps:** T-001
   **UC:** UC-PERM-05, UC-PERM-06
 
-- [ ] **T-043** Crear `src/pages/access/GroupCompositionPage.jsx`:
+- [x] **T-043** Crear `src/pages/access/GroupCompositionPage.jsx`:
   seleccionar grupo del catálogo → ver funciones asignadas → agregar/quitar funciones
   con validación SoD. Reusar `FunctionSelector` existente.
   **Archivos:** `src/pages/access/GroupCompositionPage.jsx` (nuevo)
@@ -226,7 +226,7 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/router/AppRouter.jsx` o sub-router de access
   **Deps:** T-041, T-043
 
-- [ ] **T-046** Extender `accessSlice.js` con thunks para gestión de grupos:
+- [x] **T-046** Extender `accessSlice.js` con thunks para gestión de grupos:
   `createGroup`, `updateGroup`, `deactivateGroup`, `fetchGroupFunctions`,
   `assignFunctionsToGroup`.
   **Archivos:** `src/redux/slices/accessSlice.js`
@@ -239,20 +239,20 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S3-ADMIN — Catálogos de administración
 
-- [ ] **T-050** Crear `src/services/adminService.js` con métodos para administración
+- [x] **T-050** Crear `src/services/adminService.js` con métodos para administración
   de catálogos: `getFunctions()`, `createFunction(data)`, `updateFunction(id, data)`,
   `deactivateFunction(id)`, `getAGRCatalog()`, `createAGR(data)`, `updateAGR(id, data)`,
   `deactivateAGR(id)`, `getSoDRules()`.
   **Archivos:** `src/services/adminService.js` (nuevo)
   **Deps:** T-001
 
-- [ ] **T-051** Crear `src/redux/slices/adminSlice.js` con thunks para catálogos:
+- [x] **T-051** Crear `src/redux/slices/adminSlice.js` con thunks para catálogos:
   `fetchFunctions`, `createFunction`, `updateFunction`, `deactivateFunction`,
   `fetchAGRCatalog`, `createAGR`, `updateAGR`. Selectores correspondientes.
   **Archivos:** `src/redux/slices/adminSlice.js` (nuevo)
   **Deps:** T-050
 
-- [ ] **T-052** Crear `src/pages/admin/FunctionCatalogPage.jsx`:
+- [x] **T-052** Crear `src/pages/admin/FunctionCatalogPage.jsx`:
   tabla de funciones RBAC del sistema con search, sort, paginación.
   Acciones: crear función, editar, desactivar. Validar formato
   `sistema.{dominio}.{recurso}.{accion}` al crear/editar.
@@ -260,7 +260,7 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-051
   **UC:** UC-ADM-02
 
-- [ ] **T-053** Crear `src/pages/admin/AGRCatalogPage.jsx`:
+- [x] **T-053** Crear `src/pages/admin/AGRCatalogPage.jsx`:
   tabla de Agrupadores de Funciones (AGRs) predefinidos del sistema.
   Acciones: crear AGR, editar nombre/descripción, ver composición, desactivar.
   **Archivos:** `src/pages/admin/AGRCatalogPage.jsx` (nuevo)
@@ -285,42 +285,42 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S4-LOGS — Módulo de logs
 
-- [ ] **T-060** Crear `src/services/logsService.js` con métodos:
+- [x] **T-060** Crear `src/services/logsService.js` con métodos:
   `getAppLogs(filters)`, `getETLLogs(filters)`, `getInfraLogs(filters)`,
   `searchLogs(query, filters)`, `exportLogs(type, format, filters)`,
   `getSystemStatus()`, `getPerformanceMetrics()`.
   **Archivos:** `src/services/logsService.js` (nuevo)
   **Deps:** T-001
 
-- [ ] **T-061** Crear `src/redux/slices/logsSlice.js` con thunks:
+- [x] **T-061** Crear `src/redux/slices/logsSlice.js` con thunks:
   `fetchAppLogs`, `fetchETLLogs`, `fetchInfraLogs`, `searchLogs`,
   `fetchSystemStatus`, `fetchPerformanceMetrics`.
   Selectores: `selectLogs`, `selectSystemStatus`, `selectLogsLoading`.
   **Archivos:** `src/redux/slices/logsSlice.js` (nuevo)
   **Deps:** T-060
 
-- [ ] **T-062** Crear `src/pages/logs/LogsPage.jsx`:
+- [x] **T-062** Crear `src/pages/logs/LogsPage.jsx`:
   viewer de logs de aplicación con filtros (nivel: ERROR/WARN/INFO/DEBUG,
   rango de fechas, servicio), paginación, refresh automático.
   **Archivos:** `src/pages/logs/LogsPage.jsx` (nuevo)
   **Deps:** T-061
   **UC:** UC-LOG-01
 
-- [ ] **T-063** Crear `src/pages/logs/ETLLogsPage.jsx`:
+- [x] **T-063** Crear `src/pages/logs/ETLLogsPage.jsx`:
   logs específicos del proceso ETL — mostrar paso, duración, estado y errores
   por ejecución. Agrupar por run_id.
   **Archivos:** `src/pages/logs/ETLLogsPage.jsx` (nuevo)
   **Deps:** T-061
   **UC:** UC-LOG-02
 
-- [ ] **T-064** Crear `src/pages/logs/LogSearchPage.jsx`:
+- [x] **T-064** Crear `src/pages/logs/LogSearchPage.jsx`:
   búsqueda full-text en todos los logs con highlight de términos encontrados,
   filtros combinables (tipo, fechas, nivel, servicio), resultados paginados.
   **Archivos:** `src/pages/logs/LogSearchPage.jsx` (nuevo)
   **Deps:** T-061
   **UC:** UC-LOG-03
 
-- [ ] **T-065** Crear `src/pages/logs/LogExportPage.jsx`:
+- [x] **T-065** Crear `src/pages/logs/LogExportPage.jsx`:
   seleccionar tipo de log + rango de fechas + formato (CSV/JSON),
   encolar exportación asíncrona, mostrar estado de descarga.
   Reusar patrón de `ExportHub` existente.
@@ -328,21 +328,21 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-061
   **UC:** UC-LOG-04
 
-- [ ] **T-066** Crear `src/pages/logs/InfraLogsPage.jsx`:
+- [x] **T-066** Crear `src/pages/logs/InfraLogsPage.jsx`:
   logs de infraestructura (servidores, DB, red). Mostrar host, severity,
   mensaje. Filtrar por componente de infraestructura.
   **Archivos:** `src/pages/logs/InfraLogsPage.jsx` (nuevo)
   **Deps:** T-061
   **UC:** UC-LOG-05
 
-- [ ] **T-067** Crear `src/pages/logs/SystemStatusPage.jsx`:
+- [x] **T-067** Crear `src/pages/logs/SystemStatusPage.jsx`:
   panel de estado del sistema: servicios (verde/amarillo/rojo), latencia,
   uptime. Refrescar cada 30s. Reusar `HealthService` existente.
   **Archivos:** `src/pages/logs/SystemStatusPage.jsx` (nuevo)
   **Deps:** T-061
   **UC:** UC-LOG-06
 
-- [ ] **T-068** Crear `src/pages/logs/PerformanceMetricsPage.jsx`:
+- [x] **T-068** Crear `src/pages/logs/PerformanceMetricsPage.jsx`:
   métricas de rendimiento del sistema — CPU, memoria, throughput, p95/p99
   de tiempo de respuesta. Gráficas de series de tiempo.
   Reusar `ChartComponent` de Analytics.
@@ -365,61 +365,61 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S4-RPT — Reportes IVR específicos
 
-- [ ] **T-080** Crear componente compartido `src/components/reports/ReportFilters.jsx`:
+- [x] **T-080** Crear componente compartido `src/components/reports/ReportFilters.jsx`:
   filtros reutilizables para reportes IVR (rango de fechas, agente, cola, campaña,
   segmento). Exportar como `<ReportFilters onChange={fn} />`.
   **Archivos:** `src/components/reports/ReportFilters.jsx` (nuevo)
   **Deps:** T-020
 
-- [ ] **T-081** Crear componente compartido `src/components/reports/ReportTable.jsx`:
+- [x] **T-081** Crear componente compartido `src/components/reports/ReportTable.jsx`:
   tabla genérica para reportes con sort, paginación, exportar CSV/Excel.
   Recibe `columns`, `data`, `loading` como props.
   **Archivos:** `src/components/reports/ReportTable.jsx` (nuevo)
   **Deps:** T-080
 
-- [ ] **T-082** Crear `src/pages/reports/AgentsReportPage.jsx`:
+- [x] **T-082** Crear `src/pages/reports/AgentsReportPage.jsx`:
   métricas por agente — llamadas atendidas, AHT (Average Handle Time),
   tasa de resolución, tiempo disponible, pausas. Usa `ReportFilters` + `ReportTable`.
   **Archivos:** `src/pages/reports/AgentsReportPage.jsx` (nuevo)
   **Deps:** T-081
   **UC:** UC-RPT-12
 
-- [ ] **T-083** Crear `src/pages/reports/QueuesReportPage.jsx`:
+- [x] **T-083** Crear `src/pages/reports/QueuesReportPage.jsx`:
   métricas de colas — llamadas en espera, tiempo de espera promedio, abandonos,
   SLA cumplido. Gráfica de distribución horaria.
   **Archivos:** `src/pages/reports/QueuesReportPage.jsx` (nuevo)
   **Deps:** T-081
   **UC:** UC-RPT-13
 
-- [ ] **T-084** Crear `src/pages/reports/CampaignsReportPage.jsx`:
+- [x] **T-084** Crear `src/pages/reports/CampaignsReportPage.jsx`:
   métricas de campañas outbound — marcaciones, contactos efectivos,
   tasa de conversión, mejor horario.
   **Archivos:** `src/pages/reports/CampaignsReportPage.jsx` (nuevo)
   **Deps:** T-081
   **UC:** UC-RPT-14
 
-- [ ] **T-085** Crear `src/pages/reports/TransfersReportPage.jsx`:
+- [x] **T-085** Crear `src/pages/reports/TransfersReportPage.jsx`:
   análisis de transferencias — motivo, destino, tasa de éxito,
   tiempo hasta transferencia. Pivot por cola destino.
   **Archivos:** `src/pages/reports/TransfersReportPage.jsx` (nuevo)
   **Deps:** T-081
   **UC:** UC-RPT-15
 
-- [ ] **T-086** Crear `src/pages/reports/IVRMenusReportPage.jsx`:
+- [x] **T-086** Crear `src/pages/reports/IVRMenusReportPage.jsx`:
   análisis de navegación IVR — opciones más seleccionadas, puntos de abandono,
   flujo completo vs truncado, tiempo promedio por nodo.
   **Archivos:** `src/pages/reports/IVRMenusReportPage.jsx` (nuevo)
   **Deps:** T-081
   **UC:** UC-RPT-16
 
-- [ ] **T-087** Crear `src/pages/reports/UniqueClientsReportPage.jsx`:
+- [x] **T-087** Crear `src/pages/reports/UniqueClientsReportPage.jsx`:
   clientes únicos por período — nuevos vs recurrentes, frecuencia de llamada,
   segmento de cliente, canales usados.
   **Archivos:** `src/pages/reports/UniqueClientsReportPage.jsx` (nuevo)
   **Deps:** T-081
   **UC:** UC-RPT-17
 
-- [ ] **T-088** Implementar filtros guardados (`savedFilters`):
+- [x] **T-088** Implementar filtros guardados (`savedFilters`):
   crear `src/redux/slices/savedFiltersSlice.js` + panel lateral
   `src/components/reports/SavedFiltersPanel.jsx`. Guardar/cargar/eliminar
   combinaciones de filtros por reporte.
@@ -428,14 +428,14 @@ Convención: código en inglés, comentarios/UI en español.
   **Deps:** T-080
   **UC:** UC-RPT-09
 
-- [ ] **T-089** Implementar "Guardar vista" en reportes:
+- [x] **T-089** Implementar "Guardar vista" en reportes:
   botón en cada página de reporte que persiste la configuración actual
   (filtros + columnas visibles + sort) en `savedFiltersSlice` con nombre.
   **Archivos:** cada página de reporte + `SavedFiltersPanel`
   **Deps:** T-088
   **UC:** UC-RPT-10
 
-- [ ] **T-090** Implementar "Compartir reporte":
+- [x] **T-090** Implementar "Compartir reporte":
   generar URL con query params que reproduzcan los filtros activos.
   Botón "Copiar enlace" en cada página de reporte.
   **Archivos:** `src/utils/reportShareUtils.js` (nuevo), páginas de reporte
