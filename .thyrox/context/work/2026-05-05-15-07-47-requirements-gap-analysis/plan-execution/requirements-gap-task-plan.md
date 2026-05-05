@@ -25,19 +25,19 @@ Convención: código en inglés, comentarios/UI en español.
   **Archivos:** `src/permissions/catalog.js`
   **Deps:** ninguna
 
-- [ ] **T-002** Agregar ruta pública `/login` → `LoginPage` en `AppRouter.jsx`.
+- [x] **T-002** Agregar ruta pública `/login` → `LoginPage` en `AppRouter.jsx`.
   Redirigir a `/dashboard` si ya hay sesión activa (`isAuthenticated`).
   **Archivos:** `src/router/AppRouter.jsx`, lazy import de `LoginPage`
   **Deps:** T-001
   **UC:** UC-AUTH-01
 
-- [ ] **T-003** Agregar botón/link de logout en `DashboardLayout` o header que
+- [x] **T-003** Agregar botón/link de logout en `DashboardLayout` o header que
   despache `logoutUser` thunk y redirija a `/login`.
   **Archivos:** `src/layouts/DashboardLayout/` o header component
   **Deps:** T-002
   **UC:** UC-AUTH-02
 
-- [ ] **T-004** Agregar ruta `/profile/sessions` → `SessionManagement` (componente
+- [x] **T-004** Agregar ruta `/profile/sessions` → `SessionManagement` (componente
   ya existe en `src/components/features/SessionManagement/`).
   **Archivos:** `src/router/AppRouter.jsx`
   **Deps:** T-002
@@ -45,7 +45,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S1-USERS — Ruta de gestión de usuarios
 
-- [ ] **T-005** Agregar ruta `/users` protegida por `FunctionCatalog.VIEW_USERS`
+- [x] **T-005** Agregar ruta `/users` protegida por `FunctionCatalog.VIEW_USERS`
   → `UserManagement` (ya existe en `src/components/pages/UserManagement/`).
   Agregar entrada en navLinks del `DashboardLayout`.
   **Archivos:** `src/router/AppRouter.jsx`
@@ -54,7 +54,7 @@ Convención: código en inglés, comentarios/UI en español.
 
 ### Grupo S1-REPORTS — Ruta de analytics
 
-- [ ] **T-006** Agregar ruta `/reports` protegida por `FunctionCatalog.VIEW_REPORTS`
+- [x] **T-006** Agregar ruta `/reports` protegida por `FunctionCatalog.VIEW_REPORTS`
   → `AnalyticsDashboard` (ya existe en `src/components/pages/Analytics/`).
   Agregar entrada en navLinks.
   **Archivos:** `src/router/AppRouter.jsx`

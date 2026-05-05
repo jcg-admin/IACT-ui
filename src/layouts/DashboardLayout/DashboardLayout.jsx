@@ -13,10 +13,12 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { Header, LogoBrand, MenuButton } from '@components/shared/Header'
 import { Sidebar } from '@components/shared/Sidebar'
 import { useMenuToggle } from '@hooks/useMenuToggle'
+import { logoutUser } from '@redux/slices/authSlice'
 import styles from './DashboardLayout.module.scss'
 
 export default function DashboardLayout({
@@ -25,6 +27,8 @@ export default function DashboardLayout({
   userInfo = {},
   unreadCount = 0,
 }) {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { isSidebarOpen, toggleSidebar, closeSidebar, isMobile } = useMenuToggle()
   const [isCollapsed, setIsCollapsed] = useState(false)
 
@@ -33,16 +37,13 @@ export default function DashboardLayout({
   }
 
   const handleNavigate = (link) => {
-    // Update current page
-    // This would typically be handled by routing
     if (isMobile) {
       closeSidebar()
     }
   }
 
   const handleLogout = () => {
-    // Handle logout
-    console.log('Logging out...')
+    dispatch(logoutUser()).finally(() => navigate('/login', { replace: true }))
   }
 
   return (
