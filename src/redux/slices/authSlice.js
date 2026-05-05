@@ -63,6 +63,33 @@ export const getCurrentUser = createAsyncThunk(
   }
 );
 
+export const recoverPassword = createAsyncThunk(
+  'auth/recoverPassword',
+  async (username, { rejectWithValue }) => {
+    try {
+      const res = await apiService.post('/api/auth/recover-password/', { username })
+      return res
+    } catch (err) {
+      return rejectWithValue(err.message || 'Error al recuperar contraseña')
+    }
+  }
+)
+
+export const changePassword = createAsyncThunk(
+  'auth/changePassword',
+  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const res = await apiService.post('/api/auth/change-password/', {
+        current_password: currentPassword,
+        new_password: newPassword,
+      })
+      return res
+    } catch (err) {
+      return rejectWithValue(err.message || 'Error al cambiar contraseña')
+    }
+  }
+)
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -132,6 +159,32 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.isLoading = false;
+      })
+
+      // Recover password
+      .addCase(recoverPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(recoverPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(recoverPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      // Change password
+      .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
