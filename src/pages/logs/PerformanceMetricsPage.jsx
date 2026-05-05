@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchPerformanceMetrics, selectPerformanceMetrics, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function PerformanceMetricsPage() {
   const dispatch = useDispatch()
@@ -23,7 +24,7 @@ export default function PerformanceMetricsPage() {
       {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
-        <div className="loading-state">Cargando métricas...</div>
+        <LoadingSpinner message="Cargando métricas..." />
       ) : metrics.length === 0 ? (
         <div className="empty-state">Sin métricas disponibles.</div>
       ) : (

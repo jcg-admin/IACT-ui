@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ReportFilters from '../../components/reports/ReportFilters'
 import ReportTable from '../../components/reports/ReportTable'
-import { selectSavedFilters } from '../../redux/slices/savedFiltersSlice'
 import reportsService from '../../services/reportsService'
 
 const COLUMNS = [

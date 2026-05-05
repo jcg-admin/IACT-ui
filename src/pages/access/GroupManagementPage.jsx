@@ -18,6 +18,7 @@ import {
     clearSuccess,
 } from '../../redux/slices/accessSlice';
 import accessService from '../../services/accessService';
+import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 const EMPTY_FORM = { name: '', description: '' };
 
@@ -161,7 +162,7 @@ export default function GroupManagementPage() {
 
             {/* Tabla */}
             {loading && localGroups.length === 0 ? (
-                <div className="loading-state">Cargando grupos...</div>
+                <LoadingSpinner message="Cargando grupos..." />
             ) : localGroups.length === 0 ? (
                 <div className="empty-state">No hay grupos registrados. Crea el primero.</div>
             ) : (

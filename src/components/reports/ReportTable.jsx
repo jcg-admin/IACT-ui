@@ -1,7 +1,8 @@
 import React from 'react'
+import LoadingSpinner from '../shared/LoadingSpinner'
 
 export default function ReportTable({ columns, data, loading, emptyMessage = 'No hay datos para el período seleccionado.' }) {
-  if (loading) return <div className="loading-state">Cargando...</div>
+  if (loading) return <LoadingSpinner message="Cargando..." />
   if (!data || data.length === 0) return <div className="empty-state">{emptyMessage}</div>
 
   return (

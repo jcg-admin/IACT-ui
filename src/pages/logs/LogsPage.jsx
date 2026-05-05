@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchLogs, selectLogs, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const BADGE_CLASS = { ERROR: 'badge-danger', WARNING: 'badge-warning', INFO: 'badge-info' }
 
@@ -52,7 +53,7 @@ export default function LogsPage() {
       {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
-        <div className="loading-state">Cargando...</div>
+        <LoadingSpinner message="Cargando logs..." />
       ) : logs.length === 0 ? (
         <div className="empty-state">No hay logs para los filtros seleccionados.</div>
       ) : (

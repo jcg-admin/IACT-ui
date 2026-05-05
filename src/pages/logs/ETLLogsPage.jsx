@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchETLLogs, selectETLLogs, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const STATUS_BADGE = { success: 'badge-success', failed: 'badge-danger', running: 'badge-warning' }
 
@@ -52,7 +53,7 @@ export default function ETLLogsPage() {
       {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
-        <div className="loading-state">Cargando...</div>
+        <LoadingSpinner message="Cargando logs ETL..." />
       ) : etlLogs.length === 0 ? (
         <div className="empty-state">No hay logs ETL para los filtros seleccionados.</div>
       ) : (

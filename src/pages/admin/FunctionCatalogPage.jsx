@@ -15,6 +15,7 @@ import {
   selectAdminLoading,
   selectAdminError,
 } from '../../redux/slices/adminSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 // Valida el formato sistema.dominio.recurso.accion (4 segmentos separados por punto)
 const CODENAME_REGEX = /^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$/
@@ -224,7 +225,7 @@ export default function FunctionCatalogPage() {
 
       {/* Tabla */}
       {loading ? (
-        <div className="loading-state">Cargando funciones...</div>
+        <LoadingSpinner message="Cargando funciones..." />
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           {search ? 'No hay funciones que coincidan con la búsqueda.' : 'No hay funciones registradas.'}

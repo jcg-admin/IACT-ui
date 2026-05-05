@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchInfraLogs, selectInfraLogs, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function InfraLogsPage() {
   const dispatch = useDispatch()
@@ -40,7 +41,7 @@ export default function InfraLogsPage() {
       {error && <div className="error-banner">{error}</div>}
 
       {loading ? (
-        <div className="loading-state">Cargando...</div>
+        <LoadingSpinner message="Cargando logs de infraestructura..." />
       ) : infraLogs.length === 0 ? (
         <div className="empty-state">No hay logs de infraestructura.</div>
       ) : (

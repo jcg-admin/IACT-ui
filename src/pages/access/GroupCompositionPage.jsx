@@ -18,6 +18,7 @@ import {
     clearError,
 } from '../../redux/slices/accessSlice';
 import accessService from '../../services/accessService';
+import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 export default function GroupCompositionPage() {
     const dispatch = useDispatch();
@@ -200,7 +201,7 @@ export default function GroupCompositionPage() {
 
                     {/* Lista de funciones asignadas */}
                     {loading && groupFunctions.length === 0 ? (
-                        <div className="loading-state">Cargando funciones...</div>
+                        <LoadingSpinner message="Cargando funciones..." />
                     ) : groupFunctions.length === 0 ? (
                         <div className="empty-state">Este grupo no tiene funciones asignadas.</div>
                     ) : (

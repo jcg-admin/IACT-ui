@@ -15,6 +15,7 @@ import {
   selectAdminLoading,
   selectAdminError,
 } from '../../redux/slices/adminSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const EMPTY_FORM = { codename: '', name: '', description: '' }
 
@@ -204,7 +205,7 @@ export default function AGRCatalogPage() {
 
       {/* Tabla */}
       {loading ? (
-        <div className="loading-state">Cargando AGRs...</div>
+        <LoadingSpinner message="Cargando AGRs..." />
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           {search ? 'No hay AGRs que coincidan con la búsqueda.' : 'No hay AGRs registrados.'}

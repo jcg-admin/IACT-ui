@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { searchLogs, selectSearchResults, selectLogsLoading, selectLogsError } from '../../redux/slices/logsSlice'
+import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function LogSearchPage() {
   const dispatch = useDispatch()
@@ -37,7 +38,7 @@ export default function LogSearchPage() {
 
       {error && <div className="error-banner">{error}</div>}
 
-      {loading && <div className="loading-state">Buscando...</div>}
+      {loading && <LoadingSpinner message="Buscando..." />}
 
       {!loading && searched && results.length === 0 && (
         <div className="empty-state">Sin resultados para "{query}".</div>

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSavedFilters, deleteFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFiltersSlice'
+import LoadingSpinner from '../shared/LoadingSpinner'
 
 export default function SavedFiltersPanel({ onApply }) {
   const dispatch = useDispatch()
@@ -16,7 +17,7 @@ export default function SavedFiltersPanel({ onApply }) {
     dispatch(deleteFilter(id))
   }
 
-  if (loading) return <div className="loading-state">Cargando vistas guardadas...</div>
+  if (loading) return <LoadingSpinner size="sm" />
   if (savedFilters.length === 0) return null
 
   return (
