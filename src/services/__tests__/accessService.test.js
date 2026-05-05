@@ -42,53 +42,124 @@ describe('AccessService.getFunctionGroups', () => {
     });
 });
 
-describe('AccessService.assignFunction', () => {
-    it('calls POST /access/functions/assign with userId and functionId in body', async () => {
-        await accessService.assignFunction(42, 7, null);
-        expect(mockFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/access/functions/assign'),
-            expect.objectContaining({ method: 'POST' })
-        );
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-        expect(body.userId).toBe(42);
-        expect(body.functionId).toBe(7);
-    });
-
-    it('includes expiresAt when provided', async () => {
-        await accessService.assignFunction(1, 2, '2026-12-31');
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-        expect(body.expiresAt).toBe('2026-12-31');
-    });
-});
-
-describe('AccessService.revokeFunction', () => {
-    it('calls POST /access/functions/revoke with userId and functionId in body', async () => {
-        await accessService.revokeFunction(5, 10);
-        expect(mockFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/access/functions/revoke'),
-            expect.objectContaining({ method: 'POST' })
-        );
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
-        expect(body.userId).toBe(5);
-        expect(body.functionId).toBe(10);
-    });
-});
-
-describe('AccessService.assignFunctionGroup', () => {
-    it('calls POST /access/function-groups/assign with userId and functionGroupId', async () => {
-        await accessService.assignFunctionGroup(3, 99);
+// T-025: UC-ACC-01 — asignar funciones (bulk)
+describe('AccessService.assignFunctions', () => {
+    it('calls POST /users/{userId}/functions/ with function_ids array', async () => {
+        await accessService.assignFunctions(42, [7, 8], null);
         const [url, options] = mockFetch.mock.calls[0];
-        expect(url).toContain('/access/function-groups/assign');
+        expect(url).toContain('/users/42/functions/');
         expect(options.method).toBe('POST');
         const body = JSON.parse(options.body);
-        expect(body.userId).toBe(3);
-        expect(body.functionGroupId).toBe(99);
+        expect(body.function_ids).toEqual([7, 8]);
+    });
+
+    it('includes expires_at when provided', async () => {
+        await accessService.assignFunctions(1, [2], '2026-12-31');
+        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        expect(body.expires_at).toBe('2026-12-31');
+    });
+
+    it('sends null expires_at when not provided', async () => {
+        await accessService.assignFunctions(1, [3]);
+        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        expect(body.expires_at).toBeNull();
+    });
+
+    it('throws on error response', async () => {
+        mockFetch.mockResolvedValue({ ok: false, json: async () => ({ message: 'Forbidden' }) });
+        await expect(accessService.assignFunctions(1, [1])).rejects.toThrow('Forbidden');
+    });
+});
+
+// T-026: UC-ACC-02 — revocar funciones (bulk)
+describe('AccessService.revokeFunctions', () => {
+    it('calls DELETE /users/{userId}/functions/ with function_ids array', async () => {
+        await accessService.revokeFunctions(5, [10, 11], 'Baja de usuario');
+        const [url, options] = mockFetch.mock.calls[0];
+        expect(url).toContain('/users/5/functions/');
+        expect(options.method).toBe('DELETE');
+        const body = JSON.parse(options.body);
+        expect(body.function_ids).toEqual([10, 11]);
+    });
+
+    it('includes revoke_reason in body', async () => {
+        await accessService.revokeFunctions(5, [10], 'Cambio de rol');
+        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        expect(body.revoke_reason).toBe('Cambio de rol');
+    });
+
+    it('throws on error response', async () => {
+        mockFetch.mockResolvedValue({ ok: false, json: async () => ({ message: 'Not found' }) });
+        await expect(accessService.revokeFunctions(1, [1], 'reason')).rejects.toThrow('Not found');
+    });
+});
+
+// T-027: UC-AUD-03 — exportar auditoría (async → job_id)
+describe('AccessService.exportAuditLog', () => {
+    it('calls POST /audit/export/ (not /access/audit/export)', async () => {
+        mockFetch.mockResolvedValue({ ok: true, status: 202, json: async () => ({ job_id: 'j-1' }) });
+        await accessService.exportAuditLog({}, 'monthly', 'csv', false);
+        const [url, options] = mockFetch.mock.calls[0];
+        expect(url).toContain('/audit/export/');
+        expect(url).not.toContain('/access/audit/export');
+        expect(options.method).toBe('POST');
+    });
+
+    it('sends filters, period, format, include_archive in body', async () => {
+        mockFetch.mockResolvedValue({ ok: true, status: 202, json: async () => ({ job_id: 'j-2' }) });
+        const filters = { user_id: 42 };
+        await accessService.exportAuditLog(filters, 'weekly', 'json', true);
+        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        expect(body.filters).toEqual(filters);
+        expect(body.period).toBe('weekly');
+        expect(body.format).toBe('json');
+        expect(body.include_archive).toBe(true);
+    });
+
+    it('returns job_id from 202 response (NOT blob)', async () => {
+        mockFetch.mockResolvedValue({ ok: true, status: 202, json: async () => ({ job_id: 'job-xyz' }) });
+        const result = await accessService.exportAuditLog({}, 'monthly', 'csv', false);
+        expect(result.job_id).toBe('job-xyz');
+    });
+
+    it('throws on error response', async () => {
+        mockFetch.mockResolvedValue({ ok: false, json: async () => ({ message: 'Server error' }) });
+        await expect(accessService.exportAuditLog({}, 'monthly', 'csv', false)).rejects.toThrow('Server error');
+    });
+});
+
+// T-028: UC-ACC-04 — asignar grupo de acceso (AGR)
+describe('AccessService.assignAccessGroup', () => {
+    it('calls POST /users/{userId}/access-groups/ with agr_id', async () => {
+        await accessService.assignAccessGroup(3, 99, null);
+        const [url, options] = mockFetch.mock.calls[0];
+        expect(url).toContain('/users/3/access-groups/');
+        expect(options.method).toBe('POST');
+        const body = JSON.parse(options.body);
+        expect(body.agr_id).toBe(99);
+    });
+
+    it('includes expires_at when provided', async () => {
+        await accessService.assignAccessGroup(3, 99, '2027-01-01');
+        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        expect(body.expires_at).toBe('2027-01-01');
+    });
+
+    it('sends null expires_at when not provided', async () => {
+        await accessService.assignAccessGroup(3, 99);
+        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        expect(body.expires_at).toBeNull();
+    });
+
+    it('throws on error response', async () => {
+        mockFetch.mockResolvedValue({ ok: false, json: async () => ({ message: 'Forbidden' }) });
+        await expect(accessService.assignAccessGroup(1, 1)).rejects.toThrow('Forbidden');
     });
 });
 
 describe('AccessService error handling', () => {
-    it('throws when response is not ok', async () => {
-        mockFetch.mockResolvedValue({ ok: false, json: async () => ({ message: 'Forbidden' }) });
-        await expect(accessService.assignFunction(1, 1)).rejects.toThrow('Forbidden');
+    it('throws generic message when response body has no message field', async () => {
+        mockFetch.mockResolvedValue({ ok: false, json: async () => ({}) });
+        await expect(accessService.assignFunctions(1, [1])).rejects.toThrow();
     });
 });

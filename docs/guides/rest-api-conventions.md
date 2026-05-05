@@ -81,17 +81,18 @@ verbo calificador como último segmento:
 
 ## Mapa de URLs correctas — módulo Access
 
-| Operación | URL actual | URL correcta | Estado |
-|-----------|-----------|-------------|--------|
+| Operación | URL anterior (incorrecta) | URL canónica (IACT-docs) | Estado |
+|-----------|--------------------------|--------------------------|--------|
 | Validar separación de funciones | `POST /access/validate-sod` | `POST /access/separation-rules/validate` | ✅ Corregido |
-| Asignar función a usuario | `POST /access/functions/assign` | `POST /access/function-assignments` | ⏳ TD-ACC-01 |
-| Revocar función | `POST /access/functions/revoke` | `DELETE /access/function-assignments/{id}` | ⏳ TD-ACC-02 |
-| Exportar auditoría | `POST /access/audit/export` | `POST /access/audit-exports` | ⏳ TD-ACC-03 |
-| Asignar grupo de funciones | `POST /access/function-groups/assign` | `POST /access/function-group-assignments` | ⏳ TD-ACC-04 |
-| Asignar segmento | `POST /access/segments/assign` | `POST /access/segment-assignments` | ⏳ TD-ACC-05 |
+| Asignar funciones a usuario (bulk) | `POST /access/functions/assign` | `POST /users/{userId}/functions/` | ✅ Corregido (TD-ACC-01) |
+| Revocar funciones de usuario (bulk) | `POST /access/functions/revoke` | `DELETE /users/{userId}/functions/` | ✅ Corregido (TD-ACC-02) |
+| Exportar auditoría (async) | `POST /access/audit/export` → blob | `POST /audit/export/` → `202 + {job_id}` | ✅ Corregido (TD-ACC-03) |
+| Asignar grupo de acceso (AGR) | `POST /access/function-groups/assign` | `POST /users/{userId}/access-groups/` | ✅ Corregido (TD-ACC-04) |
+| Asignar segmento | `POST /access/segments/assign` | Pendiente — sin spec UC verificada | ⏳ TD-ACC-05 |
 
-Los ítems `⏳ TD-ACC-*` son deuda técnica — requieren cambio coordinado
-con el backend. No modificar en el frontend sin alinear con el equipo backend.
+Las URLs canónicas de TD-ACC-01..04 están verificadas con los diagramas de secuencia
+UML de UC-ACC-01, UC-ACC-02, UC-ACC-04 y UC-AUD-03 en IACT-docs.
+TD-ACC-05 (segmentos) permanece pendiente hasta especificación formal.
 
 ## Query parameters
 

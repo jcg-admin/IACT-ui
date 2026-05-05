@@ -134,7 +134,7 @@ export default function UserManagement() {
               first_name: userData.firstName,
               last_name: userData.lastName,
               role: userData.role,
-              status: userData.status
+              state: userData.state
             }
           : u
       ))
@@ -148,19 +148,18 @@ export default function UserManagement() {
   }
 
   /**
-   * Handle delete user
+   * Handle deactivate user (baja lógica — UC-USR-04)
    */
-  const handleDeleteUser = async (userId) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) {
+  const handleDeactivateUser = async (userId) => {
+    if (!window.confirm('¿Confirmar dar de baja al usuario?')) {
       return
     }
 
     try {
-      // In production, call delete API
-      setUsers(users.filter(u => u.id !== userId))
-      notify.success('User deleted successfully')
+      setUsers(users.map(u => u.id === userId ? { ...u, state: 'ELIMINATED' } : u))
+      notify.success('Usuario dado de baja correctamente')
     } catch (error) {
-      notify.error(`Failed to delete user: ${error.message}`)
+      notify.error(`Error al dar de baja: ${error.message}`)
     }
   }
 
@@ -307,7 +306,7 @@ export default function UserManagement() {
             users={filteredUsers}
             loading={loading}
             onEdit={handleEditUser}
-            onDelete={handleDeleteUser}
+            onDeactivate={handleDeactivateUser}
           />
 
           <div className="results-info">
@@ -323,6 +322,7 @@ export default function UserManagement() {
             setShowForm(false)
             setSelectedUser(null)
           }}
+          onDeactivate={handleDeactivateUser}
         />
       )}
     </div>

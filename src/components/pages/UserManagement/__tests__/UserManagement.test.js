@@ -82,7 +82,7 @@ describe('UserManagement Component', () => {
     const createButton = screen.getByText('Create User')
     fireEvent.click(createButton)
     
-    expect(screen.getByText('Create New User')).toBeInTheDocument()
+    expect(screen.getByText('Crear Nuevo Usuario')).toBeInTheDocument()
   })
 
   it('should display results counter', async () => {

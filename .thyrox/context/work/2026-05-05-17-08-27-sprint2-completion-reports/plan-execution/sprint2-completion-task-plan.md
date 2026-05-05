@@ -28,32 +28,32 @@ URLs canónicas tomadas de IACT-docs (`discover/api-url-debt-analysis.md`).
 
 ## Grupo B — Corrección URLs REST (TD-ACC-01..05)
 
-- [ ] **T-025** Reescribir `assignFunction` en `accessService.js`:
+- [x] **T-025** Reescribir `assignFunction` en `accessService.js`:
   - Método: `assignFunctions(userId, functionIds[], expiresAt)` (bulk)
   - URL: `POST /users/${userId}/functions/`
   - Body: `{ function_ids: functionIds, expires_at: expiresAt }`
   - **Fuente:** UC-ACC-01 seq diagram (PROVEN)
 
-- [ ] **T-026** Reescribir `revokeFunction` en `accessService.js`:
+- [x] **T-026** Reescribir `revokeFunction` en `accessService.js`:
   - Método: `revokeFunctions(userId, functionIds[], revokeReason)` (bulk)
   - URL: `DELETE /users/${userId}/functions/`
   - Body: `{ function_ids: functionIds, revoke_reason: revokeReason }`
   - **Fuente:** UC-ACC-02 seq diagram (PROVEN)
 
-- [ ] **T-027** Reescribir `exportAudit` en `accessService.js`:
+- [x] **T-027** Reescribir `exportAudit` en `accessService.js`:
   - Método: `exportAuditLog(filters, period, format, includeArchive)`
   - URL: `POST /audit/export/` (módulo audit, no access)
   - Body: `{ filters, period, format, include_archive }`
   - Respuesta: `202 + { job_id }` — NO blob (export es async)
   - **Fuente:** UC-AUD-03 (PROVEN)
 
-- [ ] **T-028** Reescribir `assignFunctionGroup` en `accessService.js`:
+- [x] **T-028** Reescribir `assignFunctionGroup` en `accessService.js`:
   - Método: `assignAccessGroup(userId, agrId, expiresAt)` (AGR)
   - URL: `POST /users/${userId}/access-groups/`
   - Body: `{ agr_id: agrId, expires_at: expiresAt }`
   - **Fuente:** UC-ACC-04 seq diagram (PROVEN)
 
-- [ ] **T-029** Actualizar `mockInterceptor.js` + `docs/guides/rest-api-conventions.md`:
+- [x] **T-029** Actualizar `mockInterceptor.js` + `docs/guides/rest-api-conventions.md`:
   - Agregar handlers en mockInterceptor para las 4 nuevas URLs
   - Actualizar tabla "Mapa de URLs correctas" en rest-api-conventions.md
     (TD-ACC-01..04 marcados como ✅ Corregido)

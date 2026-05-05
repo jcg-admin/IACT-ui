@@ -31,7 +31,7 @@ class AccessService {
     }
 
     /**
-     * UC_ACC_03: Obtener permisos del usuario
+     * UC-ACC-03: Obtener permisos del usuario
      */
     async getUserPermissions(userId) {
         const response = await fetch(`${API_BASE_URL}/access/permissions/${userId}`, {
@@ -47,42 +47,44 @@ class AccessService {
     }
 
     /**
-     * UC_ACC_01: Asignar función
+     * UC-ACC-01: Asignar funciones a un usuario (operación bulk).
+     * POST /users/{userId}/functions/
      */
-    async assignFunction(userId, functionId, expiresAt = null) {
-        const response = await fetch(`${API_BASE_URL}/access/functions/assign`, {
+    async assignFunctions(userId, functionIds, expiresAt = null) {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/functions/`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
             body: JSON.stringify({
-                userId,
-                functionId,
-                expiresAt,
+                function_ids: functionIds,
+                expires_at: expiresAt,
             }),
         });
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Failed to assign function');
+            throw new Error(error.message || 'Failed to assign functions');
         }
 
         return response.json();
     }
 
     /**
-     * UC_ACC_02: Revocar función
+     * UC-ACC-02: Revocar funciones de un usuario (operación bulk).
+     * DELETE /users/{userId}/functions/
      */
-    async revokeFunction(userId, functionId) {
-        const response = await fetch(`${API_BASE_URL}/access/functions/revoke`, {
-            method: 'POST',
+    async revokeFunctions(userId, functionIds, revokeReason) {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/functions/`, {
+            method: 'DELETE',
             headers: this.getAuthHeaders(),
             body: JSON.stringify({
-                userId,
-                functionId,
+                function_ids: functionIds,
+                revoke_reason: revokeReason,
             }),
         });
 
         if (!response.ok) {
-            throw new Error('Failed to revoke function');
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to revoke functions');
         }
 
         return response.json();
@@ -90,7 +92,7 @@ class AccessService {
 
     /**
      * Valida reglas de separación de funciones antes de asignar (UC-043 / CNST-005).
-     * POST /access/separation-rules/validate — recurso "separation-rules", acción "validate".
+     * POST /access/separation-rules/validate
      */
     async validateSeparationRules(userId, functionId) {
         const response = await fetch(`${API_BASE_URL}/access/separation-rules/validate`, {
@@ -110,7 +112,7 @@ class AccessService {
     }
 
     /**
-     * UC_ACC_09: Obtener auditoria de cambios de acceso
+     * UC-ACC-09: Obtener auditoría de cambios de acceso
      */
     async getAccessAudit(userId) {
         const response = await fetch(`${API_BASE_URL}/access/audit/${userId}`, {
@@ -126,27 +128,32 @@ class AccessService {
     }
 
     /**
-     * Exportar auditoria
+     * UC-AUD-03: Exportar auditoría de forma asíncrona.
+     * POST /audit/export/ — retorna 202 + { job_id } (NO blob).
+     * El archivo se descarga por separado cuando el job completa.
      */
-    async exportAudit(userId, format = 'csv') {
-        const response = await fetch(`${API_BASE_URL}/access/audit/export`, {
+    async exportAuditLog(filters, period, format, includeArchive) {
+        const response = await fetch(`${API_BASE_URL}/audit/export/`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
             body: JSON.stringify({
-                userId,
+                filters,
+                period,
                 format,
+                include_archive: includeArchive,
             }),
         });
 
         if (!response.ok) {
-            throw new Error('Failed to export audit');
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to request audit export');
         }
 
-        return response.blob();
+        return response.json();
     }
 
     /**
-     * Obtener grupos de funciones
+     * Obtener grupos de acceso (AGR)
      */
     async getFunctionGroups() {
         const response = await fetch(`${API_BASE_URL}/access/function-groups`, {
@@ -162,20 +169,22 @@ class AccessService {
     }
 
     /**
-     * Asignar grupo de funciones
+     * UC-ACC-04: Asignar grupo de acceso (AGR) a un usuario.
+     * POST /users/{userId}/access-groups/
      */
-    async assignFunctionGroup(userId, functionGroupId) {
-        const response = await fetch(`${API_BASE_URL}/access/function-groups/assign`, {
+    async assignAccessGroup(userId, agrId, expiresAt = null) {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/access-groups/`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
             body: JSON.stringify({
-                userId,
-                functionGroupId,
+                agr_id: agrId,
+                expires_at: expiresAt,
             }),
         });
 
         if (!response.ok) {
-            throw new Error('Failed to assign function group');
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to assign access group');
         }
 
         return response.json();
@@ -198,7 +207,7 @@ class AccessService {
     }
 
     /**
-     * Asignar segmento
+     * Asignar segmento (deferred — sin spec UC verificada)
      */
     async assignSegment(userId, segmentId) {
         const response = await fetch(`${API_BASE_URL}/access/segments/assign`, {

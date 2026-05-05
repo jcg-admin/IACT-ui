@@ -82,6 +82,26 @@ class MockInterceptor {
       return this._handleJobCancel(url);
     }
 
+    // ACCESS — UC-ACC-01: asignar funciones (bulk)
+    if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'POST') {
+      return this._handleAssignFunctions(body);
+    }
+
+    // ACCESS — UC-ACC-02: revocar funciones (bulk)
+    if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'DELETE') {
+      return this._handleRevokeFunctions(body);
+    }
+
+    // ACCESS — UC-ACC-04: asignar grupo de acceso (AGR)
+    if (url.match(/\/api\/users\/\d+\/access-groups\/$/)) {
+      return this._handleAssignAccessGroup(body);
+    }
+
+    // AUDIT — UC-AUD-03: exportar auditoría (async)
+    if (url.includes('/api/audit/export/')) {
+      return this._handleAuditExport(body);
+    }
+
     // ALERT ENDPOINTS
     if (url.includes('/api/alerts')) {
       return this._handleGetAlerts(url);
@@ -469,6 +489,64 @@ class MockInterceptor {
     return {
       status: 200,
       data: { status: 'cancelled' }
+    };
+  }
+
+  // ====== ACCESS HANDLERS (UC-ACC-01, UC-ACC-02, UC-ACC-04) ======
+
+  _handleAssignFunctions(body) {
+    if (!body || !body.function_ids || !Array.isArray(body.function_ids)) {
+      return this._error(400, 'function_ids array required');
+    }
+    return {
+      status: 201,
+      data: {
+        assigned: body.function_ids.length,
+        expires_at: body.expires_at || null,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  _handleRevokeFunctions(body) {
+    if (!body || !body.function_ids || !Array.isArray(body.function_ids)) {
+      return this._error(400, 'function_ids array required');
+    }
+    return {
+      status: 200,
+      data: {
+        revoked: body.function_ids.length,
+        revoke_reason: body.revoke_reason || null,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  _handleAssignAccessGroup(body) {
+    if (!body || !body.agr_id) {
+      return this._error(400, 'agr_id required');
+    }
+    return {
+      status: 201,
+      data: {
+        agr_id: body.agr_id,
+        expires_at: body.expires_at || null,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  _handleAuditExport(body) {
+    if (!body || !body.format) {
+      return this._error(400, 'format required');
+    }
+    return {
+      status: 202,
+      data: {
+        job_id: `audit-export-${Date.now()}`,
+        format: body.format,
+        status: 'queued',
+      },
     };
   }
 
