@@ -19,6 +19,7 @@ import {
 import { selectUser } from '@redux/selectors'
 import PermissionsTable from '../../access/PermissionsTable'
 import FunctionSelector from '../../access/FunctionSelector'
+import './AccessPage.scss'
 
 export default function AccessPage() {
   const dispatch = useDispatch()

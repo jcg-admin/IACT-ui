@@ -13,6 +13,7 @@ import {
   selectAlerts,
   selectSubscriptions,
 } from '@redux/slices/alertsSlice'
+import './AlertsPage.scss'
 
 const selectAlertsLoading = (state) => state.alerts.loading
 const selectAlertsError = (state) => state.alerts.error
@@ -80,7 +81,7 @@ export default function AlertsPage() {
                 <p className="alert-card__message">{alert.message}</p>
                 {alert.status === 'active' && (
                   <button
-                    className="btn-secondary"
+                    className="btn btn-secondary"
                     onClick={() => handleAcknowledge(alert.id)}
                     aria-label={`Confirmar alerta: ${alert.title}`}
                   >

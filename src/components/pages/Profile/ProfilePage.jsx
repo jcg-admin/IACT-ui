@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { selectUser } from '@redux/selectors'
 import { selectIsSessionActive, selectSessionExpiresAt } from '@redux/slices/sessionSlice'
+import './ProfilePage.scss'
 
 export default function ProfilePage() {
   const user = useSelector(selectUser)
@@ -54,7 +55,7 @@ export default function ProfilePage() {
           <dt>Expira</dt>
           <dd>{formatExpiry(sessionExpiresAt)}</dd>
         </dl>
-        <Link to="/profile/sessions" className="btn-secondary">
+        <Link to="/profile/sessions" className="btn btn-secondary">
           Ver todas las sesiones
         </Link>
       </section>

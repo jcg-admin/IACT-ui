@@ -13,6 +13,7 @@ import {
   selectLogs,
   selectSearchResults,
 } from '@redux/slices/auditSlice'
+import './AuditPage.scss'
 
 const selectAuditLoading = (state) => state.audit.loading
 const selectAuditError = (state) => state.audit.error
@@ -58,9 +59,9 @@ export default function AuditPage() {
           aria-label="Buscar logs de auditoría"
           className="search-input"
         />
-        <button type="submit" className="btn-primary">Buscar</button>
+        <button type="submit" className="btn btn-primary">Buscar</button>
         {searching && (
-          <button type="button" className="btn-secondary" onClick={() => { setSearching(false); setQuery('') }}>
+          <button type="button" className="btn btn-secondary" onClick={() => { setSearching(false); setQuery('') }}>
             Limpiar
           </button>
         )}
