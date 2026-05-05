@@ -4,8 +4,8 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-05
-current_work: .thyrox/context/work/2026-05-05-15-07-47-requirements-gap-analysis
-phase: Phase 10 — IMPLEMENT
+current_work: .thyrox/context/work/2026-05-05-21-14-32-http-error-handling
+phase: Phase 8 — PLAN EXECUTION
 blockers: []
 ```
 
@@ -15,25 +15,39 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**WP activo:** `2026-05-05-19-25-21-scss-variables-audit`
+**WP activo:** `2026-05-05-21-14-32-http-error-handling`
 
-## WP previo en pausa
+## WP activo — http-error-handling
 
-`2026-05-05-15-07-47-requirements-gap-analysis` — en pausa (Phase 10).
-Pendiente: T-012, T-013, T-020..T-024. Task plan en plan-execution/.
+Phase 8 PLAN EXECUTION → listo para ejecutar.
+Task plan: `plan-execution/http-error-task-plan.md`
+
+**Próximas tareas:**
+- T-001: Registrar adminReducer, logsReducer, savedFiltersReducer en store.js
+- T-002: Montar GlobalErrorToast en App.jsx
+- T-003: Wire errorHandlingMiddleware + errorLoggingMiddleware en store.js
+- T-004: Commit Wave 1
+
+**Hallazgos clave (DISCOVER):**
+- errorHandlingMiddleware existe pero NO está wired en store — dead code
+- GlobalErrorToast existe pero NO está montado en ningún componente
+- 3 nuevos reducers (admin, logs, savedFilters) no registrados en store
+- 11 status codes HTTP faltantes en apiErrors.js (405, 408, 410, 412, 413, 415, 428, 431, 451, 501, 511)
+- 20 páginas con .error-banner redundante o inconsistente
+
+## WP en pausa — requirements-gap-analysis
+
+`2026-05-05-15-07-47-requirements-gap-analysis` — Phase 10 IMPLEMENT.
+Pendientes del WP anterior (rutas AppRouter, tests):
+- T-033: /recover-password, /change-password en AppRouter
+- T-044: navLinks dinámicos en DashboardLayout
+- T-045: /access/groups routes
+- T-054: /admin routes
+- T-069: /logs/* routes (7 sub-rutas)
+- T-091: /reports/* sub-rutas
+- T-047, T-055, T-070, T-092: tests pendientes
 
 ## WP cerrado — scss-variables-audit ✓
 
-28/29 tareas completadas. Único pendiente (T-029 push) ejecutado.
-Resultado: cero hex hardcodeados en SCSS de página, CSS Modules eliminados,
-$orange-color agregado como token de estado queued. WP cerrado.
-
-## WP activo — requirements-gap-analysis
-
-**Pendientes:**
-- T-013: baja lógica en UserForm/UserList
-- T-020..T-024: reportsService, reportsSlice, WebSocket en Analytics
-- T-030..T-034: RecoverPassword / ChangePassword pages
-- T-040..T-047: permisos temporales, gestión de grupos
-- T-050..T-055: admin (catálogo de funciones, AGR)
-- T-060..T-064: logs (LogsPage, ETLLogsPage, LogSearchPage)
+Completado. 29/29 tareas. Cero hex hardcodeados, CSS Modules eliminados,
+$orange-color como token de estado queued.
