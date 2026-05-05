@@ -28,6 +28,7 @@ module.exports = {
     '^@config/(.*)$': '<rootDir>/src/config/$1',
     '^@layouts/(.*)$': '<rootDir>/src/layouts/$1',
     '^@decorators/(.*)$': '<rootDir>/src/decorators/$1',
+    '^@hocs/(.*)$': '<rootDir>/src/hocs/$1',
     '^@facades/(.*)$': '<rootDir>/src/facades/$1',
     '^@lib/(.*)$': '<rootDir>/src/lib/$1',
     '^@types/(.*)$': '<rootDir>/src/types/$1',
