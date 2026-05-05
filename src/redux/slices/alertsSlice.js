@@ -15,7 +15,7 @@ export const fetchAlerts = createAsyncThunk(
     'alerts/fetchAlerts',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await alertManager.getAlerts();
+            const response = await alertsService.getAlerts();
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -27,7 +27,7 @@ export const createAlert = createAsyncThunk(
     'alerts/createAlert',
     async (alertConfig, { rejectWithValue }) => {
         try {
-            const response = await alertManager.createAlert(alertConfig);
+            const response = await alertsService.createAlert(alertConfig);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -39,7 +39,7 @@ export const updateAlert = createAsyncThunk(
     'alerts/updateAlert',
     async ({ alertId, config }, { rejectWithValue }) => {
         try {
-            const response = await alertManager.updateAlert(alertId, config);
+            const response = await alertsService.updateAlert(alertId, config);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -51,7 +51,7 @@ export const deleteAlert = createAsyncThunk(
     'alerts/deleteAlert',
     async (alertId, { rejectWithValue }) => {
         try {
-            await alertManager.deleteAlert(alertId);
+            await alertsService.deleteAlert(alertId);
             return alertId;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -63,7 +63,7 @@ export const fetchAlertHistory = createAsyncThunk(
     'alerts/fetchAlertHistory',
     async (filters, { rejectWithValue }) => {
         try {
-            const response = await alertManager.getAlertHistory(filters);
+            const response = await alertsService.getAlertHistory(filters);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -75,7 +75,7 @@ export const fetchTemplates = createAsyncThunk(
     'alerts/fetchTemplates',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await alertManager.getTemplates();
+            const response = await alertsService.getTemplates();
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -87,7 +87,7 @@ export const subscribeToAlert = createAsyncThunk(
     'alerts/subscribeToAlert',
     async ({ alertId, channels, frequency }, { rejectWithValue }) => {
         try {
-            const response = await alertManager.subscribeToAlert(alertId, channels, frequency);
+            const response = await alertsService.subscribeToAlert(alertId, channels, frequency);
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -99,7 +99,7 @@ export const unsubscribeFromAlert = createAsyncThunk(
     'alerts/unsubscribeFromAlert',
     async (alertId, { rejectWithValue }) => {
         try {
-            await alertManager.unsubscribeFromAlert(alertId);
+            await alertsService.unsubscribeFromAlert(alertId);
             return alertId;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -111,7 +111,7 @@ export const fetchMySubscriptions = createAsyncThunk(
     'alerts/fetchMySubscriptions',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await alertManager.getMySubscriptions();
+            const response = await alertsService.getMySubscriptions();
             return response;
         } catch (error) {
             return rejectWithValue(error.message);
