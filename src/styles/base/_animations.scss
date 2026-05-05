@@ -1,0 +1,16 @@
+/**
+ * Animation Preferences
+ * Support for prefers-reduced-motion (WCAG AAA)
+ * Users who prefer reduced motion get minimal animations
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

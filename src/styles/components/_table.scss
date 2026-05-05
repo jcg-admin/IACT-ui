@@ -1,0 +1,151 @@
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table-header {
+  background-color: #111827;
+  border-bottom: 2px solid #1f2937;
+}
+
+.table-header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #f3f4f6;
+}
+
+.table-cell {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #1f2937;
+
+  &--sortable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background-color: #1f2937;
+    }
+  }
+
+  &--checkbox {
+    width: 40px;
+    text-align: center;
+    padding: 12px 8px;
+  }
+
+  &--actions {
+    text-align: right;
+  }
+}
+
+.table-row {
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #111827;
+    cursor: pointer;
+  }
+}
+
+.table-sort-icon {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.table-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.table-loading,
+.table-empty {
+  padding: 32px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .table-cell {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 640px) {
+  .table-container {
+    border-radius: 4px;
+    border: none;
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-body {
+    display: block;
+  }
+
+  .table-row {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid #1f2937;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .table-cell {
+    display: block;
+    padding: 12px;
+    border-bottom: 1px solid #1f2937;
+    text-align: left;
+    position: relative;
+    padding-left: 40%;
+
+    &:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 12px;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--checkbox {
+      display: none;
+    }
+
+    &--actions {
+      text-align: left;
+      padding-left: 12px;
+    }
+  }
+
+  .table-checkbox {
+    display: none;
+  }
+
+  .table-sort-icon {
+    display: none;
+  }
+}

@@ -1,0 +1,87 @@
+/**
+ * IACT UI Kit - Progress Component (Adaptado de mx-template)
+ */
+
+.progress {
+  display: flex;
+  height: 1rem;
+  overflow: hidden;
+  background-color: $color-bg-tertiary;
+  border-radius: 4px;
+  @include box-shadow-elevation(1);
+
+  &-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    background-color: $primary-500;
+    @include transition-all(0.6s ease);
+
+    &-primary {
+      background-color: $primary-500;
+    }
+
+    &-success {
+      background-color: $success-500;
+    }
+
+    &-warning {
+      background-color: $warning-500;
+    }
+
+    &-danger {
+      background-color: $error-500;
+    }
+
+    &-info {
+      background-color: $info-500;
+    }
+
+    &-striped {
+      background-image: linear-gradient(
+        45deg,
+        rgba(white, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(white, 0.15) 50%,
+        rgba(white, 0.15) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 1rem 1rem;
+    }
+
+    &-animated {
+      animation: progress-bar-stripes 1s linear infinite;
+    }
+  }
+
+  &-sm {
+    height: 0.5rem;
+  }
+
+  &-lg {
+    height: 1.5rem;
+  }
+
+  &-stacked {
+    display: flex;
+
+    .progress-bar {
+      flex: 0 0 auto;
+    }
+  }
+}
+
+@keyframes progress-bar-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 1rem 0;
+  }
+}

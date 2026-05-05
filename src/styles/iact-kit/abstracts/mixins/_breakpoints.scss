@@ -1,0 +1,231 @@
+/**
+ * IACT UI Kit - Breakpoints Mixins
+ * Basado en Bootstrap/mx-template
+ * Sistema completo de media queries responsivas (mobile-first)
+ * 
+ * Uso:
+ *   @include media-breakpoint-up(md) { ... }
+ *   @include media-breakpoint-down(lg) { ... }
+ *   @include media-breakpoint-between(md, lg) { ... }
+ *   @include media-breakpoint-only(md) { ... }
+ */
+
+// ============================================================================
+// BREAKPOINT VARIABLES
+// ============================================================================
+// Definido en: src/styles/iact-kit/abstracts/variables/_breakpoints.scss
+// $grid-breakpoints: (xs: 0, sm: 640px, md: 768px, lg: 1024px, xl: 1280px)
+
+// ============================================================================
+// BREAKPOINT FUNCTIONS
+// ============================================================================
+
+/// Get the next breakpoint name in the grid-breakpoints map
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @return {string} - Next breakpoint name or null
+@function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
+  $n: index($breakpoint-names, $name);
+  @return if($n < length($breakpoint-names), nth($breakpoint-names, $n + 1), null);
+}
+
+/// Get the previous breakpoint name in the grid-breakpoints map
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @return {string} - Previous breakpoint name or null
+@function breakpoint-previous($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
+  $n: index($breakpoint-names, $name);
+  @return if($n > 1, nth($breakpoint-names, $n - 1), null);
+}
+
+/// Get the minimum width of a breakpoint
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @return {number} - Minimum width in pixels or null for xs (0)
+@function breakpoint-min($name, $breakpoints: $grid-breakpoints) {
+  $min: map-get($breakpoints, $name);
+  @return if($min != 0, $min, null);
+}
+
+/// Get the maximum width of a breakpoint
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @return {number} - Maximum width in pixels or null for xl (largest)
+/// Note: Uses 0.02px offset to work around Safari rounding bugs
+@function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
+  $next: breakpoint-next($name, $breakpoints);
+  @return if($next, breakpoint-min($next, $breakpoints) - 0.02px, null);
+}
+
+/// Get the infix string for responsive utilities
+/// Returns empty string for xs, or "-{name}" for other breakpoints
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @return {string} - Infix string ("" for xs, "-sm" for sm, etc.)
+@function breakpoint-infix($name, $breakpoints: $grid-breakpoints) {
+  @return if(breakpoint-min($name, $breakpoints) == null, "", "-#{$name}");
+}
+
+// ============================================================================
+// BREAKPOINT MIXINS
+// ============================================================================
+
+/// Media query mixin for minimum breakpoint width (mobile-first approach)
+/// Applies styles at breakpoint and wider
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @example
+///   @include media-breakpoint-up(md) {
+///     .container { width: 750px; }
+///   }
+///   // Generates: @media (min-width: 768px) { ... }
+@mixin media-breakpoint-up($name, $breakpoints: $grid-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+/// Media query mixin for maximum breakpoint width (desktop-first approach)
+/// Applies styles at breakpoint and narrower
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @example
+///   @include media-breakpoint-down(lg) {
+///     .container { width: 100%; }
+///   }
+///   // Generates: @media (max-width: 1023.98px) { ... }
+@mixin media-breakpoint-down($name, $breakpoints: $grid-breakpoints) {
+  $max: breakpoint-max($name, $breakpoints);
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+/// Media query mixin for range between two breakpoints
+/// Applies styles between minimum of lower and maximum of upper
+/// @param {string} $lower - Lower breakpoint name (xs, sm, md, lg, xl)
+/// @param {string} $upper - Upper breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @example
+///   @include media-breakpoint-between(md, lg) {
+///     .container { width: 100%; }
+///   }
+///   // Generates: @media (min-width: 768px) and (max-width: 1023.98px) { ... }
+@mixin media-breakpoint-between($lower, $upper, $breakpoints: $grid-breakpoints) {
+  $min: breakpoint-min($lower, $breakpoints);
+  $max: breakpoint-max($upper, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include media-breakpoint-up($lower, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include media-breakpoint-down($upper, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+/// Media query mixin for specific breakpoint only
+/// Applies styles only at the given breakpoint, not wider or narrower
+/// @param {string} $name - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {map} $breakpoints - Breakpoints map
+/// @example
+///   @include media-breakpoint-only(md) {
+///     .tablet-feature { display: block; }
+///   }
+///   // Generates: @media (min-width: 768px) and (max-width: 1023.98px) { ... }
+@mixin media-breakpoint-only($name, $breakpoints: $grid-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+  $max: breakpoint-max($name, $breakpoints);
+
+  @if $min != null and $max != null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else if $max == null {
+    @include media-breakpoint-up($name, $breakpoints) {
+      @content;
+    }
+  } @else if $min == null {
+    @include media-breakpoint-down($name, $breakpoints) {
+      @content;
+    }
+  }
+}
+
+// ============================================================================
+// ENHANCED MIXINS - Breakpoint + Fallback Class
+// ============================================================================
+
+/// Media query mixin with fallback class for non-responsive behavior
+/// Applies styles with both a fallback class and responsive media query
+/// @param {string} $breakpoint - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {string} $name - CSS class name (e.g., ".responsive-mode")
+/// @example
+///   @include media-breakpoint-up-or(md, ".responsive-mode") {
+///     .container { width: 750px; }
+///   }
+///   // Generates both: .responsive-mode { ... } and @media (min-width: 768px) { ... }
+@mixin media-breakpoint-up-or($breakpoint, $name) {
+  #{unquote($name)} {
+    @content;
+  }
+
+  @include media-breakpoint-up($breakpoint) {
+    @content;
+  }
+}
+
+/// Media query mixin with fallback class for maximum width
+/// Applies styles with both a fallback class and responsive media query
+/// @param {string} $breakpoint - Breakpoint name (xs, sm, md, lg, xl)
+/// @param {string} $name - CSS class name (e.g., ".compact-mode")
+@mixin media-breakpoint-down-or($breakpoint, $name) {
+  #{unquote($name)} {
+    @content;
+  }
+
+  @include media-breakpoint-down($breakpoint) {
+    @content;
+  }
+}
+
+// ============================================================================
+// BACKWARD COMPATIBILITY - Legacy mixins
+// ============================================================================
+// Para mantener compatibilidad con código existente
+
+/// Legacy mixin - Usar media-breakpoint-up() en su lugar
+@mixin respond-to($breakpoint) {
+  @include media-breakpoint-up($breakpoint) {
+    @content;
+  }
+}
+
+/// Legacy mixin - Usar media-breakpoint-down() en su lugar
+@mixin respond-below($breakpoint) {
+  @include media-breakpoint-down($breakpoint) {
+    @content;
+  }
+}
+
+/// Legacy mixin - Usar media-breakpoint-between() en su lugar
+@mixin respond-between($min-bp, $max-bp) {
+  @include media-breakpoint-between($min-bp, $max-bp) {
+    @content;
+  }
+}

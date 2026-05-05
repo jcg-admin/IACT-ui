@@ -1,0 +1,33 @@
+/**
+ * IACT UI Kit - Header Component (Adaptado de mx-template)
+ */
+
+.header {
+  padding: $padding-xl;
+  background-color: $color-bg-secondary;
+  border-bottom: 1px solid $color-border;
+  @include box-shadow-elevation(2);
+
+  &-title {
+    margin: 0 0 $spacing-sm 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  &-subtitle {
+    margin: 0;
+    font-size: $font-size-base;
+    color: $color-text-secondary;
+  }
+
+  &-action {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: $spacing-md;
+
+    .btn {
+      flex-shrink: 0;
+    }
+  }
+}

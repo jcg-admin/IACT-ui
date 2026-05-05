@@ -1,0 +1,26 @@
+/**
+ * Redux Store Configuration
+ * Centralizes application state management
+ */
+
+import { configureStore } from '@reduxjs/toolkit'
+import uiReducer from './slices/uiSlice'
+import userReducer from './slices/userSlice'
+import sessionReducer from './slices/sessionSlice'
+
+const store = configureStore({
+  reducer: {
+    ui: uiReducer,
+    user: userReducer,
+    session: sessionReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore certain actions if needed
+        ignoredActions: ['persist/PERSIST'],
+      },
+    }),
+})
+
+export default store

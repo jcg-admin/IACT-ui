@@ -1,0 +1,185 @@
+/**
+ * IACT UI Kit - Button Component (Adaptado de mx-template)
+ */
+
+.btn {
+  position: relative;
+  padding: $padding-sm $padding-lg;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+  border-radius: 4px;
+  outline: 0;
+  @include transition-all(0.2s);
+  will-change: box-shadow, transform;
+
+  // Prevent default button styles
+  &:focus {
+    outline: none;
+  }
+
+  // Primary variant
+  &-primary {
+    background-color: $primary-500;
+    color: white;
+    @include box-shadow-elevation(2);
+
+    &:hover,
+    &:focus {
+      background-color: $primary-600;
+      @include box-shadow-elevation(4);
+    }
+
+    &:active {
+      background-color: $primary-700;
+      @include box-shadow-elevation(2);
+    }
+
+    &:disabled {
+      background-color: $gray-400;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  // Secondary variant
+  &-secondary {
+    background-color: transparent;
+    color: $primary-500;
+    border: 1px solid $primary-500;
+
+    &:hover,
+    &:focus {
+      background-color: rgba($primary-500, 0.08);
+    }
+
+    &:active {
+      background-color: rgba($primary-500, 0.12);
+    }
+
+    &:disabled {
+      color: $gray-400;
+      border-color: $gray-400;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  // Tertiary/Link variant
+  &-tertiary,
+  &-link {
+    background-color: transparent;
+    color: $primary-500;
+    text-transform: none;
+    letter-spacing: normal;
+
+    &:hover,
+    &:focus {
+      color: $primary-600;
+      text-decoration: underline;
+    }
+
+    &:disabled {
+      color: $gray-400;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  // Danger variant
+  &-danger {
+    background-color: $error-500;
+    color: white;
+    @include box-shadow-elevation(2);
+
+    &:hover,
+    &:focus {
+      background-color: $error-600;
+      @include box-shadow-elevation(4);
+    }
+
+    &:disabled {
+      background-color: $gray-400;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  // Success variant
+  &-success {
+    background-color: $success-500;
+    color: white;
+    @include box-shadow-elevation(2);
+
+    &:hover,
+    &:focus {
+      background-color: $success-600;
+      @include box-shadow-elevation(4);
+    }
+
+    &:disabled {
+      background-color: $gray-400;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  // Size variations
+  &-sm {
+    padding: $padding-xs $padding-md;
+    font-size: $font-size-xs;
+  }
+
+  &-lg {
+    padding: $padding-md $padding-xl;
+    font-size: $font-size-base;
+  }
+
+  // Full width
+  &-block {
+    display: block;
+    width: 100%;
+  }
+
+  // Icon button
+  &-icon {
+    padding: $padding-sm;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    @include flex-center();
+
+    &-sm {
+      width: 32px;
+      height: 32px;
+    }
+
+    &-lg {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  // Loading state
+  &-loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  // Group
+  &-group {
+    display: flex;
+    gap: $spacing-md;
+
+    &-vertical {
+      flex-direction: column;
+    }
+  }
+}

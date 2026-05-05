@@ -1,0 +1,135 @@
+// ═══════════════════════════════════════════════════════════════════════
+// SIDEBAR & NAVIGATION - Component SCSS
+// ═══════════════════════════════════════════════════════════════════════
+
+.sidebar {
+  width: 250px;
+  background-color: $secondary-color;
+  border-right: $border-width-base solid $border-color;
+  padding: $spacing-lg 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: $z-index-fixed;
+}
+
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu-item {
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu-link {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  color: $text-color;
+  text-decoration: none;
+  transition: all $transition-duration-fast;
+  border-left: 4px solid transparent;
+  
+  &:hover {
+    background-color: darken($secondary-color, 5%);
+    color: $primary-color;
+  }
+  
+  &.active {
+    background-color: darken($secondary-color, 5%);
+    color: $primary-color;
+    border-left-color: $primary-color;
+  }
+}
+
+.sidebar-menu-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-menu-label {
+  flex: 1;
+  font-size: $font-size-sm;
+}
+
+.sidebar-menu-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: $primary-color;
+  color: #fff;
+  border-radius: $border-radius-full;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+}
+
+.sidebar-section {
+  margin-top: $spacing-lg;
+}
+
+.sidebar-section-title {
+  padding: $spacing-sm $spacing-lg;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-muted;
+}
+
+.sidebar-footer {
+  padding: $spacing-lg;
+  border-top: $border-width-base solid $border-color;
+  margin-top: auto;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: $spacing-lg;
+  
+  @include media-md {
+    margin-left: 0;
+  }
+}
+
+.sidebar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $text-color;
+  font-size: $font-size-lg;
+  padding: 0;
+  
+  @include media-md {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@include media-md {
+  .sidebar {
+    position: absolute;
+    left: -250px;
+    transition: left $transition-duration-base;
+    z-index: $z-index-fixed;
+  }
+  
+  .sidebar.show {
+    left: 0;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// End of sidebar & navigation component
+// ═══════════════════════════════════════════════════════════════════════

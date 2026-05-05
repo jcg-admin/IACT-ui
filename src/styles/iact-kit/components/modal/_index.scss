@@ -1,0 +1,62 @@
+/**
+ * IACT UI Kit - Modal Component
+ */
+
+.modal {
+  &-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  &-content {
+    background-color: $color-bg-primary;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  &-header {
+    padding: $padding-lg;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &-title {
+    margin: 0;
+    font-size: $font-size-xl;
+  }
+
+  &-close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: $color-text-tertiary;
+
+    &:hover {
+      color: $color-text-primary;
+    }
+  }
+
+  &-body {
+    padding: $padding-lg;
+  }
+
+  &-footer {
+    padding: $padding-lg;
+    border-top: 1px solid $color-border;
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+  }
+}

@@ -1,0 +1,273 @@
+/**
+ * Header Component Styles (CSS Modules)
+ * Scoped styles - no global pollution
+ * Uses SCSS with global variables
+ */
+
+@import '../../../styles/abstracts/variables';
+@import '../../../styles/abstracts/mixins';
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  height: 64px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+.headerContainer {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 16px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+}
+
+.logoBrand {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+.breadcrumb {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.notificationBell {
+  position: relative;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userMenu {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #1f2937;
+  transition: background-color 0.2s;
+  position: relative;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+}
+
+.userDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  min-width: 200px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+}
+
+.userDropdownContent {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+}
+
+.userInfo {
+  padding: 0 16px 12px;
+  border-bottom: 1px solid #e5e7eb;
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7280;
+  }
+}
+
+.logoutButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #ef4444;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #fef2f2;
+  }
+
+  &:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+  }
+}
+
+// Media Queries
+@media (max-width: 375px) {
+  .headerContainer {
+    padding: 0 12px;
+  }
+
+  .breadcrumb {
+    display: none;
+  }
+
+  .userMenu {
+    padding: 8px;
+    font-size: 0;
+
+    &::before {
+      content: '👤';
+    }
+  }
+}
+
+// Animations
+.header {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Button transitions
+.menuButton,
+.notificationBell,
+.userMenu {
+  transition: all 0.2s ease-out;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Badge animation
+.badge {
+  animation: bounce 0.5s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// Dropdown animation
+.userDropdown {
+  animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

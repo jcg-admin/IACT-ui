@@ -1,0 +1,342 @@
+/**
+ * DateTimeInput.scss
+ * IACT v4.0 - Estilos para DateTimeInput component
+ * Dark mode compatible
+ */
+
+.date-time-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .label-control {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+
+    &.required::after {
+      content: ' *';
+      color: #dc2626;
+      font-weight: 600;
+    }
+  }
+
+  .date-time-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .react-date-picker {
+      width: 100%;
+      display: flex;
+      align-items: center;
+
+      &__wrapper {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 4px;
+        padding: 8px 12px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+
+        &:focus-within {
+          border-color: #0ea5e9;
+          box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+        }
+
+        &:hover {
+          border-color: #4b5563;
+        }
+
+        input {
+          color: #fff;
+          background-color: transparent;
+          border: none;
+          font-size: 14px;
+          width: 100%;
+          padding: 0;
+          margin: 0;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+          &:focus {
+            outline: none;
+            color: #fff;
+          }
+
+          &::placeholder {
+            color: #6b7280;
+          }
+
+          &:disabled {
+            color: #6b7280;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      &__inputGroup {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #dc2626;
+      }
+
+      &:focus {
+        outline: none;
+        color: #dc2626;
+      }
+    }
+
+    // Calendar styles
+    .react-calendar {
+      background-color: #111827;
+      color: #fff;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      padding: 8px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      max-width: 350px;
+      z-index: 1000;
+
+      // Navigation
+      .react-calendar__navigation {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #374151;
+        padding-bottom: 8px;
+        justify-content: space-between;
+        align-items: center;
+
+        button {
+          background-color: #1f2937;
+          color: #fff;
+          border: 1px solid #374151;
+          border-radius: 4px;
+          padding: 6px 8px;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          min-width: 32px;
+
+          &:hover:enabled {
+            background-color: #0ea5e9;
+            border-color: #0ea5e9;
+            color: #fff;
+          }
+
+          &:active:enabled {
+            background-color: #0284c7;
+            border-color: #0284c7;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #111827;
+          }
+
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.3);
+          }
+        }
+      }
+
+      // Month/year label
+      .react-calendar__navigation__label {
+        font-weight: 600;
+        font-size: 14px;
+        flex-grow: 1;
+        text-align: center;
+        color: #fff;
+      }
+
+      // Weekdays
+      .react-calendar__month-view__weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 11px;
+        margin-bottom: 8px;
+        text-align: center;
+
+        .react-calendar__month-view__weekdays__weekday {
+          padding: 4px 0;
+          abbr {
+            text-decoration: none;
+          }
+        }
+      }
+
+      // Days grid
+      .react-calendar__month-view__days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+      }
+
+      // Tile (day, month, year)
+      .react-calendar__tile {
+        color: #fff;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        padding: 8px 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s ease;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover:not(:disabled) {
+          background-color: #374151;
+          border-color: #4b5563;
+        }
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.3);
+          background-color: #374151;
+        }
+
+        &--active {
+          background-color: #0ea5e9;
+          color: #fff;
+          border-color: #0ea5e9;
+          font-weight: 600;
+
+          &:hover {
+            background-color: #0284c7;
+            border-color: #0284c7;
+          }
+        }
+
+        &--now {
+          color: #f59e0b;
+          font-weight: 600;
+          border-color: #f59e0b;
+        }
+
+        &--range {
+          background-color: #0ea5e9;
+          color: #fff;
+          border-color: #0ea5e9;
+        }
+
+        &--rangeStart,
+        &--rangeEnd {
+          background-color: #0ea5e9;
+          color: #fff;
+          border-color: #0ea5e9;
+          font-weight: 600;
+        }
+
+        &--weekend {
+          color: #9ca3af;
+        }
+
+        &--neighboringMonth {
+          color: #6b7280;
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          color: #6b7280;
+
+          &:hover {
+            background-color: transparent;
+            border-color: transparent;
+          }
+        }
+      }
+
+      // Year and month selection
+      .react-calendar__year-view,
+      .react-calendar__decade-view {
+        .react-calendar__tile {
+          padding: 12px 4px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+
+    // Clock (time picker)
+    .react-clock {
+      background-color: #111827;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      padding: 8px;
+      color: #fff;
+
+      .react-clock__face {
+        background-color: #1f2937;
+        border-radius: 50%;
+        border: 1px solid #374151;
+      }
+
+      .react-clock__hand {
+        stroke: #0ea5e9;
+      }
+
+      .react-clock__mark {
+        stroke: #374151;
+      }
+
+      .react-clock__number {
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .date-time-input-wrapper {
+    .date-time-input-container {
+      .react-calendar {
+        max-width: 100%;
+        width: 100vw;
+        max-height: 400px;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        left: 50%;
+      }
+
+      .react-clock {
+        width: 100vw;
+        max-width: 100%;
+        margin-left: -50vw;
+        left: 50%;
+      }
+    }
+  }
+}

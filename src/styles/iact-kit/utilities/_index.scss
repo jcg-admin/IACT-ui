@@ -1,0 +1,69 @@
+/**
+ * IACT UI Kit - Utility Classes (Index Principal)
+ * Importa todas las utilities: base, responsive, grid, shadows, opacity, transforms
+ * 
+ * Estructura:
+ *   base/              - Utilities base (display, flexbox, spacing, etc.)
+ *   _responsive.scss   - Responsive utilities (Bootstrap-compatible)
+ *   _grid.scss         - Grid system avanzado
+ *   _shadows.scss      - Shadow utilities
+ *   _opacity.scss      - Opacity utilities
+ *   _transforms.scss   - Transform utilities
+ */
+
+// ============================================================================
+// BASE UTILITIES (No responsivas)
+// ============================================================================
+// Utilities base: display, flexbox, spacing, text, etc.
+// Archivos modulares en base/
+
+@import 'base/index';
+
+// ============================================================================
+// RESPONSIVE UTILITIES (Bootstrap-style)
+// ============================================================================
+// Utilities generadas automáticamente para cada breakpoint
+// Sintaxis: .{property}-{breakpoint}-{size}
+// Ejemplos: .p-md-3, .d-md-flex, .grid-md-2
+
+@import 'responsive';
+
+// ============================================================================
+// GRID SYSTEM (Advanced)
+// ============================================================================
+// Grid helpers responsivos
+// Sintaxis: .col-{breakpoint}-{fraction}
+// Ejemplos: .col-md-1-2, .col-lg-1-3, .col-md-auto, .col-lg-grow
+
+@import 'grid';
+
+// ============================================================================
+// SHADOWS (Responsive)
+// ============================================================================
+// Shadow utilities responsivas (Material Design elevations)
+// Sintaxis: .shadow-{breakpoint}-{size}
+// Ejemplos: .shadow-md-base, .shadow-lg-md, .shadow-inset
+
+@import 'shadows';
+
+// ============================================================================
+// OPACITY (Responsive)
+// ============================================================================
+// Opacity/transparency utilities responsivas
+// Sintaxis: .opacity-{breakpoint}-{value}
+// Exemplos: .opacity-md-50, .opacity-lg-70
+
+@import 'opacity';
+
+// ============================================================================
+// TRANSFORMS (Responsive)
+// ============================================================================
+// Transform utilities responsivas (scale, rotate, translate, skew)
+// Sintaxis: .scale-{breakpoint}-{value}, .rotate-{breakpoint}-{deg}, etc.
+// Exemplos: .scale-md-110, .rotate-lg-90, .translate-x-md-4
+
+@import 'transforms';
+
+// ============================================================================
+// UTILITIES INDEX END
+// ============================================================================

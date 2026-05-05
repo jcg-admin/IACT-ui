@@ -1,0 +1,50 @@
+/**
+ * Transition Durations
+ * Estándares de animación para toda la app
+ */
+
+// Transiciones estándar
+$transition-micro: 0.15s;      // Hover, focus, icons
+$transition-short: 0.2s;        // Color changes, scale
+$transition-medium: 0.3s;       // Input focus, small transitions
+$transition-standard: 0.4s;     // General animations
+$transition-long: 0.6s;         // Page transitions, large animations
+
+// Easing functions (standard)
+$ease-linear: linear;
+$ease-in: ease-in;
+$ease-out: ease-out;
+$ease-in-out: ease-in-out;
+
+// Mixins para transiciones comunes
+@mixin transition-short($property: all) {
+  transition: $property $transition-short ease-out;
+}
+
+@mixin transition-medium($property: all) {
+  transition: $property $transition-medium ease-out;
+}
+
+@mixin transition-standard($property: all) {
+  transition: $property $transition-standard ease-out;
+}
+
+@mixin transition-long($property: all) {
+  transition: $property $transition-long ease-out;
+}
+
+@mixin transition-color {
+  @include transition-short(color);
+}
+
+@mixin transition-transform {
+  @include transition-medium(transform);
+}
+
+@mixin transition-opacity {
+  @include transition-short(opacity);
+}
+
+@mixin transition-all {
+  @include transition-standard();
+}

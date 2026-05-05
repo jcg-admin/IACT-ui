@@ -1,0 +1,29 @@
+/**
+ * IACT UI Kit - Typography
+ */
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: $spacing-md;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+}
+
+h1 { font-size: $font-size-3xl; }
+h2 { font-size: $font-size-2xl; }
+h3 { font-size: $font-size-xl; }
+h4 { font-size: $font-size-lg; }
+h5 { font-size: $font-size-base; }
+h6 { font-size: $font-size-sm; }
+
+p {
+  margin-bottom: $spacing-md;
+  line-height: $line-height-normal;
+}
+
+small {
+  font-size: $font-size-xs;
+}
+
+strong {
+  font-weight: $font-weight-bold;
+}

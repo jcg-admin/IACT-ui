@@ -1,0 +1,107 @@
+/**
+ * IACT UI Kit - Datepicker Component
+ */
+
+.datepicker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1070;
+  display: none;
+  padding: $padding-md;
+  background-color: $color-bg-secondary;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  @include box-shadow-elevation(4);
+  width: 300px;
+  margin-top: $spacing-sm;
+
+  &.show {
+    display: block;
+  }
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &-title {
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  &-nav {
+    display: flex;
+    gap: $spacing-sm;
+
+    button {
+      background: none;
+      border: 1px solid $color-border;
+      color: $primary-500;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      @include transition-all(0.2s);
+
+      &:hover {
+        background-color: rgba($primary-500, 0.1);
+      }
+    }
+  }
+
+  &-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  &-weekday {
+    text-align: center;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    padding: 8px 0;
+  }
+
+  &-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    @include transition-all(0.2s);
+    border: 1px solid transparent;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+
+    &:hover {
+      background-color: rgba($primary-500, 0.1);
+      border-color: $primary-500;
+    }
+
+    &.today {
+      font-weight: $font-weight-bold;
+      border-color: $primary-500;
+    }
+
+    &.selected {
+      background-color: $primary-500;
+      color: white;
+    }
+
+    &.disabled {
+      color: $color-text-tertiary;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    &.other-month {
+      color: $color-text-tertiary;
+    }
+  }
+}

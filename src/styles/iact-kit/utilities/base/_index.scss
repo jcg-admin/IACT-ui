@@ -1,0 +1,23 @@
+/**
+ * IACT UI Kit - Base Utilities Index
+ * Importa todas las utilities base (no responsivas)
+ * 
+ * Estructura preparada para modularización futura:
+ *   - _all.scss - Todas las utilities base (consolidadas actualmente)
+ *   - _display.scss - Display utilities (futuro)
+ *   - _flexbox.scss - Flexbox utilities (futuro)
+ *   - _spacing.scss - Spacing utilities (futuro)
+ *   - ... más archivos modulares
+ */
+
+// ============================================================================
+// BASE UTILITIES (Consolidadas)
+// ============================================================================
+// Importa todas las utilities base
+// Preparado para refactorización en archivos modulares
+
+@import 'all';
+
+// ============================================================================
+// BASE UTILITIES INDEX END
+// ============================================================================

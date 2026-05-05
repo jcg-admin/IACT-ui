@@ -1,0 +1,253 @@
+/**
+ * SelectDropdown.scss
+ * IACT v4.0 - Estilos para SelectDropdown component
+ * Dark mode compatible
+ */
+
+.select-dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .label-control {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+
+    &.required::after {
+      content: ' *';
+      color: #dc2626;
+      font-weight: 600;
+    }
+  }
+
+  // React-Select overrides
+  .react-select {
+    &__control {
+      min-height: 42px;
+      font-size: 14px;
+      background-color: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &--is-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #111827;
+      }
+
+      &--is-focused {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+      }
+
+      &:hover {
+        border-color: #4b5563;
+      }
+    }
+
+    &__input-container {
+      color: #fff;
+      padding: 2px 8px;
+    }
+
+    &__value-container {
+      padding: 8px 12px;
+    }
+
+    &__menu {
+      margin-top: 4px;
+      background-color: #111827;
+      border: 1px solid #374151;
+      border-radius: 4px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      animation: slideDown 0.15s ease-out;
+    }
+
+    &__menu-list {
+      max-height: 300px;
+      padding: 4px 0;
+      scrollbar-width: thin;
+      scrollbar-color: #374151 #1f2937;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #374151;
+        border-radius: 4px;
+
+        &:hover {
+          background: #4b5563;
+        }
+      }
+    }
+
+    &__option {
+      padding: 12px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #111827;
+      color: #fff;
+      transition: all 0.15s ease;
+
+      &--is-focused {
+        background-color: #374151;
+      }
+
+      &--is-selected {
+        background-color: #0ea5e9;
+        color: #fff;
+        font-weight: 500;
+
+        &:hover {
+          background-color: #0284c7;
+        }
+      }
+
+      &--is-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+
+        &:hover {
+          background-color: #111827;
+        }
+      }
+
+      &:hover {
+        background-color: #0ea5e9;
+        color: #fff;
+      }
+    }
+
+    &__single-value {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    &__placeholder {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    &__multi-value {
+      background-color: #0ea5e9;
+      border-radius: 4px;
+      margin: 2px 4px;
+      padding: 2px 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    &__multi-value__label {
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 4px;
+      font-weight: 500;
+    }
+
+    &__multi-value__remove {
+      color: #fff;
+      cursor: pointer;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #dc2626;
+        color: #fff;
+        border-radius: 2px;
+      }
+    }
+
+    &__indicator-separator {
+      background-color: #374151;
+      margin: 8px 0;
+    }
+
+    &__dropdown-indicator {
+      color: #9ca3af;
+      padding: 8px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #0ea5e9;
+      }
+    }
+
+    &__clear-indicator {
+      color: #9ca3af;
+      padding: 8px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #dc2626;
+      }
+    }
+
+    &__loading-message {
+      color: #9ca3af;
+      font-size: 14px;
+      padding: 12px 16px;
+      background-color: #111827;
+    }
+
+    &__no-options {
+      color: #9ca3af;
+      font-size: 14px;
+      padding: 12px 16px;
+      background-color: #111827;
+      text-align: center;
+    }
+
+    &__group {
+      &-heading {
+        color: #9ca3af;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px 16px;
+        margin-top: 8px;
+        border-top: 1px solid #374151;
+        background-color: #0f172a;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .select-dropdown-wrapper {
+    .react-select {
+      &__menu {
+        max-width: calc(100vw - 32px);
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+  }
+}

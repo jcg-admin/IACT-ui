@@ -1,0 +1,22 @@
+/**
+ * IACT UI Kit - Media Component (Adaptado de mx-template)
+ */
+
+.media {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+
+  &-body {
+    flex: 1;
+  }
+}
+
+.media-list {
+  list-style: none;
+  padding-left: 0;
+
+  .media {
+    margin-bottom: $spacing-lg;
+  }
+}

@@ -1,0 +1,245 @@
+// ═══════════════════════════════════════════════════════════════════════
+// VARIABLES SCSS - IACT Dashboard
+// ═══════════════════════════════════════════════════════════════════════
+// Adaptadas del mx-template, customizadas para IACT
+// ═══════════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────────────────────────────────
+// 1. COLORES - PALETTE IACT (Dark Mode)
+// ─────────────────────────────────────────────────────────────────────
+
+// Colores primarios
+$primary-color: #3B82F6;      // Azul (buttons, links, highlights)
+$secondary-color: #1F2937;     // Gris oscuro (backgrounds)
+$dark-bg: #0f172a;             // Negro muy oscuro (main background)
+
+// Colores de estado
+$success-color: #10b981;        // Verde (success, uptrend)
+$error-color: #ef4444;          // Rojo (error, danger, downtrend)
+$warning-color: #f59e0b;        // Ámbar (warning)
+$info-color: #0ea5e9;           // Cian (info)
+
+// Colores neutrales
+$text-color: #f1f5f9;           // Blanco texto (primary text)
+$text-secondary: #cbd5e1;       // Gris claro (secondary text)
+$text-muted: #94a3b8;           // Gris medio (muted text)
+
+$border-color: #374151;         // Gris oscuro (borders)
+$background-color: #1f2937;     // Gris oscuro (cards, panels)
+$surface-color: #111827;        // Casi negro (hover states)
+
+// Colores deprecated (para compatibilidad)
+$color-text: $text-color;
+$color-text-secondary: $text-secondary;
+$color-success: $success-color;
+$color-error: $error-color;
+$color-warning: $warning-color;
+
+// ─────────────────────────────────────────────────────────────────────
+// 2. ESPACIADO - SISTEMA MODULAR (4px base)
+// ─────────────────────────────────────────────────────────────────────
+
+$spacing-xs: 4px;              // Micro spacing
+$spacing-sm: 8px;              // Small
+$spacing-md: 16px;             // Medium
+$spacing-lg: 24px;             // Large
+$spacing-xl: 32px;             // Extra large
+$spacing-2xl: 48px;            // 2x Extra large
+
+// Alias para claridad
+$space-xs: $spacing-xs;
+$space-sm: $spacing-sm;
+$space-md: $spacing-md;
+$space-lg: $spacing-lg;
+$space-xl: $spacing-xl;
+$space-2xl: $spacing-2xl;
+
+// ─────────────────────────────────────────────────────────────────────
+// 3. TIPOGRAFÍA
+// ─────────────────────────────────────────────────────────────────────
+
+// Font family
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+                   'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 
+                   'Droid Sans', 'Helvetica Neue', sans-serif;
+$font-family-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 
+                   'Menlo', monospace;
+
+// Font sizes
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-md: 16px;
+$font-size-lg: 20px;
+$font-size-xl: 24px;
+$font-size-2xl: 32px;
+$font-size-3xl: 40px;
+
+// Font weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 900;
+
+// Line heights
+$line-height-tight: 1.25;
+$line-height-snug: 1.375;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.625;
+$line-height-loose: 2;
+
+// Letter spacing
+$letter-spacing-tight: -0.02em;
+$letter-spacing-normal: 0;
+$letter-spacing-wide: 0.02em;
+
+// ─────────────────────────────────────────────────────────────────────
+// 4. BORDER & RADIUS
+// ─────────────────────────────────────────────────────────────────────
+
+$border-radius-none: 0;
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-full: 9999px;
+
+// Alias
+$border-radius: $border-radius-md;
+
+// Border width
+$border-width-thin: 1px;
+$border-width-base: 1px;
+$border-width-thick: 2px;
+
+// ─────────────────────────────────────────────────────────────────────
+// 5. SOMBRAS (Box Shadows)
+// ─────────────────────────────────────────────────────────────────────
+
+$box-shadow-none: none;
+$box-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$box-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 
+                0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$box-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$box-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+// Alias para claridad
+$shadow-sm: $box-shadow-sm;
+$shadow-md: $box-shadow-md;
+$shadow-lg: $box-shadow-lg;
+
+// ─────────────────────────────────────────────────────────────────────
+// 6. TRANSICIONES & ANIMACIONES
+// ─────────────────────────────────────────────────────────────────────
+
+// Durations
+$transition-duration-fast: 150ms;
+$transition-duration-base: 250ms;
+$transition-duration-slow: 300ms;
+$transition-duration-slower: 500ms;
+
+// Timing functions
+$transition-timing-linear: linear;
+$transition-timing-ease: ease;
+$transition-timing-ease-in: ease-in;
+$transition-timing-ease-out: ease-out;
+$transition-timing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Default transition
+$transition-default: all $transition-duration-base $transition-timing-ease;
+$transition-fast: all $transition-duration-fast $transition-timing-ease;
+$transition-slow: all $transition-duration-slow $transition-timing-ease;
+
+// ─────────────────────────────────────────────────────────────────────
+// 7. Z-INDEX SCALE
+// ─────────────────────────────────────────────────────────────────────
+
+$z-index-hide: -1;
+$z-index-auto: auto;
+$z-index-base: 0;
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// ─────────────────────────────────────────────────────────────────────
+// 8. BREAKPOINTS - RESPONSIVE DESIGN
+// ─────────────────────────────────────────────────────────────────────
+
+$breakpoint-xs: 0;              // Extra small
+$breakpoint-sm: 480px;          // Small phones
+$breakpoint-md: 768px;          // Tablets
+$breakpoint-lg: 1024px;         // Laptops
+$breakpoint-xl: 1280px;         // Desktops
+$breakpoint-2xl: 1536px;        // Large desktops
+
+// ─────────────────────────────────────────────────────────────────────
+// 9. COMPONENT SPECIFIC - BUTTONS
+// ─────────────────────────────────────────────────────────────────────
+
+$btn-padding-y: 10px;
+$btn-padding-x: 16px;
+$btn-border-radius: $border-radius-md;
+$btn-font-weight: $font-weight-semibold;
+$btn-transition: $transition-default;
+
+$btn-padding-y-sm: 6px;
+$btn-padding-x-sm: 12px;
+
+$btn-padding-y-lg: 14px;
+$btn-padding-x-lg: 24px;
+
+// ─────────────────────────────────────────────────────────────────────
+// 10. COMPONENT SPECIFIC - FORMS
+// ─────────────────────────────────────────────────────────────────────
+
+$form-control-padding-y: 10px;
+$form-control-padding-x: 12px;
+$form-control-border-radius: $border-radius-md;
+$form-control-border-color: $border-color;
+$form-control-background-color: $background-color;
+$form-control-color: $text-color;
+$form-control-focus-border-color: $primary-color;
+$form-control-transition: $transition-default;
+
+// ─────────────────────────────────────────────────────────────────────
+// 11. COMPONENT SPECIFIC - CARDS
+// ─────────────────────────────────────────────────────────────────────
+
+$card-padding: $spacing-lg;
+$card-border-color: $border-color;
+$card-border-radius: $border-radius-md;
+$card-background-color: $background-color;
+$card-box-shadow: $box-shadow-md;
+$card-transition: $transition-default;
+
+// ─────────────────────────────────────────────────────────────────────
+// 12. COMPONENT SPECIFIC - ALERTS
+// ─────────────────────────────────────────────────────────────────────
+
+$alert-padding-y: 12px;
+$alert-padding-x: 16px;
+$alert-border-radius: $border-radius-md;
+$alert-margin-bottom: $spacing-md;
+
+// ─────────────────────────────────────────────────────────────────────
+// 13. COMPONENT SPECIFIC - BADGES
+// ─────────────────────────────────────────────────────────────────────
+
+$badge-padding-y: 4px;
+$badge-padding-x: 8px;
+$badge-border-radius: $border-radius-full;
+$badge-font-size: $font-size-xs;
+$badge-font-weight: $font-weight-semibold;
+
+// ═══════════════════════════════════════════════════════════════════════
+// Fin de variables SCSS
+// ═══════════════════════════════════════════════════════════════════════

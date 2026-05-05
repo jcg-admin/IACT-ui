@@ -1,0 +1,40 @@
+/**
+ * IACT UI Kit - Toast Component
+ */
+
+.toast {
+  position: fixed;
+  bottom: $spacing-lg;
+  right: $spacing-lg;
+  padding: $padding-md;
+  border-radius: 6px;
+  min-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  @include transition(all, 0.3s);
+
+  &-success {
+    background-color: #065f46;
+    color: #d1fae5;
+  }
+
+  &-error {
+    background-color: #7f1d1d;
+    color: #fee2e2;
+  }
+
+  &-warning {
+    background-color: #78350f;
+    color: #fef3c7;
+  }
+
+  &-info {
+    background-color: #0c4a6e;
+    color: #cffafe;
+  }
+
+  @include respond-below('sm') {
+    left: $spacing-md;
+    right: $spacing-md;
+    bottom: $spacing-md;
+  }
+}

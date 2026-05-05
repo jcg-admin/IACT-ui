@@ -1,0 +1,92 @@
+/**
+ * IACT UI Kit - Step/Stepper Component
+ */
+
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  &-item {
+    display: flex;
+    gap: $spacing-md;
+    align-items: flex-start;
+
+    &-badge {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      @include flex-center();
+      border-radius: 50%;
+      background-color: $color-bg-tertiary;
+      color: $color-text-primary;
+      font-weight: $font-weight-bold;
+      border: 2px solid $color-border;
+      @include transition-all(0.2s);
+
+      &.active {
+        background-color: $primary-500;
+        color: white;
+        border-color: $primary-500;
+      }
+
+      &.completed {
+        background-color: $success-500;
+        color: white;
+        border-color: $success-500;
+
+        &::after {
+          content: '✓';
+        }
+      }
+    }
+
+    &-content {
+      flex: 1;
+      padding-top: 4px;
+
+      h4 {
+        margin: 0 0 4px 0;
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+      }
+
+      p {
+        margin: 0;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+      }
+    }
+
+    &-connector {
+      flex-shrink: 0;
+      width: 2px;
+      height: 40px;
+      margin-left: 19px;
+      background-color: $color-border;
+      @include transition-all(0.2s);
+
+      &.active {
+        background-color: $primary-500;
+      }
+    }
+  }
+
+  &-horizontal {
+    flex-direction: row;
+    justify-content: space-between;
+
+    .stepper-item {
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+
+      &-connector {
+        width: calc(100% - 50px);
+        height: 2px;
+        margin-left: 0;
+        margin-top: 19px;
+      }
+    }
+  }
+}

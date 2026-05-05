@@ -1,0 +1,48 @@
+.job-tracker {
+  padding: 1.5rem;
+  background: var(--color-bg-primary);
+  border-radius: 8px;
+  
+  .jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .job-item {
+    padding: 1rem;
+    background: var(--color-bg-secondary);
+    border-radius: 6px;
+  }
+  
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .job-type {
+    font-weight: 600;
+  }
+  
+  .job-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    
+    &--processing {
+      background: var(--color-warning);
+      color: white;
+    }
+    
+    &--completed {
+      background: var(--color-success);
+      color: white;
+    }
+    
+    &--error {
+      background: var(--color-danger);
+      color: white;
+    }
+  }
+}

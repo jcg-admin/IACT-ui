@@ -1,0 +1,74 @@
+/**
+ * IACT UI Kit - Alert Component (Adaptado de mx-template)
+ */
+
+.alert {
+  position: relative;
+  padding: $padding-md;
+  margin-bottom: $spacing-lg;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  @include transition-all(0.2s);
+
+  // Default/Info
+  &,
+  &-info {
+    background-color: rgba($info-500, 0.1);
+    border-color: $info-500;
+    color: $info-500;
+  }
+
+  // Success
+  &-success {
+    background-color: rgba($success-500, 0.1);
+    border-color: $success-500;
+    color: $success-500;
+  }
+
+  // Warning
+  &-warning {
+    background-color: rgba($warning-500, 0.1);
+    border-color: $warning-500;
+    color: $warning-500;
+  }
+
+  // Danger
+  &-danger {
+    background-color: rgba($error-500, 0.1);
+    border-color: $error-500;
+    color: $error-500;
+  }
+
+  // Close button
+  .alert-close {
+    position: absolute;
+    top: $spacing-md;
+    right: $spacing-md;
+    background: none;
+    border: none;
+    font-size: $font-size-lg;
+    cursor: pointer;
+    opacity: 0.7;
+    @include transition-all(0.2s);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Heading
+  .alert-heading {
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-bold;
+  }
+
+  // Link inside alert
+  a {
+    color: inherit;
+    text-decoration: underline;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

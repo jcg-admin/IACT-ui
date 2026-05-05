@@ -1,0 +1,338 @@
+/**
+ * Form Stepper Styles
+ * Estilos para componente multi-paso genérico
+ */
+
+.form-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--color-bg-primary);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &--loading {
+    opacity: 0.7;
+  }
+
+  &--error {
+    border: 2px solid var(--color-danger);
+  }
+}
+
+/* ====== HEADER ====== */
+
+.form-stepper__header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-stepper__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-stepper__progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.form-stepper__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  transition: width 0.5s ease;
+  border-radius: 4px;
+}
+
+/* ====== STEPS INDICATOR ====== */
+
+.form-stepper__steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.form-stepper__step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg-secondary);
+  border-radius: 6px;
+  flex: 1;
+  transition: all 0.3s ease;
+
+  &--active {
+    background: var(--color-primary);
+    color: white;
+
+    .form-stepper__step-number {
+      background: white;
+      color: var(--color-primary);
+      font-weight: bold;
+    }
+  }
+
+  &--completed {
+    background: var(--color-success);
+    color: white;
+
+    .form-stepper__step-number {
+      background: white;
+      color: var(--color-success);
+      font-weight: bold;
+    }
+  }
+}
+
+.form-stepper__step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-bg-tertiary);
+  border-radius: 50%;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.form-stepper__step-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ====== BODY ====== */
+
+.form-stepper__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-height: 300px;
+  position: relative;
+}
+
+.form-stepper__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+
+.form-stepper__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ====== ERROR BANNER ====== */
+
+.form-stepper__error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
+  border-radius: 6px;
+  color: var(--color-danger);
+}
+
+.form-stepper__error-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--color-danger);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.form-stepper__error-message {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ====== FOOTER ====== */
+
+.form-stepper__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.form-stepper__buttons-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-stepper__button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: capitalize;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  /* Cancel Button */
+  &--cancel {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+
+    &:not(:disabled):hover {
+      background: var(--color-bg-tertiary);
+    }
+  }
+
+  /* Previous Button */
+  &--previous {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+
+    &:not(:disabled):hover {
+      background: var(--color-bg-tertiary);
+    }
+  }
+
+  /* Next Button */
+  &--next {
+    background: var(--color-primary);
+    color: white;
+
+    &:not(:disabled):hover {
+      background: var(--color-primary-dark);
+    }
+  }
+
+  /* Confirm Button */
+  &--confirm {
+    background: var(--color-success);
+    color: white;
+
+    &:not(:disabled):hover {
+      background: var(--color-success-dark);
+    }
+  }
+}
+
+/* ====== INFO ====== */
+
+.form-stepper__info {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ====== RESPONSIVE ====== */
+
+@media (max-width: 768px) {
+  .form-stepper {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .form-stepper__steps {
+    flex-wrap: wrap;
+  }
+
+  .form-stepper__step {
+    flex: 0 1 calc(50% - 0.5rem);
+  }
+
+  .form-stepper__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-stepper__buttons-group {
+    flex-direction: column;
+  }
+
+  .form-stepper__button {
+    width: 100%;
+  }
+
+  .form-stepper__body {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-stepper {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .form-stepper__step {
+    flex: 0 1 calc(33.333% - 0.7rem);
+  }
+
+  .form-stepper__step-title {
+    font-size: 0.8rem;
+  }
+
+  .form-stepper__step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+
+  .form-stepper__body {
+    min-height: 200px;
+  }
+}

@@ -1,0 +1,75 @@
+/**
+ * IACT UI Kit - Badge Component (Adaptado de mx-template)
+ */
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 12px;
+  @include transition-all(0.2s);
+
+  // Default/Primary
+  &,
+  &-primary {
+    background-color: $primary-500;
+    color: white;
+  }
+
+  // Secondary
+  &-secondary {
+    background-color: $gray-200;
+    color: $gray-800;
+  }
+
+  // Success
+  &-success {
+    background-color: $success-500;
+    color: white;
+  }
+
+  // Danger
+  &-danger {
+    background-color: $error-500;
+    color: white;
+  }
+
+  // Warning
+  &-warning {
+    background-color: $warning-500;
+    color: white;
+  }
+
+  // Info
+  &-info {
+    background-color: $info-500;
+    color: white;
+  }
+
+  // Light variant
+  &-light {
+    background-color: transparent;
+    border: 1px solid currentColor;
+  }
+
+  // Pill shape
+  &-pill {
+    border-radius: 20px;
+    padding: 4px 12px;
+  }
+
+  // Size variations
+  &-sm {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
+
+  &-lg {
+    padding: 4px 12px;
+    font-size: $font-size-sm;
+  }
+}

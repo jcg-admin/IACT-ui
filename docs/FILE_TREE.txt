@@ -1,0 +1,43 @@
+IACT Documentation Structure
+============================
+
+docs/
+├── README.md                          ← START HERE
+├── QUICK_START.md                     ← 5-minute setup
+├── SETUP.md                           ← Detailed setup
+├── ARCHITECTURE.md                    ← System design
+├── API.md                             ← APIs
+├── TROUBLESHOOTING.md                 ← Problem solving
+├── CONTRIBUTING.md                    ← Contributing
+├── DEPLOYMENT.md                      ← Deployment
+├── DOCUMENTATION_STRUCTURE.md         ← This structure
+├── FILE_TREE.txt                      ← File tree
+│
+├── guides/
+│   ├── COMPONENT_GUIDE.md
+│   ├── REDUX_GUIDE.md
+│   ├── ROUTING_GUIDE.md
+│   ├── CSS_MODULES_GUIDE.md
+│   ├── TESTING_GUIDE.md
+│   └── EVENT_CLEANUP_GUIDE.md
+│
+├── raid-party-lessons/
+│   ├── LESSON_3_21_CSS_MODULES.md
+│   ├── LESSON_3_22_EVENT_CLEANUP.md
+│   ├── LESSON_3_23_FEATURE_FOLDERS.md
+│   ├── DETAILED_LESSON_3_21.md
+│   ├── DETAILED_LESSON_3_22.md
+│   └── DETAILED_LESSON_3_23.md
+│
+├── project-scope/
+│   ├── SCOPE.md
+│   ├── ATOMIC_TASKS.md
+│   └── PHASES_COMPLETED.md
+│
+└── reference/
+    ├── DEPENDENCIES.md
+    ├── RAID_PARTY_STRUCTURE.md
+    └── API_REFERENCE.md
+
+Total Files: 30+
+Status: Complete ✅
