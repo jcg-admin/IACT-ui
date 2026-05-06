@@ -104,12 +104,31 @@ class ReportsService {
     return { id, jobId: `job-${Date.now()}`, status: 'running' }
   }
 
-  // TODO: replace mock — GET /api/reports/scheduled/{id}/runs/
+  // TODO: replace mock — GET /api/reports/scheduled/{id}/runs/?page=1
   async getScheduleHistory(id) {
-    return [
-      { runId: '1', scheduledAt: new Date(Date.now() - 86400000).toISOString(), status: 'success', duration: 42 },
-      { runId: '2', scheduledAt: new Date(Date.now() - 172800000).toISOString(), status: 'success', duration: 38 },
-    ]
+    return {
+      items: [
+        {
+          id: '1',
+          scheduled_report_id: id,
+          started_at: new Date(Date.now() - 86_400_000).toISOString(),
+          completed_at: new Date(Date.now() - 86_400_000 + 42_000).toISOString(),
+          status: 'ok',
+          export_job_id: 'job-abc-1',
+          error_code: null,
+        },
+        {
+          id: '2',
+          scheduled_report_id: id,
+          started_at: new Date(Date.now() - 172_800_000).toISOString(),
+          completed_at: new Date(Date.now() - 172_800_000 + 38_000).toISOString(),
+          status: 'ok',
+          export_job_id: 'job-abc-2',
+          error_code: null,
+        },
+      ],
+      pagination: { page: 1, page_size: 20, total: 2 },
+    }
   }
 
   // TODO: replace mock — GET /api/realtime/metrics/ (SSE: Connection: text/event-stream)
