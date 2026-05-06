@@ -126,4 +126,32 @@ describe('FunctionCatalog — route permissions mapping', () => {
     it('EXPORT_LOGS (not VIEW_LOGS) maps to logs:export (G-F6)', () => {
         expect(FunctionCatalog.EXPORT_LOGS).toBe('logs:export');
     });
+
+    it('MANAGE_CATALOG maps to adm:manage_catalog — Admin nav item guard (G-M3)', () => {
+        expect(FunctionCatalog.MANAGE_CATALOG).toBe('adm:manage_catalog');
+    });
+});
+
+describe('ALL_NAV_LINKS — Admin item visibility by capacidades (G-M3)', () => {
+    it('Admin nav item is filtered out when user lacks adm:manage_catalog', () => {
+        const capacidades = ['auth:view_own_sessions', 'reports:view', 'logs:view_app'];
+        const hasPermission = jest.fn((perm) => capacidades.includes(perm));
+        usePermisos.mockReturnValue({ hasPermission, loading: false });
+
+        const adminPermission = FunctionCatalog.MANAGE_CATALOG;
+        expect(hasPermission(adminPermission)).toBe(false);
+    });
+
+    it('Admin nav item passes filter when user has adm:manage_catalog (permissions-admin)', () => {
+        const adminCapacidades = [
+            'auth:view_own_sessions', 'auth:view_all_sessions',
+            'logs:view_app', 'logs:export',
+            'adm:manage_catalog', 'adm:create_sod', 'access:assign_to_group',
+        ];
+        const hasPermission = jest.fn((perm) => adminCapacidades.includes(perm));
+        usePermisos.mockReturnValue({ hasPermission, loading: false });
+
+        const adminPermission = FunctionCatalog.MANAGE_CATALOG;
+        expect(hasPermission(adminPermission)).toBe(true);
+    });
 });

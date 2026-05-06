@@ -7,6 +7,13 @@
  */
 
 import { SENSITIVE_FIELDS } from '@config/securityConfig';
+import permissionsMock from './permissions.json';
+import permissionsAdminMock from './permissions-admin.json';
+
+const PERMISOS_BY_USER_ID = {
+  10:  permissionsMock,
+  99:  permissionsAdminMock,
+};
 
 class MockInterceptor {
   constructor() {
@@ -173,6 +180,11 @@ class MockInterceptor {
 
     if (url.includes('/api/admin/separation-rules/')) {
       return this._handleSeparationRules()
+    }
+
+    // PERMISOS — UC-PERM-07/08: capacidades del usuario (SP-01 — ADR-BACK-005)
+    if (url.match(/\/api\/permisos\/verificar\/(\d+)\/capacidades\//)) {
+      return this._handlePermisosCapacidades(url)
     }
 
     // ALERT ENDPOINTS
@@ -956,6 +968,28 @@ class MockInterceptor {
         { id: 2, name: 'SOD-002', code: 'SOD-002', description: 'Usuario vs Auditoría', group_a: ['users:create'], group_b: ['audit:view'], state: 'ACTIVE', violations: 0 },
         { id: 3, name: 'SOD-003', code: 'SOD-003', description: 'Acceso vs Admin', group_a: ['access:assign'], group_b: ['adm:manage_catalog'], state: 'ACTIVE', violations: 0 },
       ],
+    }
+  }
+
+  // ====== PERMISOS HANDLERS ======
+
+  _handlePermisosCapacidades(url) {
+    const match = url.match(/\/api\/permisos\/verificar\/(\d+)\/capacidades\//)
+    const userId = parseInt(match[1], 10)
+    const data = PERMISOS_BY_USER_ID[userId]
+
+    if (!data) {
+      return this._error(404, `Usuario ${userId} no encontrado en mock`)
+    }
+
+    return {
+      status: 200,
+      data: {
+        user_id: userId,
+        capacidades: data.capacidades,
+        access_groups: data.user.grupos.map((g) => g.codigo),
+        expires_at: null,
+      },
     }
   }
 
