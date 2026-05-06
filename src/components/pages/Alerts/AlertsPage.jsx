@@ -5,7 +5,7 @@
  * Requiere permiso VIEW_ALERTS.
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchAlerts,
@@ -13,6 +13,7 @@ import {
   selectAlerts,
   selectSubscriptions,
 } from '@redux/slices/alertsSlice'
+import ConfirmModal from '@components/shared/ConfirmModal'
 import './AlertsPage.scss'
 
 const selectAlertsLoading = (state) => state.alerts.loading
@@ -31,13 +32,23 @@ export default function AlertsPage() {
   const subscriptions = useSelector(selectSubscriptions)
   const loading = useSelector(selectAlertsLoading)
   const error = useSelector(selectAlertsError)
+  const [ackModal, setAckModal] = useState({ show: false, alertId: null, alertTitle: '' })
 
   useEffect(() => {
     dispatch(fetchAlerts())
   }, [dispatch])
 
-  const handleAcknowledge = (alertId) => {
-    dispatch(updateAlert({ id: alertId, status: 'acknowledged' }))
+  const handleAcknowledgeClick = (alertId, alertTitle) => {
+    setAckModal({ show: true, alertId, alertTitle })
+  }
+
+  const handleConfirmAcknowledge = () => {
+    dispatch(updateAlert({ id: ackModal.alertId, status: 'acknowledged' }))
+    setAckModal({ show: false, alertId: null, alertTitle: '' })
+  }
+
+  const handleCancelAcknowledge = () => {
+    setAckModal({ show: false, alertId: null, alertTitle: '' })
   }
 
   const unreadCount = alerts?.filter((a) => a.status === 'active')?.length ?? 0
@@ -82,7 +93,7 @@ export default function AlertsPage() {
                 {alert.status === 'active' && (
                   <button
                     className="btn btn-secondary"
-                    onClick={() => handleAcknowledge(alert.id)}
+                    onClick={() => handleAcknowledgeClick(alert.id, alert.title)}
                     aria-label={`Confirmar alerta: ${alert.title}`}
                   >
                     Confirmar
@@ -101,6 +112,17 @@ export default function AlertsPage() {
           <h2>Mis Suscripciones ({subscriptions.length})</h2>
         </section>
       )}
+
+      <ConfirmModal
+        isOpen={ackModal.show}
+        onClose={handleCancelAcknowledge}
+        onConfirm={handleConfirmAcknowledge}
+        title="Reconocer alerta"
+        message={`¿Confirmar reconocimiento de la alerta "${ackModal.alertTitle}"?`}
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
+        variant="warning"
+      />
     </div>
   )
 }

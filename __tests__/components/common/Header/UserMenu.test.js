@@ -30,14 +30,15 @@ describe('UserMenu Component', () => {
     expect(screen.getByText('john@example.com')).toBeInTheDocument()
   })
 
-  it('should call onLogout when logout is clicked', () => {
+  it('should call onLogout after confirmation modal', () => {
     const onLogout = jest.fn()
     render(<UserMenu userInfo={mockUserInfo} onLogout={onLogout} />)
-    
+
     fireEvent.click(screen.getByRole('button'))
-    const logoutBtn = screen.getByText('🚪 Logout')
-    fireEvent.click(logoutBtn)
-    
+    fireEvent.click(screen.getByText('🚪 Logout'))
+    // Modal opens — confirm
+    fireEvent.click(screen.getByRole('button', { name: /confirmar/i }))
+
     expect(onLogout).toHaveBeenCalled()
   })
 

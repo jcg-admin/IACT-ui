@@ -7,7 +7,7 @@
  * - Alertas en tiempo real
  */
 
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // Initial State
 const _initial_state = {
@@ -357,3 +357,19 @@ export const {
 
 // Export Reducer
 export default sessionSlice.reducer
+
+// Async thunks defined after slice to avoid circular reference with clearSession
+export const logoutAllSessions = createAsyncThunk(
+  'session/logoutAllSessions',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      // Mock-first: endpoint DELETE /auth/sessions/all will be wired when backend ready
+      const { apiService } = await import('@services/apiService')
+      await apiService.delete('/auth/sessions/all')
+    } catch {
+      // Swallow error — local session cleared regardless
+    } finally {
+      dispatch(clearSession())
+    }
+  }
+)

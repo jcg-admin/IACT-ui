@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router-dom'
 jest.mock('../../../redux/slices/alertsSlice', () => ({
   fetchAlerts: jest.fn(() => ({ type: 'alerts/fetchAlerts' })),
   createAlert: jest.fn(() => ({ type: 'alerts/createAlert' })),
+  updateAlert: jest.fn((payload) => ({ type: 'alerts/updateAlert', payload })),
   fetchAlertHistory: jest.fn(() => ({ type: 'alerts/fetchAlertHistory' })),
   fetchTemplates: jest.fn(() => ({ type: 'alerts/fetchTemplates' })),
   fetchMySubscriptions: jest.fn(() => ({ type: 'alerts/fetchMySubscriptions' })),
@@ -39,6 +40,7 @@ function wrap(ui) {
 
 import AlertsPage from '../AlertsPage'
 import AlertHistoryPage from '../AlertHistoryPage'
+import AcknowledgeAlertsPage from '../../../components/pages/Alerts/AlertsPage'
 import AlertConfigPage from '../AlertConfigPage'
 import TemplatesPage from '../TemplatesPage'
 import SubscriptionsPage from '../SubscriptionsPage'
@@ -75,5 +77,71 @@ describe('SubscriptionsPage', () => {
   it('renders page title', () => {
     wrap(<SubscriptionsPage />)
     expect(screen.getByText('Mis Suscripciones')).toBeInTheDocument()
+  })
+})
+
+// uc-alr-03: Reconocer alerta con confirmación
+describe('AcknowledgeAlertsPage — uc-alr-03', () => {
+  const ACTIVE_ALERT = {
+    id: 'alr-1',
+    title: 'CPU crítica',
+    message: 'CPU al 99%',
+    severity: 'critical',
+    status: 'active',
+    created_at: new Date().toISOString(),
+  }
+
+  function buildAlertsStore(alerts = []) {
+    return configureStore({
+      reducer: {
+        alerts: (state = { alerts, subscriptions: [], loading: false, error: null }) => state,
+      },
+    })
+  }
+
+  function wrapAlerts(ui, alerts = []) {
+    return render(
+      <Provider store={buildAlertsStore(alerts)}>
+        <MemoryRouter>{ui}</MemoryRouter>
+      </Provider>
+    )
+  }
+
+  it('renders Confirmar button for active alerts', () => {
+    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    expect(screen.getByRole('button', { name: /confirmar alerta/i })).toBeInTheDocument()
+  })
+
+  it('does NOT dispatch updateAlert immediately when Confirmar is clicked', () => {
+    const { updateAlert } = require('../../../redux/slices/alertsSlice')
+    updateAlert.mockClear()
+    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
+    expect(updateAlert).not.toHaveBeenCalled()
+  })
+
+  it('opens ConfirmModal when Confirmar is clicked', () => {
+    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
+    expect(screen.getByRole('heading', { name: /reconocer alerta/i })).toBeInTheDocument()
+  })
+
+  it('dispatches updateAlert with acknowledged status on confirm', () => {
+    const { updateAlert } = require('../../../redux/slices/alertsSlice')
+    updateAlert.mockClear()
+    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^confirmar$/i }))
+    expect(updateAlert).toHaveBeenCalledWith({ id: 'alr-1', status: 'acknowledged' })
+  })
+
+  it('closes modal without dispatching when cancel is clicked', () => {
+    const { updateAlert } = require('../../../redux/slices/alertsSlice')
+    updateAlert.mockClear()
+    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
+    fireEvent.click(screen.getByRole('button', { name: /cancelar/i }))
+    expect(updateAlert).not.toHaveBeenCalled()
+    expect(screen.queryByRole('heading', { name: /reconocer alerta/i })).not.toBeInTheDocument()
   })
 })
