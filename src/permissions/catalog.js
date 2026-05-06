@@ -65,4 +65,16 @@ export const FunctionCatalog = {
     // Configuration
     VIEW_CONFIG:        'sistema.configuracion.parametros.ver',
     EDIT_CONFIG:        'sistema.configuracion.parametros.editar',
+
+    // SoD rule lifecycle (uc-adm-01)
+    MANAGE_SOD_RULES:           'sistema.administracion.acceso.sod.gestionar',
+
+    // Pipeline retry (uc-pip-04)
+    RETRY_PIPELINE:             'sistema.observabilidad.pipeline.reintentar',
+
+    // Report sharing (uc-rpt-11)
+    SHARE_REPORTS:              'sistema.analisis.reportes.compartir',
+
+    // Permissions audit (uc-perm-10)
+    VIEW_PERMISSIONS_AUDIT:     'sistema.administracion.permisos.auditoria',
 };

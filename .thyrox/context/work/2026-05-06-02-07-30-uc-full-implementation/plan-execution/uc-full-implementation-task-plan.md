@@ -34,10 +34,10 @@ Opción C — tareas genéricas con trazabilidad a UC/INFRA.
 > Pre-requisito de ITER-1 completo y de pip-04 en ITER-4.
 > Sin estas dos tareas, cualquier modal de confirmación o permiso nuevo está bloqueado.
 
-- [ ] **T-001** `src/components/shared/__tests__/ConfirmModal.test.jsx` — crear: tests render con props (title/message/variant), variantes danger/warning/default, onConfirm/onClose, ESC key cierra (INFRA-01)
-- [ ] **T-002** `src/components/shared/ConfirmModal.jsx` — crear: wrapper sobre `Modal.jsx` con footer [Cancelar][Confirmar], prop `variant` controla color del botón confirm, forwardea todas las props de Modal (INFRA-01)
-- [ ] **T-003** `src/permissions/catalog.js` — agregar 4 constantes: `MANAGE_SOD_RULES`, `RETRY_PIPELINE`, `SHARE_REPORTS`, `VIEW_PERMISSIONS_AUDIT` con string paths en el namespace existente (INFRA-02)
-- [ ] **T-004** Commit ITER-0: `Add ConfirmModal component and 4 FunctionCatalog permissions`
+- [x] **T-001** `src/components/shared/__tests__/ConfirmModal.test.jsx` — crear: tests render con props (title/message/variant), variantes danger/warning/default, onConfirm/onClose, ESC key cierra (INFRA-01)
+- [x] **T-002** `src/components/shared/ConfirmModal.jsx` — crear: wrapper sobre `Modal.jsx` con footer [Cancelar][Confirmar], prop `variant` controla color del botón confirm, forwardea todas las props de Modal (INFRA-01)
+- [x] **T-003** `src/permissions/catalog.js` — agregar 4 constantes: `MANAGE_SOD_RULES`, `RETRY_PIPELINE`, `SHARE_REPORTS`, `VIEW_PERMISSIONS_AUDIT` con string paths en el namespace existente (INFRA-02)
+- [x] **T-004** Commit ITER-0: `Add ConfirmModal component and 4 FunctionCatalog permissions`
 
 ---
 
