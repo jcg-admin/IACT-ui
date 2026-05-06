@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import ReportFilters from '../../components/reports/ReportFilters'
 import ReportTable from '../../components/reports/ReportTable'
 import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
 import ShareReportModal from '../../components/reports/ShareReportModal'
 import reportsService from '../../services/reportsService'
-import apiService from '../../services/apiService'
 
 const COLUMNS = [
-  { key: 'client_id', label: 'Cliente ID' },
-  { key: 'calls', label: 'Llamadas' },
-  { key: 'first_call', label: 'Primera llamada' },
-  { key: 'last_call', label: 'Última llamada' },
+  { key: 'trimestre',       label: 'Trimestre' },
+  { key: 'segmento',        label: 'Segmento' },
+  { key: 'clientes_unicos', label: 'Clientes únicos' },
 ]
 
-const DEFAULT_FILTERS = { dateFrom: '', dateTo: '' }
+const TRIMESTRES = ['', 'Q01_25', 'Q02_25', 'Q03_25']
+
+const DEFAULT_FILTERS = { trimestre: '' }
 
 export default function UniqueClientsReportPage() {
   const dispatch = useDispatch()
@@ -28,8 +27,8 @@ export default function UniqueClientsReportPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiService.get('/api/reports/unique-clients/', { params: { date_from: f.dateFrom, date_to: f.dateTo } })
-      setData(res?.results ?? res ?? [])
+      const res = await reportsService.getUniqueClients(f.trimestre ? { trimestre: f.trimestre } : {})
+      setData(Array.isArray(res) ? res : (res?.results ?? res?.data ?? []))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -39,8 +38,6 @@ export default function UniqueClientsReportPage() {
 
   useEffect(() => { loadData() }, [])
 
-  function handleChange(key, value) { setFilters((prev) => ({ ...prev, [key]: value })) }
-  function handleApply() { loadData(filters) }
   function handleReset() { setFilters(DEFAULT_FILTERS); loadData(DEFAULT_FILTERS) }
 
   async function handleSaveView() {
@@ -66,10 +63,26 @@ export default function UniqueClientsReportPage() {
           <button className="btn btn-secondary" onClick={handleSaveView}>Guardar vista</button>
         </div>
       </div>
+
       <SavedFiltersPanel onApply={(f) => { setFilters(f); loadData(f) }} />
-      <ReportFilters filters={filters} onChange={handleChange} onApply={handleApply} onReset={handleReset} />
+
+      <div className="filter-bar" style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', margin: '12px 0' }}>
+        <div>
+          <label htmlFor="uc-filter-trimestre" style={{ display: 'block', marginBottom: 4 }}>Trimestre</label>
+          <select
+            id="uc-filter-trimestre"
+            value={filters.trimestre}
+            onChange={(e) => { const v = e.target.value; setFilters({ trimestre: v }); loadData({ trimestre: v }) }}
+          >
+            {TRIMESTRES.map((t) => <option key={t} value={t}>{t || 'Todos'}</option>)}
+          </select>
+        </div>
+      </div>
+
       {error && <div className="error-banner">{error}</div>}
+
       <ReportTable columns={COLUMNS} data={data} loading={loading} />
+
       <ShareReportModal
         isOpen={shareModal.isOpen}
         url={shareModal.url}

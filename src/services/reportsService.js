@@ -84,6 +84,76 @@ class ReportsService {
     return apiService.get('/api/reports/history/')
   }
 
+  /**
+   * Obtiene transferencias IVR agrupadas por centro de transferencia.
+   *
+   * Endpoint: GET /api/reports/transfers/
+   *
+   * Schema de respuesta (por fila):
+   *   trimestre         {string}  - Periodo: Q01_25, Q02_25, Q03_25
+   *   fecha             {string}  - Mes en formato YYYYMM
+   *   800_transfer      {string}  - Segmento: Nacional | Puebla
+   *   centro_transferencia {string} - Código del centro (e.g. "19020086")
+   *   menu              {string}  - Nombre del menú IVR
+   *   opcion            {string}  - Opción seleccionada
+   *   total_llamadas    {number}  - Volumen total del periodo/grupo
+   *   porcentaje        {number}  - % sobre el total del segmento
+   *   misma_linea       {number}  - Transferencias a la misma línea
+   *   linea_diferente   {number}  - Transferencias a línea diferente
+   *   no_digito_telefono {number} - Llamadas sin dígito de teléfono
+   *
+   * @param {Object} filters
+   * @param {string} [filters.trimestre]  - Filtro de trimestre (e.g. "Q01_25")
+   * @param {string} [filters.segmento]   - Filtro de segmento / 800_transfer
+   * @param {string} [filters.fecha]      - Filtro de mes YYYYMM (opcional)
+   * @returns {Promise<Array>} Arreglo de filas con el schema descrito
+   */
+  async getTransfersByCentro(filters = {}) {
+    return apiService.get('/api/reports/transfers/', { params: filters })
+  }
+
+  /**
+   * IVR menu distribution with call averages (prom_llamadas).
+   *
+   * Endpoint: GET /api/reports/ivr-menus/
+   *
+   * Schema per row:
+   *   trimestre              {string}  Q01_25 | Q02_25 | Q03_25
+   *   segmento               {string}  Nacional | Puebla
+   *   cMenu                  {string}  IVR menu name
+   *   promedio_llamadas      {number}  Average calls per unique customer
+   *   min_llamadas_x_cliente {number}
+   *   max_llamadas_x_cliente {number}
+   *   total_llamadas         {number}
+   *
+   * @param {Object} filters
+   * @param {string} [filters.trimestre]
+   * @param {string} [filters.segmento]
+   * @returns {Promise<Array>}
+   */
+  async getIvrMenus(filters = {}) {
+    return apiService.get('/api/reports/ivr-menus/', { params: filters })
+  }
+
+  /**
+   * Unique clients summary by segment and quarter.
+   *
+   * Endpoint: GET /api/reports/unique-clients/
+   *
+   * Schema per row:
+   *   trimestre       {string}  Q01_25 | Q02_25 | Q03_25
+   *   segmento        {string}  Nacional_A | Nacional_B | Puebla
+   *   clientes_unicos {number}  Unique client count — total across all rows: 9,617,998
+   *
+   * @param {Object} filters
+   * @param {string} [filters.trimestre]
+   * @param {string} [filters.segmento]
+   * @returns {Promise<Array>}
+   */
+  async getUniqueClients(filters = {}) {
+    return apiService.get('/api/reports/unique-clients/', { params: filters })
+  }
+
   // TODO: replace mock — PATCH /api/reports/scheduled/{id}/pause/
   async pauseSchedule(id) {
     return { id, status: 'paused' }
