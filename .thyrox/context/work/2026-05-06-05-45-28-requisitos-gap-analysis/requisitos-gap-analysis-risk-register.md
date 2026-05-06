@@ -2,11 +2,11 @@
 project: IACT-UI
 work_package: 2026-05-06-05-45-28-requisitos-gap-analysis
 created_at: 2026-05-06 05:52:29
-updated_at: 2026-05-06 05:52:29
-current_phase: Phase 1 — DISCOVER
-open_risks: 5
-mitigated_risks: 0
-closed_risks: 0
+updated_at: 2026-05-06 06:00:02
+current_phase: Phase 3 — ANALYZE
+open_risks: 1
+mitigated_risks: 2
+closed_risks: 2
 author: NestorMonroy
 ```
 
@@ -16,10 +16,10 @@ author: NestorMonroy
 
 | ID | Descripción | Probabilidad | Impacto | Severidad | Estado |
 |----|-------------|:---:|:---:|:---:|--------|
-| R-001 | Módulo Operador depende de CTI backend no implementado | alta | alto | crítica | abierto |
-| R-002 | Módulo Supervisión requiere WebSocket/SSE en tiempo real | alta | alto | crítica | abierto |
-| R-003 | uc-rpt-02 (tiempo real) puede requerir cambio arquitectónico | media | medio | alta | abierto |
-| R-004 | Regressions al agregar módulo Operador (10 páginas nuevas) | media | alto | alta | abierto |
+| R-001 | Módulo Operador depende de CTI backend no implementado | alta | alto | crítica | **cerrado** |
+| R-002 | Módulo Supervisión requiere WebSocket/SSE en tiempo real | alta | alto | crítica | **cerrado** |
+| R-003 | uc-rpt-02 (tiempo real) puede requerir cambio arquitectónico | baja | bajo | **baja** | **mitigado** |
+| R-004 | Regressions al agregar módulo Operador (10 páginas nuevas) | baja | medio | **media** | **mitigado** |
 | R-005 | Ambigüedad entre UCs similares (uc-acc-* vs uc-perm-*) | media | bajo | media | abierto |
 
 ---
@@ -143,9 +143,30 @@ o incompletas.
 
 ---
 
-## Riesgos cerrados
+## Riesgos cerrados / mitigados (Phase 3)
 
-_(ninguno aún — Phase 1)_
+### R-001 — CERRADO (Phase 3)
+
+Decisión de usuario: uc-opr-* excluido del scope del WP. El riesgo deja
+de ser relevante para esta iteración.
+
+### R-002 — CERRADO (Phase 3)
+
+Decisión de usuario: uc-sup-* excluido del scope del WP. El riesgo deja
+de ser relevante para esta iteración.
+
+### R-003 — MITIGADO (Phase 3)
+
+Phase 3 confirmó: rpt-02 usará polling a 30s con mock-first — no requiere
+WebSocket ni cambio arquitectónico en el store Redux. Cuando el backend
+exponga el endpoint, se sustituye el mock por la llamada real (1 línea).
+El riesgo arquitectónico era especulativo.
+
+### R-004 — MITIGADO (Phase 3)
+
+Scope reducido de 10 páginas (módulo Operador) a ~6 UCs en total —
+riesgo de regresión proporcionalmente menor. Se aplica PAT-UI-003
+(grep consumers antes de agregar exports a slices) en cada iteración.
 
 ---
 
