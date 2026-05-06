@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-06
-current_work: .thyrox/context/work/2026-05-06-21-11-12-menu-rbac-user-scope
-phase: Phase 11 — TRACK/EVALUATE (completa)
-updated_at: 2026-05-06 23:55:00
+current_work: .thyrox/context/work/2026-05-06-21-55-12-menu-submenu-ux
+phase: Phase 10 — IMPLEMENT (T-001..T-014 pendientes)
+updated_at: 2026-05-06 22:05:00
 blockers: []
 ```
 
@@ -16,7 +16,7 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP menu-rbac-user-scope cerrado. Siguiente: WP sub-menús (menu-submenu-ux) si se activa.
+**Estado:** WP menu-submenu-ux activo — Phase 10 IMPLEMENT, T-001 siguiente.
 
 ## Métricas de test suite
 
