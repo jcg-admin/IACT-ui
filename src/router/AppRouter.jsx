@@ -431,7 +431,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/etl"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_PIPELINE_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <ETLLogsPage />
                 </Suspense>
@@ -471,7 +471,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/infra"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_INFRA_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <InfraLogsPage />
                 </Suspense>
@@ -481,7 +481,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/status"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_SYSTEM_HEALTH}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <SystemStatusPage />
                 </Suspense>
@@ -491,7 +491,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/metrics"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_TECHNICAL_METRICS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <PerformanceMetricsPage />
                 </Suspense>
@@ -586,7 +586,7 @@ function RoutesWithTransitions() {
           <Route
             path="/reports/realtime"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_DASHBOARD}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_METRICS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <RealTimeMetricsPage />
                 </Suspense>

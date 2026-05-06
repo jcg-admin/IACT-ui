@@ -18,6 +18,7 @@ export const FunctionCatalog = {
     EXPORT_EXCEL:       'reports:export_excel',
     EXPORT_PDF:         'reports:export_pdf',
     SCHEDULE_REPORTS:   'reports:schedule',
+    SAVE_VIEW:          'reports:save_view',
     SHARE_REPORTS:      'reports:share',
 
     // MOD_Users — identity management (UC-006..009)
@@ -43,10 +44,13 @@ export const FunctionCatalog = {
     MANAGE_ALERTS:      'alerts:configure',
 
     // MOD_Logs — technical observability (UC-LOG-01..07)
-    VIEW_LOGS:          'logs:view_app',
-    VIEW_PIPELINE_LOGS: 'logs:view_etl',
-    SEARCH_LOGS:        'logs:search',
-    EXPORT_LOGS:        'logs:export',
+    VIEW_LOGS:               'logs:view_app',
+    VIEW_PIPELINE_LOGS:      'logs:view_etl',
+    VIEW_INFRA_LOGS:         'logs:view_infra',
+    VIEW_SYSTEM_HEALTH:      'logs:view_health',
+    VIEW_TECHNICAL_METRICS:  'logs:view_metrics',
+    SEARCH_LOGS:             'logs:search',
+    EXPORT_LOGS:             'logs:export',
 
     // MOD_Pipeline — ETL supervision (UC-050..053)
     VIEW_ETL_SUPERVISION: 'pipeline:view_status',
