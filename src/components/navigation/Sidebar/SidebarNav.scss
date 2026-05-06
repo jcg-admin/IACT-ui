@@ -66,3 +66,40 @@
 .navLink.active .icon {
   color: $primary-color;
 }
+
+.navGroup {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__chevron {
+    transition: transform 0.2s ease;
+    font-style: normal;
+    font-size: 16px;
+    margin-left: auto;
+    color: $gray-300;
+  }
+
+  &__chevron--open {
+    transform: rotate(90deg);
+  }
+
+  &__children {
+    padding-left: 1rem;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.2s ease-out;
+
+    &--open {
+      max-height: 400px;
+    }
+  }
+}
+
+.navItem--child .navLink--child {
+  font-size: 13px;
+  padding: 8px 16px;
+  color: $gray-500;
+}

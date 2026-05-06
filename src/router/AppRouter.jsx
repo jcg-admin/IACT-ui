@@ -120,23 +120,78 @@ const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalogPage'
 const AGRCatalogPage = lazy(() => import('@pages/admin/AGRCatalogPage'))
 
 // ── Nav config ───────────────────────────────────────────────────────────────
+// Groups that carry children — referenced when building ALL_NAV_LINKS children arrays
+const NAV_GROUP_IDS = { REPORTS: 3, LOGS: 7, ACCESS: 4, ADMIN: 8 }
 
 const ALL_NAV_LINKS = [
   { id: 1, label: 'Dashboard',     icon: 'grid-alt',  path: '/dashboard',  permission: FunctionCatalog.VIEW_DASHBOARD },
   { id: 2, label: 'Usuarios',      icon: 'users',     path: '/users',      permission: FunctionCatalog.VIEW_USERS },
-  { id: 3, label: 'Reportes',      icon: 'chart-bar', path: '/reports',    permission: FunctionCatalog.VIEW_REPORTS },
-  { id: 4, label: 'Acceso',        icon: 'lock',      path: '/access',     permission: FunctionCatalog.VIEW_ACCESS },
+  {
+    id: NAV_GROUP_IDS.REPORTS,
+    label: 'Reportes', icon: 'chart-bar', path: '/reports', permission: FunctionCatalog.VIEW_REPORTS,
+    children: [
+      { label: 'Históricos',        icon: 'chart-bar',      path: '/reports/historical',     permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Agentes IVR',       icon: 'headset',        path: '/reports/agents',         permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Colas IVR',         icon: 'list-ol',        path: '/reports/queues',         permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Campañas',          icon: 'bullhorn',       path: '/reports/campaigns',      permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Transferencias',    icon: 'exchange-alt',   path: '/reports/transfers',      permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Menús IVR',         icon: 'sitemap',        path: '/reports/ivr-menus',      permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Clientes únicos',   icon: 'user-check',     path: '/reports/unique-clients', permission: FunctionCatalog.VIEW_REPORTS },
+      { label: 'Tiempo real',       icon: 'tachometer-alt', path: '/reports/realtime',       permission: FunctionCatalog.VIEW_METRICS },
+      { label: 'Programados',       icon: 'calendar-alt',   path: '/reports/scheduled',      permission: FunctionCatalog.SCHEDULE_REPORTS },
+      { label: 'Exportar',          icon: 'file-export',    path: '/reports/export',         permission: FunctionCatalog.EXPORT_CSV },
+      { label: 'Vistas guardadas',  icon: 'bookmark',       path: '/reports/saved',          permission: FunctionCatalog.SAVE_VIEW },
+    ],
+  },
+  {
+    id: NAV_GROUP_IDS.ACCESS,
+    label: 'Acceso', icon: 'lock', path: '/access', permission: FunctionCatalog.VIEW_ACCESS,
+    children: [
+      { label: 'Grupos de acceso',  icon: 'users',        path: '/access/groups',             permission: FunctionCatalog.MANAGE_GROUPS },
+      { label: 'Composición',       icon: 'layer-group',  path: '/access/groups/composition', permission: FunctionCatalog.MANAGE_GROUPS },
+      { label: 'Agrupadores',       icon: 'object-group', path: '/access/groupers',           permission: FunctionCatalog.MANAGE_ACCESS },
+      { label: 'Reglas SoD',        icon: 'ban',          path: '/access/separation-rules',   permission: FunctionCatalog.MANAGE_SEPARATION_RULES },
+      { label: 'Segmentos',         icon: 'filter',       path: '/access/segments',           permission: FunctionCatalog.MANAGE_ACCESS },
+      { label: 'Asignar grupo',     icon: 'user-plus',    path: '/access/assign-group',       permission: FunctionCatalog.MANAGE_ACCESS },
+    ],
+  },
   { id: 5, label: 'Auditoría',     icon: 'history',   path: '/audit',      permission: FunctionCatalog.VIEW_AUDIT },
   { id: 6, label: 'Alertas',       icon: 'bell',      path: '/alerts',     permission: FunctionCatalog.VIEW_ALERTS },
-  { id: 7, label: 'Logs',          icon: 'terminal',  path: '/logs',       permission: FunctionCatalog.VIEW_LOGS },
-  { id: 8, label: 'Admin',         icon: 'shield',    path: '/admin',      permission: FunctionCatalog.MANAGE_CATALOG },
+  {
+    id: NAV_GROUP_IDS.LOGS,
+    label: 'Logs', icon: 'terminal', path: '/logs', permission: FunctionCatalog.VIEW_LOGS,
+    children: [
+      { label: 'App logs',          icon: 'file-alt',        path: '/logs',                  permission: FunctionCatalog.VIEW_LOGS },
+      { label: 'ETL logs',          icon: 'exchange-alt',    path: '/logs/etl',              permission: FunctionCatalog.VIEW_PIPELINE_LOGS },
+      { label: 'Disponibilidad',    icon: 'heartbeat',       path: '/logs/etl/availability', permission: FunctionCatalog.VIEW_PIPELINE_LOGS },
+      { label: 'Buscar',            icon: 'search',          path: '/logs/search',           permission: FunctionCatalog.SEARCH_LOGS },
+      { label: 'Exportar',          icon: 'download',        path: '/logs/export',           permission: FunctionCatalog.EXPORT_LOGS },
+      { label: 'Infraestructura',   icon: 'server',          path: '/logs/infra',            permission: FunctionCatalog.VIEW_INFRA_LOGS },
+      { label: 'Estado sistema',    icon: 'heartbeat',       path: '/logs/status',           permission: FunctionCatalog.VIEW_SYSTEM_HEALTH },
+      { label: 'Métricas técnicas', icon: 'chart-line',      path: '/logs/metrics',          permission: FunctionCatalog.VIEW_TECHNICAL_METRICS },
+      { label: 'Supervisión ETL',   icon: 'project-diagram', path: '/logs/pipeline',         permission: FunctionCatalog.VIEW_ETL_SUPERVISION },
+    ],
+  },
+  {
+    id: NAV_GROUP_IDS.ADMIN,
+    label: 'Admin', icon: 'shield', path: '/admin', permission: FunctionCatalog.MANAGE_CATALOG,
+    children: [
+      { label: 'Funciones RBAC',    icon: 'list-check', path: '/admin/functions', permission: FunctionCatalog.MANAGE_CATALOG },
+      { label: 'Grupos AGR',        icon: 'users-cog',  path: '/admin/groups',    permission: FunctionCatalog.MANAGE_CATALOG },
+    ],
+  },
   { id: 9, label: 'Ajustes',       icon: 'cog',       path: '/settings',   permission: FunctionCatalog.VIEW_OWN_SESSIONS },
 ]
 
 function useFilteredNavLinks() {
   const { hasPermission, loading } = usePermisos()
   if (loading) return ALL_NAV_LINKS.slice(0, 1)
-  return ALL_NAV_LINKS.filter(link => hasPermission(link.permission))
+  return ALL_NAV_LINKS
+    .filter(link => hasPermission(link.permission))
+    .map(link => ({
+      ...link,
+      children: link.children?.filter(c => hasPermission(c.permission)) ?? [],
+    }))
 }
 
 // ── Guards ───────────────────────────────────────────────────────────────────
