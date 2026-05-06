@@ -86,6 +86,7 @@ jest.mock('@redux/slices/dashboardSlice', () => ({
   setMetrics: jest.fn(() => ({ type: 'dashboard/setMetrics' })),
   setCharts: jest.fn(() => ({ type: 'dashboard/setCharts' })),
   setDashboardLoading: jest.fn(() => ({ type: 'dashboard/setDashboardLoading' })),
+  fetchDashboardData: jest.fn(() => ({ type: 'dashboard/fetchData/pending' })),
 }))
 
 function buildStore(auth = {}, dashboard = {}) {
@@ -177,9 +178,10 @@ describe('Dashboard', () => {
     expect(screen.getByText(/Luis/i)).toBeInTheDocument()
   })
 
-  it('renders metrics grid', () => {
+  it('renders IVR KPI labels', () => {
     wrap(<Dashboard />)
-    expect(screen.getByTestId('metrics-grid')).toBeInTheDocument()
+    expect(screen.getByText('Total Llamadas')).toBeInTheDocument()
+    expect(screen.getByText('Tasa de Abandono')).toBeInTheDocument()
   })
 })
 

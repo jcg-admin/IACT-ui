@@ -34,3 +34,21 @@ export const mockDashboardData = {
   menus: mockMenusRedirigidos,
   lastUpdated: new Date().toISOString(),
 };
+
+// Formato requerido por dashboardSlice (metrics + charts)
+export function getMockDashboardData() {
+  return {
+    metrics: {
+      total_llamadas: mockIVRDashboard.total_llamadas,
+      total_abandonadas: mockIVRDashboard.total_abandonadas,
+      tasa_abandono: mockIVRDashboard.tasa_abandono,
+      trimestre_activo: mockIVRDashboard.trimestre_activo,
+      segmentos_activos: mockIVRDashboard.segmentos_activos,
+      centros_principales: mockIVRDashboard.centros_principales,
+    },
+    charts: {
+      menus_redirigidos: mockMenusRedirigidos,
+      abandono_breakdown: mockAbandonoBreakdown,
+    },
+  };
+}

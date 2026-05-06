@@ -132,21 +132,20 @@ class ReportsService {
   }
 
   // TODO: replace mock — GET /api/realtime/metrics/ (SSE: Connection: text/event-stream)
-  // Shape matches uc-rpt-02: IVR batch metrics (6-12h lag), not true real-time
+  // Shape per uc-rpt-02: live call-center state via pub/sub (call_state_changes,
+  // agent_state_changes, queue_state_snapshots) — NOT ETL batch data.
   async getRealTimeMetrics() {
     return {
       timestamp: new Date().toISOString(),
-      trimestre_activo: 'Q3_25',
-      segmentos_activos: ['nacional_A', 'nacional_B'],
-      total_llamadas_hoy: 842,
-      tasa_abandono_5min: 6.3,
-      centros_activos: [
-        { centro: 'Servicio_General', llamadas_hoy: 340 },
-        { centro: 'Soporte_Tecnico', llamadas_hoy: 280 },
-        { centro: 'Cobranza', llamadas_hoy: 152 },
-      ],
-      ultima_ejecucion_etl: new Date(Date.now() - 6 * 3600_000).toISOString(),
-      lag_seconds: 8,
+      queue_count: 12,
+      agents_busy: 8,
+      agents_idle: 4,
+      answered_per_hour: 143,
+      abandon_rate_5min: 3.2,
+      service_level_15min: 87.5,
+      lag_seconds: 5,
+      segments_applied: [],
+      schema_version: 1,
     }
   }
 

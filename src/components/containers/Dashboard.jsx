@@ -1,72 +1,106 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import MetricsGrid from '@components/presentational/MetricsGrid';
-import ChartsSection from '@components/presentational/ChartsSection';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchDashboardData } from '@redux/slices/dashboardSlice';
 
-const mockMetrics = [
-  { id: 1, label: 'Total Usuarios', value: '1,234', change: '+12%', trend: 'up' },
-  { id: 2, label: 'Activos Hoy', value: '567', change: '+5%', trend: 'up' },
-  { id: 3, label: 'Tasa Crecimiento', value: '23%', change: '-2%', trend: 'down' },
-  { id: 4, label: 'Revenue', value: '$45.2K', change: '+18%', trend: 'up' },
-];
-
-const mockCharts = [
-  {
-    id: 1,
-    title: 'Usuarios por Mes',
-    type: 'line',
-    data: [
-      { month: 'Ene', value: 400 },
-      { month: 'Feb', value: 450 },
-      { month: 'Mar', value: 520 },
-      { month: 'Abr', value: 580 },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Distribucion por Role',
-    type: 'pie',
-    data: [
-      { name: 'Admin', value: 20 },
-      { name: 'User', value: 60 },
-      { name: 'Guest', value: 20 },
-    ],
-  },
-];
-
-function Dashboard() {
-  const { user } = useSelector(state => state.auth);
-
+function KpiCard({ label, value, unit }) {
   return (
-    <div className="p-lg">
-      <div>
-        <h1>Bienvenido, {user?.first_name || 'Usuario'}</h1>
-        <p style={{ color: '#cbd5e1', marginBottom: '24px' }}>
-          Aqui esta un resumen de tu dashboard
-        </p>
-      </div>
-
-      <MetricsGrid metrics={mockMetrics} />
-
-      <div style={{ marginTop: '32px' }}>
-        <h2>Graficos</h2>
-        <div className="grid-2">
-          {mockCharts.map(chart => (
-            <div key={chart.id} className="card">
-              <div className="card-header">
-                <h3 className="card-title">{chart.title}</h3>
-              </div>
-              <div className="card-body">
-                <div style={{ height: '300px', background: '#111827', borderRadius: '8px' }}>
-                  Grafico: {chart.type}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
+      <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '8px' }}>{label}</div>
+      <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff' }}>
+        {value ?? '—'}
+        {unit && <span style={{ fontSize: '13px', color: '#9ca3af', marginLeft: '4px' }}>{unit}</span>}
       </div>
     </div>
   );
 }
 
-export default Dashboard;
+function CentrosTable({ centros }) {
+  if (!centros?.length) return null;
+  return (
+    <div className="card" style={{ padding: '20px', marginTop: '24px' }}>
+      <h3 style={{ margin: '0 0 16px', fontSize: '15px', color: '#cbd5e1' }}>
+        Centros de Transferencia Principales
+      </h3>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ color: '#6b7280', fontSize: '12px', textAlign: 'left' }}>
+            <th style={{ padding: '8px 0' }}>Centro</th>
+            <th style={{ padding: '8px 0', textAlign: 'right' }}>Llamadas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {centros.map((c) => (
+            <tr key={c.centro} style={{ borderTop: '1px solid #1f2937' }}>
+              <td style={{ padding: '10px 0', color: '#e2e8f0' }}>{c.centro}</td>
+              <td style={{ padding: '10px 0', textAlign: 'right', color: '#94a3b8' }}>
+                {c.total.toLocaleString()}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { metrics, loading, error, lastUpdate } = useSelector((state) => state.dashboard);
+
+  useEffect(() => {
+    dispatch(fetchDashboardData());
+  }, [dispatch]);
+
+  return (
+    <div className="p-lg">
+      <div style={{ marginBottom: '24px' }}>
+        <h1>Bienvenido, {user?.first_name || 'Usuario'}</h1>
+        <p style={{ color: '#cbd5e1', margin: 0, fontSize: '14px' }}>
+          Dashboard IVR — Trimestre {metrics?.trimestre_activo ?? '…'}
+          {lastUpdate && (
+            <span style={{ color: '#6b7280', marginLeft: '12px' }}>
+              Actualizado: {new Date(lastUpdate).toLocaleTimeString()}
+            </span>
+          )}
+        </p>
+      </div>
+
+      {error && (
+        <div role="alert" style={{ padding: '12px', background: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+          Error al cargar dashboard: {error}
+        </div>
+      )}
+
+      {loading && !metrics?.total_llamadas ? (
+        <div role="status" aria-busy="true" style={{ color: '#9ca3af', padding: '48px', textAlign: 'center' }}>
+          Cargando datos del dashboard…
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+            <KpiCard
+              label="Total Llamadas"
+              value={metrics?.total_llamadas?.toLocaleString()}
+            />
+            <KpiCard
+              label="Total Abandonadas"
+              value={metrics?.total_abandonadas?.toLocaleString()}
+            />
+            <KpiCard
+              label="Tasa de Abandono"
+              value={metrics?.tasa_abandono != null ? metrics.tasa_abandono.toFixed(2) : null}
+              unit="%"
+            />
+            <KpiCard
+              label="Trimestre"
+              value={metrics?.trimestre_activo}
+            />
+          </div>
+
+          <CentrosTable centros={metrics?.centros_principales} />
+        </>
+      )}
+    </div>
+  );
+}
