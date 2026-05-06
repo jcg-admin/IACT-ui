@@ -12,8 +12,10 @@ import { getNotificationService } from '@services/notificationService'
 import { getWebSocketService } from '@services/websocketService'
 import {
   fetchDashboardMetrics,
+  fetchReportHistory,
   updateMetrics,
   selectMetrics,
+  selectReportHistory,
   selectReportsLoading,
 } from '../../../redux/slices/reportsSlice'
 import MetricsCard from './MetricsCard'
@@ -25,6 +27,7 @@ import './Analytics.scss'
 export default function AnalyticsDashboard() {
   const dispatch = useDispatch()
   const metrics = useSelector(selectMetrics)
+  const reportHistory = useSelector(selectReportHistory)
   const loading = useSelector(selectReportsLoading)
 
   const [activeTab, setActiveTab] = useState('overview')
@@ -36,6 +39,7 @@ export default function AnalyticsDashboard() {
     dispatch(fetchDashboardMetrics()).catch((err) => {
       notify.error(`Error al cargar métricas: ${err.message}`)
     })
+    dispatch(fetchReportHistory())
   }, [dispatch])
 
   // T-023: WebSocket — suscribir al canal "metrics" en mount, desuscribir en unmount
@@ -100,6 +104,13 @@ export default function AnalyticsDashboard() {
           onClick={() => setActiveTab('scheduled')}
         >
           Scheduled
+        </button>
+        <button
+          role="tab"
+          className={`tab ${activeTab === 'history' ? 'active' : ''}`}
+          onClick={() => setActiveTab('history')}
+        >
+          Historial
         </button>
       </div>
 
@@ -192,6 +203,35 @@ export default function AnalyticsDashboard() {
       {activeTab === 'scheduled' && (
         <div className="tab-content">
           <ScheduledReports />
+        </div>
+      )}
+
+      {/* Historial Tab */}
+      {activeTab === 'history' && (
+        <div className="tab-content">
+          <h2>Historial de reportes</h2>
+          {reportHistory.length === 0 ? (
+            <p>No hay reportes generados aún.</p>
+          ) : (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Formato</th>
+                  <th>Generado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportHistory.map((r) => (
+                  <tr key={r.id}>
+                    <td>{r.name}</td>
+                    <td>{r.format}</td>
+                    <td>{r.generated_at}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

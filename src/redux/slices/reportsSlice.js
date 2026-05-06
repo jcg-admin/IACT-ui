@@ -34,6 +34,18 @@ export const fetchScheduledReports = createAsyncThunk(
   }
 )
 
+/** Obtiene el historial de reportes generados. */
+export const fetchReportHistory = createAsyncThunk(
+  'reports/fetchReportHistory',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await reportsService.getReportHistory()
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 /** Programa un nuevo reporte periódico. */
 export const createScheduledReport = createAsyncThunk(
   'reports/createScheduledReport',
@@ -53,6 +65,7 @@ const reportsSlice = createSlice({
   initialState: {
     metrics: null,
     scheduledReports: [],
+    reportHistory: [],
     loading: false,
     error: null,
   },
@@ -93,6 +106,21 @@ const reportsSlice = createSlice({
         state.error = action.payload
       })
 
+    // fetchReportHistory
+    builder
+      .addCase(fetchReportHistory.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchReportHistory.fulfilled, (state, action) => {
+        state.reportHistory = action.payload?.results ?? action.payload ?? []
+        state.loading = false
+      })
+      .addCase(fetchReportHistory.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
     // createScheduledReport
     builder
       .addCase(createScheduledReport.fulfilled, (state, action) => {
@@ -112,6 +140,7 @@ const selectReportsState = (state) => state.reports
 
 export const selectMetrics = createSelector(selectReportsState, (s) => s.metrics)
 export const selectScheduledReports = createSelector(selectReportsState, (s) => s.scheduledReports)
+export const selectReportHistory = createSelector(selectReportsState, (s) => s.reportHistory)
 export const selectReportsLoading = createSelector(selectReportsState, (s) => s.loading)
 export const selectReportsError = createSelector(selectReportsState, (s) => s.error)
 

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import ReportFilters from '../../components/reports/ReportFilters'
 import ReportTable from '../../components/reports/ReportTable'
+import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
 import reportsService from '../../services/reportsService'
 import apiService from '../../services/apiService'
 
@@ -14,6 +16,7 @@ const COLUMNS = [
 const DEFAULT_FILTERS = { dateFrom: '', dateTo: '' }
 
 export default function CampaignsReportPage() {
+  const dispatch = useDispatch()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
@@ -38,9 +41,22 @@ export default function CampaignsReportPage() {
   function handleApply() { loadData(filters) }
   function handleReset() { setFilters(DEFAULT_FILTERS); loadData(DEFAULT_FILTERS) }
 
+  async function handleSaveView() {
+    const name = window.prompt('Nombre para esta vista:')
+    if (!name) return
+    try {
+      const { saveFilter } = await import('../../redux/slices/savedFiltersSlice')
+      dispatch(saveFilter({ name, filters }))
+    } catch (_) { /* saveFilter is optional */ }
+  }
+
   return (
     <div className="page-container">
-      <div className="page-header"><h1>Reporte de campañas</h1></div>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Reporte de campañas</h1>
+        <button className="btn btn-secondary" onClick={handleSaveView}>Guardar vista</button>
+      </div>
+      <SavedFiltersPanel onApply={(f) => { setFilters(f); loadData(f) }} />
       <ReportFilters filters={filters} onChange={handleChange} onApply={handleApply} onReset={handleReset} />
       {error && <div className="error-banner">{error}</div>}
       <ReportTable columns={COLUMNS} data={data} loading={loading} />

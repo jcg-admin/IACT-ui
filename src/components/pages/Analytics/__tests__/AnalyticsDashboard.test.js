@@ -41,6 +41,7 @@ jest.mock('../../../../services/reportsService', () => ({
       jobsRunning: 28,
       dataExported: '2.5TB',
     }),
+    getReportHistory: jest.fn().mockResolvedValue([]),
   }
 }))
 
@@ -73,6 +74,11 @@ function renderWithStore(preloaded = {}) {
     </Provider>
   )
 }
+
+const HISTORY_DATA = [
+  { id: 1, name: 'Agentes semana 1', generated_at: '2026-05-01T10:00:00Z', format: 'xlsx' },
+  { id: 2, name: 'Campañas abril', generated_at: '2026-04-30T09:00:00Z', format: 'pdf' },
+]
 
 describe('AnalyticsDashboard Component', () => {
   beforeEach(() => {
@@ -114,6 +120,32 @@ describe('AnalyticsDashboard Component', () => {
     renderWithStore()
     await waitFor(() => {
       expect(screen.getByText('Export as Excel')).toBeInTheDocument()
+    })
+  })
+})
+
+describe('AnalyticsDashboard — Historial tab (uc-rpt-03)', () => {
+  beforeEach(() => { jest.clearAllMocks() })
+
+  it('renders Historial tab button', () => {
+    renderWithStore()
+    expect(screen.getByRole('tab', { name: /historial/i })).toBeInTheDocument()
+  })
+
+  it('shows history entries when Historial tab is active', async () => {
+    renderWithStore({ reportHistory: HISTORY_DATA })
+    fireEvent.click(screen.getByRole('tab', { name: /historial/i }))
+    await waitFor(() => {
+      expect(screen.getByText('Agentes semana 1')).toBeInTheDocument()
+      expect(screen.getByText('Campañas abril')).toBeInTheDocument()
+    })
+  })
+
+  it('shows empty state when no history', async () => {
+    renderWithStore({ reportHistory: [] })
+    fireEvent.click(screen.getByRole('tab', { name: /historial/i }))
+    await waitFor(() => {
+      expect(screen.getByText(/no hay reportes/i)).toBeInTheDocument()
     })
   })
 })

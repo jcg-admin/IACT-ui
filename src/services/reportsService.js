@@ -79,6 +79,10 @@ class ReportsService {
   async exportReport(type, format, filters = {}) {
     return apiService.post('/api/reports/export/', { type, format, filters })
   }
+
+  async getReportHistory() {
+    return apiService.get('/api/reports/history/')
+  }
 }
 
 export default new ReportsService()
