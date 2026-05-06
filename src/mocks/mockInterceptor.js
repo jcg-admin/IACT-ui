@@ -120,6 +120,24 @@ class MockInterceptor {
       return this._handleTransfersByCentro(params)
     }
 
+    // REPORTS: IVR agents (virtual agents = menus)
+    if (url.includes('/api/reports/agents/')) {
+      const params = options.params || {}
+      return this._handleAgentsReport(params)
+    }
+
+    // REPORTS: transfer queues by centro
+    if (url.includes('/api/reports/queues/')) {
+      const params = options.params || {}
+      return this._handleQueuesReport(params)
+    }
+
+    // REPORTS: IVR campaign menus
+    if (url.includes('/api/reports/campaigns/')) {
+      const params = options.params || {}
+      return this._handleCampaignsReport(params)
+    }
+
     // ALERT ENDPOINTS
     if (url.includes('/api/alerts')) {
       return this._handleGetAlerts(url);
@@ -690,6 +708,74 @@ class MockInterceptor {
       if (params.segmento  && r.segmento  !== params.segmento)  return false
       return true
     })
+    return { status: 200, data: rows }
+  }
+
+  _handleAgentsReport(params) {
+    const tri = params.trimestre || 'Q01_25'
+    const seg = params.segmento  || 'Nacional'
+    const ALL = [
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.82, min_llamadas_x_cliente:1, max_llamadas_x_cliente:7320,  total_llamadas:2507905 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',      promedio_llamadas:2.01, min_llamadas_x_cliente:1, max_llamadas_x_cliente:5103,  total_llamadas:1514344 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'VACIO',                  promedio_llamadas:1.47, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3317,  total_llamadas:1013259 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-FALLAINTERNET',      promedio_llamadas:1.56, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4367,  total_llamadas:806020  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-MADT-DETALLE',       promedio_llamadas:1.60, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4573,  total_llamadas:721424  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'SINOPCION_CABECERA',     promedio_llamadas:1.28, min_llamadas_x_cliente:1, max_llamadas_x_cliente:331,   total_llamadas:596843  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-SALDOOPAGOS',        promedio_llamadas:1.82, min_llamadas_x_cliente:1, max_llamadas_x_cliente:494,   total_llamadas:481621  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'DESBORDE_PROMOCIONAL',   promedio_llamadas:1.72, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3074,  total_llamadas:341839  },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'NUMERO TELMEX',          promedio_llamadas:1.66, min_llamadas_x_cliente:1, max_llamadas_x_cliente:43,   total_llamadas:52010   },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'DESBORDE_CABECERA',      promedio_llamadas:1.87, min_llamadas_x_cliente:1, max_llamadas_x_cliente:41,   total_llamadas:40896   },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.33, min_llamadas_x_cliente:1, max_llamadas_x_cliente:131,  total_llamadas:39331   },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.79, min_llamadas_x_cliente:1, max_llamadas_x_cliente:6990,  total_llamadas:2350120 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',      promedio_llamadas:1.98, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4800,  total_llamadas:1420000 },
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'NUMERO TELMEX',          promedio_llamadas:1.62, min_llamadas_x_cliente:1, max_llamadas_x_cliente:38,   total_llamadas:48500   },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.85, min_llamadas_x_cliente:1, max_llamadas_x_cliente:7100,  total_llamadas:2480000 },
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.35, min_llamadas_x_cliente:1, max_llamadas_x_cliente:125,  total_llamadas:37200   },
+    ]
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
+    return { status: 200, data: rows }
+  }
+
+  _handleQueuesReport(params) {
+    const tri = params.trimestre || 'Q01_25'
+    const seg = params.segmento  || 'Nacional'
+    const ALL = [
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020086', total_llamadas:901808,  misma_linea:78589,  linea_diferente:177548, no_digito_telefono:645671 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020032', total_llamadas:756432,  misma_linea:65210,  linea_diferente:148320, no_digito_telefono:542902 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020018', total_llamadas:612877,  misma_linea:54100,  linea_diferente:122400, no_digito_telefono:436377 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020051', total_llamadas:489230,  misma_linea:43500,  linea_diferente:96800,  no_digito_telefono:348930 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020074', total_llamadas:378910,  misma_linea:34200,  linea_diferente:74500,  no_digito_telefono:270210 },
+      { trimestre:'Q01_25', segmento:'Puebla',   centro_transferencia:'22020011', total_llamadas:98450,   misma_linea:9200,   linea_diferente:19800,  no_digito_telefono:69450  },
+      { trimestre:'Q01_25', segmento:'Puebla',   centro_transferencia:'22020025', total_llamadas:75320,   misma_linea:6800,   linea_diferente:15200,  no_digito_telefono:53320  },
+      { trimestre:'Q02_25', segmento:'Nacional', centro_transferencia:'19020086', total_llamadas:880000,  misma_linea:75000,  linea_diferente:172000, no_digito_telefono:633000 },
+      { trimestre:'Q02_25', segmento:'Nacional', centro_transferencia:'19020032', total_llamadas:740000,  misma_linea:63000,  linea_diferente:145000, no_digito_telefono:532000 },
+      { trimestre:'Q02_25', segmento:'Puebla',   centro_transferencia:'22020011', total_llamadas:95000,   misma_linea:8900,   linea_diferente:19000,  no_digito_telefono:67100  },
+      { trimestre:'Q03_25', segmento:'Nacional', centro_transferencia:'19020086', total_llamadas:860000,  misma_linea:73000,  linea_diferente:168000, no_digito_telefono:619000 },
+      { trimestre:'Q03_25', segmento:'Puebla',   centro_transferencia:'22020011', total_llamadas:92000,   misma_linea:8600,   linea_diferente:18500,  no_digito_telefono:64900  },
+    ]
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
+    return { status: 200, data: rows }
+  }
+
+  _handleCampaignsReport(params) {
+    const tri = params.trimestre || 'Q01_25'
+    const seg = params.segmento  || 'Nacional'
+    const ALL = [
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:312450, promedio_llamadas:2.14 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'NOTMX-CONT-PORTABILIDAD',     total_llamadas:187320, promedio_llamadas:1.98 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'RES-CONTRATACIONINFINITUM',   total_llamadas:145600, promedio_llamadas:2.31 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'DESBORDE_PROMOCIONAL',        total_llamadas:341839, promedio_llamadas:1.72 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION_B2B', total_llamadas:89200,  promedio_llamadas:2.45 },
+      { trimestre:'Q01_25', segmento:'Puebla',   campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:28500,  promedio_llamadas:1.87 },
+      { trimestre:'Q01_25', segmento:'Puebla',   campana:'RES-CONTRATACIONINFINITUM_2024', total_llamadas:35754, promedio_llamadas:1.58 },
+      { trimestre:'Q02_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:298700, promedio_llamadas:2.08 },
+      { trimestre:'Q02_25', segmento:'Nacional', campana:'NOTMX-CONT-PORTABILIDAD',     total_llamadas:178400, promedio_llamadas:1.91 },
+      { trimestre:'Q02_25', segmento:'Puebla',   campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:26800,  promedio_llamadas:1.82 },
+      { trimestre:'Q03_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:285000, promedio_llamadas:2.01 },
+      { trimestre:'Q03_25', segmento:'Nacional', campana:'NOTMX-CONT-PORTABILIDAD',     total_llamadas:170000, promedio_llamadas:1.88 },
+      { trimestre:'Q03_25', segmento:'Puebla',   campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:24500,  promedio_llamadas:1.75 },
+    ]
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
     return { status: 200, data: rows }
   }
 

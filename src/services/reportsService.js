@@ -25,27 +25,67 @@ class ReportsService {
   }
 
   /**
-   * Obtiene el reporte de agentes con filtros opcionales.
-   * @param {Object} filters - Filtros: state, team, period, etc.
-   * @returns {Promise<Object>} Reporte de agentes con datos y metadatos
+   * IVR agent activity by menu (virtual agents = IVR menus).
+   *
+   * Endpoint: GET /api/reports/agents/
+   *
+   * Schema per row:
+   *   trimestre              {string}  Q01_25 | Q02_25 | Q03_25
+   *   segmento               {string}  Nacional | Puebla
+   *   cMenu                  {string}  IVR menu name
+   *   total_llamadas         {number}
+   *   promedio_llamadas      {number}  Average calls per unique customer
+   *   min_llamadas_x_cliente {number}
+   *   max_llamadas_x_cliente {number}
+   *
+   * @param {Object} filters
+   * @param {string} [filters.trimestre]
+   * @param {string} [filters.segmento]
+   * @returns {Promise<Array>}
    */
   async getAgentsReport(filters = {}) {
     return apiService.get('/api/reports/agents/', { params: filters })
   }
 
   /**
-   * Obtiene el reporte de colas con filtros opcionales.
-   * @param {Object} filters - Filtros: queue_id, period, etc.
-   * @returns {Promise<Object>} Reporte de colas
+   * Transfer queue metrics by centro de transferencia.
+   *
+   * Endpoint: GET /api/reports/queues/
+   *
+   * Schema per row:
+   *   trimestre            {string}  Q01_25 | Q02_25 | Q03_25
+   *   segmento             {string}  Nacional | Puebla
+   *   centro_transferencia {string}  Transfer center code
+   *   total_llamadas       {number}
+   *   misma_linea          {number}  Transfers to same line
+   *   linea_diferente      {number}  Transfers to different line
+   *   no_digito_telefono   {number}  Calls without phone digit
+   *
+   * @param {Object} filters
+   * @param {string} [filters.trimestre]
+   * @param {string} [filters.segmento]
+   * @returns {Promise<Array>}
    */
   async getQueuesReport(filters = {}) {
     return apiService.get('/api/reports/queues/', { params: filters })
   }
 
   /**
-   * Obtiene el reporte de campañas con filtros opcionales.
-   * @param {Object} filters - Filtros: campaign_id, period, state, etc.
-   * @returns {Promise<Object>} Reporte de campañas
+   * IVR campaign menu metrics (contratacion, portabilidad).
+   *
+   * Endpoint: GET /api/reports/campaigns/
+   *
+   * Schema per row:
+   *   trimestre         {string}  Q01_25 | Q02_25 | Q03_25
+   *   segmento          {string}  Nacional | Puebla
+   *   campana           {string}  Campaign name (IVR menu)
+   *   total_llamadas    {number}
+   *   promedio_llamadas {number}  Average calls per unique customer
+   *
+   * @param {Object} filters
+   * @param {string} [filters.trimestre]
+   * @param {string} [filters.segmento]
+   * @returns {Promise<Array>}
    */
   async getCampaignsReport(filters = {}) {
     return apiService.get('/api/reports/campaigns/', { params: filters })

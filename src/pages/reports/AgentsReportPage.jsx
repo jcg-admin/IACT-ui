@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import ReportFilters from '../../components/reports/ReportFilters'
 import ReportTable from '../../components/reports/ReportTable'
 import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
 import ShareReportModal from '../../components/reports/ShareReportModal'
 import reportsService from '../../services/reportsService'
 
 const COLUMNS = [
-  { key: 'agent', label: 'Agente' },
-  { key: 'calls_answered', label: 'Llamadas atendidas' },
-  { key: 'avg_time', label: 'Tiempo promedio' },
-  { key: 'satisfaction', label: 'Satisfacción' },
+  { key: 'cMenu',                  label: 'Menú IVR' },
+  { key: 'trimestre',              label: 'Trimestre' },
+  { key: 'segmento',               label: 'Segmento' },
+  { key: 'total_llamadas',         label: 'Total llamadas' },
+  { key: 'promedio_llamadas',      label: 'Prom. llamadas/cliente' },
+  { key: 'min_llamadas_x_cliente', label: 'Mín. llamadas' },
+  { key: 'max_llamadas_x_cliente', label: 'Máx. llamadas' },
 ]
 
-const DEFAULT_FILTERS = { dateFrom: '', dateTo: '' }
+const TRIMESTRES = ['Q01_25', 'Q02_25', 'Q03_25']
+const SEGMENTOS  = ['Nacional', 'Puebla']
+const DEFAULT_FILTERS = { trimestre: 'Q01_25', segmento: 'Nacional' }
 
 export default function AgentsReportPage() {
   const dispatch = useDispatch()
@@ -27,8 +31,8 @@ export default function AgentsReportPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await reportsService.getAgentsReport({ date_from: f.dateFrom, date_to: f.dateTo })
-      setData(res?.results ?? res ?? [])
+      const res = await reportsService.getAgentsReport({ trimestre: f.trimestre, segmento: f.segmento })
+      setData(res ?? [])
     } catch (err) {
       setError(err.message)
     } finally {
@@ -38,8 +42,6 @@ export default function AgentsReportPage() {
 
   useEffect(() => { loadData() }, [])
 
-  function handleChange(key, value) { setFilters((prev) => ({ ...prev, [key]: value })) }
-  function handleApply() { loadData(filters) }
   function handleReset() { setFilters(DEFAULT_FILTERS); loadData(DEFAULT_FILTERS) }
 
   async function handleSaveView() {
@@ -48,7 +50,7 @@ export default function AgentsReportPage() {
     try {
       const { saveFilter } = await import('../../redux/slices/savedFiltersSlice')
       dispatch(saveFilter({ name, filters }))
-    } catch (_) { /* saveFilter is optional — ignore if slice missing */ }
+    } catch (_) {}
   }
 
   function handleShare() {
@@ -59,14 +61,37 @@ export default function AgentsReportPage() {
   return (
     <div className="page-container">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Reporte de agentes</h1>
+        <h1>Reporte de agentes IVR</h1>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button className="btn btn-secondary" onClick={handleShare}>Compartir</button>
           <button className="btn btn-secondary" onClick={handleSaveView}>Guardar vista</button>
         </div>
       </div>
       <SavedFiltersPanel onApply={(f) => { setFilters(f); loadData(f) }} />
-      <ReportFilters filters={filters} onChange={handleChange} onApply={handleApply} onReset={handleReset} />
+      <div className="filters-bar" style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+        <div>
+          <label htmlFor="agents-filter-trimestre">Trimestre</label>
+          <select
+            id="agents-filter-trimestre"
+            value={filters.trimestre}
+            onChange={(e) => setFilters((p) => ({ ...p, trimestre: e.target.value }))}
+          >
+            {TRIMESTRES.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="agents-filter-segmento">Segmento</label>
+          <select
+            id="agents-filter-segmento"
+            value={filters.segmento}
+            onChange={(e) => setFilters((p) => ({ ...p, segmento: e.target.value }))}
+          >
+            {SEGMENTOS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <button className="btn btn-primary" onClick={() => loadData(filters)}>Aplicar</button>
+        <button className="btn btn-secondary" onClick={handleReset}>Restablecer</button>
+      </div>
       {error && <div className="error-banner">{error}</div>}
       <ReportTable columns={COLUMNS} data={data} loading={loading} />
       <ShareReportModal

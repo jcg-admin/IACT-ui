@@ -3,7 +3,16 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import CampaignsReportPage from '../CampaignsReportPage'
 
+const MOCK_ROW = {
+  trimestre: 'Q01_25',
+  segmento: 'Nacional',
+  campana: 'NOTMX-CONT-CONTRATACION',
+  total_llamadas: 150000,
+  promedio_llamadas: 2.1,
+}
+
 jest.mock('../../../services/reportsService', () => ({
+  __esModule: true,
   default: {
     getCampaignsReport: jest.fn().mockResolvedValue([]),
     generateShareUrl: jest.fn(() => 'https://example.com/reports/shared?type=campaigns'),
@@ -14,15 +23,13 @@ jest.mock('../../../services/apiService', () => ({
   default: { get: jest.fn().mockResolvedValue([]) },
 }))
 
-jest.mock('../../../components/reports/ReportFilters', () =>
-  function MockFilters({ onApply }) {
-    return <button onClick={onApply}>Aplicar filtros</button>
-  }
-)
-
 jest.mock('../../../components/reports/SavedFiltersPanel', () =>
   function MockSavedFiltersPanel({ onApply }) {
-    return <div data-testid="saved-filters-panel"><button onClick={() => onApply({})}>apply-saved</button></div>
+    return (
+      <div data-testid="saved-filters-panel">
+        <button onClick={() => onApply({})}>apply-saved</button>
+      </div>
+    )
   }
 )
 
@@ -33,8 +40,15 @@ jest.mock('../../../components/reports/ShareReportModal', () =>
 )
 
 jest.mock('../../../components/reports/ReportTable', () =>
-  function MockTable({ data }) {
-    return <div data-testid="report-table">Rows: {data.length}</div>
+  function MockTable({ columns, data }) {
+    return (
+      <div data-testid="report-table">
+        <span data-testid="row-count">Rows: {data.length}</span>
+        {columns.map((c) => (
+          <span key={c.key} data-testid={`col-${c.key}`}>{c.label}</span>
+        ))}
+      </div>
+    )
   }
 )
 
@@ -45,20 +59,71 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('CampaignsReportPage', () => {
+describe('CampaignsReportPage — estructura base', () => {
   it('renders page heading', () => {
     wrapper(<CampaignsReportPage />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
-  it('renders ReportFilters', () => {
-    wrapper(<CampaignsReportPage />)
-    expect(screen.getByText('Aplicar filtros')).toBeInTheDocument()
-  })
-
   it('renders ReportTable', () => {
     wrapper(<CampaignsReportPage />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
+  })
+})
+
+describe('CampaignsReportPage — columnas del schema real', () => {
+  it('pasa columna campana al ReportTable', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByTestId('col-campana')).toBeInTheDocument()
+  })
+
+  it('pasa columna total_llamadas al ReportTable', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByTestId('col-total_llamadas')).toBeInTheDocument()
+  })
+
+  it('pasa columna promedio_llamadas al ReportTable', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByTestId('col-promedio_llamadas')).toBeInTheDocument()
+  })
+
+  it('NO pasa columnas del schema obsoleto', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.queryByTestId('col-campaign')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('col-calls_made')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('col-contacts')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('col-success_rate_pct')).not.toBeInTheDocument()
+  })
+})
+
+describe('CampaignsReportPage — filtros reales (trimestre / segmento)', () => {
+  it('renderiza selector de trimestre', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByLabelText(/trimestre/i)).toBeInTheDocument()
+  })
+
+  it('renderiza selector de segmento', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByLabelText(/segmento/i)).toBeInTheDocument()
+  })
+
+  it('el selector trimestre tiene opción Q01_25', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByRole('option', { name: 'Q01_25' })).toBeInTheDocument()
+  })
+
+  it('el selector segmento tiene opción Nacional', () => {
+    wrapper(<CampaignsReportPage />)
+    expect(screen.getByRole('option', { name: /nacional/i })).toBeInTheDocument()
+  })
+})
+
+describe('CampaignsReportPage — renderiza filas del servicio', () => {
+  it('muestra filas cuando el servicio retorna datos', async () => {
+    const svc = jest.requireMock('../../../services/reportsService').default
+    svc.getCampaignsReport.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
+    wrapper(<CampaignsReportPage />)
+    expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })
 })
 
