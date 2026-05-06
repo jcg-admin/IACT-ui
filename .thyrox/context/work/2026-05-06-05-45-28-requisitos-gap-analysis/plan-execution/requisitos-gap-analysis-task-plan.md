@@ -42,13 +42,13 @@ status: Borrador
 > Polling a 30s con mock-first. Estado local en hook — no contaminar el store global
 > con datos efímeros que se invalidan cada 30s.
 
-- [ ] **T-010** Agregar `getRealTimeMetrics()` mock-first a `src/services/reportsService.js` — retorna las 6 métricas (llamadas en cola, agentes ocupados/libres, atendidas/hora, abandono/5min, SL/15min, lag)
-- [ ] **T-011** Crear `src/hooks/domain/__tests__/useRealTimeMetrics.test.js` — tests: llama servicio al montar, refresca cada 30s, limpia interval al desmontar
-- [ ] **T-012** Crear `src/hooks/domain/useRealTimeMetrics.js` — hook con `setInterval(30000)` + cleanup en return de `useEffect`
-- [ ] **T-013** Crear `src/pages/reports/__tests__/RealTimeMetricsPage.test.jsx` — tests: muestra 6 métricas, muestra indicador de lag, muestra estado de carga
-- [ ] **T-014** Crear `src/pages/reports/RealTimeMetricsPage.jsx` — grid de métricas, badge de lag, indicador de última actualización
-- [ ] **T-015** Agregar route `/reports/realtime` + lazy import en AppRouter con `ProtectedRoute permission={FunctionCatalog.VIEW_REALTIME_METRICS}`
-- [ ] **T-016** Commit ITER-2: `Add ITER-2: uc-rpt-02 real-time metrics page with 30s polling`
+- [x] **T-010** Agregar `getRealTimeMetrics()` mock-first a `src/services/reportsService.js` — retorna las 6 métricas (llamadas en cola, agentes ocupados/libres, atendidas/hora, abandono/5min, SL/15min, lag)
+- [x] **T-011** Crear `src/hooks/domain/__tests__/useRealTimeMetrics.test.js` — tests: llama servicio al montar, refresca cada 30s, limpia interval al desmontar
+- [x] **T-012** Crear `src/hooks/domain/useRealTimeMetrics.js` — hook con `setInterval(30000)` + cleanup en return de `useEffect`
+- [x] **T-013** Crear `src/pages/reports/__tests__/RealTimeMetricsPage.test.jsx` — tests: muestra 6 métricas, muestra indicador de lag, muestra estado de carga
+- [x] **T-014** Crear `src/pages/reports/RealTimeMetricsPage.jsx` — grid de métricas, badge de lag, indicador de última actualización
+- [x] **T-015** Agregar route `/reports/realtime` + lazy import en AppRouter con `ProtectedRoute permission={FunctionCatalog.VIEW_REALTIME_METRICS}`
+- [x] **T-016** Commit ITER-2: `Add ITER-2: uc-rpt-02 real-time metrics page with 30s polling`
 
 ---
 
