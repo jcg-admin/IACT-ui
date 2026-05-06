@@ -1,5 +1,6 @@
 import configMock from './config.json';
 import permissionsMock from './permissions.json';
+import permissionsAdminMock from './permissions-admin.json';
 import callsMock from './llamadas.json';
 import healthMock from './health.json';
 import usuariosMock from './usuarios.json';
@@ -35,6 +36,7 @@ import {
 const DATA_BY_KEY = {
   config: configMock,
   permissions: permissionsMock,
+  'permissions-admin': permissionsAdminMock,
   calls: callsMock,
   health: healthMock,
   users: usuariosMock,
@@ -53,6 +55,7 @@ const DATA_BY_KEY = {
 const VALIDATORS = {
   config: validateConfigMock,
   permissions: validatePermissionsMock,
+  'permissions-admin': validatePermissionsMock,
   calls: validateCallsMock,
   health: validateHealthMock,
   users: validateUsersMock,

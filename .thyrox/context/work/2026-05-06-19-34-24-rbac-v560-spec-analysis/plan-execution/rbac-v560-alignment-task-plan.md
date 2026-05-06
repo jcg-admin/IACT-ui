@@ -129,7 +129,7 @@ flowchart LR
 
 ## Tasks — Bloque V: Admin user mock (G-C5)
 
-- [ ] [T-009] **IMPLEMENT** — Agregar segundo escenario de usuario en mock:
+- [x] [T-009] **IMPLEMENT** — Agregar segundo escenario de usuario en mock:
   Crear `src/mocks/permissions-admin.json` (o agregar `adminUser` export en `permissions.json`)
   con usuario `sistema.admin` perteneciente a AGR-010 (`system_admin_group`) con capacidades:
   `auth:view_own_sessions`, `auth:close_session`, `auth:reset_password`,
