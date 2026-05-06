@@ -7,14 +7,13 @@ describe('FunctionCatalog', () => {
         expect(entries.length).toBeGreaterThanOrEqual(25);
     });
 
-    it.each(entries)('%s follows sistema.{domain}.{resource}.{action} format', (key, value) => {
+    it.each(entries)('%s follows module:action format', (key, value) => {
         expect(typeof value).toBe('string');
         expect(value).not.toBe('');
-        const parts = value.split('.');
-        expect(parts.length).toBe(4);
-        expect(parts[0]).toBe('sistema');
-        parts.slice(1).forEach(part => {
-            expect(part).toMatch(/^[a-z_]+$/);
+        const parts = value.split(':');
+        expect(parts.length).toBe(2);
+        parts.forEach(part => {
+            expect(part).toMatch(/^[a-z][a-z_]*$/);
             expect(part.length).toBeGreaterThan(0);
         });
     });
@@ -26,10 +25,18 @@ describe('FunctionCatalog', () => {
     });
 
     it('exposes VIEW_ACCESS for RBAC access control route guard', () => {
-        expect(FunctionCatalog.VIEW_ACCESS).toBe('sistema.administracion.acceso.ver');
+        expect(FunctionCatalog.VIEW_ACCESS).toBe('access:view');
     });
 
     it('exposes VIEW_AUDIT for audit route guard', () => {
-        expect(FunctionCatalog.VIEW_AUDIT).toBe('sistema.auditoria.logs.ver');
+        expect(FunctionCatalog.VIEW_AUDIT).toBe('audit:view');
+    });
+
+    it('exposes VIEW_ALERTS for alerts route guard', () => {
+        expect(FunctionCatalog.VIEW_ALERTS).toBe('alerts:view');
+    });
+
+    it('exposes VIEW_DASHBOARD for dashboard route guard', () => {
+        expect(FunctionCatalog.VIEW_DASHBOARD).toBe('reports:dashboard');
     });
 });

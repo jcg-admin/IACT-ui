@@ -1,84 +1,64 @@
 /**
  * FunctionCatalog — canonical permission strings for client-side RBAC checks.
  *
- * Values follow the sistema.{domain}.{resource}.{action} notation used by the
- * backend's calculate_effective_functions endpoint and surfaced in the
- * permissions mock under the "capacidades" array.
+ * Values follow the {module}:{action} notation defined in RBAC v5.4.0.
+ * See: IACT-docs/source/requisitos/reglas-negocio/rbac/catalogo-funciones.rst
  *
  * IMPORTANT: These strings are for UX only. The backend enforces authorization
  * independently on every request.
  */
 export const FunctionCatalog = {
-    // Dashboard & reporting
-    VIEW_DASHBOARD:     'sistema.vistas.dashboards.ver',
-    VIEW_METRICS:       'sistema.analisis.metricas.ver',
-    VIEW_REPORTS:       'sistema.analisis.reportes.ver',
-    EXPORT_CSV:         'sistema.analisis.reportes.exportar',
+    // MOD_Reports — analytics and reporting (UC-RPT-01..11)
+    VIEW_DASHBOARD:     'reports:dashboard',
+    VIEW_METRICS:       'reports:kpis',
+    VIEW_REPORTS:       'reports:view',
+    FILTER_REPORTS:     'reports:filter',
+    VIEW_CHARTS:        'reports:charts',
+    EXPORT_CSV:         'reports:export_csv',
+    EXPORT_EXCEL:       'reports:export_excel',
+    EXPORT_PDF:         'reports:export_pdf',
+    SCHEDULE_REPORTS:   'reports:schedule',
+    SHARE_REPORTS:      'reports:share',
 
-    // Call operations
-    VIEW_CALLS:         'sistema.operaciones.llamadas.ver',
-    PERFORM_CALLS:      'sistema.operaciones.llamadas.realizar',
+    // MOD_Users — identity management (UC-006..009)
+    VIEW_USERS:         'users:view',
+    MANAGE_USERS:       'users:create',
+    EDIT_USERS:         'users:update',
+    DELETE_USERS:       'users:deactivate',
 
-    // Tickets
-    VIEW_TICKETS:       'sistema.operaciones.tickets.ver',
-    CREATE_TICKETS:     'sistema.operaciones.tickets.crear',
-    EDIT_TICKETS:       'sistema.operaciones.tickets.editar',
+    // MOD_Access — RBAC assignment and SoD (UC-010..011, UC_PERM_*)
+    VIEW_ACCESS:        'access:view',
+    MANAGE_ACCESS:      'access:assign',
+    MANAGE_GROUPS:      'access:create_group',
+    MANAGE_SEPARATION_RULES: 'access:view_sod',
 
-    // Clients
-    VIEW_CLIENTS:       'sistema.operaciones.clientes.ver',
+    // MOD_Audit — compliance and audit trail (UC-061..063)
+    VIEW_AUDIT:         'audit:view',
+    SEARCH_AUDIT:       'audit:search',
+    EXPORT_AUDIT:       'audit:export',
+    VIEW_COMPLIANCE:    'audit:compliance',
 
-    // User administration
-    VIEW_USERS:             'sistema.administracion.usuarios.ver',
-    MANAGE_USERS:           'sistema.administracion.usuarios.gestionar',
-    EDIT_USERS:             'sistema.administracion.usuarios.editar',
-    DELETE_USERS:           'sistema.administracion.usuarios.eliminar',
+    // MOD_Alerts — alert configuration and history (UC-036..040)
+    VIEW_ALERTS:        'alerts:view',
+    MANAGE_ALERTS:      'alerts:configure',
 
-    // Access control (RBAC management — ITER4)
-    VIEW_ACCESS:        'sistema.administracion.acceso.ver',
-    MANAGE_ACCESS:      'sistema.administracion.acceso.gestionar',
-    ASSIGN_FUNCTIONS:   'sistema.administracion.acceso.asignar',
-    MANAGE_SEPARATION_RULES: 'sistema.administracion.acceso.sod',
+    // MOD_Logs — technical observability (UC-LOG-01..07)
+    VIEW_LOGS:          'logs:view_app',
+    VIEW_PIPELINE_LOGS: 'logs:view_etl',
+    SEARCH_LOGS:        'logs:search',
+    EXPORT_LOGS:        'logs:export',
 
-    // Audit (ITER6)
-    VIEW_AUDIT:         'sistema.auditoria.logs.ver',
-    SEARCH_AUDIT:       'sistema.auditoria.logs.buscar',
-    EXPORT_AUDIT:       'sistema.auditoria.logs.exportar',
-    VIEW_COMPLIANCE:    'sistema.auditoria.compliance.ver',
+    // MOD_Pipeline — ETL supervision (UC-050..053)
+    VIEW_ETL_SUPERVISION: 'pipeline:view_status',
+    RETRY_PIPELINE:       'pipeline:retry',
 
-    // Alerts (ITER5)
-    VIEW_ALERTS:        'sistema.alertas.notificaciones.ver',
-    MANAGE_ALERTS:      'sistema.alertas.notificaciones.gestionar',
+    // MOD_Operator — call center agent actions (UC_OPR_*)
+    VIEW_CALLS:         'operator:answer',
+    PERFORM_CALLS:      'operator:dial_out',
 
-    // Groups & catalog administration (RBAC groups, AGRs, permission catalog)
-    MANAGE_GROUPS:          'sistema.administracion.grupos.gestionar',
-    MANAGE_CATALOG:         'sistema.administracion.catalogo.gestionar',
+    // MOD_Admin — RBAC configuration plane (UC_ADM_*)
+    MANAGE_CATALOG:     'adm:manage_catalog',
 
-    // Observability — logs
-    VIEW_LOGS:              'sistema.observabilidad.logs.ver',
-
-    // Real-time metrics
-    VIEW_REALTIME_METRICS:  'sistema.analisis.metricas_tiempo_real.ver',
-
-    // Super-admin — unrestricted system access
-    SUPER_ADMIN:            'sistema.administracion.sistema.superadmin',
-
-    // Configuration
-    VIEW_CONFIG:        'sistema.configuracion.parametros.ver',
-    EDIT_CONFIG:        'sistema.configuracion.parametros.editar',
-
-    // SoD rule lifecycle (uc-adm-01)
-    MANAGE_SOD_RULES:           'sistema.administracion.sod.gestionar',
-
-    // Pipeline — ETL supervision (uc-pip-01) + retry (uc-pip-04)
-    VIEW_ETL_SUPERVISION:       'sistema.observabilidad.pipeline.ver',
-    RETRY_PIPELINE:             'sistema.observabilidad.pipeline.reintentar',
-
-    // Scheduled reports (uc-rpt-07/08)
-    SCHEDULE_REPORTS:           'sistema.analisis.reportes.programar',
-
-    // Report sharing (uc-rpt-11)
-    SHARE_REPORTS:              'sistema.analisis.reportes.compartir',
-
-    // Permissions audit (uc-perm-10)
-    VIEW_PERMISSIONS_AUDIT:     'sistema.administracion.permisos.auditoria',
+    // MOD_Auth — session management (UC-005)
+    VIEW_OWN_SESSIONS:  'auth:view_own_sessions',
 };
