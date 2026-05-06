@@ -321,6 +321,46 @@ class AccessService {
 
         return response.json();
     }
+
+    // uc-adm-01: SoD rules CRUD (mock-first — backend endpoint pending)
+
+    async getSodRules() {
+        const response = await fetch(`${API_BASE_URL}/access/sod-rules`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch SoD rules');
+        return response.json();
+    }
+
+    async createSodRule(data) {
+        const response = await fetch(`${API_BASE_URL}/access/sod-rules`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Failed to create SoD rule');
+        return response.json();
+    }
+
+    async updateSodRule(id, data) {
+        const response = await fetch(`${API_BASE_URL}/access/sod-rules/${id}`, {
+            method: 'PUT',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Failed to update SoD rule');
+        return response.json();
+    }
+
+    async deleteSodRule(id) {
+        const response = await fetch(`${API_BASE_URL}/access/sod-rules/${id}`, {
+            method: 'DELETE',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to delete SoD rule');
+        return response.json();
+    }
 }
 
 export default new AccessService();

@@ -5,61 +5,33 @@
  */
 
 import React, { useState, useEffect } from 'react';
-
-const SOD_RULES_DATA = [
-    {
-        id: 1,
-        code: 'SOD-001',
-        name: 'Pipeline vs Auditoria',
-        description: 'Quien ejecuta pipelines no puede auditarlos',
-        reason: 'Separación de deberes: Ejecutor no debe ser Auditor',
-        setA: 'Funciones Pipeline (PIP-*)',
-        functionsA: ['PIP-002', 'PIP-003', 'PIP-004', 'PIP-005', 'PIP-006', 'PIP-007', 'PIP-008'],
-        setB: 'Funciones Auditoria (AUD-*)',
-        functionsB: ['AUD-001', 'AUD-002', 'AUD-003', 'AUD-004', 'AUD-005', 'AUD-006'],
-        isActive: true,
-        violations: 2,
-    },
-    {
-        id: 2,
-        code: 'SOD-002',
-        name: 'Usuario vs Auditoria',
-        description: 'Quien gestiona usuarios no puede auditarlos',
-        reason: 'Separación de deberes: Gestor de Usuario no debe ser Auditor',
-        setA: 'Funciones Usuario (USR-*)',
-        functionsA: ['USR-001', 'USR-002', 'USR-003', 'USR-004', 'USR-005', 'USR-006', 'USR-007', 'USR-008'],
-        setB: 'Funciones Auditoria (AUD-*)',
-        functionsB: ['AUD-001', 'AUD-002', 'AUD-003', 'AUD-004', 'AUD-005', 'AUD-006'],
-        isActive: true,
-        violations: 0,
-    },
-    {
-        id: 3,
-        code: 'SOD-003',
-        name: 'Acceso vs Auditoria',
-        description: 'Quien asigna funciones no puede auditarlas',
-        reason: 'Separación de deberes: Admin de Acceso no debe ser Auditor',
-        setA: 'Funciones Acceso (ACC-*)',
-        functionsA: ['ACC-001', 'ACC-002', 'ACC-003', 'ACC-004', 'ACC-005', 'ACC-006', 'ACC-007', 'ACC-008'],
-        setB: 'Funciones Auditoria (AUD-*)',
-        functionsB: ['AUD-001', 'AUD-002', 'AUD-003', 'AUD-004', 'AUD-005', 'AUD-006'],
-        isActive: true,
-        violations: 1,
-    },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    fetchSodRules, updateSodRule, deleteSodRule,
+    selectSodRules, selectLoading, selectError,
+} from '../../redux/slices/accessSlice';
 
 export default function SeparationRulesPage() {
-    const [sodRules, setSodRules] = useState(SOD_RULES_DATA);
+    const dispatch = useDispatch();
+    const sodRules = useSelector(selectSodRules);
+    const loading = useSelector(selectLoading);
+    const error = useSelector(selectError);
     const [selectedRule, setSelectedRule] = useState(null);
     const [showViolations, setShowViolations] = useState(false);
 
-    const handleToggleRule = (ruleId) => {
-        setSodRules(sodRules.map(rule =>
-            rule.id === ruleId ? { ...rule, isActive: !rule.isActive } : rule
-        ));
+    useEffect(() => {
+        dispatch(fetchSodRules());
+    }, [dispatch]);
+
+    const handleToggleRule = (rule) => {
+        dispatch(updateSodRule({ id: rule.id, isActive: !rule.isActive }));
     };
 
-    const getTotalViolations = () => sodRules.reduce((sum, rule) => sum + rule.violations, 0);
+    const handleDeleteRule = (id) => {
+        dispatch(deleteSodRule(id));
+    };
+
+    const getTotalViolations = () => sodRules.reduce((sum, rule) => sum + (rule.violations || 0), 0);
     const getActiveRules = () => sodRules.filter(rule => rule.isActive).length;
 
     return (
@@ -156,23 +128,27 @@ export default function SeparationRulesPage() {
                                         </div>
                                     </div>
 
-                                    <label style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        cursor: 'pointer',
-                                    }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={rule.isActive}
-                                            onChange={() => handleToggleRule(rule.id)}
-                                            onClick={(e) => e.stopPropagation()}
-                                            style={{ cursor: 'pointer', accentColor: '#0ea5e9' }}
-                                        />
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <button
+                                            aria-label={rule.isActive ? 'Desactivar' : 'Activar'}
+                                            onClick={(e) => { e.stopPropagation(); handleToggleRule(rule); }}
+                                            disabled={loading}
+                                            style={{ padding: '4px 10px', fontSize: '12px', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: rule.isActive ? '#374151' : '#0ea5e9', color: '#fff' }}
+                                        >
+                                            {rule.isActive ? 'Desactivar' : 'Activar'}
+                                        </button>
+                                        <button
+                                            aria-label="Eliminar"
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteRule(rule.id); }}
+                                            disabled={loading}
+                                            style={{ padding: '4px 10px', fontSize: '12px', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#dc2626', color: '#fff' }}
+                                        >
+                                            Eliminar
+                                        </button>
                                         <span style={{ fontSize: '12px', color: '#9ca3af' }}>
                                             {rule.isActive ? 'Activa' : 'Inactiva'}
                                         </span>
-                                    </label>
+                                    </div>
                                 </div>
 
                                 {rule.violations > 0 && (
