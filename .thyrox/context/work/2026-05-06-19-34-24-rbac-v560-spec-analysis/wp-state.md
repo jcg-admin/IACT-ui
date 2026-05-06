@@ -17,6 +17,9 @@ decisiones de implementación en IACT-UI.
 
 ## Artefactos
 
-- `discover/rbac-v560-spec-analysis.md` — análisis completo con
-  catálogo (64 funciones activas + 13 reservadas), 12 AGRs, 3 SoD,
-  y 4 gaps identificados en la implementación actual de IACT-UI.
+- `discover/rbac-v560-spec-analysis.md` — catálogo canónico v5.6.0
+  (64 funciones activas + 13 reservadas), 12 AGRs, 3 SoD,
+  changelog v5.5.0 → v5.6.0.
+- `discover/iact-ui-rbac-implementation-audit.md` — auditoría de
+  implementación actual: 17 gaps en 6 artefactos (1 CRÍTICO, 2 ALTA,
+  6 MEDIA, 8 BAJA). Tier de correcciones 1..3 priorizado.
