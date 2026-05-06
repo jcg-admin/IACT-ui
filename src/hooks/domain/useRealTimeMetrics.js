@@ -1,30 +1,60 @@
-import { useState, useEffect, useCallback } from 'react'
-import reportsService from '@services/reportsService'
+import { useState, useEffect, useRef } from 'react'
 
-const POLL_INTERVAL_MS = 30_000
+const SSE_URL = '/api/realtime/metrics/'
 
 export function useRealTimeMetrics() {
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  const fetch = useCallback(async () => {
-    try {
-      const data = await reportsService.getRealTimeMetrics()
-      setMetrics(data)
-      setError(null)
-    } catch (err) {
-      setError(err.message ?? 'Error al cargar métricas')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const lastEventIdRef = useRef(null)
 
   useEffect(() => {
-    fetch()
-    const id = setInterval(fetch, POLL_INTERVAL_MS)
-    return () => clearInterval(id)
-  }, [fetch])
+    const url = lastEventIdRef.current
+      ? `${SSE_URL}?lastEventId=${encodeURIComponent(lastEventIdRef.current)}`
+      : SSE_URL
+
+    const es = new EventSource(url)
+
+    es.addEventListener('metrics', (e) => {
+      try {
+        const data = JSON.parse(e.data)
+        setMetrics(data)
+        setError(null)
+        setLoading(false)
+        if (e.lastEventId) lastEventIdRef.current = e.lastEventId
+      } catch {
+        setError('Error al parsear métricas')
+        setLoading(false)
+      }
+    })
+
+    es.addEventListener('heartbeat', () => {
+      // keep-alive ping — no state update needed
+    })
+
+    es.addEventListener('error', (e) => {
+      try {
+        const data = JSON.parse(e.data)
+        setError(data.message ?? 'Error en conexión SSE')
+      } catch {
+        setError('Error en conexión SSE')
+      }
+      setLoading(false)
+    })
+
+    es.addEventListener('close', () => {
+      es.close()
+    })
+
+    es.onerror = () => {
+      setError('Conexión SSE perdida')
+      setLoading(false)
+    }
+
+    return () => {
+      es.close()
+    }
+  }, [])
 
   return { metrics, loading, error }
 }

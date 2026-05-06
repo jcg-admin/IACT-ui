@@ -1,9 +1,44 @@
 import { renderHook, act } from '@testing-library/react'
 import { useRealTimeMetrics } from '../useRealTimeMetrics'
-import reportsService from '@services/reportsService'
 
-jest.mock('@services/reportsService')
-jest.useFakeTimers()
+class MockEventSource {
+  constructor(url) {
+    this.url = url
+    this.closed = false
+    this._listeners = {}
+    MockEventSource.instances.push(this)
+  }
+
+  addEventListener(event, handler) {
+    if (!this._listeners[event]) this._listeners[event] = []
+    this._listeners[event].push(handler)
+  }
+
+  removeEventListener(event, handler) {
+    if (this._listeners[event]) {
+      this._listeners[event] = this._listeners[event].filter((h) => h !== handler)
+    }
+  }
+
+  emit(event, data, lastEventId = 'evt-1') {
+    const handlers = this._listeners[event] ?? []
+    handlers.forEach((h) => h({ data: JSON.stringify(data), lastEventId }))
+  }
+
+  emitRaw(event, rawData) {
+    const handlers = this._listeners[event] ?? []
+    handlers.forEach((h) => h({ data: rawData, lastEventId: '' }))
+  }
+
+  triggerOnerror() {
+    if (this.onerror) this.onerror(new Event('error'))
+  }
+
+  close() {
+    this.closed = true
+  }
+}
+MockEventSource.instances = []
 
 const MOCK_METRICS = {
   timestamp: '2026-05-06T06:00:00Z',
@@ -18,52 +53,65 @@ const MOCK_METRICS = {
 }
 
 beforeEach(() => {
-  reportsService.getRealTimeMetrics.mockResolvedValue(MOCK_METRICS)
+  MockEventSource.instances = []
+  global.EventSource = MockEventSource
 })
 
 afterEach(() => {
+  delete global.EventSource
   jest.clearAllMocks()
-  jest.clearAllTimers()
 })
 
-describe('useRealTimeMetrics', () => {
-  it('llama a getRealTimeMetrics al montar', async () => {
-    const { result } = renderHook(() => useRealTimeMetrics())
-    await act(async () => {})
-    expect(reportsService.getRealTimeMetrics).toHaveBeenCalledTimes(1)
-    expect(result.current.metrics).toEqual(MOCK_METRICS)
-  })
+function getEs() {
+  return MockEventSource.instances[MockEventSource.instances.length - 1]
+}
 
-  it('refresca métricas después de 30s', async () => {
+describe('useRealTimeMetrics — SSE', () => {
+  it('abre una conexión EventSource al montar', () => {
     renderHook(() => useRealTimeMetrics())
-    await act(async () => {})
-    expect(reportsService.getRealTimeMetrics).toHaveBeenCalledTimes(1)
-
-    await act(async () => {
-      jest.advanceTimersByTime(30000)
-    })
-    expect(reportsService.getRealTimeMetrics).toHaveBeenCalledTimes(2)
+    expect(MockEventSource.instances).toHaveLength(1)
+    expect(getEs().url).toContain('/api/realtime/metrics/')
   })
 
-  it('pone loading en true mientras carga', () => {
-    reportsService.getRealTimeMetrics.mockReturnValue(new Promise(() => {}))
+  it('empieza en loading=true, metrics=null', () => {
     const { result } = renderHook(() => useRealTimeMetrics())
     expect(result.current.loading).toBe(true)
-  })
-
-  it('captura error en el campo error', async () => {
-    reportsService.getRealTimeMetrics.mockRejectedValue(new Error('timeout'))
-    const { result } = renderHook(() => useRealTimeMetrics())
-    await act(async () => {})
-    expect(result.current.error).toBe('timeout')
     expect(result.current.metrics).toBeNull()
   })
 
-  it('limpia el intervalo al desmontar', async () => {
-    const clearSpy = jest.spyOn(global, 'clearInterval')
+  it('actualiza metrics al recibir evento "metrics"', async () => {
+    const { result } = renderHook(() => useRealTimeMetrics())
+    act(() => { getEs().emit('metrics', MOCK_METRICS) })
+    expect(result.current.metrics).toEqual(MOCK_METRICS)
+    expect(result.current.loading).toBe(false)
+    expect(result.current.error).toBeNull()
+  })
+
+  it('no cambia metrics al recibir heartbeat', async () => {
+    const { result } = renderHook(() => useRealTimeMetrics())
+    act(() => { getEs().emit('metrics', MOCK_METRICS) })
+    act(() => { getEs().emit('heartbeat', {}) })
+    expect(result.current.metrics).toEqual(MOCK_METRICS)
+  })
+
+  it('pone error al recibir evento "error" del servidor', async () => {
+    const { result } = renderHook(() => useRealTimeMetrics())
+    act(() => { getEs().emit('error', { message: 'upstream down' }) })
+    expect(result.current.error).toBe('upstream down')
+    expect(result.current.loading).toBe(false)
+  })
+
+  it('pone error genérico cuando onerror se dispara', async () => {
+    const { result } = renderHook(() => useRealTimeMetrics())
+    act(() => { getEs().triggerOnerror() })
+    expect(result.current.error).toBeTruthy()
+    expect(result.current.loading).toBe(false)
+  })
+
+  it('cierra el EventSource al desmontar', () => {
     const { unmount } = renderHook(() => useRealTimeMetrics())
-    await act(async () => {})
+    const es = getEs()
     unmount()
-    expect(clearSpy).toHaveBeenCalled()
+    expect(es.closed).toBe(true)
   })
 })
