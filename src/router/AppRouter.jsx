@@ -95,6 +95,12 @@ const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsR
 // ── Access pages ─────────────────────────────────────────────────────────────
 const GroupManagementPage = lazy(() => import('@pages/access/GroupManagementPage'))
 const GroupCompositionPage = lazy(() => import('@pages/access/GroupCompositionPage'))
+const GroupersPage = lazy(() => import('@pages/access/GroupersPage'))
+const SeparationRulesPage = lazy(() => import('@pages/access/SeparationRulesPage'))
+const SegmentsPage = lazy(() => import('@pages/access/SegmentsPage'))
+
+// ── Alerts pages ──────────────────────────────────────────────────────────────
+const TemplatesPage = lazy(() => import('@pages/alerts/TemplatesPage'))
 
 // ── Admin pages ──────────────────────────────────────────────────────────────
 const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalogPage'))
@@ -323,6 +329,54 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.MANAGE_GROUPS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <GroupCompositionPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Acceso — agrupadores de funciones (UC-ACC-04) */}
+          <Route
+            path="/access/groupers"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <GroupersPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Acceso — reglas de separación de funciones/SoD (UC-ACC-05) */}
+          <Route
+            path="/access/sod-rules"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_SEPARATION_RULES}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SeparationRulesPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Acceso — segmentos (UC-ACC-06, UC-ACC-07) */}
+          <Route
+            path="/access/segments"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SegmentsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Alertas — plantillas (UC-ALR-05) */}
+          <Route
+            path="/alerts/templates"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ALERTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <TemplatesPage />
                 </Suspense>
               </ProtectedRoute>
             }
