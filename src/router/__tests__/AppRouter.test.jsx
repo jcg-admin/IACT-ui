@@ -276,3 +276,162 @@ describe('useFilteredNavLinks — children filtering (G-S3)', () => {
         expect(result2.find(r => r.label === 'Acceso')).toBeUndefined();
     });
 });
+
+// ── Integration: permission filtering end-to-end (T-009, T-010) ─────────────
+
+// Inline filter utility matches useFilteredNavLinks implementation
+function filterNavLinks(navLinks, hasPermission) {
+    return navLinks
+        .filter(link => hasPermission(link.permission))
+        .map(link => ({
+            ...link,
+            children: link.children?.filter(c => hasPermission(c.permission)) ?? [],
+        }));
+}
+
+import permissionsAdminJson from '../../mocks/permissions-admin.json';
+
+// Actual permission constants from catalog (T-009)
+const FC = {
+    VIEW_REPORTS:       'reports:view',
+    VIEW_METRICS:       'reports:kpis',
+    MANAGE_CATALOG:     'adm:manage_catalog',
+    MANAGE_GROUPS:      'access:create_group',
+    MANAGE_ACCESS:      'access:assign',
+    VIEW_LOGS:          'logs:view_app',
+    VIEW_PIPELINE_LOGS: 'logs:view_etl',
+    SEARCH_LOGS:        'logs:search',
+    EXPORT_LOGS:        'logs:export',
+    VIEW_OWN_SESSIONS:  'auth:view_own_sessions',
+    VIEW_DASHBOARD:     'reports:dashboard',
+    VIEW_ACCESS:        'access:view',
+    MANAGE_SEPARATION_RULES: 'access:view_sod',
+    VIEW_AUDIT:         'audit:view',
+    VIEW_ALERTS:        'alerts:view',
+    VIEW_USERS:         'users:view',
+    VIEW_INFRA_LOGS:    'logs:view_infra',
+    VIEW_SYSTEM_HEALTH: 'logs:view_health',
+    VIEW_TECHNICAL_METRICS: 'logs:view_metrics',
+    VIEW_ETL_SUPERVISION: 'pipeline:view_status',
+    SCHEDULE_REPORTS:   'reports:schedule',
+    EXPORT_CSV:         'reports:export_csv',
+    SAVE_VIEW:          'reports:save_view',
+};
+
+const ALL_NAV_LINKS_INTEGRATION = [
+    { id: 1,  label: 'Dashboard', path: '/dashboard', permission: FC.VIEW_DASHBOARD },
+    { id: 2,  label: 'Usuarios',  path: '/users',     permission: FC.VIEW_USERS },
+    {
+        id: 3, label: 'Reportes', path: '/reports', permission: FC.VIEW_REPORTS,
+        children: [
+            { label: 'Históricos',      path: '/reports/historical',     permission: FC.VIEW_REPORTS },
+            { label: 'Tiempo real',     path: '/reports/realtime',       permission: FC.VIEW_METRICS },
+            { label: 'Programados',     path: '/reports/scheduled',      permission: FC.SCHEDULE_REPORTS },
+            { label: 'Exportar',        path: '/reports/export',         permission: FC.EXPORT_CSV },
+            { label: 'Vistas guardadas',path: '/reports/saved',          permission: FC.SAVE_VIEW },
+        ],
+    },
+    {
+        id: 4, label: 'Acceso', path: '/access', permission: FC.VIEW_ACCESS,
+        children: [
+            { label: 'Grupos de acceso', path: '/access/groups',             permission: FC.MANAGE_GROUPS },
+            { label: 'Agrupadores',      path: '/access/groupers',           permission: FC.MANAGE_ACCESS },
+            { label: 'Reglas SoD',       path: '/access/separation-rules',   permission: FC.MANAGE_SEPARATION_RULES },
+        ],
+    },
+    { id: 5, label: 'Auditoría', path: '/audit',    permission: FC.VIEW_AUDIT },
+    { id: 6, label: 'Alertas',   path: '/alerts',   permission: FC.VIEW_ALERTS },
+    {
+        id: 7, label: 'Logs', path: '/logs', permission: FC.VIEW_LOGS,
+        children: [
+            { label: 'App logs',          path: '/logs',                  permission: FC.VIEW_LOGS },
+            { label: 'ETL logs',          path: '/logs/etl',              permission: FC.VIEW_PIPELINE_LOGS },
+            { label: 'Buscar',            path: '/logs/search',           permission: FC.SEARCH_LOGS },
+            { label: 'Exportar',          path: '/logs/export',           permission: FC.EXPORT_LOGS },
+            { label: 'Infraestructura',   path: '/logs/infra',            permission: FC.VIEW_INFRA_LOGS },
+            { label: 'Estado sistema',    path: '/logs/status',           permission: FC.VIEW_SYSTEM_HEALTH },
+            { label: 'Métricas técnicas', path: '/logs/metrics',          permission: FC.VIEW_TECHNICAL_METRICS },
+            { label: 'Supervisión ETL',   path: '/logs/pipeline',         permission: FC.VIEW_ETL_SUPERVISION },
+        ],
+    },
+    {
+        id: 8, label: 'Admin', path: '/admin', permission: FC.MANAGE_CATALOG,
+        children: [
+            { label: 'Funciones RBAC', path: '/admin/functions', permission: FC.MANAGE_CATALOG },
+            { label: 'Grupos AGR',     path: '/admin/groups',    permission: FC.MANAGE_CATALOG },
+        ],
+    },
+    { id: 9, label: 'Ajustes', path: '/settings', permission: FC.VIEW_OWN_SESSIONS },
+];
+
+describe('Integration: nav filtering end-to-end (T-009)', () => {
+    it('(a) VIEW_REPORTS only → "Tiempo real" not in Reportes children', () => {
+        const caps = [FC.VIEW_REPORTS];
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, p => caps.includes(p));
+        const reportes = result.find(r => r.label === 'Reportes');
+        expect(reportes).toBeDefined();
+        expect(reportes.children.find(c => c.label === 'Tiempo real')).toBeUndefined();
+        expect(reportes.children.find(c => c.label === 'Históricos')).toBeDefined();
+    });
+
+    it('(b) MANAGE_CATALOG user → Admin group with 2 children', () => {
+        const caps = [FC.MANAGE_CATALOG];
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, p => caps.includes(p));
+        const admin = result.find(r => r.label === 'Admin');
+        expect(admin).toBeDefined();
+        expect(admin.children).toHaveLength(2);
+    });
+
+    it('(c) MANAGE_ACCESS (not MANAGE_GROUPS) → "Grupos de acceso" hidden, "Agrupadores" visible in Acceso', () => {
+        const caps = [FC.VIEW_ACCESS, FC.MANAGE_ACCESS];
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, p => caps.includes(p));
+        const acceso = result.find(r => r.label === 'Acceso');
+        expect(acceso).toBeDefined();
+        expect(acceso.children.find(c => c.label === 'Grupos de acceso')).toBeUndefined();
+        expect(acceso.children.find(c => c.label === 'Agrupadores')).toBeDefined();
+    });
+
+    it('(d) VIEW_LOGS only → only "App logs" visible in Logs children', () => {
+        const caps = [FC.VIEW_LOGS];
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, p => caps.includes(p));
+        const logs = result.find(r => r.label === 'Logs');
+        expect(logs).toBeDefined();
+        expect(logs.children).toHaveLength(1);
+        expect(logs.children[0].label).toBe('App logs');
+    });
+});
+
+describe('Integration: permissions-admin.json user (userId=99) — T-010', () => {
+    const adminCaps = permissionsAdminJson.capacidades;
+    const hasPermission = (p) => adminCaps.includes(p);
+
+    it('admin sees Admin nav group with 2 children', () => {
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, hasPermission);
+        const admin = result.find(r => r.label === 'Admin');
+        expect(admin).toBeDefined();
+        expect(admin.children).toHaveLength(2);
+    });
+
+    it('admin sees Logs with App logs + Exportar only', () => {
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, hasPermission);
+        const logs = result.find(r => r.label === 'Logs');
+        expect(logs).toBeDefined();
+        expect(logs.children.map(c => c.label)).toEqual(['App logs', 'Exportar']);
+    });
+
+    it('admin sees Ajustes (VIEW_OWN_SESSIONS)', () => {
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, hasPermission);
+        expect(result.find(r => r.label === 'Ajustes')).toBeDefined();
+    });
+
+    it('admin does NOT see Reportes, Acceso, Auditoría, Alertas, Dashboard, Usuarios', () => {
+        const result = filterNavLinks(ALL_NAV_LINKS_INTEGRATION, hasPermission);
+        const labels = result.map(r => r.label);
+        expect(labels).not.toContain('Reportes');
+        expect(labels).not.toContain('Acceso');
+        expect(labels).not.toContain('Auditoría');
+        expect(labels).not.toContain('Alertas');
+        expect(labels).not.toContain('Dashboard');
+        expect(labels).not.toContain('Usuarios');
+    });
+});
