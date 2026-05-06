@@ -12,12 +12,34 @@ jest.mock('@redux/slices/logsSlice', () => ({
 }))
 
 const MOCK_STATUS = {
-  jobs: { running: 3, completed: 142, failed: 2 },
-  sources: [
-    { name: 'CRM', lag: '12 min', throughputRowsPerMin: 1840, bytesProcessed: 2400000, avgLatencyMs: 320 },
-    { name: 'PBX', lag: '2 min', throughputRowsPerMin: 560, bytesProcessed: 890000, avgLatencyMs: 110 },
-  ],
-  updatedAt: '2026-05-06T06:00:00Z',
+  estado_general: 'ok',
+  ultima_ejecucion_exitosa: {
+    trimestre: 'Q2_26',
+    finished_at: '2026-05-06T03:42:00Z',
+    base_records: 1_234_567,
+  },
+  ejecucion_en_curso: null,
+  ultima_ejecucion_fallida: null,
+  total_exitosas_24h: 2,
+  total_fallidas_24h: 0,
+}
+
+const MOCK_STATUS_CRITICO = {
+  estado_general: 'critico',
+  ultima_ejecucion_exitosa: null,
+  ejecucion_en_curso: null,
+  ultima_ejecucion_fallida: {
+    trimestre: 'Q2_26',
+    finished_at: '2026-05-05T08:00:00Z',
+    base_records: 0,
+  },
+  total_exitosas_24h: 0,
+  total_fallidas_24h: 3,
+}
+
+const MOCK_STATUS_EN_CURSO = {
+  ...MOCK_STATUS,
+  ejecucion_en_curso: { trimestre: 'Q2_26', started_at: '2026-05-06T05:00:00Z' },
 }
 
 function buildStore(logs = {}) {
@@ -32,7 +54,7 @@ function wrap(ui, store = buildStore()) {
   return render(<Provider store={store}>{ui}</Provider>)
 }
 
-describe('PipelineStatusPage', () => {
+describe('PipelineStatusPage — uc-pip-01', () => {
   it('renderiza el título', () => {
     wrap(<PipelineStatusPage />)
     expect(screen.getByRole('heading', { name: /estado del pipeline/i })).toBeInTheDocument()
@@ -44,21 +66,47 @@ describe('PipelineStatusPage', () => {
     expect(fetchPipelineStatus).toHaveBeenCalled()
   })
 
-  it('muestra jobs running, completed, failed', () => {
+  it('muestra badge estado_general ok', () => {
     const store = buildStore({ pipelineStatus: MOCK_STATUS })
     wrap(<PipelineStatusPage />, store)
-    expect(screen.getByText('3')).toBeInTheDocument()   // running
-    expect(screen.getByText('142')).toBeInTheDocument() // completed
-    expect(screen.getByText('2')).toBeInTheDocument()   // failed
+    expect(screen.getByText(/ok/i)).toBeInTheDocument()
   })
 
-  it('muestra tabla de sources con lag y throughput', () => {
+  it('muestra trimestre de última ejecución exitosa', () => {
     const store = buildStore({ pipelineStatus: MOCK_STATUS })
     wrap(<PipelineStatusPage />, store)
-    expect(screen.getByText('CRM')).toBeInTheDocument()
-    expect(screen.getByText('12 min')).toBeInTheDocument()
-    expect(screen.getByText('1840')).toBeInTheDocument()
-    expect(screen.getByText('PBX')).toBeInTheDocument()
+    expect(screen.getByText('Q2_26')).toBeInTheDocument()
+  })
+
+  it('muestra base_records formateado', () => {
+    const store = buildStore({ pipelineStatus: MOCK_STATUS })
+    wrap(<PipelineStatusPage />, store)
+    expect(screen.getByText(/1[.,]234[.,]567/)).toBeInTheDocument()
+  })
+
+  it('muestra contadores total_exitosas_24h y total_fallidas_24h', () => {
+    const store = buildStore({ pipelineStatus: MOCK_STATUS })
+    wrap(<PipelineStatusPage />, store)
+    expect(screen.getByText('2')).toBeInTheDocument()  // exitosas
+    expect(screen.getByText('0')).toBeInTheDocument()  // fallidas
+  })
+
+  it('muestra indicador en curso cuando ejecucion_en_curso no es null', () => {
+    const store = buildStore({ pipelineStatus: MOCK_STATUS_EN_CURSO })
+    wrap(<PipelineStatusPage />, store)
+    expect(screen.getByText(/en curso/i)).toBeInTheDocument()
+  })
+
+  it('muestra alerta de fallos cuando total_fallidas_24h > 0', () => {
+    const store = buildStore({ pipelineStatus: MOCK_STATUS_CRITICO })
+    wrap(<PipelineStatusPage />, store)
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
+  it('muestra badge critico con color rojo', () => {
+    const store = buildStore({ pipelineStatus: MOCK_STATUS_CRITICO })
+    wrap(<PipelineStatusPage />, store)
+    expect(screen.getByText(/critico/i)).toBeInTheDocument()
   })
 
   it('muestra indicador de carga', () => {

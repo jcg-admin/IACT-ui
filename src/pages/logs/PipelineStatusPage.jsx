@@ -7,7 +7,33 @@ import {
   selectLogsError,
 } from '@redux/slices/logsSlice'
 
-function JobCard({ label, count, color }) {
+const ESTADO_COLOR = {
+  ok: '#34d399',
+  degradado: '#f59e0b',
+  critico: '#ef4444',
+}
+
+function EstadoBadge({ estado }) {
+  const color = ESTADO_COLOR[estado] ?? '#9ca3af'
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '4px 16px',
+      borderRadius: '999px',
+      backgroundColor: `${color}22`,
+      border: `1px solid ${color}`,
+      color,
+      fontWeight: 700,
+      fontSize: '15px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+    }}>
+      {estado ?? '—'}
+    </span>
+  )
+}
+
+function CounterCard({ label, count, color }) {
   return (
     <div className="card" style={{ padding: '20px', textAlign: 'center', flex: 1 }}>
       <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '8px' }}>{label}</div>
@@ -16,11 +42,9 @@ function JobCard({ label, count, color }) {
   )
 }
 
-function formatBytes(bytes) {
-  if (!bytes) return '0 B'
-  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`
-  if (bytes >= 1_000) return `${(bytes / 1_000).toFixed(1)} KB`
-  return `${bytes} B`
+function formatRecords(n) {
+  if (n == null) return '—'
+  return n.toLocaleString()
 }
 
 export default function PipelineStatusPage() {
@@ -31,6 +55,8 @@ export default function PipelineStatusPage() {
 
   useEffect(() => {
     dispatch(fetchPipelineStatus())
+    const id = setInterval(() => dispatch(fetchPipelineStatus()), 30_000)
+    return () => clearInterval(id)
   }, [dispatch])
 
   return (
@@ -38,7 +64,7 @@ export default function PipelineStatusPage() {
       <div className="page-header">
         <h1>Estado del Pipeline ETL</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-PIP-01 — Salud y throughput del ETL de Analytics
+          UC-PIP-01 — Salud del ETL de Analytics · refresco cada 30 s
         </p>
       </div>
 
@@ -56,43 +82,69 @@ export default function PipelineStatusPage() {
         <div className="empty-state">Sin datos de pipeline disponibles.</div>
       ) : (
         <>
-          {/* Jobs dashboard */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
-            <JobCard label="En ejecución" count={status.jobs?.running} color="#f59e0b" />
-            <JobCard label="Completados" count={status.jobs?.completed} color="#34d399" />
-            <JobCard label="Fallidos" count={status.jobs?.failed} color="#ef4444" />
+          {/* Estado general */}
+          <div className="card" style={{ padding: '24px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div>
+              <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '8px' }}>Estado general</div>
+              <EstadoBadge estado={status.estado_general} />
+            </div>
+
+            {status.ejecucion_en_curso && (
+              <div style={{ marginLeft: '24px', borderLeft: '2px solid #374151', paddingLeft: '24px' }}>
+                <div style={{ color: '#f59e0b', fontWeight: 600, fontSize: '14px' }}>
+                  ⟳ ETL en curso
+                </div>
+                <div style={{ color: '#9ca3af', fontSize: '13px' }}>
+                  Trimestre: {status.ejecucion_en_curso.trimestre}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Sources table */}
-          <div className="card" style={{ overflow: 'hidden' }}>
-            <div style={{ padding: '16px', borderBottom: '1px solid #374151' }}>
-              <h2 style={{ margin: 0, fontSize: '16px', color: '#fff' }}>Fuentes de datos</h2>
+          {/* Alerta de fallos */}
+          {status.total_fallidas_24h > 0 && (
+            <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+              {status.total_fallidas_24h} ejecución(es) fallida(s) en las últimas 24 h.{' '}
+              <a href="/logs/etl" style={{ color: '#fca5a5', textDecoration: 'underline' }}>
+                Ver detalles
+              </a>
             </div>
-            <table className="table" style={{ width: '100%' }}>
-              <thead>
-                <tr>
-                  <th>Fuente</th>
-                  <th>Lag</th>
-                  <th>Throughput (filas/min)</th>
-                  <th>Bytes procesados</th>
-                  <th>Latencia promedio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(status.sources ?? []).map((src) => (
-                  <tr key={src.name}>
-                    <td style={{ color: '#fff', fontWeight: 600 }}>{src.name}</td>
-                    <td style={{ color: src.throughputRowsPerMin === 0 ? '#ef4444' : '#9ca3af' }}>
-                      {src.lag}
-                    </td>
-                    <td>{src.throughputRowsPerMin}</td>
-                    <td>{formatBytes(src.bytesProcessed)}</td>
-                    <td>{src.avgLatencyMs != null ? `${src.avgLatencyMs} ms` : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          )}
+
+          {/* Contadores 24h */}
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+            <CounterCard label="Exitosas (24 h)" count={status.total_exitosas_24h} color="#34d399" />
+            <CounterCard label="Fallidas (24 h)" count={status.total_fallidas_24h} color="#ef4444" />
           </div>
+
+          {/* Última ejecución exitosa */}
+          {status.ultima_ejecucion_exitosa && (
+            <div className="card" style={{ padding: '20px' }}>
+              <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Última ejecución exitosa
+              </div>
+              <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ color: '#6b7280', fontSize: '12px' }}>Trimestre</div>
+                  <div style={{ color: '#fff', fontWeight: 600, fontSize: '18px' }}>
+                    {status.ultima_ejecucion_exitosa.trimestre}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: '#6b7280', fontSize: '12px' }}>Finalizada</div>
+                  <div style={{ color: '#fff', fontWeight: 600, fontSize: '15px' }}>
+                    {new Date(status.ultima_ejecucion_exitosa.finished_at).toLocaleString()}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: '#6b7280', fontSize: '12px' }}>Registros cargados</div>
+                  <div style={{ color: '#34d399', fontWeight: 700, fontSize: '18px' }}>
+                    {formatRecords(status.ultima_ejecucion_exitosa.base_records)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

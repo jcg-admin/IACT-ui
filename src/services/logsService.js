@@ -37,16 +37,19 @@ class LogsService {
     return apiService.post(`/api/etl/logs/${logId}/retry/`)
   }
 
-  // TODO: replace mock — GET /api/etl/pipeline/status/
+  // TODO: replace mock — GET /api/v1/etl/supervision/
   async getPipelineStatus() {
     return {
-      jobs: { running: 3, completed: 142, failed: 2 },
-      sources: [
-        { name: 'CRM', lag: '12 min', throughputRowsPerMin: 1840, bytesProcessed: 2400000, avgLatencyMs: 320 },
-        { name: 'PBX', lag: '2 min', throughputRowsPerMin: 560, bytesProcessed: 890000, avgLatencyMs: 110 },
-        { name: 'IVR', lag: '45 min', throughputRowsPerMin: 0, bytesProcessed: 0, avgLatencyMs: null },
-      ],
-      updatedAt: new Date().toISOString(),
+      estado_general: 'ok',
+      ultima_ejecucion_exitosa: {
+        trimestre: 'Q2_26',
+        finished_at: new Date(Date.now() - 2 * 3_600_000).toISOString(),
+        base_records: 1_234_567,
+      },
+      ejecucion_en_curso: null,
+      ultima_ejecucion_fallida: null,
+      total_exitosas_24h: 2,
+      total_fallidas_24h: 0,
     }
   }
 }
