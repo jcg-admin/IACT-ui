@@ -66,12 +66,12 @@ flowchart LR
 
 ## Tasks — Bloque I: Fix crítico (deactivateAGR)
 
-- [ ] [T-001] **TDD RED** — Agregar test en `adminSlice.test.js` que verifique que
+- [x] [T-001] **TDD RED** — Agregar test en `adminSlice.test.js` que verifique que
   `deactivateAGR` existe como named export y que su reducer actualiza `agr.active = false`.
   SPEC: `adminService.deactivateAGR(id)` existe (adminService.js:91) y retorna AGR con active:false.
   Tests deben fallar porque el thunk no existe en slice.
 
-- [ ] [T-002] **IMPLEMENT** — Agregar en `adminSlice.js`:
+- [x] [T-002] **IMPLEMENT** — Agregar en `adminSlice.js`:
   (1) thunk `deactivateAGR = createAsyncThunk('admin/deactivateAGR', ...)` que llama
   `adminService.deactivateAGR(id)`; (2) extraReducers para `fulfilled` (patch agr en state.agrs)
   y `rejected` (set error). Verificar que tests T-001 pasan.
@@ -79,14 +79,14 @@ flowchart LR
 
 ## Tasks — Bloque II: Fix mock data model AGR
 
-- [ ] [T-003] **TDD RED** — Agregar tests en `mockInterceptor.test.js` (o crear
+- [x] [T-003] **TDD RED** — Agregar tests en `mockInterceptor.test.js` (o crear
   `__tests__/mockInterceptor-agr.test.js`) que verifiquen:
   (a) GET /api/admin/agr/ retorna objetos con `codename` en snake_case (ej: `basic_operator_group`);
   (b) GET retorna objetos con `active: true` (boolean), no `state: 'ACTIVE'` (string);
   (c) POST crea AGR con `active: true`.
   Tests deben fallar porque mock actual tiene el formato invertido.
 
-- [ ] [T-004] **IMPLEMENT** — Actualizar `_handleAdminAGR` en `mockInterceptor.js`:
+- [x] [T-004] **IMPLEMENT** — Actualizar `_handleAdminAGR` en `mockInterceptor.js`:
   (a) Corregir array AGRS: `codename` = snake_case (ej: `basic_operator_group`),
   `name` = nombre display (ej: `'Operador Básico'`), reemplazar `state: 'ACTIVE'` → `active: true`;
   (b) En POST: reemplazar `state: 'ACTIVE'` → `active: true`;

@@ -920,7 +920,7 @@ class MockInterceptor {
           name: body.name,
           description: body.description || '',
           functions_count: 0,
-          state: 'ACTIVE',
+          active: true,
         },
       }
     }
@@ -934,16 +934,16 @@ class MockInterceptor {
       return this._error(405, 'Method not allowed')
     }
     const AGRS = [
-      { id:  1, codename: 'AGR-001', name: 'basic_operator_group',      description: 'Operador básico de call center',       functions_count: 6,  state: 'ACTIVE' },
-      { id:  2, codename: 'AGR-002', name: 'report_viewer_group',        description: 'Visualizador de reportes IVR',         functions_count: 8,  state: 'ACTIVE' },
-      { id:  3, codename: 'AGR-003', name: 'quality_supervisor_group',   description: 'Supervisor de calidad',                functions_count: 11, state: 'ACTIVE' },
-      { id:  4, codename: 'AGR-004', name: 'data_exporter_group',        description: 'Exportador de datos y reportes',       functions_count: 14, state: 'ACTIVE' },
-      { id:  5, codename: 'AGR-005', name: 'alert_manager_group',        description: 'Gestor de alertas y notificaciones',   functions_count: 6,  state: 'ACTIVE' },
-      { id:  6, codename: 'AGR-006', name: 'user_admin_group',           description: 'Administrador de usuarios',            functions_count: 9,  state: 'ACTIVE' },
-      { id:  7, codename: 'AGR-007', name: 'permission_admin_group',     description: 'Administrador de permisos',            functions_count: 5,  state: 'ACTIVE' },
-      { id:  8, codename: 'AGR-008', name: 'auditor_group',              description: 'Auditor de cumplimiento',              functions_count: 4,  state: 'ACTIVE' },
-      { id:  9, codename: 'AGR-009', name: 'pipeline_admin_group',       description: 'Administrador de pipelines ETL',       functions_count: 4,  state: 'ACTIVE' },
-      { id: 10, codename: 'AGR-010', name: 'system_admin_group',         description: 'Administrador del sistema RBAC',       functions_count: 6,  state: 'ACTIVE' },
+      { id:  1, codename: 'basic_operator_group',      name: 'Operador Básico',           description: 'Operador básico de call center',       functions_count: 6,  active: true },
+      { id:  2, codename: 'report_viewer_group',        name: 'Visualizador de Reportes',  description: 'Visualizador de reportes IVR',         functions_count: 8,  active: true },
+      { id:  3, codename: 'quality_supervisor_group',   name: 'Supervisor de Calidad',     description: 'Supervisor de calidad',                functions_count: 11, active: true },
+      { id:  4, codename: 'data_exporter_group',        name: 'Exportador de Datos',       description: 'Exportador de datos y reportes',       functions_count: 14, active: true },
+      { id:  5, codename: 'alert_manager_group',        name: 'Gestor de Alertas',         description: 'Gestor de alertas y notificaciones',   functions_count: 6,  active: true },
+      { id:  6, codename: 'user_admin_group',           name: 'Admin de Usuarios',         description: 'Administrador de usuarios',            functions_count: 9,  active: true },
+      { id:  7, codename: 'permission_admin_group',     name: 'Admin de Permisos',         description: 'Administrador de permisos',            functions_count: 5,  active: true },
+      { id:  8, codename: 'auditor_group',              name: 'Auditor',                   description: 'Auditor de cumplimiento',              functions_count: 4,  active: true },
+      { id:  9, codename: 'pipeline_admin_group',       name: 'Admin de Pipeline',         description: 'Administrador de pipelines ETL',       functions_count: 4,  active: true },
+      { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 6,  active: true },
     ]
     return { status: 200, data: { results: AGRS, count: AGRS.length } }
   }

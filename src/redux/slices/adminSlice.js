@@ -96,6 +96,18 @@ export const updateAGR = createAsyncThunk(
   }
 )
 
+/** Desactiva un AGR (soft-delete). */
+export const deactivateAGR = createAsyncThunk(
+  'admin/deactivateAGR',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await adminService.deactivateAGR(id)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const adminSlice = createSlice({
@@ -188,6 +200,17 @@ const adminSlice = createSlice({
         if (idx !== -1) state.agrs[idx] = updated
       })
       .addCase(updateAGR.rejected, (state, action) => {
+        state.error = action.payload
+      })
+
+    // deactivateAGR
+    builder
+      .addCase(deactivateAGR.fulfilled, (state, action) => {
+        const updated = action.payload
+        const idx = state.agrs.findIndex((a) => a.id === updated.id)
+        if (idx !== -1) state.agrs[idx] = updated
+      })
+      .addCase(deactivateAGR.rejected, (state, action) => {
         state.error = action.payload
       })
   },
