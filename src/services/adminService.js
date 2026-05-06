@@ -10,7 +10,7 @@
  * GET   /api/admin/agr/             - Listar AGRs (Agrupadores de Funciones)
  * POST  /api/admin/agr/             - Crear AGR
  * PATCH /api/admin/agr/{id}/        - Actualizar / desactivar AGR
- * GET   /api/admin/sod-rules/       - Listar reglas SoD
+ * GET   /api/admin/separation-rules/ - Listar reglas de separación
  */
 
 import apiService from './apiService'
@@ -92,14 +92,14 @@ class AdminService {
     return apiService.patch(`/api/admin/agr/${id}/`, { active: false })
   }
 
-  // ── Reglas SoD ───────────────────────────────────────────────────────────
+  // ── Reglas de separación de funciones ───────────────────────────────────
 
   /**
-   * Obtiene las reglas de Separación de Duties (SoD).
-   * @returns {Promise<Object>} Lista de reglas SoD
+   * Obtiene las reglas de separación de funciones.
+   * @returns {Promise<Object>} Lista de reglas de separación
    */
-  async getSoDRules() {
-    return apiService.get('/api/admin/sod-rules/')
+  async getSeparationRules() {
+    return apiService.get('/api/admin/separation-rules/')
   }
 }
 

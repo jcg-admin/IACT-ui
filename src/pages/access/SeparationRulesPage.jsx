@@ -8,12 +8,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchSodRules, updateSodRule, deleteSodRule,
-    selectSodRules, selectLoading, selectError,
+    selectSeparationRules, selectLoading, selectError,
 } from '../../redux/slices/accessSlice';
 
 export default function SeparationRulesPage() {
     const dispatch = useDispatch();
-    const sodRules = useSelector(selectSodRules);
+    const sodRules = useSelector(selectSeparationRules);
     const loading = useSelector(selectLoading);
     const error = useSelector(selectError);
     const [selectedRule, setSelectedRule] = useState(null);

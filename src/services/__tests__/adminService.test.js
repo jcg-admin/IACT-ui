@@ -55,9 +55,9 @@ describe('adminService.createAGR', () => {
   })
 })
 
-describe('adminService.getSoDRules', () => {
-  it('calls GET /api/admin/sod-rules/', async () => {
-    await adminService.getSoDRules()
-    expect(api.get).toHaveBeenCalledWith('/api/admin/sod-rules/')
+describe('adminService.getSeparationRules', () => {
+  it('calls GET /api/admin/separation-rules/', async () => {
+    await adminService.getSeparationRules()
+    expect(api.get).toHaveBeenCalledWith('/api/admin/separation-rules/')
   })
 })

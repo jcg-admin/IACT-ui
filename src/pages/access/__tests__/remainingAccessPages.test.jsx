@@ -12,13 +12,13 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
   deleteSodRule: jest.fn((id) => ({ type: 'access/deleteSodRule', payload: id })),
   selectFunctions: (s) => s.access.functions,
   selectAuditLog: (s) => s.access.auditLog,
-  selectSodRules: (s) => s.access.sodRules,
+  selectSeparationRules: (s) => s.access.separationRules,
   selectLoading: (s) => s.access.loading,
   selectError: (s) => s.access.error,
 }))
 
 const accessReducer = (state = {
-  functions: [], auditLog: [], sodRules: [], loading: false, error: null,
+  functions: [], auditLog: [], separationRules: [], loading: false, error: null,
 }) => state
 
 function wrap(ui) {

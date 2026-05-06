@@ -89,7 +89,7 @@ export const fetchSodRules = createAsyncThunk(
     'access/fetchSodRules',
     async (_, { rejectWithValue }) => {
         try {
-            return await accessService.getSodRules();
+            return await accessService.getSeparationRules();
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -100,7 +100,7 @@ export const createSodRule = createAsyncThunk(
     'access/createSodRule',
     async (data, { rejectWithValue }) => {
         try {
-            return await accessService.createSodRule(data);
+            return await accessService.createSeparationRule(data);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -111,7 +111,7 @@ export const updateSodRule = createAsyncThunk(
     'access/updateSodRule',
     async ({ id, ...data }, { rejectWithValue }) => {
         try {
-            return await accessService.updateSodRule(id, data);
+            return await accessService.updateSeparationRule(id, data);
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -122,7 +122,7 @@ export const deleteSodRule = createAsyncThunk(
     'access/deleteSodRule',
     async (id, { rejectWithValue }) => {
         try {
-            await accessService.deleteSodRule(id);
+            await accessService.deleteSeparationRule(id);
             return id;
         } catch (error) {
             return rejectWithValue(error.message);
@@ -235,7 +235,7 @@ const initialState = {
     functions: [],
     userPermissions: {},
     userAssignedFunctions: [],
-    sodRules: [],
+    separationRules: [],
     separationConflicts: [],
     auditLog: [],
     groups: [],
@@ -392,20 +392,20 @@ const accessSlice = createSlice({
          */
         builder
             .addCase(fetchSodRules.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(fetchSodRules.fulfilled, (state, action) => { state.loading = false; state.sodRules = action.payload; })
+            .addCase(fetchSodRules.fulfilled, (state, action) => { state.loading = false; state.separationRules = action.payload; })
             .addCase(fetchSodRules.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         builder
             .addCase(createSodRule.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(createSodRule.fulfilled, (state, action) => { state.loading = false; state.sodRules.push(action.payload); })
+            .addCase(createSodRule.fulfilled, (state, action) => { state.loading = false; state.separationRules.push(action.payload); })
             .addCase(createSodRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         builder
             .addCase(updateSodRule.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(updateSodRule.fulfilled, (state, action) => {
                 state.loading = false;
-                const idx = state.sodRules.findIndex(r => r.id === action.payload.id);
-                if (idx !== -1) state.sodRules[idx] = action.payload;
+                const idx = state.separationRules.findIndex(r => r.id === action.payload.id);
+                if (idx !== -1) state.separationRules[idx] = action.payload;
             })
             .addCase(updateSodRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
@@ -413,7 +413,7 @@ const accessSlice = createSlice({
             .addCase(deleteSodRule.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(deleteSodRule.fulfilled, (state, action) => {
                 state.loading = false;
-                state.sodRules = state.sodRules.filter(r => r.id !== action.payload);
+                state.separationRules = state.separationRules.filter(r => r.id !== action.payload);
             })
             .addCase(deleteSodRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
@@ -546,7 +546,7 @@ const accessSlice = createSlice({
 export const selectFunctions = (state) => state.access.functions;
 export const selectUserPermissions = (state) => state.access.userPermissions;
 export const selectUserAssignedFunctions = (state) => state.access.userAssignedFunctions;
-export const selectSodRules = (state) => state.access.sodRules;
+export const selectSeparationRules = (state) => state.access.separationRules;
 export const selectSeparationConflicts = (state) => state.access.separationConflicts;
 export const selectAuditLog = (state) => state.access.auditLog;
 export const selectGroups = (state) => state.access.groups;

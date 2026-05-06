@@ -338,43 +338,43 @@ class AccessService {
         return response.json();
     }
 
-    // uc-adm-01: SoD rules CRUD (mock-first — backend endpoint pending)
+    // uc-adm-01: separation rules CRUD (mock-first — backend endpoint pending)
 
-    async getSodRules() {
-        const response = await fetch(`${API_BASE_URL}/access/sod-rules`, {
+    async getSeparationRules() {
+        const response = await fetch(`${API_BASE_URL}/access/separation-rules`, {
             method: 'GET',
             headers: this.getAuthHeaders(),
         });
-        if (!response.ok) throw new Error('Failed to fetch SoD rules');
+        if (!response.ok) throw new Error('Failed to fetch separation rules');
         return response.json();
     }
 
-    async createSodRule(data) {
-        const response = await fetch(`${API_BASE_URL}/access/sod-rules`, {
+    async createSeparationRule(data) {
+        const response = await fetch(`${API_BASE_URL}/access/separation-rules`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
             body: JSON.stringify(data),
         });
-        if (!response.ok) throw new Error('Failed to create SoD rule');
+        if (!response.ok) throw new Error('Failed to create separation rule');
         return response.json();
     }
 
-    async updateSodRule(id, data) {
-        const response = await fetch(`${API_BASE_URL}/access/sod-rules/${id}`, {
+    async updateSeparationRule(id, data) {
+        const response = await fetch(`${API_BASE_URL}/access/separation-rules/${id}`, {
             method: 'PUT',
             headers: this.getAuthHeaders(),
             body: JSON.stringify(data),
         });
-        if (!response.ok) throw new Error('Failed to update SoD rule');
+        if (!response.ok) throw new Error('Failed to update separation rule');
         return response.json();
     }
 
-    async deleteSodRule(id) {
-        const response = await fetch(`${API_BASE_URL}/access/sod-rules/${id}`, {
+    async deleteSeparationRule(id) {
+        const response = await fetch(`${API_BASE_URL}/access/separation-rules/${id}`, {
             method: 'DELETE',
             headers: this.getAuthHeaders(),
         });
-        if (!response.ok) throw new Error('Failed to delete SoD rule');
+        if (!response.ok) throw new Error('Failed to delete separation rule');
         return response.json();
     }
 }

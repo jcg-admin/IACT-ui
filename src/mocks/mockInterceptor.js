@@ -97,6 +97,19 @@ class MockInterceptor {
       return this._handleAssignAccessGroup(body);
     }
 
+    // REPORTS — UC-RPT-04: exportar reporte (async job)
+    if (url.includes('/api/reports/export/')) {
+      return {
+        status: 202,
+        data: { job_id: `report-export-${Date.now()}` },
+      }
+    }
+
+    // ACCESS — UC-PERM-02: revocar grupo de usuario
+    if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/$/) && method === 'DELETE') {
+      return { status: 200, data: { revoked: true } }
+    }
+
     // AUDIT — UC-AUD-03: exportar auditoría (async)
     if (url.includes('/api/audit/export/')) {
       return this._handleAuditExport(body);
@@ -136,6 +149,15 @@ class MockInterceptor {
     if (url.includes('/api/reports/campaigns/')) {
       const params = options.params || {}
       return this._handleCampaignsReport(params)
+    }
+
+    if (url.includes('/api/reports/history/')) {
+      const params = options.params || {}
+      return this._handleReportHistory(params)
+    }
+
+    if (url.includes('/api/admin/separation-rules/')) {
+      return this._handleSeparationRules()
     }
 
     // ALERT ENDPOINTS
@@ -777,6 +799,37 @@ class MockInterceptor {
     ]
     const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
     return { status: 200, data: rows }
+  }
+
+  _handleReportHistory(params) {
+    const periodo = params.periodo || 'last_7d'
+    const seg = params.segmento || ''
+    const ALL = [
+      { periodo: 'last_7d',  segmento: 'Nacional', dimension: 'menu',     total_llamadas: 88500,  fecha_inicio: '2026-04-29', fecha_fin: '2026-05-06' },
+      { periodo: 'last_7d',  segmento: 'Nacional', dimension: 'campana',  total_llamadas: 42300,  fecha_inicio: '2026-04-29', fecha_fin: '2026-05-06' },
+      { periodo: 'last_7d',  segmento: 'Puebla',   dimension: 'menu',     total_llamadas: 9200,   fecha_inicio: '2026-04-29', fecha_fin: '2026-05-06' },
+      { periodo: 'last_30d', segmento: 'Nacional', dimension: 'menu',     total_llamadas: 362000, fecha_inicio: '2026-04-06', fecha_fin: '2026-05-06' },
+      { periodo: 'last_30d', segmento: 'Nacional', dimension: 'campana',  total_llamadas: 178500, fecha_inicio: '2026-04-06', fecha_fin: '2026-05-06' },
+      { periodo: 'last_30d', segmento: 'Puebla',   dimension: 'menu',     total_llamadas: 38900,  fecha_inicio: '2026-04-06', fecha_fin: '2026-05-06' },
+      { periodo: 'last_24h', segmento: 'Nacional', dimension: 'menu',     total_llamadas: 12800,  fecha_inicio: '2026-05-05', fecha_fin: '2026-05-06' },
+      { periodo: 'last_90d', segmento: 'Nacional', dimension: 'menu',     total_llamadas: 1020000, fecha_inicio: '2026-02-05', fecha_fin: '2026-05-06' },
+      { periodo: 'year-to-date', segmento: 'Nacional', dimension: 'menu', total_llamadas: 2507905, fecha_inicio: '2026-01-01', fecha_fin: '2026-05-06' },
+    ]
+    const rows = ALL.filter((r) =>
+      r.periodo === periodo && (seg === '' || r.segmento === seg)
+    )
+    return { status: 200, data: rows }
+  }
+
+  _handleSeparationRules() {
+    return {
+      status: 200,
+      data: [
+        { id: 1, name: 'SOD-001', code: 'SOD-001', description: 'Pipeline vs Auditoría', group_a: ['pipeline:execute'], group_b: ['audit:export'], state: 'ACTIVE', violations: 0 },
+        { id: 2, name: 'SOD-002', code: 'SOD-002', description: 'Usuario vs Auditoría', group_a: ['users:create'], group_b: ['audit:view'], state: 'ACTIVE', violations: 0 },
+        { id: 3, name: 'SOD-003', code: 'SOD-003', description: 'Acceso vs Admin', group_a: ['access:assign'], group_b: ['adm:manage_catalog'], state: 'ACTIVE', violations: 0 },
+      ],
+    }
   }
 
   // ====== ALERT HANDLERS ======

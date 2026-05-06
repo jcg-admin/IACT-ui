@@ -116,9 +116,12 @@ export default function TemporaryPermissionsPage() {
     };
 
     const handleRevoke = (perm) => {
+        const reason = window.prompt('Motivo de revocación (obligatorio):')
+        if (!reason || reason.trim().length === 0) return
         dispatch(revokeFunction({
-            userId: perm.userId,
-            catalogId: perm.catalogId,
+            userId: perm.user,
+            catalogId: perm.id,
+            revoke_reason: reason.trim(),
         }));
     };
 

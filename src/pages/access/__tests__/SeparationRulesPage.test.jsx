@@ -14,7 +14,7 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
   useSelector: (selector) => selector({
-    access: { sodRules: SOD_RULES, loading: false, error: null, success: false },
+    access: { separationRules: SOD_RULES, loading: false, error: null, success: false },
   }),
 }))
 
@@ -26,7 +26,7 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
   selectLoading: (s) => s.access.loading,
   selectError: (s) => s.access.error,
   selectSuccess: (s) => s.access.success,
-  selectSodRules: (s) => s.access.sodRules,
+  selectSeparationRules: (s) => s.access.separationRules,
 }))
 
 import { fetchSodRules, createSodRule, updateSodRule, deleteSodRule } from '../../../redux/slices/accessSlice'

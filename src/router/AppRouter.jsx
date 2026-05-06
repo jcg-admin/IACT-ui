@@ -95,6 +95,11 @@ const IVRMenusReportPage = lazy(() => import('@pages/reports/IVRMenusReportPage'
 const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsReportPage'))
 const ScheduledReportPage = lazy(() => import('@pages/reports/ScheduledReportPage'))
 const RealTimeMetricsPage = lazy(() => import('@pages/reports/RealTimeMetricsPage'))
+const HistoricalReportsPage = lazy(() => import('@pages/reports/HistoricalReportsPage'))
+const ReportExportPage = lazy(() => import('@pages/reports/ReportExportPage'))
+
+// ── Permissions pages ─────────────────────────────────────────────────────────
+const RevokeGroupPage = lazy(() => import('@pages/permissions/RevokeGroupPage'))
 
 // ── Access pages ─────────────────────────────────────────────────────────────
 const GroupManagementPage = lazy(() => import('@pages/access/GroupManagementPage'))
@@ -104,6 +109,7 @@ const SeparationRulesPage = lazy(() => import('@pages/access/SeparationRulesPage
 const SegmentsPage = lazy(() => import('@pages/access/SegmentsPage'))
 const PermissionsAuditPage = lazy(() => import('@pages/access/PermissionsAuditPage'))
 const AssignGroupPage = lazy(() => import('@pages/access/AssignGroupPage'))
+const TemporaryPermissionsPage = lazy(() => import('@pages/access/TemporaryPermissionsPage'))
 
 // ── Alerts pages ──────────────────────────────────────────────────────────────
 const TemplatesPage = lazy(() => import('@pages/alerts/TemplatesPage'))
@@ -352,9 +358,9 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — reglas de separación de funciones/SoD (UC-ACC-05) */}
+          {/* Acceso — reglas de separación de funciones (UC-ACC-05) */}
           <Route
-            path="/access/sod-rules"
+            path="/access/separation-rules"
             element={
               <ProtectedRoute permission={FunctionCatalog.MANAGE_SEPARATION_RULES}>
                 <Suspense fallback={<RouteLoadingFallback />}>
@@ -583,6 +589,62 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.VIEW_DASHBOARD}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <RealTimeMetricsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* UC-RPT-03 — Reportes históricos */}
+          <Route
+            path="/reports/historical"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <HistoricalReportsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* UC-RPT-04 — Exportar reporte (async job) */}
+          <Route
+            path="/reports/export"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.EXPORT_CSV}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ReportExportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Permisos — UC-PERM-01: asignar grupo (mismo componente que /access/assign-group) */}
+          <Route
+            path="/permissions/assign-group"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AssignGroupPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* Permisos — UC-PERM-02: revocar grupo */}
+          <Route
+            path="/permissions/revoke-group"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <RevokeGroupPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* Permisos — UC-PERM-03: permisos temporales (misma página que /access/temp-permissions) */}
+          <Route
+            path="/permissions/temp-permissions"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <TemporaryPermissionsPage />
                 </Suspense>
               </ProtectedRoute>
             }
