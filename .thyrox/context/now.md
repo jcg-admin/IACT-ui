@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-06
-current_work: .thyrox/context/work/2026-05-06-08-10-48-rbac-permissions-mock-alignment
-phase: Phase 1 — DISCOVER (GATE HUMANO)
-updated_at: 2026-05-06 08:15:47
+current_work: null
+phase: null
+updated_at: 2026-05-06 19:15:06
 blockers: []
 ```
 
@@ -16,11 +16,25 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP rbac-permissions-mock-alignment en Phase 1 DISCOVER (gate humano).
+**Estado:** Sin WP activo. Todos los WPs cerrados.
 
 ## Métricas de test suite
 
-**1602 tests** passing en **205 suites** (verificado 2026-05-06 — WP spec-alignment-debt Phase 10 completa)
+**~1700 tests** passing (verificado 2026-05-06 — WP rbac-permissions-mock-alignment Phase 11 completa)
+
+---
+
+## WP cerrado — rbac-permissions-mock-alignment ✓
+
+`2026-05-06-08-10-48-rbac-permissions-mock-alignment` — Phase 11 TRACK completa.
+
+6 UCs implementados (uc-rpt-03/04, uc-perm-01..04) con TDD.
+Nomenclatura `sod-rules` → `separation-rules` corregida en toda la codebase
+(accessSlice, accessService, adminService, router, tests, mock).
+~1700 tests, 0 regressions. Artefactos:
+- `track/rbac-permissions-mock-alignment-changelog.md`
+- `track/rbac-permissions-mock-alignment-lessons-learned.md`
+- `plan-execution/rbac-permissions-mock-alignment-task-plan.md` (6/6 [x])
 
 ---
 
