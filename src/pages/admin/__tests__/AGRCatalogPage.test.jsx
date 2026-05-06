@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import AGRCatalogPage from '../AGRCatalogPage'
 
@@ -49,5 +49,60 @@ describe('AGRCatalogPage', () => {
   it('dispatches fetchAGRCatalog on mount', () => {
     wrapper(<AGRCatalogPage />)
     expect(mockDispatch).toHaveBeenCalled()
+  })
+})
+
+describe('AGRCatalogPage — codename snake_case validation (G-B2)', () => {
+  const { createAGR } = require('../../../redux/slices/adminSlice')
+
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    createAGR.mockClear()
+  })
+
+  function openCreateForm() {
+    wrapper(<AGRCatalogPage />)
+    fireEvent.click(screen.getByRole('button', { name: /nuevo agr/i }))
+  }
+
+  function fillAndSubmit(codename, name = 'Test AGR') {
+    const codenameInput = document.querySelector('[name="codename"]')
+    const nameInput = document.querySelector('[name="name"]')
+    fireEvent.change(codenameInput, { target: { value: codename } })
+    fireEvent.change(nameInput, { target: { value: name } })
+    fireEvent.click(screen.getByRole('button', { name: /crear agr/i }))
+  }
+
+  it('accepts valid snake_case codename', () => {
+    openCreateForm()
+    fillAndSubmit('basic_operator_group')
+    expect(screen.queryByText(/formato.*snake_case/i)).not.toBeInTheDocument()
+    expect(mockDispatch).toHaveBeenCalledTimes(2)
+  })
+
+  it('rejects codename with uppercase letters', () => {
+    openCreateForm()
+    fillAndSubmit('BasicOperatorGroup')
+    expect(screen.getByText(/formato.*snake_case/i)).toBeInTheDocument()
+    expect(createAGR).not.toHaveBeenCalled()
+  })
+
+  it('rejects codename with hyphens', () => {
+    openCreateForm()
+    fillAndSubmit('basic-operator-group')
+    expect(screen.getByText(/formato.*snake_case/i)).toBeInTheDocument()
+  })
+
+  it('rejects codename starting with a number', () => {
+    openCreateForm()
+    fillAndSubmit('1_invalid')
+    expect(screen.getByText(/formato.*snake_case/i)).toBeInTheDocument()
+  })
+
+  it('accepts codename with numbers after first char', () => {
+    openCreateForm()
+    fillAndSubmit('group_v2')
+    expect(screen.queryByText(/formato.*snake_case/i)).not.toBeInTheDocument()
+    expect(mockDispatch).toHaveBeenCalledTimes(2)
   })
 })
