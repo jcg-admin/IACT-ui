@@ -76,9 +76,9 @@ T-001 → T-002 → T-003 → T-004 → T-005 → T-006 → T-007
 
 ### Bloque IV: Cierre formal WP
 
-- [ ] [T-005] **TRACK** — Crear `track/menu-rbac-user-scope-changelog.md`.
-- [ ] [T-006] **TRACK** — Crear `track/menu-rbac-user-scope-lessons.md` con ≥3 lecciones.
-- [ ] [T-007] **CLOSE** — Actualizar `wp-state.md` + `now.md`. Push final + validate-phase-completion.sh.
+- [x] [T-005] **TRACK** — Crear `track/menu-rbac-user-scope-changelog.md`.
+- [x] [T-006] **TRACK** — Crear `track/menu-rbac-user-scope-lessons.md` con ≥3 lecciones.
+- [x] [T-007] **CLOSE** — Actualizar `wp-state.md` + `now.md`. Push final + validate-phase-completion.sh.
 
 ## Métricas de éxito
 

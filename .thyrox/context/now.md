@@ -5,8 +5,8 @@ project: IACT-UI
 cold_boot: false
 last_session: 2026-05-06
 current_work: .thyrox/context/work/2026-05-06-21-11-12-menu-rbac-user-scope
-phase: Phase 10 — IMPLEMENT (T-002..T-007 pendientes)
-updated_at: 2026-05-06 23:30:00
+phase: Phase 11 — TRACK/EVALUATE (completa)
+updated_at: 2026-05-06 23:55:00
 blockers: []
 ```
 
@@ -16,11 +16,11 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP rbac-v560-spec-analysis cerrado. Siguiente: revisar SP-01/SP-02/SP-03 del WP menu-rbac-user-scope.
+**Estado:** WP menu-rbac-user-scope cerrado. Siguiente: WP sub-menús (menu-submenu-ux) si se activa.
 
 ## Métricas de test suite
 
-**1737 tests** passing (verificado 2026-05-06 — WP rbac-v560-spec-analysis Phase 11 completa, 210 suites)
+**1748 tests** passing (verificado 2026-05-06 — WP menu-rbac-user-scope Phase 11 completa, 211 suites)
 
 ---
 
@@ -34,8 +34,8 @@ blockers: []
 - `track/rbac-v560-alignment-lessons.md` (6 lecciones)
 - `plan-execution/rbac-v560-alignment-task-plan.md` (13/13 [x])
 
-WP paralelo activo: `2026-05-06-21-11-12-menu-rbac-user-scope` (Phase 1 DISCOVER completa,
-SP-01/SP-02/SP-03 pendientes de revisión humana).
+WP `2026-05-06-21-11-12-menu-rbac-user-scope` cerrado — Phase 11 TRACK completa.
+G-M1 fix: handler capacidades mock. 1748 tests / 211 suites.
 
 ---
 
