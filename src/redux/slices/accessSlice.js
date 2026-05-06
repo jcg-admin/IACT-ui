@@ -63,6 +63,28 @@ export const revokeFunction = createAsyncThunk(
     }
 );
 
+export const assignGroupToUser = createAsyncThunk(
+    'access/assignGroupToUser',
+    async ({ userId, groupId, expiresAt = null }, { rejectWithValue }) => {
+        try {
+            return await accessService.assignAccessGroup(userId, groupId, expiresAt);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const revokeGroupFromUser = createAsyncThunk(
+    'access/revokeGroupFromUser',
+    async ({ userId, groupId }, { rejectWithValue }) => {
+        try {
+            return await accessService.revokeAccessGroup(userId, groupId);
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 export const fetchSodRules = createAsyncThunk(
     'access/fetchSodRules',
     async (_, { rejectWithValue }) => {
@@ -351,6 +373,19 @@ const accessSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
+
+        /**
+         * Assign / Revoke Group to/from User (uc-perm-01/02)
+         */
+        builder
+            .addCase(assignGroupToUser.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(assignGroupToUser.fulfilled, (state) => { state.loading = false; state.success = true; })
+            .addCase(assignGroupToUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
+        builder
+            .addCase(revokeGroupFromUser.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(revokeGroupFromUser.fulfilled, (state) => { state.loading = false; state.success = true; })
+            .addCase(revokeGroupFromUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         /**
          * SoD Rules CRUD (uc-adm-01)

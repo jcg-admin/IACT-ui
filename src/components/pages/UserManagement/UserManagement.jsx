@@ -6,14 +6,20 @@
  */
 
 import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import userAuth from '../../../facades/UserAuth'
 import reportExporter from '../../../facades/ReportExporter'
 import { getNotificationService } from '@services/notificationService'
+import { assignGroupToUser, revokeGroupFromUser, selectGroups } from '../../../redux/slices/accessSlice'
+import GroupAssignModal from '../../access/GroupAssignModal'
 import UserList from './UserList'
 import UserForm from './UserForm'
 import './UserManagement.scss'
 
 export default function UserManagement() {
+  const dispatch = useDispatch()
+  const groups = useSelector(selectGroups)
+
   // State
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -21,6 +27,7 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
+  const [groupModal, setGroupModal] = useState({ isOpen: false, mode: 'assign', userId: null })
 
   const notify = getNotificationService()
 
@@ -221,6 +228,16 @@ export default function UserManagement() {
     }
   }
 
+  const handleGroupConfirm = (groupId) => {
+    if (!groupModal.userId) return
+    if (groupModal.mode === 'assign') {
+      dispatch(assignGroupToUser({ userId: groupModal.userId, groupId }))
+    } else {
+      dispatch(revokeGroupFromUser({ userId: groupModal.userId, groupId }))
+    }
+    setGroupModal({ isOpen: false, mode: 'assign', userId: null })
+  }
+
   /**
    * Filter users by search term and role
    */
@@ -309,6 +326,28 @@ export default function UserManagement() {
             onDeactivate={handleDeactivateUser}
           />
 
+          {/* Group assign/revoke buttons per user */}
+          {!loading && filteredUsers.map(user => (
+            <div key={`group-actions-${user.id}`} style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+              <button
+                aria-label="Asignar Grupo"
+                onClick={() => setGroupModal({ isOpen: true, mode: 'assign', userId: user.id })}
+                className="btn btn-secondary"
+                style={{ fontSize: '12px', padding: '2px 8px' }}
+              >
+                Asignar Grupo
+              </button>
+              <button
+                aria-label="Revocar Grupo"
+                onClick={() => setGroupModal({ isOpen: true, mode: 'revoke', userId: user.id })}
+                className="btn btn-secondary"
+                style={{ fontSize: '12px', padding: '2px 8px' }}
+              >
+                Revocar Grupo
+              </button>
+            </div>
+          ))}
+
           <div className="results-info">
             Showing {filteredUsers.length} of {users.length} users
           </div>
@@ -325,6 +364,14 @@ export default function UserManagement() {
           onDeactivate={handleDeactivateUser}
         />
       )}
+
+      <GroupAssignModal
+        isOpen={groupModal.isOpen}
+        mode={groupModal.mode}
+        groups={groups || []}
+        onConfirm={handleGroupConfirm}
+        onClose={() => setGroupModal({ isOpen: false, mode: 'assign', userId: null })}
+      />
     </div>
   )
 }

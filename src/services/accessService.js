@@ -175,6 +175,22 @@ class AccessService {
     }
 
     /**
+     * UC-PERM-02: Revocar grupo de acceso de un usuario.
+     * DELETE /users/{userId}/access-groups/{agrId}
+     */
+    async revokeAccessGroup(userId, agrId) {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/access-groups/${agrId}`, {
+            method: 'DELETE',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || 'Failed to revoke access group');
+        }
+        return response.json().catch(() => ({}));
+    }
+
+    /**
      * Obtener segmentos
      */
     async getSegments() {

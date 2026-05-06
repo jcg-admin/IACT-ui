@@ -98,6 +98,7 @@ const GroupCompositionPage = lazy(() => import('@pages/access/GroupCompositionPa
 const GroupersPage = lazy(() => import('@pages/access/GroupersPage'))
 const SeparationRulesPage = lazy(() => import('@pages/access/SeparationRulesPage'))
 const SegmentsPage = lazy(() => import('@pages/access/SegmentsPage'))
+const PermissionsAuditPage = lazy(() => import('@pages/access/PermissionsAuditPage'))
 
 // ── Alerts pages ──────────────────────────────────────────────────────────────
 const TemplatesPage = lazy(() => import('@pages/alerts/TemplatesPage'))
@@ -365,6 +366,18 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <SegmentsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Permisos — auditoría (UC-PERM-10) */}
+          <Route
+            path="/access/audit/permissions"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_PERMISSIONS_AUDIT}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <PermissionsAuditPage />
                 </Suspense>
               </ProtectedRoute>
             }
