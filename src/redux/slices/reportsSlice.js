@@ -70,6 +70,61 @@ export const createScheduledReport = createAsyncThunk(
   }
 )
 
+export const pauseSchedule = createAsyncThunk(
+  'reports/pauseSchedule',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await reportsService.pauseSchedule(id)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const resumeSchedule = createAsyncThunk(
+  'reports/resumeSchedule',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await reportsService.resumeSchedule(id)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const deleteSchedule = createAsyncThunk(
+  'reports/deleteSchedule',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await reportsService.deleteSchedule(id)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const runScheduleNow = createAsyncThunk(
+  'reports/runScheduleNow',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await reportsService.runScheduleNow(id)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const fetchScheduleHistory = createAsyncThunk(
+  'reports/fetchScheduleHistory',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await reportsService.getScheduleHistory(id)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 // ── Slice ────────────────────────────────────────────────────────────────────
 
 const reportsSlice = createSlice({
@@ -77,9 +132,11 @@ const reportsSlice = createSlice({
   initialState: {
     metrics: null,
     scheduledReports: [],
+    scheduleHistory: [],
     reportHistory: [],
     sharedUrl: null,
     loading: false,
+    scheduleActionLoading: false,
     error: null,
   },
   reducers: {
@@ -148,6 +205,38 @@ const reportsSlice = createSlice({
       .addCase(createScheduledReport.rejected, (state, action) => {
         state.error = action.payload
       })
+
+    // schedule management actions
+    const scheduleAction = (thunk, updater) => {
+      builder
+        .addCase(thunk.pending, (state) => { state.scheduleActionLoading = true })
+        .addCase(thunk.fulfilled, (state, action) => {
+          state.scheduleActionLoading = false
+          updater(state, action)
+        })
+        .addCase(thunk.rejected, (state, action) => {
+          state.scheduleActionLoading = false
+          state.error = action.payload
+        })
+    }
+
+    scheduleAction(pauseSchedule, (state, action) => {
+      const idx = state.scheduledReports.findIndex((r) => r.id === action.payload.id)
+      if (idx !== -1) state.scheduledReports[idx].status = 'paused'
+    })
+    scheduleAction(resumeSchedule, (state, action) => {
+      const idx = state.scheduledReports.findIndex((r) => r.id === action.payload.id)
+      if (idx !== -1) state.scheduledReports[idx].status = 'active'
+    })
+    scheduleAction(deleteSchedule, (state, action) => {
+      state.scheduledReports = state.scheduledReports.filter((r) => r.id !== action.payload.id)
+    })
+    scheduleAction(runScheduleNow, (state) => { state.scheduleActionLoading = false })
+
+    builder
+      .addCase(fetchScheduleHistory.fulfilled, (state, action) => {
+        state.scheduleHistory = action.payload
+      })
   },
 })
 
@@ -159,9 +248,11 @@ const selectReportsState = (state) => state.reports
 
 export const selectMetrics = createSelector(selectReportsState, (s) => s.metrics)
 export const selectScheduledReports = createSelector(selectReportsState, (s) => s.scheduledReports)
+export const selectScheduleHistory = createSelector(selectReportsState, (s) => s.scheduleHistory)
 export const selectReportHistory = createSelector(selectReportsState, (s) => s.reportHistory)
 export const selectSharedUrl = createSelector(selectReportsState, (s) => s.sharedUrl)
 export const selectReportsLoading = createSelector(selectReportsState, (s) => s.loading)
+export const selectScheduleActionLoading = createSelector(selectReportsState, (s) => s.scheduleActionLoading)
 export const selectReportsError = createSelector(selectReportsState, (s) => s.error)
 
 export default reportsSlice.reducer

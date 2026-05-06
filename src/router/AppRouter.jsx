@@ -92,6 +92,8 @@ const CampaignsReportPage = lazy(() => import('@pages/reports/CampaignsReportPag
 const TransfersReportPage = lazy(() => import('@pages/reports/TransfersReportPage'))
 const IVRMenusReportPage = lazy(() => import('@pages/reports/IVRMenusReportPage'))
 const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsReportPage'))
+const ScheduledReportPage = lazy(() => import('@pages/reports/ScheduledReportPage'))
+const RealTimeMetricsPage = lazy(() => import('@pages/reports/RealTimeMetricsPage'))
 
 // ── Access pages ─────────────────────────────────────────────────────────────
 const GroupManagementPage = lazy(() => import('@pages/access/GroupManagementPage'))
@@ -535,6 +537,28 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <UniqueClientsReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* UC-RPT-07/08 — Reportes programados */}
+          <Route
+            path="/reports/scheduled"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.SCHEDULE_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ScheduledReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* UC-RPT-02 — Métricas en tiempo real */}
+          <Route
+            path="/reports/realtime"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REALTIME_METRICS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <RealTimeMetricsPage />
                 </Suspense>
               </ProtectedRoute>
             }

@@ -24,15 +24,15 @@ status: Borrador
 > `createScheduledReport` y selector `selectScheduledReports` ya existen en el slice.
 > Falta: actions de gestión (pause/resume/delete/run-now), la página real y la ruta.
 
-- [ ] **T-001** Agregar `SCHEDULE_REPORTS` a `src/permissions/catalog.js`
-- [ ] **T-002** Agregar `pauseSchedule(id)`, `resumeSchedule(id)`, `deleteSchedule(id)`, `runScheduleNow(id)` mock-first a `src/services/reportsService.js`
-- [ ] **T-003** Grep consumers de `reportsSlice` en tests: `grep -r "from '@redux/slices/reportsSlice'" src --include="*.test.*" -l`
-- [ ] **T-004** Agregar thunks `pauseSchedule`, `resumeSchedule`, `deleteSchedule`, `runScheduleNow` + reducers a `src/redux/slices/reportsSlice.js`
-- [ ] **T-005** Actualizar mocks de `reportsSlice` en todos los archivos de test encontrados en T-003
-- [ ] **T-006** Crear `src/pages/reports/__tests__/ScheduledReportPage.test.jsx` — tests: renderiza lista, muestra form de creación, acciones pause/resume/delete/run-now, history panel
-- [ ] **T-007** Crear `src/pages/reports/ScheduledReportPage.jsx` — tabs Crear / Gestionar, detalle + historico 30 días, actions funcionales vía dispatch
-- [ ] **T-008** Agregar route `/reports/scheduled` + lazy import `ScheduledReportPage` en `src/router/AppRouter.jsx` con `ProtectedRoute permission={FunctionCatalog.SCHEDULE_REPORTS}`
-- [ ] **T-009** Commit ITER-1: `Add ITER-1: uc-rpt-07 + uc-rpt-08 scheduled reports`
+- [x] **T-001** Agregar `SCHEDULE_REPORTS` a `src/permissions/catalog.js`
+- [x] **T-002** Agregar `pauseSchedule(id)`, `resumeSchedule(id)`, `deleteSchedule(id)`, `runScheduleNow(id)` mock-first a `src/services/reportsService.js`
+- [x] **T-003** Grep consumers de `reportsSlice` en tests: `grep -r "from '@redux/slices/reportsSlice'" src --include="*.test.*" -l`
+- [x] **T-004** Agregar thunks `pauseSchedule`, `resumeSchedule`, `deleteSchedule`, `runScheduleNow` + reducers a `src/redux/slices/reportsSlice.js`
+- [x] **T-005** Actualizar mocks de `reportsSlice` en todos los archivos de test encontrados en T-003
+- [x] **T-006** Crear `src/pages/reports/__tests__/ScheduledReportPage.test.jsx` — tests: renderiza lista, muestra form de creación, acciones pause/resume/delete/run-now, history panel
+- [x] **T-007** Crear `src/pages/reports/ScheduledReportPage.jsx` — tabs Crear / Gestionar, detalle + historico 30 días, actions funcionales vía dispatch
+- [x] **T-008** Agregar route `/reports/scheduled` + lazy import `ScheduledReportPage` en `src/router/AppRouter.jsx` con `ProtectedRoute permission={FunctionCatalog.SCHEDULE_REPORTS}`
+- [x] **T-009** Commit ITER-1: `Add ITER-1: uc-rpt-07 + uc-rpt-08 scheduled reports`
 
 ---
 

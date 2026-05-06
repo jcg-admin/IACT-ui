@@ -84,6 +84,48 @@ class ReportsService {
     return apiService.get('/api/reports/history/')
   }
 
+  // TODO: replace mock — PATCH /api/reports/scheduled/{id}/pause/
+  async pauseSchedule(id) {
+    return { id, status: 'paused' }
+  }
+
+  // TODO: replace mock — PATCH /api/reports/scheduled/{id}/resume/
+  async resumeSchedule(id) {
+    return { id, status: 'active' }
+  }
+
+  // TODO: replace mock — DELETE /api/reports/scheduled/{id}/
+  async deleteSchedule(id) {
+    return { id, deleted: true }
+  }
+
+  // TODO: replace mock — POST /api/reports/scheduled/{id}/run/
+  async runScheduleNow(id) {
+    return { id, jobId: `job-${Date.now()}`, status: 'running' }
+  }
+
+  // TODO: replace mock — GET /api/reports/scheduled/{id}/runs/
+  async getScheduleHistory(id) {
+    return [
+      { runId: '1', scheduledAt: new Date(Date.now() - 86400000).toISOString(), status: 'success', duration: 42 },
+      { runId: '2', scheduledAt: new Date(Date.now() - 172800000).toISOString(), status: 'success', duration: 38 },
+    ]
+  }
+
+  // TODO: replace mock — GET /api/reports/realtime/
+  async getRealTimeMetrics() {
+    return {
+      callsQueued: 12,
+      agentsBusy: 8,
+      agentsIdle: 4,
+      callsAnsweredPerHour: 143,
+      abandonRatePer5Min: 3.2,
+      serviceLevelPer15Min: 87.5,
+      lagSeconds: 5,
+      updatedAt: new Date().toISOString(),
+    }
+  }
+
   generateShareUrl(type, filters = {}) {
     const params = new URLSearchParams({ type, ...filters }).toString()
     const base = typeof window !== 'undefined' ? window.location.origin : ''

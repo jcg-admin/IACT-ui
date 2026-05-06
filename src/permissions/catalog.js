@@ -69,8 +69,12 @@ export const FunctionCatalog = {
     // SoD rule lifecycle (uc-adm-01)
     MANAGE_SOD_RULES:           'sistema.administracion.sod.gestionar',
 
-    // Pipeline retry (uc-pip-04)
+    // Pipeline — ETL supervision (uc-pip-01) + retry (uc-pip-04)
+    VIEW_ETL_SUPERVISION:       'sistema.observabilidad.pipeline.ver',
     RETRY_PIPELINE:             'sistema.observabilidad.pipeline.reintentar',
+
+    // Scheduled reports (uc-rpt-07/08)
+    SCHEDULE_REPORTS:           'sistema.analisis.reportes.programar',
 
     // Report sharing (uc-rpt-11)
     SHARE_REPORTS:              'sistema.analisis.reportes.compartir',
