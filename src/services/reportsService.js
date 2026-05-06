@@ -264,6 +264,14 @@ class ReportsService {
     const base = typeof window !== 'undefined' ? window.location.origin : ''
     return `${base}/reports/shared?${params}`
   }
+
+  async getSavedViews() {
+    return apiService.get('/api/reports/saved-views/')
+  }
+
+  async deleteSavedView(id) {
+    return apiService.delete(`/api/reports/saved-views/${id}/`)
+  }
 }
 
 export default new ReportsService()

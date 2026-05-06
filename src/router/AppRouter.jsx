@@ -97,6 +97,7 @@ const ScheduledReportPage = lazy(() => import('@pages/reports/ScheduledReportPag
 const RealTimeMetricsPage = lazy(() => import('@pages/reports/RealTimeMetricsPage'))
 const HistoricalReportsPage = lazy(() => import('@pages/reports/HistoricalReportsPage'))
 const ReportExportPage = lazy(() => import('@pages/reports/ReportExportPage'))
+const SavedViewsPage = lazy(() => import('@pages/reports/SavedViewsPage'))
 
 // ── Permissions pages ─────────────────────────────────────────────────────────
 const RevokeGroupPage = lazy(() => import('@pages/permissions/RevokeGroupPage'))
@@ -611,6 +612,17 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.EXPORT_CSV}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <ReportExportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* UC-RPT-10 — Vistas guardadas */}
+          <Route
+            path="/reports/saved"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.SAVE_VIEW}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SavedViewsPage />
                 </Suspense>
               </ProtectedRoute>
             }

@@ -156,6 +156,11 @@ class MockInterceptor {
       return this._handleReportHistory(params)
     }
 
+    // REPORTS — UC-RPT-10: vistas guardadas
+    if (url.includes('/api/reports/saved-views/')) {
+      return this._handleSavedViews(method, url)
+    }
+
     // ADMIN — UC-ADM-02: catálogo de funciones RBAC
     if (url.includes('/api/admin/functions/')) {
       return this._handleAdminFunctions(method, body)
@@ -829,6 +834,24 @@ class MockInterceptor {
       r.periodo === periodo && (seg === '' || r.segmento === seg)
     )
     return { status: 200, data: rows }
+  }
+
+  // ====== REPORTS — SAVED VIEWS HANDLER (UC-RPT-10) ======
+
+  _handleSavedViews(method, url) {
+    const VIEWS = [
+      { id: 1, name: 'Agentes Nacional Q01_25',  report_type: 'agents',    filters: { segmento: 'Nacional', trimestre: 'Q01_25' }, created_at: '2026-01-15T10:00:00Z' },
+      { id: 2, name: 'Colas Puebla Q01_25',       report_type: 'queues',    filters: { segmento: 'Puebla',   trimestre: 'Q01_25' }, created_at: '2026-02-01T08:30:00Z' },
+      { id: 3, name: 'Campañas Nacional Q02_25',  report_type: 'campaigns', filters: { segmento: 'Nacional', trimestre: 'Q02_25' }, created_at: '2026-03-10T14:00:00Z' },
+    ]
+    if (method === 'GET') {
+      return { status: 200, data: { results: VIEWS, count: VIEWS.length } }
+    }
+    if (method === 'DELETE') {
+      const id = parseInt(url.split('/').filter(Boolean).pop(), 10)
+      return { status: 204, data: null }
+    }
+    return this._error(405, 'Method not allowed')
   }
 
   // ====== ADMIN — RBAC CATALOG HANDLERS (ITER-C: GET only) ======

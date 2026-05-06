@@ -125,6 +125,31 @@ export const fetchScheduleHistory = createAsyncThunk(
   }
 )
 
+/** Obtiene las vistas guardadas del usuario (UC_RPT_10). */
+export const fetchSavedViews = createAsyncThunk(
+  'reports/fetchSavedViews',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await reportsService.getSavedViews()
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+/** Elimina una vista guardada por id (UC_RPT_10). */
+export const deleteSavedView = createAsyncThunk(
+  'reports/deleteSavedView',
+  async (id, { rejectWithValue }) => {
+    try {
+      await reportsService.deleteSavedView(id)
+      return id
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 // ── Slice ────────────────────────────────────────────────────────────────────
 
 const reportsSlice = createSlice({
@@ -134,6 +159,7 @@ const reportsSlice = createSlice({
     scheduledReports: [],
     scheduleHistory: [],
     reportHistory: [],
+    savedViews: [],
     sharedUrl: null,
     loading: false,
     scheduleActionLoading: false,
@@ -237,6 +263,30 @@ const reportsSlice = createSlice({
       .addCase(fetchScheduleHistory.fulfilled, (state, action) => {
         state.scheduleHistory = action.payload
       })
+
+    // fetchSavedViews
+    builder
+      .addCase(fetchSavedViews.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchSavedViews.fulfilled, (state, action) => {
+        state.savedViews = action.payload?.results ?? action.payload ?? []
+        state.loading = false
+      })
+      .addCase(fetchSavedViews.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
+    // deleteSavedView
+    builder
+      .addCase(deleteSavedView.fulfilled, (state, action) => {
+        state.savedViews = state.savedViews.filter((v) => v.id !== action.payload)
+      })
+      .addCase(deleteSavedView.rejected, (state, action) => {
+        state.error = action.payload
+      })
   },
 })
 
@@ -250,6 +300,7 @@ export const selectMetrics = createSelector(selectReportsState, (s) => s.metrics
 export const selectScheduledReports = createSelector(selectReportsState, (s) => s.scheduledReports)
 export const selectScheduleHistory = createSelector(selectReportsState, (s) => s.scheduleHistory)
 export const selectReportHistory = createSelector(selectReportsState, (s) => s.reportHistory)
+export const selectSavedViews = createSelector(selectReportsState, (s) => s.savedViews)
 export const selectSharedUrl = createSelector(selectReportsState, (s) => s.sharedUrl)
 export const selectReportsLoading = createSelector(selectReportsState, (s) => s.loading)
 export const selectScheduleActionLoading = createSelector(selectReportsState, (s) => s.scheduleActionLoading)
