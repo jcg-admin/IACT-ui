@@ -104,14 +104,14 @@ describe('/access-denied route', () => {
 
 describe('FunctionCatalog — route permissions mapping', () => {
     it('VIEW_ACCESS protects /access/* routes', () => {
-        expect(FunctionCatalog.VIEW_ACCESS).toBe('sistema.administracion.acceso.ver');
+        expect(FunctionCatalog.VIEW_ACCESS).toBe('access:view');
     });
 
     it('VIEW_AUDIT protects /audit/* routes', () => {
-        expect(FunctionCatalog.VIEW_AUDIT).toBe('sistema.auditoria.logs.ver');
+        expect(FunctionCatalog.VIEW_AUDIT).toBe('audit:view');
     });
 
     it('VIEW_ALERTS protects /alerts/* routes', () => {
-        expect(FunctionCatalog.VIEW_ALERTS).toBe('sistema.alertas.notificaciones.ver');
+        expect(FunctionCatalog.VIEW_ALERTS).toBe('alerts:view');
     });
 });

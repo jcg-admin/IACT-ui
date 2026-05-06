@@ -15,7 +15,7 @@ import { usePermisos } from '../hooks/usePermisos';
 export interface PermissionGateProps {
   /**
    * Capacidad requerida para mostrar el contenido
-   * @example "sistema.vistas.dashboards.ver"
+   * @example "reports:dashboard"
    */
   permission: string;
 
@@ -57,7 +57,7 @@ export interface PermissionGateProps {
  *
  * @example Uso básico
  * ```tsx
- * <PermissionGate permission="sistema.vistas.dashboards.ver">
+ * <PermissionGate permission="reports:dashboard">
  *   <Dashboard />
  * </PermissionGate>
  * ```
@@ -65,7 +65,7 @@ export interface PermissionGateProps {
  * @example Con fallback
  * ```tsx
  * <PermissionGate
- *   permission="sistema.administracion.usuarios.ver"
+ *   permission="users:view"
  *   fallback={<AccessDenied />}
  * >
  *   <UserManagement />
@@ -75,7 +75,7 @@ export interface PermissionGateProps {
  * @example Con loading
  * ```tsx
  * <PermissionGate
- *   permission="sistema.vistas.dashboards.ver"
+ *   permission="reports:dashboard"
  *   loading={<Spinner />}
  *   fallback={<AccessDenied />}
  * >
@@ -133,8 +133,8 @@ export interface PermissionGateAnyProps extends Omit<PermissionGateProps, 'permi
  * ```tsx
  * <PermissionGateAny
  *   permissions={[
- *     'sistema.vistas.dashboards.ver',
- *     'sistema.vistas.metricas.ver'
+ *     'reports:dashboard',
+ *     'reports:kpis'
  *   ]}
  * >
  *   <DashboardOrMetrics />
@@ -191,9 +191,9 @@ export interface PermissionGateAllProps extends Omit<PermissionGateProps, 'permi
  * ```tsx
  * <PermissionGateAll
  *   permissions={[
- *     'sistema.administracion.usuarios.ver',
- *     'sistema.administracion.usuarios.editar',
- *     'sistema.administracion.usuarios.eliminar'
+ *     'users:view',
+ *     'users:update',
+ *     'users:deactivate'
  *   ]}
  * >
  *   <FullUserManagement />
@@ -253,7 +253,7 @@ export interface PermissionGateRenderProps {
  *
  * @example
  * ```tsx
- * <PermissionGateRender permission="sistema.vistas.dashboards.ver">
+ * <PermissionGateRender permission="reports:dashboard">
  *   {(granted, loading) => {
  *     if (loading) return <Spinner />;
  *     if (granted) return <Dashboard />;

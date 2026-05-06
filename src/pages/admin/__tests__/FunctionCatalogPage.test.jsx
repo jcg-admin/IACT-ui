@@ -4,8 +4,8 @@ import { MemoryRouter } from 'react-router-dom'
 import FunctionCatalogPage from '../FunctionCatalogPage'
 
 const FUNCTIONS = [
-  { id: 1, codename: 'sistema.auditoria.logs.ver', name: 'Ver logs', description: 'Ver logs del sistema', domain: 'auditoria', active: true },
-  { id: 2, codename: 'sistema.administracion.usuarios.ver', name: 'Ver usuarios', description: '', domain: 'administracion', active: true },
+  { id: 1, codename: 'audit:view', name: 'Ver logs', description: 'Ver logs del sistema', domain: 'audit', active: true },
+  { id: 2, codename: 'users:view', name: 'Ver usuarios', description: '', domain: 'users', active: true },
 ]
 
 const mockDispatch = jest.fn()
@@ -48,7 +48,7 @@ describe('FunctionCatalogPage', () => {
 
   it('renders codename values in table', () => {
     wrapper(<FunctionCatalogPage />)
-    expect(screen.getByText('sistema.auditoria.logs.ver')).toBeInTheDocument()
+    expect(screen.getByText('audit:view')).toBeInTheDocument()
   })
 
   it('dispatches fetchFunctions on mount', () => {

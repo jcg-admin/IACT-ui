@@ -11,12 +11,12 @@
  * - /users                        : Gestión de usuarios (VIEW_USERS)
  * - /reports/*                    : Reportes IVR (VIEW_REPORTS)
  * - /profile, /profile/sessions   : Perfil de usuario
- * - /settings                     : Configuración (VIEW_CONFIG)
+ * - /settings                     : Configuración (VIEW_OWN_SESSIONS)
  * - /access/*                     : Control de acceso (VIEW_ACCESS)
  * - /audit/*                      : Auditoría (VIEW_AUDIT)
  * - /alerts/*                     : Alertas (VIEW_ALERTS)
  * - /logs/*                       : Observabilidad (VIEW_LOGS)
- * - /admin/*                      : Administración (SUPER_ADMIN)
+ * - /admin/*                      : Administración (MANAGE_CATALOG)
  * - /access-denied                : Página de acceso denegado
  * - *                             : 404 Not Found
  */
@@ -122,8 +122,8 @@ const ALL_NAV_LINKS = [
   { id: 5, label: 'Auditoría',     icon: 'history',   path: '/audit',      permission: FunctionCatalog.VIEW_AUDIT },
   { id: 6, label: 'Alertas',       icon: 'bell',      path: '/alerts',     permission: FunctionCatalog.VIEW_ALERTS },
   { id: 7, label: 'Logs',          icon: 'terminal',  path: '/logs',       permission: FunctionCatalog.VIEW_LOGS },
-  { id: 8, label: 'Admin',         icon: 'shield',    path: '/admin',      permission: FunctionCatalog.SUPER_ADMIN },
-  { id: 9, label: 'Ajustes',       icon: 'cog',       path: '/settings',   permission: FunctionCatalog.VIEW_CONFIG },
+  { id: 8, label: 'Admin',         icon: 'shield',    path: '/admin',      permission: FunctionCatalog.MANAGE_CATALOG },
+  { id: 9, label: 'Ajustes',       icon: 'cog',       path: '/settings',   permission: FunctionCatalog.VIEW_OWN_SESSIONS },
 ]
 
 function useFilteredNavLinks() {
@@ -267,7 +267,7 @@ function RoutesWithTransitions() {
           <Route
             path="/settings"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_CONFIG}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_OWN_SESSIONS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <SettingsPage />
                 </Suspense>
@@ -380,7 +380,7 @@ function RoutesWithTransitions() {
           <Route
             path="/access/audit/permissions"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_PERMISSIONS_AUDIT}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_ACCESS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <PermissionsAuditPage />
                 </Suspense>
@@ -580,7 +580,7 @@ function RoutesWithTransitions() {
           <Route
             path="/reports/realtime"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_REALTIME_METRICS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_DASHBOARD}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <RealTimeMetricsPage />
                 </Suspense>
@@ -588,11 +588,11 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Administración del sistema — SUPER_ADMIN (UC-ADM-01..03) */}
+          {/* Administración del sistema — MANAGE_CATALOG (UC-ADM-01..03) */}
           <Route
             path="/admin/functions"
             element={
-              <ProtectedRoute permission={FunctionCatalog.SUPER_ADMIN}>
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_CATALOG}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <FunctionCatalogPage />
                 </Suspense>
@@ -602,7 +602,7 @@ function RoutesWithTransitions() {
           <Route
             path="/admin/groups"
             element={
-              <ProtectedRoute permission={FunctionCatalog.SUPER_ADMIN}>
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_CATALOG}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <AGRCatalogPage />
                 </Suspense>
