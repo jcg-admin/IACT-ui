@@ -38,7 +38,7 @@ export default function LogSearchPage() {
       {loading && <LoadingSpinner message="Buscando..." />}
 
       {!loading && searched && results.length === 0 && (
-        <div className="empty-state">Sin resultados para "{query}".</div>
+        <div className="empty-state">Sin resultados para &quot;{query}&quot;.</div>
       )}
 
       {!loading && results.length > 0 && (

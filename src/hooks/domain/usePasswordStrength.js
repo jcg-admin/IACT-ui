@@ -36,7 +36,7 @@ export function usePasswordStrength(_password) {
     if (/\d/.test(_password)) _score += 15
 
     // Caracteres especiales
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(_password)) _score += 15
+    if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(_password)) _score += 15
 
     // Penalty por patrones comunes
     const _hasCommonPattern = _isCommonPattern(_password)
@@ -96,7 +96,7 @@ function _getRequirements(_password) {
     {
       id: 'special',
       label: 'Al menos un carácter especial',
-      met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(_password)
+      met: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(_password)
     }
   ]
 }

@@ -131,15 +131,7 @@ class JobOrchestrator {
    * @returns {Promise<Array<{jobId, type, status, progress, createdAt}>>}
    */
   async listActiveJobs() {
-    try {
-      // In a real app, this would call a service that lists jobs
-      // For now, returning structure
-      return []
-    } catch (error) {
-      const notify = getNotificationService()
-      notify.error(`Failed to list jobs: ${error.message}`)
-      throw error
-    }
+    return []
   }
 
   /**

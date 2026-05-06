@@ -13,19 +13,3 @@ export { useAlertPolling } from './useAlertPolling'
 export { usePasswordStrength } from './usePasswordStrength'
 export { useMenuToggle } from './useMenuToggle'
 export { useAPI } from './useAPI'
-
-export default {
-  useAuth,
-  useJobs,
-  useExport,
-  useForm,
-  useDashboard,
-  useJobPolling,
-  useMetrics,
-  useTransaction,
-  useWebSocket,
-  useAlertPolling,
-  usePasswordStrength,
-  useMenuToggle,
-  useAPI
-}

@@ -22,6 +22,7 @@ jest.mock('exceljs', () => {
           font: {},
           alignment: {},
           fill: {},
+          border: {},
         }),
         addRow: jest.fn().mockReturnValue({
           font: {},
@@ -31,10 +32,6 @@ jest.mock('exceljs', () => {
         insertRows: jest.fn(),
         eachRow: jest.fn(),
         lastRow: { number: 10 },
-        getCell: jest.fn().mockReturnValue({
-          value: null,
-          border: {},
-        }),
         columns: [],
       }),
       xlsx: {

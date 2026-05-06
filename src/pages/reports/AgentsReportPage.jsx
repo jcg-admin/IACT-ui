@@ -45,7 +45,7 @@ export default function AgentsReportPage() {
     try {
       const { saveFilter } = await import('../../redux/slices/savedFiltersSlice')
       dispatch(saveFilter({ name, filters }))
-    } catch (_) {}
+    } catch (_) { /* saveFilter is optional — ignore if slice missing */ }
   }
 
   return (

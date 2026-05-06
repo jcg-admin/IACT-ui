@@ -20,8 +20,8 @@ export const useMetrics = () => {
   const stats = useSelector(selectMetricsStats);
 
   const getMetricById = useCallback(
-    (metricId) => useSelector((state) => selectMetricById(state, metricId)),
-    []
+    (metricId) => metricsArray.find((m) => m.id === metricId) ?? null,
+    [metricsArray]
   );
 
   const updateMetricValue = useCallback(

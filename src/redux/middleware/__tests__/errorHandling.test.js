@@ -150,7 +150,6 @@ describe('errorLoggingMiddleware — BR_008 audit logging', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     auditService = require('../../../services/auditService').default
   })
 

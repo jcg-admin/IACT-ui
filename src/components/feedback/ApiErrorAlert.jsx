@@ -39,9 +39,6 @@ export default function ApiErrorAlert() {
 
   const severity = severityFromError(error)
 
-  // 503/502 persistent errors are handled by ServerErrorBanner — skip here
-  if (isPersistent) return null
-
   useEffect(() => {
     if (!error || isPersistent) return
 
@@ -70,7 +67,8 @@ export default function ApiErrorAlert() {
     }
   }, [error, dispatch, isPersistent, retryAfterSeconds])
 
-  if (!error || !severity) return null
+  // 503/502 persistent errors are handled by ServerErrorBanner — skip here
+  if (isPersistent || !error || !severity) return null
 
   const icon = ICON_BY_SEVERITY[severity]
   const severityLabel = { info: 'Info', success: 'Éxito', warning: 'Advertencia', danger: 'Error' }[severity]
