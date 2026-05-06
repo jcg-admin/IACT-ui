@@ -7,8 +7,8 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/useTransaction'
-import useJobPolling from '@hooks/useJobPolling'
+import useTransaction from '@hooks/domain/useTransaction'
+import useJobPolling from '@hooks/domain/useJobPolling'
 import FormStepper from './FormStepper'
 import FilterForm from './content/FilterForm'
 import PreviewResults from './content/PreviewResults'

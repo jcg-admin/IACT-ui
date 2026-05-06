@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { AnimatedButton } from '@components/animations'
-import { useExport } from '@hooks/useExport'
+import { useExport } from '@hooks/domain/useExport'
 
 /**
  * ExportButtons Component
@@ -50,7 +50,7 @@ import { useExport } from '@hooks/useExport'
  *         title="User Management Report"
  *       />
  *       <table ref={tableRef}>
- *         {/* table content */}
+ *         {(table content)}
  *       </table>
  *     </div>
  *   )

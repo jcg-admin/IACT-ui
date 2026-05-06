@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/useTransaction'
+import useTransaction from '@hooks/domain/useTransaction'
 import FormStepper from './FormStepper'
 import UserInfoForm from './content/UserInfoForm'
 import PermissionsSelector from './content/PermissionsSelector'

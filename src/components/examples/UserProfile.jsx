@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAPI from '@hooks/useAPI';
+import useAPI from '@hooks/domain/useAPI';
 
 function UserProfile({ userId }) {
   const [editMode, setEditMode] = useState(false);

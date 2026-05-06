@@ -32,6 +32,10 @@ module.exports = {
     '^@lib/(.*)$': '<rootDir>/src/lib/$1',
     '^@types/(.*)$': '<rootDir>/src/types/$1',
     '^@constants/(.*)$': '<rootDir>/src/constants/$1',
+    '^react-select$': '<rootDir>/__mocks__/react-select.js',
+    '^react-date-picker$': '<rootDir>/__mocks__/react-date-picker.js',
+    '^react-date-picker/dist/(.*)$': '<rootDir>/__mocks__/styleMock.js',
+    '^react-calendar/dist/(.*)$': '<rootDir>/__mocks__/styleMock.js',
   },
 
   testMatch: [

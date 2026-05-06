@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/useTransaction'
+import useTransaction from '@hooks/domain/useTransaction'
 import FormStepper from './FormStepper'
 import SeparationRulesValidation from './content/SeparationRulesValidation'
 import ConflictResolver from './content/ConflictResolver'
@@ -32,6 +32,28 @@ function AssignFunctionStepper({ userId, onComplete }) {
       startTx({ userId })
     }
   }, [_tx.id, userId, startTx])
+
+  const handleNext = async () => {
+    const _result = await nextStep(_stepData)
+    if (_result.success) {
+      setStepData({})
+    }
+  }
+
+  const _handleResolveConflict = async (_conflictId, _resolution) => {
+    await resolveConflict(_conflictId, _resolution)
+  }
+
+  const _handleConfirm = async () => {
+    const _result = await confirmTx(_stepData)
+    if (_result.success) {
+      onComplete?.(_result.result)
+    }
+  }
+
+  const _handleCancel = async () => {
+    await cancelTx()
+  }
 
   // Steps definition
   const _steps = [
@@ -62,28 +84,6 @@ function AssignFunctionStepper({ userId, onComplete }) {
       )
     }
   ]
-
-  const handleNext = async () => {
-    const _result = await nextStep(_stepData)
-    if (_result.success) {
-      setStepData({})
-    }
-  }
-
-  const _handleResolveConflict = async (_conflictId, _resolution) => {
-    await resolveConflict(_conflictId, _resolution)
-  }
-
-  const _handleConfirm = async () => {
-    const _result = await confirmTx(_stepData)
-    if (_result.success) {
-      onComplete?.(_result.result)
-    }
-  }
-
-  const _handleCancel = async () => {
-    await cancelTx()
-  }
 
   return (
     <FormStepper

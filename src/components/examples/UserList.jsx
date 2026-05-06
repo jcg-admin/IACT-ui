@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAPI from '@hooks/useAPI';
+import useAPI from '@hooks/domain/useAPI';
 
 function UserList() {
   const [page, setPage] = useState(1);
