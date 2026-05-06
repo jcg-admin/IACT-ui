@@ -265,9 +265,11 @@ function RoutesWithTransitions() {
           <Route
             path="/profile/sessions"
             element={
-              <Suspense fallback={<RouteLoadingFallback />}>
-                <ActiveSessionsPage />
-              </Suspense>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_ALL_SESSIONS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ActiveSessionsPage />
+                </Suspense>
+              </ProtectedRoute>
             }
           />
 
@@ -442,7 +444,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/etl/availability"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_PIPELINE_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <ETLAvailabilityPage />
                 </Suspense>
@@ -452,7 +454,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/search"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.SEARCH_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <LogSearchPage />
                 </Suspense>
@@ -462,7 +464,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/export"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.EXPORT_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <LogExportPage />
                 </Suspense>
@@ -643,7 +645,7 @@ function RoutesWithTransitions() {
           <Route
             path="/permissions/revoke-group"
             element={
-              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+              <ProtectedRoute permission={FunctionCatalog.REVOKE_FUNCTION_GROUP}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <RevokeGroupPage />
                 </Suspense>
@@ -654,7 +656,7 @@ function RoutesWithTransitions() {
           <Route
             path="/permissions/temp-permissions"
             element={
-              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+              <ProtectedRoute permission={FunctionCatalog.GRANT_EXCEPTIONAL}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <TemporaryPermissionsPage />
                 </Suspense>

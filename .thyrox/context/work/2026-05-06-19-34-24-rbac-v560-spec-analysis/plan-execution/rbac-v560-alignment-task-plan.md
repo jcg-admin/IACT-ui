@@ -95,7 +95,7 @@ flowchart LR
 
 ## Tasks — Bloque III: Route guards logs granulares
 
-- [ ] [T-005] **TDD + IMPLEMENT** — Corregir 3 route guards en `AppRouter.jsx`:
+- [x] [T-005] **TDD + IMPLEMENT** — Corregir 3 route guards en `AppRouter.jsx`:
   (a) `/logs/etl/availability` → `FunctionCatalog.VIEW_PIPELINE_LOGS` (era VIEW_LOGS);
   (b) `/logs/search` → `FunctionCatalog.SEARCH_LOGS` (era VIEW_LOGS);
   (c) `/logs/export` → `FunctionCatalog.EXPORT_LOGS` (era VIEW_LOGS).
@@ -105,13 +105,13 @@ flowchart LR
 
 ## Tasks — Bloque IV: Catalog + route guards faltantes
 
-- [ ] [T-006] **TDD RED** — Agregar tests en `catalog.test.js` que verifiquen existencia de:
+- [x] [T-006] **TDD RED** — Agregar tests en `catalog.test.js` que verifiquen existencia de:
   `VIEW_ALL_SESSIONS = 'auth:view_all_sessions'`,
   `REVOKE_FUNCTION_GROUP = 'access:revoke_group'`,
   `GRANT_EXCEPTIONAL = 'access:grant_exceptional'`.
   Tests fallan porque constantes no existen en catalog.js.
 
-- [ ] [T-007] **IMPLEMENT** — Agregar en `catalog.js`:
+- [x] [T-007] **IMPLEMENT** — Agregar en `catalog.js`:
   ```
   // MOD_Auth (extendido)
   VIEW_ALL_SESSIONS: 'auth:view_all_sessions',
@@ -121,7 +121,7 @@ flowchart LR
   ```
   SPEC: G-F7, G-F8, G-F9. Mapeo confirmado en spec sección 3.3 MOD_Access.
 
-- [ ] [T-008] **IMPLEMENT** — Actualizar route guards en `AppRouter.jsx`:
+- [x] [T-008] **IMPLEMENT** — Actualizar route guards en `AppRouter.jsx`:
   (a) `/profile/sessions` → agregar `ProtectedRoute` con `FunctionCatalog.VIEW_ALL_SESSIONS`;
   (b) `/permissions/revoke-group` → cambiar `MANAGE_ACCESS` → `REVOKE_FUNCTION_GROUP`;
   (c) `/permissions/temp-permissions` → cambiar `MANAGE_ACCESS` → `GRANT_EXCEPTIONAL`.

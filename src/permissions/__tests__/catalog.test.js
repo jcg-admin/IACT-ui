@@ -39,4 +39,16 @@ describe('FunctionCatalog', () => {
     it('exposes VIEW_DASHBOARD for dashboard route guard', () => {
         expect(FunctionCatalog.VIEW_DASHBOARD).toBe('reports:dashboard');
     });
+
+    it('exposes VIEW_ALL_SESSIONS for profile sessions route guard (G-F7)', () => {
+        expect(FunctionCatalog.VIEW_ALL_SESSIONS).toBe('auth:view_all_sessions');
+    });
+
+    it('exposes REVOKE_FUNCTION_GROUP for permissions revoke-group route guard (G-F8)', () => {
+        expect(FunctionCatalog.REVOKE_FUNCTION_GROUP).toBe('access:revoke_group');
+    });
+
+    it('exposes GRANT_EXCEPTIONAL for permissions temp-permissions route guard (G-F9)', () => {
+        expect(FunctionCatalog.GRANT_EXCEPTIONAL).toBe('access:grant_exceptional');
+    });
 });

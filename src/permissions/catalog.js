@@ -60,6 +60,11 @@ export const FunctionCatalog = {
     MANAGE_CATALOG:          'adm:manage_catalog',
     CREATE_SEPARATION_RULE:  'adm:create_sod',
 
-    // MOD_Auth — session management (UC-005)
+    // MOD_Auth — session management (UC-005, UC-AUTH-05)
     VIEW_OWN_SESSIONS:  'auth:view_own_sessions',
+    VIEW_ALL_SESSIONS:  'auth:view_all_sessions',
+
+    // MOD_Access — extended (UC_PERM_02, UC_PERM_03)
+    REVOKE_FUNCTION_GROUP: 'access:revoke_group',
+    GRANT_EXCEPTIONAL:     'access:grant_exceptional',
 };

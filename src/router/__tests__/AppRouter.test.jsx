@@ -114,4 +114,16 @@ describe('FunctionCatalog — route permissions mapping', () => {
     it('VIEW_ALERTS protects /alerts/* routes', () => {
         expect(FunctionCatalog.VIEW_ALERTS).toBe('alerts:view');
     });
+
+    it('VIEW_PIPELINE_LOGS (not VIEW_LOGS) maps to logs:view_etl (G-F4)', () => {
+        expect(FunctionCatalog.VIEW_PIPELINE_LOGS).toBe('logs:view_etl');
+    });
+
+    it('SEARCH_LOGS (not VIEW_LOGS) maps to logs:search (G-F5)', () => {
+        expect(FunctionCatalog.SEARCH_LOGS).toBe('logs:search');
+    });
+
+    it('EXPORT_LOGS (not VIEW_LOGS) maps to logs:export (G-F6)', () => {
+        expect(FunctionCatalog.EXPORT_LOGS).toBe('logs:export');
+    });
 });
