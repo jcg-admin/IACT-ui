@@ -28,10 +28,10 @@ export default function RealTimeMetricsPage() {
         {metrics && (
           <div style={{ textAlign: 'right', fontSize: '13px', color: '#6b7280' }}>
             <div>Última actualización</div>
-            <div>{new Date(metrics.updatedAt).toLocaleTimeString()}</div>
+            <div>{new Date(metrics.timestamp).toLocaleTimeString()}</div>
             <div style={{ marginTop: '4px' }}>
-              Lag: <span style={{ color: metrics.lagSeconds > 10 ? '#ef4444' : '#34d399' }}>
-                {metrics.lagSeconds} s
+              Lag: <span style={{ color: metrics.lag_seconds > 10 ? '#ef4444' : '#34d399' }}>
+                {metrics.lag_seconds} s
               </span>
             </div>
           </div>
@@ -52,30 +52,30 @@ export default function RealTimeMetricsPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
           <MetricCard
             label="Llamadas en cola"
-            value={metrics?.callsQueued}
-            highlight={metrics?.callsQueued > 20}
+            value={metrics?.queue_count}
+            highlight={metrics?.queue_count > 20}
           />
           <MetricCard
             label="Agentes ocupados"
-            value={metrics?.agentsBusy}
+            value={metrics?.agents_busy}
           />
           <MetricCard
             label="Agentes libres"
-            value={metrics?.agentsIdle}
+            value={metrics?.agents_idle}
           />
           <MetricCard
             label="Atendidas / hora"
-            value={metrics?.callsAnsweredPerHour}
+            value={metrics?.answered_per_hour}
           />
           <MetricCard
             label="Abandono / 5 min"
-            value={metrics?.abandonRatePer5Min != null ? `${metrics.abandonRatePer5Min}` : null}
+            value={metrics?.abandon_rate_5min != null ? `${metrics.abandon_rate_5min}` : null}
             unit="%"
-            highlight={metrics?.abandonRatePer5Min > 10}
+            highlight={metrics?.abandon_rate_5min > 10}
           />
           <MetricCard
             label="Nivel de servicio / 15 min"
-            value={metrics?.serviceLevelPer15Min != null ? `${metrics.serviceLevelPer15Min}` : null}
+            value={metrics?.service_level_15min != null ? `${metrics.service_level_15min}` : null}
             unit="%"
           />
         </div>

@@ -112,17 +112,18 @@ class ReportsService {
     ]
   }
 
-  // TODO: replace mock — GET /api/reports/realtime/
+  // TODO: replace mock — GET /api/realtime/metrics/ (SSE: Connection: text/event-stream)
   async getRealTimeMetrics() {
     return {
-      callsQueued: 12,
-      agentsBusy: 8,
-      agentsIdle: 4,
-      callsAnsweredPerHour: 143,
-      abandonRatePer5Min: 3.2,
-      serviceLevelPer15Min: 87.5,
-      lagSeconds: 5,
-      updatedAt: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+      queue_count: 12,
+      agents_busy: 8,
+      agents_idle: 4,
+      answered_per_hour: 143,
+      abandon_rate_5min: 3.2,
+      service_level_15min: 87.5,
+      lag_seconds: 5,
+      segments_applied: [],
     }
   }
 
