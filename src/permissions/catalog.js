@@ -1,7 +1,7 @@
 /**
  * FunctionCatalog — canonical permission strings for client-side RBAC checks.
  *
- * Values follow the {module}:{action} notation defined in RBAC v5.4.0.
+ * Values follow the {module}:{action} notation defined in RBAC v5.6.0.
  * See: IACT-docs/source/requisitos/reglas-negocio/rbac/catalogo-funciones.rst
  *
  * IMPORTANT: These strings are for UX only. The backend enforces authorization
@@ -52,12 +52,9 @@ export const FunctionCatalog = {
     VIEW_ETL_SUPERVISION: 'pipeline:view_status',
     RETRY_PIPELINE:       'pipeline:retry',
 
-    // MOD_Operator — call center agent actions (UC_OPR_*)
-    VIEW_CALLS:         'operator:answer',
-    PERFORM_CALLS:      'operator:dial_out',
-
     // MOD_Admin — RBAC configuration plane (UC_ADM_*)
-    MANAGE_CATALOG:     'adm:manage_catalog',
+    MANAGE_CATALOG:          'adm:manage_catalog',
+    CREATE_SEPARATION_RULE:  'adm:create_sod',
 
     // MOD_Auth — session management (UC-005)
     VIEW_OWN_SESSIONS:  'auth:view_own_sessions',

@@ -16,8 +16,8 @@ import {
 } from '../../redux/slices/adminSlice'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
-// Valida el formato sistema.dominio.recurso.accion (4 segmentos separados por punto)
-const CODENAME_REGEX = /^[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+\.[a-z0-9_]+$/
+// Valida el formato modulo:accion definido en RBAC v5.6.0
+const CODENAME_REGEX = /^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$/
 
 const EMPTY_FORM = { codename: '', name: '', description: '', domain: '' }
 
@@ -81,7 +81,7 @@ export default function FunctionCatalogPage() {
   const validateForm = () => {
     if (!form.codename.trim()) return 'El codename es requerido.'
     if (!CODENAME_REGEX.test(form.codename.trim())) {
-      return 'El codename debe tener el formato sistema.dominio.recurso.accion (solo minúsculas, números y guiones bajos).'
+      return 'El codename debe tener el formato modulo:accion (minúsculas, números y guiones bajos).'
     }
     if (!form.name.trim()) return 'El nombre es requerido.'
     return ''
@@ -161,7 +161,7 @@ export default function FunctionCatalogPage() {
                 name="codename"
                 value={form.codename}
                 onChange={handleChange}
-                placeholder="sistema.dominio.recurso.accion"
+                placeholder="modulo:accion"
                 disabled={!!editingId}
                 style={{ width: '100%', padding: '8px 12px', border: '1px solid #374151', borderRadius: '4px', background: '#1f2937', color: '#fff', fontSize: '13px' }}
               />
