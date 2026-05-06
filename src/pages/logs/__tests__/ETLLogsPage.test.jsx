@@ -63,3 +63,24 @@ describe('ETLLogsPage', () => {
     expect(document.querySelector('.spinner') || screen.queryByText(/cargando/i)).toBeTruthy()
   })
 })
+
+// uc-pip-02: Botón quick-filter "Solo errores"
+describe('ETLLogsPage — Solo errores quick-filter (uc-pip-02)', () => {
+  const { fireEvent } = require('@testing-library/react')
+
+  beforeEach(() => mockDispatch.mockClear())
+
+  it('renders Solo errores button', () => {
+    wrapper(<ETLLogsPage />)
+    expect(screen.getByRole('button', { name: /solo errores/i })).toBeInTheDocument()
+  })
+
+  it('dispatches fetchETLLogs with status=error when Solo errores is clicked', () => {
+    const { fetchETLLogs } = require('../../../redux/slices/logsSlice')
+    wrapper(<ETLLogsPage />)
+    fireEvent.click(screen.getByRole('button', { name: /solo errores/i }))
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'logs/fetchETLLogs' })
+    )
+  })
+})

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchETLLogs, selectETLLogs } from '../../redux/slices/logsSlice'
+import { fetchETLLogs, retryPipeline, selectETLLogs } from '../../redux/slices/logsSlice'
 import { selectIsLoading } from '../../redux/slices/loadingSlice'
+import ConfirmModal from '../../components/shared/ConfirmModal'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const STATUS_BADGE = { success: 'badge-success', failed: 'badge-danger', running: 'badge-warning' }
@@ -14,6 +15,7 @@ export default function ETLLogsPage() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [status, setStatus] = useState('')
+  const [retryModal, setRetryModal] = useState({ isOpen: false, logId: null })
 
   useEffect(() => {
     dispatch(fetchETLLogs())
@@ -21,6 +23,11 @@ export default function ETLLogsPage() {
 
   function handleApply() {
     dispatch(fetchETLLogs({ date_from: dateFrom, date_to: dateTo, status: status || undefined }))
+  }
+
+  function handleConfirmRetry() {
+    dispatch(retryPipeline(retryModal.logId))
+    setRetryModal({ isOpen: false, logId: null })
   }
 
   return (
@@ -48,6 +55,12 @@ export default function ETLLogsPage() {
           </select>
         </div>
         <button className="btn btn-primary" onClick={handleApply}>Aplicar</button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => dispatch(fetchETLLogs({ status: 'error' }))}
+        >
+          Solo errores
+        </button>
       </div>
 
       {loading ? (
@@ -73,11 +86,33 @@ export default function ETLLogsPage() {
                 <td><span className={`badge ${STATUS_BADGE[log.status] ?? 'badge'}`}>{log.status}</span></td>
                 <td>{log.duration}</td>
                 <td>{log.records_processed}</td>
+                <td>
+                  {log.status === 'failed' && (
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setRetryModal({ isOpen: true, logId: log.id })}
+                      style={{ fontSize: '12px', padding: '2px 8px' }}
+                    >
+                      Reintentar
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
+
+      <ConfirmModal
+        isOpen={retryModal.isOpen}
+        onClose={() => setRetryModal({ isOpen: false, logId: null })}
+        onConfirm={handleConfirmRetry}
+        title="Reintentar pipeline"
+        message="¿Confirmar reintento del proceso ETL fallido?"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
+        variant="danger"
+      />
     </div>
   )
 }

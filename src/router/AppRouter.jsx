@@ -78,6 +78,7 @@ const ChangePasswordPage = lazy(() => import('@pages/auth/ChangePasswordPage'))
 // ── Logs pages ───────────────────────────────────────────────────────────────
 const LogsPage = lazy(() => import('@pages/logs/LogsPage'))
 const ETLLogsPage = lazy(() => import('@pages/logs/ETLLogsPage'))
+const ETLAvailabilityPage = lazy(() => import('@pages/logs/ETLAvailabilityPage'))
 const LogSearchPage = lazy(() => import('@pages/logs/LogSearchPage'))
 const LogExportPage = lazy(() => import('@pages/logs/LogExportPage'))
 const InfraLogsPage = lazy(() => import('@pages/logs/InfraLogsPage'))
@@ -412,6 +413,16 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <ETLLogsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/etl/availability"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ETLAvailabilityPage />
                 </Suspense>
               </ProtectedRoute>
             }

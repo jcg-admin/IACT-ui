@@ -28,6 +28,14 @@ class LogsService {
   async getPerformanceMetrics(params = {}) {
     return apiService.get('/api/system/metrics/', { params })
   }
+
+  async getETLAvailability() {
+    return apiService.get('/api/etl/availability/')
+  }
+
+  async retryPipeline(logId) {
+    return apiService.post(`/api/etl/logs/${logId}/retry/`)
+  }
 }
 
 export default new LogsService()

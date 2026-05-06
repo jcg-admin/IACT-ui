@@ -78,11 +78,34 @@ export const fetchPerformanceMetrics = createAsyncThunk(
   }
 )
 
+export const retryPipeline = createAsyncThunk(
+  'logs/retryPipeline',
+  async (logId, { rejectWithValue }) => {
+    try {
+      return await logsService.retryPipeline(logId)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const fetchETLAvailability = createAsyncThunk(
+  'logs/fetchETLAvailability',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await logsService.getETLAvailability()
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 const logsSlice = createSlice({
   name: 'logs',
   initialState: {
     logs: [],
     etlLogs: [],
+    etlAvailability: [],
     searchResults: [],
     infraLogs: [],
     systemStatus: null,
@@ -141,6 +164,17 @@ const logsSlice = createSlice({
         state.performanceMetrics = action.payload
       })
       .addCase(fetchPerformanceMetrics.rejected, rejected)
+
+      .addCase(fetchETLAvailability.pending, pending)
+      .addCase(fetchETLAvailability.fulfilled, (state, action) => {
+        state.loading = false
+        state.etlAvailability = action.payload?.results ?? action.payload ?? []
+      })
+      .addCase(fetchETLAvailability.rejected, rejected)
+
+      .addCase(retryPipeline.pending, pending)
+      .addCase(retryPipeline.fulfilled, (state) => { state.loading = false })
+      .addCase(retryPipeline.rejected, rejected)
   },
 })
 
@@ -150,6 +184,7 @@ const selectLogsState = (state) => state.logs
 
 export const selectLogs = createSelector(selectLogsState, (s) => s.logs)
 export const selectETLLogs = createSelector(selectLogsState, (s) => s.etlLogs)
+export const selectETLAvailability = createSelector(selectLogsState, (s) => s.etlAvailability)
 export const selectSearchResults = createSelector(selectLogsState, (s) => s.searchResults)
 export const selectInfraLogs = createSelector(selectLogsState, (s) => s.infraLogs)
 export const selectSystemStatus = createSelector(selectLogsState, (s) => s.systemStatus)
