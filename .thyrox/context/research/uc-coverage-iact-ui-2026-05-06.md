@@ -113,12 +113,12 @@ Necesitan rutas bajo `/access/groupers` y `/access/sod-rules`.
 |----|-------------|--------------|------------|--------|
 | uc-inc-rpt-01 | Resolver segmento (inclusión) | — | Lógica backend (`SegmentResolver`) | N/A — no requiere UI |
 | uc-rpt-01 | Ver dashboard | `/dashboard` | `DashboardPage` | ✅ |
-| uc-rpt-02 | Ver métricas en tiempo real | `/dashboard` | `DashboardPage` (widgets) | ⚠ No hay ruta dedicada para métricas RT |
+| uc-rpt-02 | Ver métricas en tiempo real | `/reports` | `AnalyticsDashboard` (WebSocket metrics) | ✅ WebSocket suscribe canal `metrics` — análisis profundo 2026-05-06 |
 | uc-rpt-03 | Ver reportes históricos | `/reports` | `AnalyticsDashboard` | ⚠ Aggregado con otros UCs en la misma página |
 | uc-rpt-04 | Exportar reporte | `/reports` + ExportHub | `ReportBuilder` + `ExportHub` | ✅ |
 | uc-rpt-07 | Programar reporte | `/reports` | `ScheduledReports` | ✅ |
 | uc-rpt-08 | Ver reportes programados | `/reports` | `ScheduledReports` | ✅ |
-| uc-rpt-09 | Configurar filtros | `/reports` | `ReportBuilder` | ⚠ Embedded en ReportBuilder, sin ruta propia |
+| uc-rpt-09 | Configurar filtros | `/reports` | `ReportBuilder` + `SavedFiltersPanel` | ✅ savedFiltersSlice CRUD completo + SavedFiltersPanel wired — análisis profundo 2026-05-06 |
 | uc-rpt-10 | Guardar vista | — | `AgentsReportPage` (saveFilter) | ⚠ Solo implementado en Agents, no global |
 | uc-rpt-11 | Compartir reporte | — | Sin implementación | ❌ |
 | uc-rpt-12 | Reporte de agentes | `/reports/agents` | `AgentsReportPage` | ✅ |
