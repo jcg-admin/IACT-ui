@@ -2,7 +2,7 @@
 type: Registro de Deuda Técnica
 project: IACT-UI
 version: 1.0
-updated_at: 2026-05-05 (sesión 2)
+updated_at: 2026-05-06 07:08:46
 ```
 
 # Deuda Técnica — IACT-UI
@@ -18,10 +18,9 @@ updated_at: 2026-05-05 (sesión 2)
 
 ## Media prioridad
 
-### TD-003 — 4 vulnerabilidades moderadas restantes
-- **Paquetes:** `jest-environment-jsdom` (< 30), `webpack-dev-server` (uuid interno)
-- **Motivo no resuelto:** Requieren `npm audit fix --force` con cambios breaking
-- **Acción:** Evaluar upgrade a `jest-environment-jsdom@30` en ventana de mantenimiento
+### ~~TD-003~~ — RESUELTO — vulnerabilidades npm moderadas
+- **Estado:** `npm audit` retorna 0 vulnerabilidades (verificado 2026-05-06).
+  Todas las dependencias están en versiones limpias.
 
 ### TD-004 — Redux slice duplicado (`homeSlice.js`)
 - **Ubicaciones:**
@@ -36,10 +35,9 @@ updated_at: 2026-05-05 (sesión 2)
 - **Impacto:** La navegación multi-página no funciona todavía
 - **Acción:** Definir estructura de rutas con `BrowserRouter` + `Routes`
 
-### TD-006 — ESLint versión 8 (EOL)
-- **Síntoma:** ESLint 8 fue declarado EOL. La versión actual es 9 con flat config.
-- **Impacto:** Sin actualizaciones de seguridad para el linter
-- **Acción:** Migrar a ESLint 9 con `eslint.config.js` (flat config)
+### ~~TD-006~~ — RESUELTO — ESLint ya en v9 con flat config
+- **Estado:** ESLint 9.39.4 instalado. `eslint.config.mjs` (flat config) ya existe
+  y está activo (verificado 2026-05-06). El registro estaba desactualizado.
 
 ## Baja prioridad
 

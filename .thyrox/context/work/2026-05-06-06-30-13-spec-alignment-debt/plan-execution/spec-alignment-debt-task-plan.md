@@ -29,7 +29,7 @@ TDD estricto: tests antes de implementación en cada tarea.
 
 > Bajo riesgo. Solo renombrar — sin cambio de lógica.
 
-- [ ] **T-001** Actualizar mock `reportsService.getRealTimeMetrics()` en
+- [x] **T-001** Actualizar mock `reportsService.getRealTimeMetrics()` en
   `src/services/reportsService.js`:
   renombrar 6 campos al snake_case del spec SSE payload +
   agregar `timestamp` (ISO string) + `segments_applied` (array vacío) +
@@ -44,23 +44,23 @@ TDD estricto: tests antes de implementación en cada tarea.
   lagSeconds           → lag_seconds
   ```
 
-- [ ] **T-002** Actualizar `src/hooks/domain/__tests__/useRealTimeMetrics.test.js`:
+- [x] **T-002** Actualizar `src/hooks/domain/__tests__/useRealTimeMetrics.test.js`:
   reemplazar todos los campos camelCase por snake_case en el mock de
   `reportsService.getRealTimeMetrics` dentro del test. Verificar que
   los 5 tests pasan con el nuevo schema.
 
-- [ ] **T-003** Actualizar `src/pages/reports/__tests__/RealTimeMetricsPage.test.jsx`:
+- [x] **T-003** Actualizar `src/pages/reports/__tests__/RealTimeMetricsPage.test.jsx`:
   reemplazar todos los campos camelCase por snake_case en el mock de
   `useRealTimeMetrics`. Verificar que los 6 tests pasan.
 
-- [ ] **T-004** Actualizar `src/pages/reports/RealTimeMetricsPage.jsx`:
+- [x] **T-004** Actualizar `src/pages/reports/RealTimeMetricsPage.jsx`:
   reemplazar referencias a campos camelCase por snake_case en JSX.
   Campos que cambian: `metrics?.callsQueued` → `metrics?.queue_count`,
   `metrics?.agentsBusy` → `metrics?.agents_busy`, etc.
   Agregar `segments_applied` en el subtítulo si no está vacío.
   Cambiar condición de lag: `metrics.lagSeconds` → `metrics.lag_seconds`.
 
-- [ ] **T-005** Commit ITER-A:
+- [x] **T-005** Commit ITER-A:
   `Fix D-002: align uc-rpt-02 field names to spec snake_case`
 
 ---
@@ -69,7 +69,7 @@ TDD estricto: tests antes de implementación en cada tarea.
 
 > Bajo riesgo. El historial no tiene UI prominente aún.
 
-- [ ] **T-006** Actualizar mock `reportsService.getScheduleHistory(id)` en
+- [x] **T-006** Actualizar mock `reportsService.getScheduleHistory(id)` en
   `src/services/reportsService.js` para retornar estructura paginada
   con schema correcto según `uc-rpt-07/datos-involucrados.rst §7.2`:
   ```js
@@ -98,25 +98,25 @@ TDD estricto: tests antes de implementación en cada tarea.
   }
   ```
 
-- [ ] **T-007** Actualizar `src/pages/reports/__tests__/ScheduledReportPage.test.jsx`:
+- [x] **T-007** Actualizar `src/pages/reports/__tests__/ScheduledReportPage.test.jsx`:
   ajustar cualquier test que referencie `runId`, `scheduledAt`,
   `duration` (nombres del mock antiguo) → `id`, `started_at`,
   `status: 'ok'`. Si no hay tests específicos del historial,
   agregar al menos uno que verifique que el componente renderiza
   `started_at` y `status` de un item del historial.
 
-- [ ] **T-008** Actualizar `src/components/pages/__tests__/pagesComponents.test.jsx`:
+- [x] **T-008** Actualizar `src/components/pages/__tests__/pagesComponents.test.jsx`:
   verificar que el mock de `selectScheduleHistory` sigue siendo compatible
   (el selector retorna array de items — ajustar si el slice ahora
   guarda el objeto paginado completo o solo los items).
 
-- [ ] **T-009** Actualizar `src/pages/reports/ScheduledReportPage.jsx` si hay
+- [x] **T-009** Actualizar `src/pages/reports/ScheduledReportPage.jsx` si hay
   sección de historial que renderice campos del schema antiguo:
   actualizar referencias a `runId`/`scheduledAt`/`duration` →
   `id`/`started_at`/`status`. Si no existe UI de historial, no crear
   (uc-rpt-08 es read-only — será su propia página eventualmente).
 
-- [ ] **T-010** Commit ITER-B:
+- [x] **T-010** Commit ITER-B:
   `Fix D-005: align schedule history schema to spec ScheduleExecutionLog`
 
 ---
@@ -125,7 +125,7 @@ TDD estricto: tests antes de implementación en cada tarea.
 
 > Alto riesgo. Reescritura completa del componente y sus 7 tests.
 
-- [ ] **T-011** Actualizar `src/services/logsService.js` —
+- [x] **T-011** Actualizar `src/services/logsService.js` —
   reemplazar el mock de `getPipelineStatus()` con la estructura
   `ResumenSalud` canónica y corregir el URL del TODO:
   ```js
@@ -146,7 +146,7 @@ TDD estricto: tests antes de implementación en cada tarea.
   }
   ```
 
-- [ ] **T-012** Reescribir `src/pages/logs/__tests__/PipelineStatusPage.test.jsx`
+- [x] **T-012** Reescribir `src/pages/logs/__tests__/PipelineStatusPage.test.jsx`
   con el nuevo contrato. Eliminar los 7 tests basados en el modelo
   incorrecto (jobs.running/completed/failed, sources CRM/PBX/IVR).
   Escribir nuevos tests:
@@ -162,7 +162,7 @@ TDD estricto: tests antes de implementación en cada tarea.
   - Muestra error cuando existe
   - Muestra estado vacío cuando no hay datos
 
-- [ ] **T-013** Reescribir `src/pages/logs/PipelineStatusPage.jsx`:
+- [x] **T-013** Reescribir `src/pages/logs/PipelineStatusPage.jsx`:
   eliminar `JobCard` x3 y tabla de sources CRM/PBX/IVR.
   Implementar con el modelo `ResumenSalud`:
 
@@ -180,13 +180,13 @@ TDD estricto: tests antes de implementación en cada tarea.
   - Auto-refresh polling 30s con `setInterval` (correcto según spec)
   - Loading, error, empty-state igual que antes
 
-- [ ] **T-014** Verificar que `ETLAvailabilityPage.test.jsx` y
+- [x] **T-014** Verificar que `ETLAvailabilityPage.test.jsx` y
   `PipelineRetry.test.jsx` no rompieron — sus mocks de `logsSlice`
   ya incluyen `fetchPipelineStatus` y `selectPipelineStatus`,
   pero el shape del dato cambió. Ajustar si algún test usa valores
   del mock antiguo (jobs.running/sources).
 
-- [ ] **T-015** Commit ITER-C:
+- [x] **T-015** Commit ITER-C:
   `Fix D-001: rewrite PipelineStatusPage with ResumenSalud model`
 
 ---
@@ -195,7 +195,7 @@ TDD estricto: tests antes de implementación en cada tarea.
 
 > Riesgo medio. El formulario crece — requiere lógica condicional.
 
-- [ ] **T-016** Ampliar `src/pages/reports/__tests__/ScheduledReportPage.test.jsx`
+- [x] **T-016** Ampliar `src/pages/reports/__tests__/ScheduledReportPage.test.jsx`
   con tests para los nuevos campos del formulario (TDD primero):
   - Renderiza selector `report_type` con opciones: agents, queues,
     campaigns, transfers, ivr_menus, unique_clients
@@ -208,7 +208,7 @@ TDD estricto: tests antes de implementación en cada tarea.
   - El dispatch de `createScheduledReport` incluye `report_type`,
     `period_relative`, `format`, `timezone` en el payload
 
-- [ ] **T-017** Actualizar `src/pages/reports/ScheduledReportPage.jsx`
+- [x] **T-017** Actualizar `src/pages/reports/ScheduledReportPage.jsx`
   — extender `CreateForm` con los campos faltantes:
 
   **Campos nuevos (todos requeridos salvo timezone que tiene default):**
@@ -244,7 +244,7 @@ TDD estricto: tests antes de implementación en cada tarea.
   }))
   ```
 
-- [ ] **T-018** Commit ITER-D:
+- [x] **T-018** Commit ITER-D:
   `Fix D-004: extend scheduled report form with missing spec fields`
 
 ---
@@ -253,7 +253,7 @@ TDD estricto: tests antes de implementación en cada tarea.
 
 > Alto riesgo. Cambio de paradigma polling → push. Tests requieren mock de EventSource.
 
-- [ ] **T-019** Crear mock global de `EventSource` en
+- [x] **T-019** Crear mock global de `EventSource` en
   `src/hooks/domain/__tests__/useRealTimeMetrics.test.js`.
   Reescribir los 5 tests existentes con el nuevo paradigma SSE:
   ```js
@@ -286,7 +286,7 @@ TDD estricto: tests antes de implementación en cada tarea.
   - Cierra `EventSource` al desmontar (cleanup)
   - Re-abre conexión con `Last-Event-ID` tras recibir un evento
 
-- [ ] **T-020** Reescribir `src/hooks/domain/useRealTimeMetrics.js`
+- [x] **T-020** Reescribir `src/hooks/domain/useRealTimeMetrics.js`
   con `EventSource`:
   ```js
   const SSE_URL = '/api/realtime/metrics/'
@@ -329,23 +329,23 @@ TDD estricto: tests antes de implementación en cada tarea.
   }
   ```
 
-- [ ] **T-021** Actualizar `src/pages/reports/__tests__/RealTimeMetricsPage.test.jsx`:
+- [x] **T-021** Actualizar `src/pages/reports/__tests__/RealTimeMetricsPage.test.jsx`:
   el test mockea `useRealTimeMetrics` directamente con `jest.mock`,
   por lo que debería seguir pasando sin cambios. Verificar y ajustar
   solo si algún test importa el hook directamente.
 
-- [ ] **T-022** Commit ITER-E:
+- [x] **T-022** Commit ITER-E:
   `Fix D-003: rewrite useRealTimeMetrics with EventSource SSE`
 
 ---
 
 ## Cierre
 
-- [ ] **T-023** Ejecutar suite completa: `npx jest --no-coverage`
+- [x] **T-023** Ejecutar suite completa: `npx jest --no-coverage`
   Verificar: 0 regressions, todos los tests nuevos pasan.
   Umbral mínimo: ≥ 1588 tests (baseline tras ITER-4 del WP anterior).
 
-- [ ] **T-024** Push a origin + actualizar `now.md` con métricas finales.
+- [x] **T-024** Push a origin + actualizar `now.md` con métricas finales.
 
 ---
 
