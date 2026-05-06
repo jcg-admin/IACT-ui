@@ -5,8 +5,8 @@ project: IACT-UI
 cold_boot: false
 last_session: 2026-05-06
 current_work: .thyrox/context/work/2026-05-06-06-30-13-spec-alignment-debt
-phase: Phase 1 — GATE HUMANO
-updated_at: 2026-05-06 06:32:35
+phase: Phase 10 — IMPLEMENT COMPLETA
+updated_at: 2026-05-06 09:15:00
 blockers: []
 ```
 
@@ -20,7 +20,22 @@ blockers: []
 
 ## Métricas de test suite
 
-**1588 tests** passing en **205 suites** (verificado 2026-05-06 — Phase 10 completa, WP cerrado)
+**1602 tests** passing en **205 suites** (verificado 2026-05-06 — WP spec-alignment-debt Phase 10 completa)
+
+---
+
+## WP activo — spec-alignment-debt (Phase 10 IMPLEMENT completa)
+
+`2026-05-06-06-30-13-spec-alignment-debt` — 5 deudas de alineación con spec cerradas.
+
+5 ITERs (A..E), 5 commits, 1602 tests (+14 nuevos), 0 regressions:
+- ITER-A: D-001 logsService.getPipelineStatus() → ResumenSalud correcto
+- ITER-B: D-002 reportsService.getRealTimeMetrics() → snake_case + campos spec
+- ITER-C: D-005 getScheduleHistory() → ScheduleExecutionLog correcto
+- ITER-D: D-004 ScheduledReportPage form → 7 campos faltantes (report_type, period_relative, format, timezone, day_of_week, day_of_month, cron_expr)
+- ITER-E: D-003 useRealTimeMetrics → EventSource SSE (reemplaza polling)
+
+Próximo: Phase 11 TRACK (lecciones + cierre WP)
 
 ---
 
