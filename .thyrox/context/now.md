@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-06
-current_work: .thyrox/context/work/2026-05-06-21-55-12-menu-submenu-ux
-phase: Phase 10 — IMPLEMENT (T-001..T-014 pendientes)
-updated_at: 2026-05-06 22:05:00
+current_work: null
+phase: null
+updated_at: 2026-05-06 22:40:00
 blockers: []
 ```
 
@@ -16,11 +16,26 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP menu-submenu-ux activo — Phase 10 IMPLEMENT, T-001 siguiente.
+**Estado:** Sin WP activo. Todos los WPs cerrados.
 
 ## Métricas de test suite
 
-**1748 tests** passing (verificado 2026-05-06 — WP menu-rbac-user-scope Phase 11 completa, 211 suites)
+**1769 tests** passing (verificado 2026-05-06 — WP menu-submenu-ux Phase 11 completa, 212 suites)
+
+---
+
+## WP cerrado — menu-submenu-ux ✓
+
+`2026-05-06-21-55-12-menu-submenu-ux` — Phase 11 TRACK completa.
+
+28 children añadidos a 4 grupos (Admin×2, Logs×9, Reports×11, Access×6).
+SidebarNav refactorizado a NavLeaf/NavGroup accordion. useFilteredNavLinks
+filtra children individualmente por hasPermission.
+1769 tests / 212 suites. 0 regressions.
+Artefactos:
+- `track/menu-submenu-ux-changelog.md` (Added + Changed: 10 entradas)
+- `track/menu-submenu-ux-lessons.md` (5 lecciones)
+- `plan-execution/menu-submenu-ux-task-plan.md` (14/14 [x])
 
 ---
 

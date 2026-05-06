@@ -42,13 +42,13 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque I — Tipos y data model (base para todo)
 
-- [ ] [T-001] **IMPLEMENT** — Extender `SidebarNav.propTypes` para declarar `children`.
+- [x] [T-001] **IMPLEMENT** — Extender `SidebarNav.propTypes` para declarar `children`.
   En `src/components/navigation/Sidebar/SidebarNav.jsx`:
   - Agregar al shape de cada link: `children: PropTypes.arrayOf(PropTypes.shape({ label, path, permission, icon }))`
   - El campo `children` es opcional (`PropTypes.arrayOf(...).isOptional` — simplemente sin `.isRequired`)
   SPEC: G-S4.
 
-- [ ] [T-002] **IMPLEMENT** — Definir la forma extendida de nav link en `ALL_NAV_LINKS`.
+- [x] [T-002] **IMPLEMENT** — Definir la forma extendida de nav link en `ALL_NAV_LINKS`.
   Solo el esqueleto de datos — children vacíos todavía, rellenados en T-007.
   Agregar en `AppRouter.jsx` antes de `ALL_NAV_LINKS` el comentario de diseño y la
   constante `NAV_GROUP_IDS = { REPORTS: 3, LOGS: 7, ACCESS: 4, ADMIN: 8 }` para
@@ -59,7 +59,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque II — SidebarNav accordion
 
-- [ ] [T-003] **IMPLEMENT** — Refactorizar `SidebarNav.jsx` para soportar children.
+- [x] [T-003] **IMPLEMENT** — Refactorizar `SidebarNav.jsx` para soportar children.
   Dividir en tres sub-componentes en el mismo archivo:
   ```
   NavLeaf({ link, currentPath, onNavigate })       ← ítem sin children (actual)
@@ -74,7 +74,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
   `NavGroup` click en el label → toggle (no navega). Click en child → `onNavigate(child)`.
   SPEC: G-S1.
 
-- [ ] [T-004] **TDD** — Tests para `SidebarNav` en `SidebarNav.test.jsx` (nuevo).
+- [x] [T-004] **TDD** — Tests para `SidebarNav` en `SidebarNav.test.jsx` (nuevo).
   Given/When/Then:
   (a) Link sin children → renderiza como botón simple (comportamiento actual)
   (b) Link con children → renderiza con indicador expandible (chevron o similar)
@@ -88,7 +88,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque III — Filtrado por hasPermission
 
-- [ ] [T-005] **IMPLEMENT** — Actualizar `useFilteredNavLinks` en `AppRouter.jsx`.
+- [x] [T-005] **IMPLEMENT** — Actualizar `useFilteredNavLinks` en `AppRouter.jsx`.
   Lógica nueva:
   ```js
   function useFilteredNavLinks() {
@@ -104,7 +104,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
   ```
   SPEC: G-S3. Un parent puede tener 0 children visibles (aún aparece el parent).
 
-- [ ] [T-006] **TDD** — Tests para `useFilteredNavLinks` en `AppRouter.test.jsx`.
+- [x] [T-006] **TDD** — Tests para `useFilteredNavLinks` en `AppRouter.test.jsx`.
   (a) Parent con permiso + children con permiso → parent visible, children filtrados
   (b) Parent con permiso + todos children sin permiso → parent visible, children=[]
   (c) Parent sin permiso → parent oculto (children no importan)
@@ -115,7 +115,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque IV — Rellenar ALL_NAV_LINKS con children reales
 
-- [ ] [T-007] **IMPLEMENT** — Agregar children a los 4 grupos en `ALL_NAV_LINKS`.
+- [x] [T-007] **IMPLEMENT** — Agregar children a los 4 grupos en `ALL_NAV_LINKS`.
 
   **Admin (id=8):**
   ```js
@@ -175,7 +175,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque V — SCSS para accordion
 
-- [ ] [T-008] **IMPLEMENT** — Actualizar `SidebarNav.scss` con estilos de accordion.
+- [x] [T-008] **IMPLEMENT** — Actualizar `SidebarNav.scss` con estilos de accordion.
   Agregar:
   ```scss
   .navGroup {
@@ -198,7 +198,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque VI — Integración y tests finales
 
-- [ ] [T-009] **TDD** — Tests de integración en `AppRouter.test.jsx` (o nuevo `SidebarNav.integration.test.jsx`).
+- [x] [T-009] **TDD** — Tests de integración en `AppRouter.test.jsx` (o nuevo `SidebarNav.integration.test.jsx`).
   Verificar el flujo completo:
   (a) Usuario con `VIEW_REPORTS` y sin `VIEW_METRICS` → sub-item "Tiempo real" no aparece
   (b) Usuario con `MANAGE_CATALOG` → Admin group con 2 children visibles
@@ -206,7 +206,7 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
   (d) Usuario sin ninguna capacidad de Logs excepto `VIEW_LOGS` → 8 children de logs ocultos excepto "App logs"
   SPEC: G-S2, G-S3.
 
-- [ ] [T-010] **VERIFY** — Verificar que `permissions-admin.json` (userId=99) produce el
+- [x] [T-010] **VERIFY** — Verificar que `permissions-admin.json` (userId=99) produce el
   conjunto correcto de nav items + children visibles:
   capacidades admin = `adm:manage_catalog, auth:view_all_sessions, logs:view_app, logs:export`
   Esperado: Admin (2 children), Logs (App logs + Exportar), Ajustes. Sin Reportes, sin Acceso.
@@ -216,10 +216,10 @@ T-001..T-010 todos completos ──→ T-011 (full test suite) ──→ T-012..
 
 ## Bloque VII — Cierre formal WP
 
-- [ ] [T-011] **VERIFY** — Correr suite completa. Target: ≥ 1748 + nuevos tests.
-- [ ] [T-012] **TRACK** — Crear `track/menu-submenu-ux-changelog.md`.
-- [ ] [T-013] **TRACK** — Crear `track/menu-submenu-ux-lessons.md` (≥ 3 lecciones).
-- [ ] [T-014] **CLOSE** — Actualizar `wp-state.md` + `now.md`. Push + validate-phase-completion.sh.
+- [x] [T-011] **VERIFY** — Correr suite completa. Target: ≥ 1748 + nuevos tests.
+- [x] [T-012] **TRACK** — Crear `track/menu-submenu-ux-changelog.md`.
+- [x] [T-013] **TRACK** — Crear `track/menu-submenu-ux-lessons.md` (≥ 3 lecciones).
+- [x] [T-014] **CLOSE** — Actualizar `wp-state.md` + `now.md`. Push + validate-phase-completion.sh.
 
 ---
 
