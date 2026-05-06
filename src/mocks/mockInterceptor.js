@@ -156,6 +156,16 @@ class MockInterceptor {
       return this._handleReportHistory(params)
     }
 
+    // ADMIN — UC-ADM-02: catálogo de funciones RBAC
+    if (url.includes('/api/admin/functions/')) {
+      return this._handleAdminFunctions(method, body)
+    }
+
+    // ADMIN — UC-ADM-03: catálogo de AGRs
+    if (url.includes('/api/admin/agr/')) {
+      return this._handleAdminAGR(method, body)
+    }
+
     if (url.includes('/api/admin/separation-rules/')) {
       return this._handleSeparationRules()
     }
@@ -819,6 +829,56 @@ class MockInterceptor {
       r.periodo === periodo && (seg === '' || r.segmento === seg)
     )
     return { status: 200, data: rows }
+  }
+
+  // ====== ADMIN — RBAC CATALOG HANDLERS (ITER-C: GET only) ======
+
+  _handleAdminFunctions(method) {
+    if (method !== 'GET') {
+      return this._error(405, 'Method not allowed')
+    }
+    const FUNCTIONS = [
+      { id:  1, codename: 'reports:view',         name: 'Ver reportes',               domain: 'reports',  active: true },
+      { id:  2, codename: 'reports:kpis',          name: 'Ver KPIs',                   domain: 'reports',  active: true },
+      { id:  3, codename: 'reports:save_view',     name: 'Guardar vista de reporte',   domain: 'reports',  active: true },
+      { id:  4, codename: 'users:view',            name: 'Ver usuarios',               domain: 'users',    active: true },
+      { id:  5, codename: 'users:create',          name: 'Crear usuarios',             domain: 'users',    active: true },
+      { id:  6, codename: 'access:view',           name: 'Ver asignaciones',           domain: 'access',   active: true },
+      { id:  7, codename: 'access:assign',         name: 'Asignar funciones',          domain: 'access',   active: true },
+      { id:  8, codename: 'audit:view',            name: 'Ver log de auditoría',       domain: 'audit',    active: true },
+      { id:  9, codename: 'alerts:view',           name: 'Ver alertas',                domain: 'alerts',   active: true },
+      { id: 10, codename: 'logs:view_app',         name: 'Ver logs de aplicación',     domain: 'logs',     active: true },
+      { id: 11, codename: 'logs:view_etl',         name: 'Ver logs ETL/pipeline',      domain: 'logs',     active: true },
+      { id: 12, codename: 'logs:view_infra',       name: 'Ver logs de infraestructura',domain: 'logs',     active: true },
+      { id: 13, codename: 'logs:view_health',      name: 'Ver salud del sistema',      domain: 'logs',     active: true },
+      { id: 14, codename: 'logs:view_metrics',     name: 'Ver métricas técnicas',      domain: 'logs',     active: true },
+      { id: 15, codename: 'pipeline:view_status',  name: 'Ver estado del pipeline',    domain: 'pipeline', active: true },
+      { id: 16, codename: 'pipeline:retry',        name: 'Reintentar pipeline',        domain: 'pipeline', active: true },
+      { id: 17, codename: 'auth:view_own_sessions',name: 'Ver sesiones propias',       domain: 'auth',     active: true },
+      { id: 18, codename: 'adm:manage_catalog',    name: 'Gestionar catálogo RBAC',    domain: 'admin',    active: true },
+      { id: 19, codename: 'adm:create_sod',        name: 'Crear regla de separación',  domain: 'admin',    active: true },
+      { id: 20, codename: 'access:view_sod',       name: 'Ver reglas de separación',   domain: 'access',   active: true },
+    ]
+    return { status: 200, data: { results: FUNCTIONS, count: FUNCTIONS.length } }
+  }
+
+  _handleAdminAGR(method) {
+    if (method !== 'GET') {
+      return this._error(405, 'Method not allowed')
+    }
+    const AGRS = [
+      { id:  1, codename: 'AGR-001', name: 'basic_operator_group',      description: 'Operador básico de call center',       functions_count: 6,  state: 'ACTIVE' },
+      { id:  2, codename: 'AGR-002', name: 'report_viewer_group',        description: 'Visualizador de reportes IVR',         functions_count: 8,  state: 'ACTIVE' },
+      { id:  3, codename: 'AGR-003', name: 'quality_supervisor_group',   description: 'Supervisor de calidad',                functions_count: 11, state: 'ACTIVE' },
+      { id:  4, codename: 'AGR-004', name: 'data_exporter_group',        description: 'Exportador de datos y reportes',       functions_count: 14, state: 'ACTIVE' },
+      { id:  5, codename: 'AGR-005', name: 'alert_manager_group',        description: 'Gestor de alertas y notificaciones',   functions_count: 6,  state: 'ACTIVE' },
+      { id:  6, codename: 'AGR-006', name: 'user_admin_group',           description: 'Administrador de usuarios',            functions_count: 9,  state: 'ACTIVE' },
+      { id:  7, codename: 'AGR-007', name: 'permission_admin_group',     description: 'Administrador de permisos',            functions_count: 5,  state: 'ACTIVE' },
+      { id:  8, codename: 'AGR-008', name: 'auditor_group',              description: 'Auditor de cumplimiento',              functions_count: 4,  state: 'ACTIVE' },
+      { id:  9, codename: 'AGR-009', name: 'pipeline_admin_group',       description: 'Administrador de pipelines ETL',       functions_count: 4,  state: 'ACTIVE' },
+      { id: 10, codename: 'AGR-010', name: 'system_admin_group',         description: 'Administrador del sistema RBAC',       functions_count: 6,  state: 'ACTIVE' },
+    ]
+    return { status: 200, data: { results: AGRS, count: AGRS.length } }
   }
 
   _handleSeparationRules() {
