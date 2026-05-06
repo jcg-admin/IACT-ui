@@ -84,6 +84,7 @@ const LogExportPage = lazy(() => import('@pages/logs/LogExportPage'))
 const InfraLogsPage = lazy(() => import('@pages/logs/InfraLogsPage'))
 const SystemStatusPage = lazy(() => import('@pages/logs/SystemStatusPage'))
 const PerformanceMetricsPage = lazy(() => import('@pages/logs/PerformanceMetricsPage'))
+const PipelineStatusPage = lazy(() => import('@pages/logs/PipelineStatusPage'))
 
 // ── Reports pages ────────────────────────────────────────────────────────────
 const AgentsReportPage = lazy(() => import('@pages/reports/AgentsReportPage'))
@@ -475,6 +476,17 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.VIEW_LOGS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <PerformanceMetricsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/logs/pipeline"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_ETL_SUPERVISION}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <PipelineStatusPage />
                 </Suspense>
               </ProtectedRoute>
             }

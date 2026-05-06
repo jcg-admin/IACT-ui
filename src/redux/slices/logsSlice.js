@@ -100,12 +100,24 @@ export const fetchETLAvailability = createAsyncThunk(
   }
 )
 
+export const fetchPipelineStatus = createAsyncThunk(
+  'logs/fetchPipelineStatus',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await logsService.getPipelineStatus()
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 const logsSlice = createSlice({
   name: 'logs',
   initialState: {
     logs: [],
     etlLogs: [],
     etlAvailability: [],
+    pipelineStatus: null,
     searchResults: [],
     infraLogs: [],
     systemStatus: null,
@@ -175,6 +187,13 @@ const logsSlice = createSlice({
       .addCase(retryPipeline.pending, pending)
       .addCase(retryPipeline.fulfilled, (state) => { state.loading = false })
       .addCase(retryPipeline.rejected, rejected)
+
+      .addCase(fetchPipelineStatus.pending, pending)
+      .addCase(fetchPipelineStatus.fulfilled, (state, action) => {
+        state.loading = false
+        state.pipelineStatus = action.payload
+      })
+      .addCase(fetchPipelineStatus.rejected, rejected)
   },
 })
 
@@ -185,6 +204,7 @@ const selectLogsState = (state) => state.logs
 export const selectLogs = createSelector(selectLogsState, (s) => s.logs)
 export const selectETLLogs = createSelector(selectLogsState, (s) => s.etlLogs)
 export const selectETLAvailability = createSelector(selectLogsState, (s) => s.etlAvailability)
+export const selectPipelineStatus = createSelector(selectLogsState, (s) => s.pipelineStatus)
 export const selectSearchResults = createSelector(selectLogsState, (s) => s.searchResults)
 export const selectInfraLogs = createSelector(selectLogsState, (s) => s.infraLogs)
 export const selectSystemStatus = createSelector(selectLogsState, (s) => s.systemStatus)

@@ -22,7 +22,11 @@ jest.mock('react-redux', () => ({
 jest.mock('../../../redux/slices/logsSlice', () => ({
   fetchETLLogs: () => ({ type: 'logs/fetchETLLogs' }),
   retryPipeline: jest.fn((id) => ({ type: 'logs/retryPipeline', payload: id })),
+  fetchPipelineStatus: jest.fn(() => ({ type: 'logs/fetchPipelineStatus' })),
   selectETLLogs: (s) => s.logs.etlLogs,
+  selectPipelineStatus: (s) => s.logs.pipelineStatus ?? null,
+  selectLogsLoading: (s) => s.logs.loading ?? false,
+  selectLogsError: (s) => s.logs.error ?? null,
 }))
 
 jest.mock('../../../redux/slices/loadingSlice', () => ({

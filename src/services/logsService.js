@@ -36,6 +36,19 @@ class LogsService {
   async retryPipeline(logId) {
     return apiService.post(`/api/etl/logs/${logId}/retry/`)
   }
+
+  // TODO: replace mock — GET /api/etl/pipeline/status/
+  async getPipelineStatus() {
+    return {
+      jobs: { running: 3, completed: 142, failed: 2 },
+      sources: [
+        { name: 'CRM', lag: '12 min', throughputRowsPerMin: 1840, bytesProcessed: 2400000, avgLatencyMs: 320 },
+        { name: 'PBX', lag: '2 min', throughputRowsPerMin: 560, bytesProcessed: 890000, avgLatencyMs: 110 },
+        { name: 'IVR', lag: '45 min', throughputRowsPerMin: 0, bytesProcessed: 0, avgLatencyMs: null },
+      ],
+      updatedAt: new Date().toISOString(),
+    }
+  }
 }
 
 export default new LogsService()

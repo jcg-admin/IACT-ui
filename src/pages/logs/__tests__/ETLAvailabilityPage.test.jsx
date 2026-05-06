@@ -19,7 +19,11 @@ jest.mock('react-redux', () => ({
 
 jest.mock('../../../redux/slices/logsSlice', () => ({
   fetchETLAvailability: jest.fn(() => ({ type: 'logs/fetchETLAvailability' })),
+  fetchPipelineStatus: jest.fn(() => ({ type: 'logs/fetchPipelineStatus' })),
   selectETLAvailability: (s) => s.logs.etlAvailability,
+  selectPipelineStatus: (s) => s.logs.pipelineStatus ?? null,
+  selectLogsLoading: (s) => s.logs.loading ?? false,
+  selectLogsError: (s) => s.logs.error ?? null,
 }))
 
 import { fetchETLAvailability } from '../../../redux/slices/logsSlice'
