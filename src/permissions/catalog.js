@@ -67,7 +67,7 @@ export const FunctionCatalog = {
     EDIT_CONFIG:        'sistema.configuracion.parametros.editar',
 
     // SoD rule lifecycle (uc-adm-01)
-    MANAGE_SOD_RULES:           'sistema.administracion.acceso.sod.gestionar',
+    MANAGE_SOD_RULES:           'sistema.administracion.sod.gestionar',
 
     // Pipeline retry (uc-pip-04)
     RETRY_PIPELINE:             'sistema.observabilidad.pipeline.reintentar',

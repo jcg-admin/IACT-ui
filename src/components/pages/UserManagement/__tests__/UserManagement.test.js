@@ -8,6 +8,25 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import UserManagement from '../UserManagement'
 
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => jest.fn(),
+  useSelector: (selector) => selector({
+    access: { groups: [], functions: [], loading: false, error: null },
+  }),
+}))
+
+jest.mock('../../../../redux/slices/accessSlice', () => ({
+  selectGroups: (s) => s.access?.groups ?? [],
+  assignGroupToUser: jest.fn((p) => ({ type: 'access/assignGroupToUser', payload: p })),
+  revokeGroupFromUser: jest.fn((p) => ({ type: 'access/revokeGroupFromUser', payload: p })),
+}))
+
+jest.mock('../../../access/GroupAssignModal', () => ({
+  __esModule: true,
+  default: ({ isOpen }) => isOpen ? <div data-testid="group-assign-modal" /> : null,
+}))
+
 // Mock façades before importing component
 jest.mock('@facades/UserAuth', () => ({
   default: {

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import ReportFilters from '../../components/reports/ReportFilters'
 import ReportTable from '../../components/reports/ReportTable'
 import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
+import ShareReportModal from '../../components/reports/ShareReportModal'
 import reportsService from '../../services/reportsService'
 
 const COLUMNS = [
@@ -20,6 +21,7 @@ export default function QueuesReportPage() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [shareModal, setShareModal] = useState({ isOpen: false, url: '' })
 
   async function loadData(f = filters) {
     setLoading(true)
@@ -49,16 +51,29 @@ export default function QueuesReportPage() {
     } catch (_) { /* saveFilter is optional */ }
   }
 
+  function handleShare() {
+    const url = reportsService.generateShareUrl('queues', filters)
+    setShareModal({ isOpen: true, url })
+  }
+
   return (
     <div className="page-container">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Reporte de colas</h1>
-        <button className="btn btn-secondary" onClick={handleSaveView}>Guardar vista</button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="btn btn-secondary" onClick={handleShare}>Compartir</button>
+          <button className="btn btn-secondary" onClick={handleSaveView}>Guardar vista</button>
+        </div>
       </div>
       <SavedFiltersPanel onApply={(f) => { setFilters(f); loadData(f) }} />
       <ReportFilters filters={filters} onChange={handleChange} onApply={handleApply} onReset={handleReset} />
       {error && <div className="error-banner">{error}</div>}
       <ReportTable columns={COLUMNS} data={data} loading={loading} />
+      <ShareReportModal
+        isOpen={shareModal.isOpen}
+        url={shareModal.url}
+        onClose={() => setShareModal({ isOpen: false, url: '' })}
+      />
     </div>
   )
 }

@@ -27,9 +27,11 @@ jest.mock('../../../facades/JobOrchestrator', () => ({
 
 jest.mock('../../../redux/slices/reportsSlice', () => ({
   fetchDashboardMetrics: jest.fn(() => (dispatch) => Promise.resolve({ type: 'reports/fetchDashboardMetrics' })),
+  fetchReportHistory: jest.fn(() => ({ type: 'reports/fetchReportHistory' })),
   updateMetrics: jest.fn(() => ({ type: 'reports/updateMetrics' })),
   selectMetrics: (s) => s.reports?.metrics ?? { totalPipelines: 0, activeAlerts: 0 },
   selectReportsLoading: (s) => s.reports?.loading ?? false,
+  selectReportHistory: (s) => s.reports?.reportHistory ?? [],
   selectSavedFilters: (s) => s.reports?.savedFilters ?? [],
   selectFilters: (s) => s.reports?.filters ?? {},
   selectFilteredData: (s) => s.reports?.filteredData ?? [],

@@ -9,8 +9,23 @@ const DATA = [
 ]
 
 jest.mock('../../../services/reportsService', () => ({
-  default: { getAgentsReport: jest.fn().mockResolvedValue(DATA) },
+  default: {
+    getAgentsReport: jest.fn().mockResolvedValue(DATA),
+    generateShareUrl: jest.fn(() => 'https://example.com/reports/shared?type=agents'),
+  },
 }))
+
+jest.mock('../../../components/reports/SavedFiltersPanel', () =>
+  function MockSavedFiltersPanel({ onApply }) {
+    return <div data-testid="saved-filters-panel" />
+  }
+)
+
+jest.mock('../../../components/reports/ShareReportModal', () =>
+  function MockShareReportModal({ isOpen }) {
+    return isOpen ? <div data-testid="share-report-modal" /> : null
+  }
+)
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),

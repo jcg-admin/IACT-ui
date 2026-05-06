@@ -4,12 +4,21 @@ import { MemoryRouter } from 'react-router-dom'
 import QueuesReportPage from '../QueuesReportPage'
 
 jest.mock('../../../services/reportsService', () => ({
-  default: { getQueuesReport: jest.fn().mockResolvedValue([]) },
+  default: {
+    getQueuesReport: jest.fn().mockResolvedValue([]),
+    generateShareUrl: jest.fn(() => 'https://example.com/reports/shared?type=queues'),
+  },
 }))
 
 jest.mock('../../../components/reports/SavedFiltersPanel', () =>
   function MockSavedFiltersPanel({ onApply }) {
     return <div data-testid="saved-filters-panel"><button onClick={() => onApply({})}>apply-saved</button></div>
+  }
+)
+
+jest.mock('../../../components/reports/ShareReportModal', () =>
+  function MockShareReportModal({ isOpen }) {
+    return isOpen ? <div data-testid="share-report-modal" /> : null
   }
 )
 
@@ -45,5 +54,12 @@ describe('QueuesReportPage — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders Guardar vista button', () => {
     wrapper(<QueuesReportPage />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
+  })
+})
+
+describe('QueuesReportPage — Compartir (uc-rpt-11)', () => {
+  it('renders Compartir button', () => {
+    wrapper(<QueuesReportPage />)
+    expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

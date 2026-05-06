@@ -83,6 +83,12 @@ class ReportsService {
   async getReportHistory() {
     return apiService.get('/api/reports/history/')
   }
+
+  generateShareUrl(type, filters = {}) {
+    const params = new URLSearchParams({ type, ...filters }).toString()
+    const base = typeof window !== 'undefined' ? window.location.origin : ''
+    return `${base}/reports/shared?${params}`
+  }
 }
 
 export default new ReportsService()

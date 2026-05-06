@@ -7,14 +7,18 @@ import { MemoryRouter } from 'react-router-dom'
 jest.mock('../../../redux/slices/accessSlice', () => ({
   fetchAllFunctions: jest.fn(() => ({ type: 'access/fetchAllFunctions' })),
   fetchAccessAudit: jest.fn(() => ({ type: 'access/fetchAccessAudit' })),
+  fetchSodRules: jest.fn(() => ({ type: 'access/fetchSodRules' })),
+  updateSodRule: jest.fn((r) => ({ type: 'access/updateSodRule', payload: r })),
+  deleteSodRule: jest.fn((id) => ({ type: 'access/deleteSodRule', payload: id })),
   selectFunctions: (s) => s.access.functions,
   selectAuditLog: (s) => s.access.auditLog,
+  selectSodRules: (s) => s.access.sodRules,
   selectLoading: (s) => s.access.loading,
   selectError: (s) => s.access.error,
 }))
 
 const accessReducer = (state = {
-  functions: [], auditLog: [], loading: false, error: null,
+  functions: [], auditLog: [], sodRules: [], loading: false, error: null,
 }) => state
 
 function wrap(ui) {

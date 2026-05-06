@@ -34,6 +34,18 @@ export const fetchScheduledReports = createAsyncThunk(
   }
 )
 
+/** Genera URL compartible para un reporte con los filtros actuales (client-side). */
+export const shareReport = createAsyncThunk(
+  'reports/shareReport',
+  async ({ type, filters }, { rejectWithValue }) => {
+    try {
+      return reportsService.generateShareUrl(type, filters)
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 /** Obtiene el historial de reportes generados. */
 export const fetchReportHistory = createAsyncThunk(
   'reports/fetchReportHistory',
@@ -66,6 +78,7 @@ const reportsSlice = createSlice({
     metrics: null,
     scheduledReports: [],
     reportHistory: [],
+    sharedUrl: null,
     loading: false,
     error: null,
   },
@@ -106,6 +119,12 @@ const reportsSlice = createSlice({
         state.error = action.payload
       })
 
+    // shareReport
+    builder
+      .addCase(shareReport.fulfilled, (state, action) => {
+        state.sharedUrl = action.payload
+      })
+
     // fetchReportHistory
     builder
       .addCase(fetchReportHistory.pending, (state) => {
@@ -141,6 +160,7 @@ const selectReportsState = (state) => state.reports
 export const selectMetrics = createSelector(selectReportsState, (s) => s.metrics)
 export const selectScheduledReports = createSelector(selectReportsState, (s) => s.scheduledReports)
 export const selectReportHistory = createSelector(selectReportsState, (s) => s.reportHistory)
+export const selectSharedUrl = createSelector(selectReportsState, (s) => s.sharedUrl)
 export const selectReportsLoading = createSelector(selectReportsState, (s) => s.loading)
 export const selectReportsError = createSelector(selectReportsState, (s) => s.error)
 
