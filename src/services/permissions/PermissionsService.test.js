@@ -30,11 +30,11 @@ describe('PermissionsService', () => {
     expect(result.data.capabilities).toEqual(Array.from(new Set(permissionsMock.capacidades)));
     const expectedOrder = [...permissionsMock.funciones_accesibles]
       .sort((a, b) => a.orden_menu - b.orden_menu)
-      .map(({ id, nombre, nombre_completo, dominio, icono, orden_menu }) => ({
+      .map(({ id, nombre, module: mod, dominio, icono, orden_menu }) => ({
         id,
         code: nombre,
         label: formatLabel(nombre),
-        fullName: nombre_completo,
+        fullName: mod,
         domain: dominio,
         icon: icono,
         order: orden_menu,

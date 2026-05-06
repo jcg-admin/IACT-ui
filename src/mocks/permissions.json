@@ -6,13 +6,13 @@
     "grupos": [
       {
         "id": 2,
-        "codigo": "report_viewer_group",
+        "codigo": "AGR-002",
         "nombre_display": "Analista de Reportes",
-        "descripcion": "Análisis de reportes IVR sin exportación"
+        "descripcion": "Visualizador de reportes IVR"
       },
       {
         "id": 4,
-        "codigo": "data_exporter_group",
+        "codigo": "AGR-004",
         "nombre_display": "Exportador de Datos",
         "descripcion": "Exportación autorizada CSV/Excel/PDF"
       }
@@ -29,21 +29,16 @@
     "reports:export_csv",
     "reports:export_excel",
     "reports:export_pdf",
-    "reports:schedule",
     "users:view",
     "alerts:view",
     "alerts:configure",
-    "alerts:history",
-    "access:view",
-    "logs:view_app",
-    "logs:search",
-    "pipeline:view_status"
+    "alerts:history"
   ],
   "funciones_accesibles": [
     {
       "id": 1,
       "nombre": "view_dashboard",
-      "nombre_completo": "reports",
+      "module": "reports",
       "dominio": "reportes",
       "icono": "dashboard",
       "orden_menu": 10
@@ -51,42 +46,106 @@
     {
       "id": 2,
       "nombre": "view_reports",
-      "nombre_completo": "reports",
+      "module": "reports",
       "dominio": "reportes",
       "icono": "bar_chart",
       "orden_menu": 20
     },
     {
       "id": 3,
-      "nombre": "view_users",
-      "nombre_completo": "users",
-      "dominio": "usuarios",
-      "icono": "people",
-      "orden_menu": 30
+      "nombre": "view_kpis",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "trending_up",
+      "orden_menu": 25
     },
     {
       "id": 4,
-      "nombre": "view_alerts",
-      "nombre_completo": "alerts",
-      "dominio": "alertas",
-      "icono": "notifications",
-      "orden_menu": 40
+      "nombre": "view_charts",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "pie_chart",
+      "orden_menu": 30
     },
     {
       "id": 5,
-      "nombre": "view_application_logs",
-      "nombre_completo": "logs",
-      "dominio": "observabilidad",
-      "icono": "terminal",
-      "orden_menu": 50
+      "nombre": "filter_reports",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "filter_list",
+      "orden_menu": 35
     },
     {
       "id": 6,
-      "nombre": "view_pipeline_status",
-      "nombre_completo": "pipeline",
-      "dominio": "observabilidad",
-      "icono": "sync",
+      "nombre": "export_csv",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "table_view",
+      "orden_menu": 40
+    },
+    {
+      "id": 7,
+      "nombre": "export_excel",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "grid_on",
+      "orden_menu": 45
+    },
+    {
+      "id": 8,
+      "nombre": "export_pdf",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "picture_as_pdf",
+      "orden_menu": 50
+    },
+    {
+      "id": 9,
+      "nombre": "view_users",
+      "module": "users",
+      "dominio": "usuarios",
+      "icono": "people",
       "orden_menu": 60
+    },
+    {
+      "id": 10,
+      "nombre": "view_alerts",
+      "module": "alerts",
+      "dominio": "alertas",
+      "icono": "notifications",
+      "orden_menu": 70
+    },
+    {
+      "id": 11,
+      "nombre": "configure_alerts",
+      "module": "alerts",
+      "dominio": "alertas",
+      "icono": "tune",
+      "orden_menu": 75
+    },
+    {
+      "id": 12,
+      "nombre": "view_alert_history",
+      "module": "alerts",
+      "dominio": "alertas",
+      "icono": "history",
+      "orden_menu": 80
+    },
+    {
+      "id": 13,
+      "nombre": "view_own_sessions",
+      "module": "auth",
+      "dominio": "autenticacion",
+      "icono": "manage_accounts",
+      "orden_menu": 90
+    },
+    {
+      "id": 14,
+      "nombre": "view_all_active_sessions",
+      "module": "auth",
+      "dominio": "autenticacion",
+      "icono": "devices",
+      "orden_menu": 95
     }
   ],
   "permisos_excepcionales": [],
@@ -94,5 +153,6 @@
     "timestamp": "2025-11-18T12:30:00Z",
     "capacidad": "reports:dashboard",
     "resultado": "permitido"
-  }
+  },
+  "_agr_nota": "AGR-011 (call_center_operator_group) y AGR-012 (supervision_group) son RESERVADOS open-closed en v5.6.0 — no asignables a usuarios de UI"
 }

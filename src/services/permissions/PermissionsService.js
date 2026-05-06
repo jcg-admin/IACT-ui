@@ -26,11 +26,11 @@ const normalizePermissions = (raw) => {
 
   const capabilities = Array.from(new Set(source.capacidades ?? []));
   const menuEntries = (source.funciones_accesibles ?? [])
-    .map(({ id, nombre, nombre_completo, dominio, icono, orden_menu }) => ({
+    .map(({ id, nombre, module: mod, dominio, icono, orden_menu }) => ({
       id,
       code: nombre,
       label: formatLabel(nombre),
-      fullName: nombre_completo,
+      fullName: mod,
       domain: dominio,
       icon: icono,
       order: orden_menu,

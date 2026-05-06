@@ -833,7 +833,29 @@ class MockInterceptor {
 
   // ====== ADMIN — RBAC CATALOG HANDLERS (ITER-C: GET only) ======
 
-  _handleAdminFunctions(method) {
+  _handleAdminFunctions(method, body) {
+    if (method === 'POST') {
+      if (!body || !body.codename || !body.name) {
+        return this._error(400, 'codename and name are required')
+      }
+      return {
+        status: 201,
+        data: {
+          id: Math.floor(Math.random() * 900) + 100,
+          codename: body.codename,
+          name: body.name,
+          description: body.description || '',
+          domain: body.domain || '',
+          active: true,
+        },
+      }
+    }
+    if (method === 'PATCH') {
+      return {
+        status: 200,
+        data: { ...body, active: body.active !== false },
+      }
+    }
     if (method !== 'GET') {
       return this._error(405, 'Method not allowed')
     }
@@ -862,7 +884,29 @@ class MockInterceptor {
     return { status: 200, data: { results: FUNCTIONS, count: FUNCTIONS.length } }
   }
 
-  _handleAdminAGR(method) {
+  _handleAdminAGR(method, body) {
+    if (method === 'POST') {
+      if (!body || !body.codename || !body.name) {
+        return this._error(400, 'codename and name are required')
+      }
+      return {
+        status: 201,
+        data: {
+          id: Math.floor(Math.random() * 900) + 100,
+          codename: body.codename,
+          name: body.name,
+          description: body.description || '',
+          functions_count: 0,
+          state: 'ACTIVE',
+        },
+      }
+    }
+    if (method === 'PATCH') {
+      return {
+        status: 200,
+        data: { ...body },
+      }
+    }
     if (method !== 'GET') {
       return this._error(405, 'Method not allowed')
     }
