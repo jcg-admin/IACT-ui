@@ -2,8 +2,8 @@
 project: IACT-UI
 work_package: 2026-05-06-19-34-24-rbac-v560-spec-analysis
 created_at: 2026-05-06 19:34:24
-current_phase: Phase 1 — DISCOVER (completa) → listo para Phase 10 IMPLEMENT
-status: Activo
+current_phase: Phase 11 — TRACK/EVALUATE (completa)
+status: Cerrado
 author: claude
 source: feature/cnst-033-uml-conformance (IACT-docs, commit c2c61825)
 size: mediano (Phase 1 + Phase 10 ITER-A..F + Phase 11)

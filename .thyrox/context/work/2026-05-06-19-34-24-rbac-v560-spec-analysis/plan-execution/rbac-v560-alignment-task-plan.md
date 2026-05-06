@@ -143,14 +143,14 @@ flowchart LR
 
 ## Tasks — Bloque VI: Cierre formal WP (Phase 11 + 12)
 
-- [ ] [T-010] Actualizar `now.md` → phase: `Phase 11 — TRACK/EVALUATE`.
+- [x] [T-010] Actualizar `now.md` → phase: `Phase 11 — TRACK/EVALUATE`.
   SPEC: now.md muestra stale "Phase 1 — DISCOVER (SP-01 gate humano)".
 
-- [ ] [T-011] Crear `track/rbac-v560-alignment-changelog.md` con entradas de todos los
+- [x] [T-011] Crear `track/rbac-v560-alignment-changelog.md` con entradas de todos los
   ITERs A..F + correcciones T-001..T-009. Formato Keep a Changelog.
   SPEC: changelog-policy.md — WP-changelog obligatorio antes del cierre.
 
-- [ ] [T-012] Crear `track/rbac-v560-alignment-lessons.md` con ≥5 lecciones:
+- [x] [T-012] Crear `track/rbac-v560-alignment-lessons.md` con ≥5 lecciones:
   (1) nombre_completo→module rename requirió schemas.js (descubierto mid-ITER),
   (2) deactivateAGR omitido en ITER-F (patrón simétrico no verificado),
   (3) mock data model AGR invertido (codename↔name),
@@ -158,7 +158,7 @@ flowchart LR
   (5) G-C5 identificado en Phase 1 pero postergado sin T-NNN de cierre.
   SPEC: workflow-track/SKILL.md — lessons learned obligatorio.
 
-- [ ] [T-013] Actualizar `wp-state.md` con métricas finales. Commit de cierre Tim Pope.
+- [x] [T-013] Actualizar `wp-state.md` con métricas finales. Commit de cierre Tim Pope.
   Push a `claude/project-analysis-N9IkV`. Ejecutar `validate-phase-completion.sh`.
   SPEC: I-015. Protocolo de completación.
 
