@@ -61,7 +61,6 @@ describe('useAuth Hooks', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
@@ -111,7 +110,6 @@ describe('useAuth Hooks', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
@@ -166,7 +164,6 @@ describe('useAuth Hooks', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
@@ -304,7 +301,6 @@ describe('useAuth Hooks', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'admin',
         first_name: 'Test',
         last_name: 'User',
       }
@@ -321,7 +317,6 @@ describe('useAuth Hooks', () => {
 
       expect(result.current.user).toEqual(mockUser)
       expect(result.current.userEmail).toBe('test@example.com')
-      expect(result.current.userRole).toBe('admin')
       expect(typeof result.current.login).toBe('function')
       expect(typeof result.current.logout).toBe('function')
     })

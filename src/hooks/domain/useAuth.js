@@ -168,7 +168,6 @@ export function useAuth() {
     loading,
     error: error?.message || null,
     userEmail: user?.email || null,
-    userRole: user?.role || null,
     // Actions
     login,
     logout,

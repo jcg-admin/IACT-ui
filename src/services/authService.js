@@ -41,7 +41,6 @@ async function loginBase(username, password) {
       user_id: response.user_id,
       username: response.username,
       email: response.email,
-      role: response.role || 'user',
       first_name: response.first_name || '',
       last_name: response.last_name || '',
     }
@@ -88,7 +87,6 @@ async function getCurrentUserBase() {
     user_id: response.user_id,
     username: response.username,
     email: response.email,
-    role: response.role || 'user',
     first_name: response.first_name || '',
     last_name: response.last_name || '',
   }

@@ -19,11 +19,11 @@ function UserList() {
 
   // Mock data
   const mockUsers = [
-    { id: 1, first_name: 'Juan', last_name: 'Pérez', email: 'juan@example.com', role: 'Admin', status: 'Activo' },
-    { id: 2, first_name: 'María', last_name: 'García', email: 'maria@example.com', role: 'User', status: 'Activo' },
-    { id: 3, first_name: 'Carlos', last_name: 'López', email: 'carlos@example.com', role: 'User', status: 'Inactivo' },
-    { id: 4, first_name: 'Ana', last_name: 'Martínez', email: 'ana@example.com', role: 'Moderator', status: 'Activo' },
-    { id: 5, first_name: 'Luis', last_name: 'Rodríguez', email: 'luis@example.com', role: 'User', status: 'Activo' },
+    { id: 1, first_name: 'Juan', last_name: 'Pérez', email: 'juan@example.com', access_groups: ['AGR-010'], status: 'Activo' },
+    { id: 2, first_name: 'María', last_name: 'García', email: 'maria@example.com', access_groups: ['AGR-001'], status: 'Activo' },
+    { id: 3, first_name: 'Carlos', last_name: 'López', email: 'carlos@example.com', access_groups: [], status: 'Inactivo' },
+    { id: 4, first_name: 'Ana', last_name: 'Martínez', email: 'ana@example.com', access_groups: ['AGR-002'], status: 'Activo' },
+    { id: 5, first_name: 'Luis', last_name: 'Rodríguez', email: 'luis@example.com', access_groups: ['AGR-001'], status: 'Activo' },
   ];
 
   useEffect(() => {
@@ -42,7 +42,7 @@ function UserList() {
   const columns = [
     { key: 'first_name', label: 'Nombre' },
     { key: 'email', label: 'Email', width: '200px' },
-    { key: 'role', label: 'Rol', width: '100px' },
+    { key: 'access_groups', label: 'Grupos', width: '120px', render: (v) => (v || []).join(', ') || '—' },
     {
       key: 'status',
       label: 'Estado',
@@ -151,7 +151,7 @@ function UserModal({ isOpen, user, onClose, onSave }) {
     first_name: '',
     last_name: '',
     email: '',
-    role: 'User',
+    access_groups: [],
     status: 'Activo',
   });
 
@@ -274,28 +274,7 @@ function UserModal({ isOpen, user, onClose, onSave }) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-              Rol
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              style={{
-                width: '100%',
-                padding: '8px',
-                borderRadius: '4px',
-                border: '1px solid #1f2937',
-                backgroundColor: '#0f172a',
-                color: '#f3f4f6',
-              }}
-            >
-              <option>Admin</option>
-              <option>Moderator</option>
-              <option>User</option>
-            </select>
-          </div>
+
 
           <div>
             <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>

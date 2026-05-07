@@ -58,11 +58,11 @@ describe('UserList Component', () => {
     });
   });
 
-  test('shows role badges', async () => {
+  test('shows access groups', async () => {
     render(<UserList />);
     await waitFor(() => {
-      expect(screen.getByText('Admin')).toBeInTheDocument();
-      expect(screen.getAllByText('User')[0]).toBeInTheDocument();
+      expect(screen.getByText('AGR-010')).toBeInTheDocument();
+      expect(screen.getAllByText('AGR-001')[0]).toBeInTheDocument();
     });
   });
 

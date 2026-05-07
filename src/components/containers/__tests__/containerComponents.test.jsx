@@ -149,13 +149,13 @@ describe('Profile', () => {
   })
 
   it('renders Mi Perfil heading', () => {
-    const store = buildStore({ user: { first_name: 'Ana', last_name: 'Torres', role: 'admin', email: 'a@a.com' } })
+    const store = buildStore({ user: { first_name: 'Ana', last_name: 'Torres', email: 'a@a.com' } })
     wrap(<Profile />, store)
     expect(screen.getByText('Mi Perfil')).toBeInTheDocument()
   })
 
   it('shows user name', () => {
-    const store = buildStore({ user: { first_name: 'Ana', last_name: 'Torres', role: 'admin', email: 'a@a.com' } })
+    const store = buildStore({ user: { first_name: 'Ana', last_name: 'Torres', email: 'a@a.com' } })
     wrap(<Profile />, store)
     expect(screen.getAllByText(/Ana/i).length).toBeGreaterThan(0)
   })

@@ -26,7 +26,6 @@ describe('authService', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
@@ -48,7 +47,6 @@ describe('authService', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        // role not provided
         // first_name not provided
         // last_name not provided
       }
@@ -57,7 +55,6 @@ describe('authService', () => {
 
       const result = await authService.login('testuser', 'password123')
 
-      expect(result.role).toBe('user')
       expect(result.first_name).toBe('')
       expect(result.last_name).toBe('')
     })
@@ -82,7 +79,6 @@ describe('authService', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
