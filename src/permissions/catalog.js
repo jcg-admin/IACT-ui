@@ -67,4 +67,42 @@ export const FunctionCatalog = {
     // MOD_Access — extended (UC_PERM_02, UC_PERM_03)
     REVOKE_FUNCTION_GROUP: 'access:revoke_group',
     GRANT_EXCEPTIONAL:     'access:grant_exceptional',
+
+    // MOD_Alerts — extended (NUEVAS v5.4.0 — ALR-003..010)
+    CONFIGURE_TEAM_ALERTS:    'alerts:config_team',
+    PAUSE_ALERTS:             'alerts:pause',
+    DISABLE_ALERTS:           'alerts:disable',
+    VIEW_ALERT_HISTORY:       'alerts:history',
+    ACKNOWLEDGE_ALERT:        'alerts:acknowledge',
+    SUBSCRIBE_ALERT:          'alerts:subscribe',
+    UNSUBSCRIBE_ALERT:        'alerts:unsubscribe',
+    CONFIGURE_ALERT_SEVERITY: 'alerts:config_severity',
+
+    // MOD_Pipeline — extended (PIP-002/003)
+    VIEW_PIPELINE_ERRORS:     'pipeline:view_errors',
+    VIEW_DATA_AVAILABILITY:   'pipeline:availability',
+
+    // MOD_Users — extended (USR-004..008)
+    LIST_USERS:               'users:list',
+    SEARCH_USERS:             'users:search',
+    BLOCK_USERS:              'users:block',
+    UNBLOCK_USERS:            'users:unblock',
+    REACTIVATE_USERS:         'users:reactivate',
+
+    // MOD_Access — extended v5.3.0/v5.4.0
+    REVOKE_FUNCTIONS:         'access:revoke',
+    ASSIGN_FUNCTION_GROUPS:   'access:assign_group',
+    ASSIGN_TO_GROUP:          'access:assign_to_group',
+    UPDATE_SEPARATION_RULE:   'access:update_sod',
+    DISABLE_SEPARATION_RULE:  'access:disable_sod',
+    REVOKE_EXCEPTIONAL:       'access:revoke_exceptional',
+
+    // MOD_Auth — extended (AUTH-002/003)
+    CLOSE_SESSION:            'auth:close_session',
+    RESET_PASSWORD:           'auth:reset_password',
+
+    // MOD_Admin — v5.6.x extension (ADM-004..006)
+    MANAGE_MENU_CATALOG:      'adm:manage_menu_catalog',
+    MANAGE_MENU_LIFECYCLE:    'adm:manage_menu_lifecycle',
+    MANAGE_IS_CRITICAL:       'adm:manage_is_critical',
 };
