@@ -339,8 +339,25 @@ const ALL_NAV_LINKS_INTEGRATION = [
             { label: 'Reglas SoD',       path: '/access/separation-rules',   permission: FC.MANAGE_SEPARATION_RULES },
         ],
     },
-    { id: 5, label: 'Auditoría', path: '/audit',    permission: FC.VIEW_AUDIT },
-    { id: 6, label: 'Alertas',   path: '/alerts',   permission: FC.VIEW_ALERTS },
+    {
+        id: 5, label: 'Auditoría', path: '/audit', permission: FC.VIEW_AUDIT,
+        children: [
+            { label: 'Log de auditoría', path: '/audit',            permission: FC.VIEW_AUDIT },
+            { label: 'Buscar',           path: '/audit/search',     permission: 'audit:search' },
+            { label: 'Exportar',         path: '/audit/export',     permission: 'audit:export' },
+            { label: 'Cumplimiento',     path: '/audit/compliance', permission: 'audit:compliance' },
+        ],
+    },
+    {
+        id: 6, label: 'Alertas', path: '/alerts', permission: FC.VIEW_ALERTS,
+        children: [
+            { label: 'Ver alertas',   path: '/alerts',              permission: FC.VIEW_ALERTS },
+            { label: 'Configuración', path: '/alerts/config',       permission: 'alerts:config_team' },
+            { label: 'Historial',     path: '/alerts/history',      permission: 'alerts:history' },
+            { label: 'Plantillas',    path: '/alerts/templates',    permission: 'alerts:configure' },
+            { label: 'Suscripciones', path: '/alerts/subscriptions',permission: 'alerts:subscribe' },
+        ],
+    },
     {
         id: 7, label: 'Logs', path: '/logs', permission: FC.VIEW_LOGS,
         children: [
@@ -433,5 +450,134 @@ describe('Integration: permissions-admin.json user (userId=99) — T-010', () =>
         expect(labels).not.toContain('Alertas');
         expect(labels).not.toContain('Dashboard');
         expect(labels).not.toContain('Usuarios');
+    });
+});
+
+// ── Alerts accordion nav filtering (T-015) ───────────────────────────────────
+
+const VIEW_ALERTS        = 'alerts:view';
+const CONFIGURE_TEAM     = 'alerts:config_team';
+const VIEW_ALERT_HISTORY = 'alerts:history';
+const MANAGE_ALERTS      = 'alerts:configure';
+const SUBSCRIBE_ALERT    = 'alerts:subscribe';
+
+const ALERTS_ACCORDION = {
+    id: 6,
+    label: 'Alertas',
+    icon: 'bell',
+    path: '/alerts',
+    permission: VIEW_ALERTS,
+    children: [
+        { label: 'Ver alertas',    path: '/alerts',              permission: VIEW_ALERTS },
+        { label: 'Configuración',  path: '/alerts/config',       permission: CONFIGURE_TEAM },
+        { label: 'Historial',      path: '/alerts/history',      permission: VIEW_ALERT_HISTORY },
+        { label: 'Plantillas',     path: '/alerts/templates',    permission: MANAGE_ALERTS },
+        { label: 'Suscripciones',  path: '/alerts/subscriptions',permission: SUBSCRIBE_ALERT },
+    ],
+};
+
+describe('Alerts accordion — nav children filtering (T-015)', () => {
+    function filterChildren(caps) {
+        if (!caps.includes(ALERTS_ACCORDION.permission)) return null;
+        return {
+            ...ALERTS_ACCORDION,
+            children: ALERTS_ACCORDION.children.filter(c => caps.includes(c.permission)),
+        };
+    }
+
+    it('user with VIEW_ALERTS only → sees Alertas parent with 1 child (Ver alertas)', () => {
+        const result = filterChildren([VIEW_ALERTS]);
+        expect(result).not.toBeNull();
+        expect(result.children).toHaveLength(1);
+        expect(result.children[0].label).toBe('Ver alertas');
+    });
+
+    it('user with VIEW_ALERTS + CONFIGURE_TEAM → sees 2 children', () => {
+        const result = filterChildren([VIEW_ALERTS, CONFIGURE_TEAM]);
+        expect(result.children).toHaveLength(2);
+        const labels = result.children.map(c => c.label);
+        expect(labels).toContain('Ver alertas');
+        expect(labels).toContain('Configuración');
+    });
+
+    it('user with all alerts caps → sees all 5 children', () => {
+        const caps = [VIEW_ALERTS, CONFIGURE_TEAM, VIEW_ALERT_HISTORY, MANAGE_ALERTS, SUBSCRIBE_ALERT];
+        const result = filterChildren(caps);
+        expect(result.children).toHaveLength(5);
+    });
+
+    it('user without VIEW_ALERTS → Alertas nav item hidden entirely', () => {
+        const result = filterChildren([CONFIGURE_TEAM, VIEW_ALERT_HISTORY]);
+        expect(result).toBeNull();
+    });
+
+    it('Alertas accordion has children in ALL_NAV_LINKS (G-F4 — accordion structure)', () => {
+        const alertasItem = ALL_NAV_LINKS_INTEGRATION.find(l => l.label === 'Alertas');
+        expect(alertasItem).toBeDefined();
+        expect(alertasItem.children).toBeDefined();
+        expect(alertasItem.children.length).toBeGreaterThanOrEqual(1);
+    });
+});
+
+// ── Audit accordion nav filtering (T-018) ────────────────────────────────────
+
+const VIEW_AUDIT_CAP    = 'audit:view';
+const SEARCH_AUDIT_CAP  = 'audit:search';
+const EXPORT_AUDIT_CAP  = 'audit:export';
+const VIEW_COMPLIANCE   = 'audit:compliance';
+
+const AUDIT_ACCORDION = {
+    id: 5,
+    label: 'Auditoría',
+    icon: 'history',
+    path: '/audit',
+    permission: VIEW_AUDIT_CAP,
+    children: [
+        { label: 'Log de auditoría', path: '/audit',            permission: VIEW_AUDIT_CAP },
+        { label: 'Buscar',           path: '/audit/search',     permission: SEARCH_AUDIT_CAP },
+        { label: 'Exportar',         path: '/audit/export',     permission: EXPORT_AUDIT_CAP },
+        { label: 'Cumplimiento',     path: '/audit/compliance', permission: VIEW_COMPLIANCE },
+    ],
+};
+
+describe('Audit accordion — nav children filtering (T-018)', () => {
+    function filterAuditChildren(caps) {
+        if (!caps.includes(AUDIT_ACCORDION.permission)) return null;
+        return {
+            ...AUDIT_ACCORDION,
+            children: AUDIT_ACCORDION.children.filter(c => caps.includes(c.permission)),
+        };
+    }
+
+    it('user with VIEW_AUDIT only → sees Auditoría with 1 child (Log de auditoría)', () => {
+        const result = filterAuditChildren([VIEW_AUDIT_CAP]);
+        expect(result).not.toBeNull();
+        expect(result.children).toHaveLength(1);
+        expect(result.children[0].label).toBe('Log de auditoría');
+    });
+
+    it('user with VIEW_AUDIT + SEARCH_AUDIT → sees 2 children', () => {
+        const result = filterAuditChildren([VIEW_AUDIT_CAP, SEARCH_AUDIT_CAP]);
+        expect(result.children).toHaveLength(2);
+        const labels = result.children.map(c => c.label);
+        expect(labels).toContain('Buscar');
+    });
+
+    it('user with all audit caps → sees all 4 children', () => {
+        const caps = [VIEW_AUDIT_CAP, SEARCH_AUDIT_CAP, EXPORT_AUDIT_CAP, VIEW_COMPLIANCE];
+        const result = filterAuditChildren(caps);
+        expect(result.children).toHaveLength(4);
+    });
+
+    it('user without VIEW_AUDIT → Auditoría nav item hidden entirely', () => {
+        const result = filterAuditChildren([SEARCH_AUDIT_CAP, EXPORT_AUDIT_CAP]);
+        expect(result).toBeNull();
+    });
+
+    it('Auditoría accordion has children in ALL_NAV_LINKS (G-F5 — accordion structure)', () => {
+        const auditoriaItem = ALL_NAV_LINKS_INTEGRATION.find(l => l.label === 'Auditoría');
+        expect(auditoriaItem).toBeDefined();
+        expect(auditoriaItem.children).toBeDefined();
+        expect(auditoriaItem.children.length).toBeGreaterThanOrEqual(1);
     });
 });

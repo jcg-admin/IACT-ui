@@ -52,6 +52,9 @@ const AccessPage = lazy(() =>
 const AuditPage = lazy(() =>
   import('@components/pages/Audit/AuditPage').then(m => ({ default: m.default }))
 )
+const AuditSearchPage      = lazy(() => import('@pages/audit/AuditSearchPage'))
+const AuditExportPage      = lazy(() => import('@pages/audit/ExportPage'))
+const ComplianceReportPage = lazy(() => import('@pages/audit/ComplianceReportPage'))
 const AlertsPage = lazy(() =>
   import('@components/pages/Alerts/AlertsPage').then(m => ({ default: m.default }))
 )
@@ -113,7 +116,10 @@ const AssignGroupPage = lazy(() => import('@pages/access/AssignGroupPage'))
 const TemporaryPermissionsPage = lazy(() => import('@pages/access/TemporaryPermissionsPage'))
 
 // ── Alerts pages ──────────────────────────────────────────────────────────────
-const TemplatesPage = lazy(() => import('@pages/alerts/TemplatesPage'))
+const TemplatesPage      = lazy(() => import('@pages/alerts/TemplatesPage'))
+const AlertConfigPage    = lazy(() => import('@pages/alerts/AlertConfigPage'))
+const AlertHistoryPage   = lazy(() => import('@pages/alerts/AlertHistoryPage'))
+const SubscriptionsPage  = lazy(() => import('@pages/alerts/SubscriptionsPage'))
 
 // ── Admin pages ──────────────────────────────────────────────────────────────
 const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalogPage'))
@@ -149,21 +155,40 @@ const ALL_NAV_LINKS = [
     children: [
       { label: 'Grupos de acceso',  icon: 'users',        path: '/access/groups',             permission: FunctionCatalog.MANAGE_GROUPS },
       { label: 'Composición',       icon: 'layer-group',  path: '/access/groups/composition', permission: FunctionCatalog.MANAGE_GROUPS },
-      { label: 'Agrupadores',       icon: 'object-group', path: '/access/groupers',           permission: FunctionCatalog.MANAGE_ACCESS },
-      { label: 'Reglas SoD',        icon: 'ban',          path: '/access/separation-rules',   permission: FunctionCatalog.MANAGE_SEPARATION_RULES },
-      { label: 'Segmentos',         icon: 'filter',       path: '/access/segments',           permission: FunctionCatalog.MANAGE_ACCESS },
-      { label: 'Asignar grupo',     icon: 'user-plus',    path: '/access/assign-group',       permission: FunctionCatalog.MANAGE_ACCESS },
+      { label: 'Agrupadores',       icon: 'object-group', path: '/access/groupers',           permission: FunctionCatalog.ASSIGN_FUNCTION_GROUPS },
+      { label: 'Reglas Separación',  icon: 'ban',          path: '/access/separation-rules',   permission: FunctionCatalog.MANAGE_SEPARATION_RULES },
+      { label: 'Segmentos',         icon: 'filter',       path: '/access/segments',           permission: FunctionCatalog.ASSIGN_FUNCTION_GROUPS },
+      { label: 'Asignar grupo',     icon: 'user-plus',    path: '/access/assign-group',       permission: FunctionCatalog.ASSIGN_TO_GROUP },
     ],
   },
-  { id: 5, label: 'Auditoría',     icon: 'history',   path: '/audit',      permission: FunctionCatalog.VIEW_AUDIT },
-  { id: 6, label: 'Alertas',       icon: 'bell',      path: '/alerts',     permission: FunctionCatalog.VIEW_ALERTS },
+  {
+    id: 5,
+    label: 'Auditoría', icon: 'history', path: '/audit', permission: FunctionCatalog.VIEW_AUDIT,
+    children: [
+      { label: 'Log de auditoría', icon: 'history',     path: '/audit',            permission: FunctionCatalog.VIEW_AUDIT },
+      { label: 'Buscar',           icon: 'search',      path: '/audit/search',     permission: FunctionCatalog.SEARCH_AUDIT },
+      { label: 'Exportar',         icon: 'file-export', path: '/audit/export',     permission: FunctionCatalog.EXPORT_AUDIT },
+      { label: 'Cumplimiento',     icon: 'clipboard',   path: '/audit/compliance', permission: FunctionCatalog.VIEW_COMPLIANCE },
+    ],
+  },
+  {
+    id: 6,
+    label: 'Alertas', icon: 'bell', path: '/alerts', permission: FunctionCatalog.VIEW_ALERTS,
+    children: [
+      { label: 'Ver alertas',   icon: 'bell',         path: '/alerts',              permission: FunctionCatalog.VIEW_ALERTS },
+      { label: 'Configuración', icon: 'sliders-h',    path: '/alerts/config',       permission: FunctionCatalog.CONFIGURE_TEAM_ALERTS },
+      { label: 'Historial',     icon: 'history',      path: '/alerts/history',      permission: FunctionCatalog.VIEW_ALERT_HISTORY },
+      { label: 'Plantillas',    icon: 'file-alt',     path: '/alerts/templates',    permission: FunctionCatalog.MANAGE_ALERTS },
+      { label: 'Suscripciones', icon: 'envelope',     path: '/alerts/subscriptions',permission: FunctionCatalog.SUBSCRIBE_ALERT },
+    ],
+  },
   {
     id: NAV_GROUP_IDS.LOGS,
     label: 'Logs', icon: 'terminal', path: '/logs', permission: FunctionCatalog.VIEW_LOGS,
     children: [
       { label: 'App logs',          icon: 'file-alt',        path: '/logs',                  permission: FunctionCatalog.VIEW_LOGS },
       { label: 'ETL logs',          icon: 'exchange-alt',    path: '/logs/etl',              permission: FunctionCatalog.VIEW_PIPELINE_LOGS },
-      { label: 'Disponibilidad',    icon: 'heartbeat',       path: '/logs/etl/availability', permission: FunctionCatalog.VIEW_PIPELINE_LOGS },
+      { label: 'Disponibilidad',    icon: 'heartbeat',       path: '/logs/etl/availability', permission: FunctionCatalog.VIEW_DATA_AVAILABILITY },
       { label: 'Buscar',            icon: 'search',          path: '/logs/search',           permission: FunctionCatalog.SEARCH_LOGS },
       { label: 'Exportar',          icon: 'download',        path: '/logs/export',           permission: FunctionCatalog.EXPORT_LOGS },
       { label: 'Infraestructura',   icon: 'server',          path: '/logs/infra',            permission: FunctionCatalog.VIEW_INFRA_LOGS },
@@ -361,6 +386,42 @@ function RoutesWithTransitions() {
             }
           />
 
+          {/* Auditoría — búsqueda avanzada (UC-AUD-02) */}
+          <Route
+            path="/audit/search"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.SEARCH_AUDIT}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AuditSearchPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Auditoría — exportación (UC-AUD-03) */}
+          <Route
+            path="/audit/export"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.EXPORT_AUDIT}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AuditExportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Auditoría — cumplimiento (UC-AUD-04) */}
+          <Route
+            path="/audit/compliance"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_COMPLIANCE}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ComplianceReportPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/alerts/*"
             element={
@@ -408,7 +469,7 @@ function RoutesWithTransitions() {
           <Route
             path="/access/groupers"
             element={
-              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+              <ProtectedRoute permission={FunctionCatalog.ASSIGN_FUNCTION_GROUPS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <GroupersPage />
                 </Suspense>
@@ -432,7 +493,7 @@ function RoutesWithTransitions() {
           <Route
             path="/access/segments"
             element={
-              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+              <ProtectedRoute permission={FunctionCatalog.ASSIGN_FUNCTION_GROUPS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <SegmentsPage />
                 </Suspense>
@@ -455,7 +516,7 @@ function RoutesWithTransitions() {
           <Route
             path="/access/assign-group"
             element={
-              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+              <ProtectedRoute permission={FunctionCatalog.ASSIGN_TO_GROUP}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <AssignGroupPage />
                 </Suspense>
@@ -470,6 +531,42 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.MANAGE_ALERTS}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <TemplatesPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Alertas — configuración (UC-ALR-03) */}
+          <Route
+            path="/alerts/config"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.CONFIGURE_TEAM_ALERTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AlertConfigPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Alertas — historial (UC-ALR-04) */}
+          <Route
+            path="/alerts/history"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_ALERT_HISTORY}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AlertHistoryPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Alertas — suscripciones (UC-ALR-06) */}
+          <Route
+            path="/alerts/subscriptions"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.SUBSCRIBE_ALERT}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SubscriptionsPage />
                 </Suspense>
               </ProtectedRoute>
             }
@@ -499,7 +596,7 @@ function RoutesWithTransitions() {
           <Route
             path="/logs/etl/availability"
             element={
-              <ProtectedRoute permission={FunctionCatalog.VIEW_PIPELINE_LOGS}>
+              <ProtectedRoute permission={FunctionCatalog.VIEW_DATA_AVAILABILITY}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <ETLAvailabilityPage />
                 </Suspense>
@@ -689,7 +786,7 @@ function RoutesWithTransitions() {
           <Route
             path="/permissions/assign-group"
             element={
-              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+              <ProtectedRoute permission={FunctionCatalog.ASSIGN_TO_GROUP}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <AssignGroupPage />
                 </Suspense>
