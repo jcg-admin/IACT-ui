@@ -60,7 +60,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
 ## Bloque I — FunctionCatalog completeness
 
-- [ ] [T-001] **IMPLEMENT** — Agregar 26 constantes faltantes a `src/permissions/catalog.js`.
+- [x] [T-001] **IMPLEMENT** — Agregar 26 constantes faltantes a `src/permissions/catalog.js`.
 
   Agregar cada sección al final del módulo correspondiente:
 
@@ -107,7 +107,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   SPEC: catalogo-funciones.rst §3.1..3.11. NAMING: `UPDATE_SEPARATION_RULE` y
   `DISABLE_SEPARATION_RULE` — sin SOD en el nombre de la constante.
 
-- [ ] [T-002] **TDD** — Tests en `src/permissions/__tests__/catalog.test.js`.
+- [x] [T-002] **TDD** — Tests en `src/permissions/__tests__/catalog.test.js`.
 
   Agregar bloque `describe('FunctionCatalog v5.6.x extension')` con:
   - Cada nueva constante tiene el valor canónico del spec
@@ -133,7 +133,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 | `pages/audit/ComplianceReportPage.jsx` | `regulations: ['SOD']`→`regulations: ['separation-rules']` |
 | `mocks/mockInterceptor.js` | en `_handleSeparationRules`: `name/code 'SOD-001'`→`'SR-001'`, `'SOD-002'`→`'SR-002'`, `'SOD-003'`→`'SR-003'`; corregir `pipeline:execute`→ codenames canónicos |
 
-- [ ] [T-003] **REFACTOR** — Renombrar thunks en `src/redux/slices/accessSlice.js`.
+- [x] [T-003] **REFACTOR** — Renombrar thunks en `src/redux/slices/accessSlice.js`.
 
   Cambios (replace_all):
   - `fetchSodRules` → `fetchSeparationRules` (función + action type `access/fetchSodRules`→`access/fetchSeparationRules`)
@@ -144,7 +144,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   Los exports con nombre nuevo. Verificar que los `addCase` en `extraReducers` usen
   los nuevos nombres de thunk. SPEC: naming convention (no Sod en identifiers).
 
-- [ ] [T-004] **REFACTOR** — Actualizar `src/pages/access/SeparationRulesPage.jsx`.
+- [x] [T-004] **REFACTOR** — Actualizar `src/pages/access/SeparationRulesPage.jsx`.
 
   - Imports: usar `fetchSeparationRules`, `updateSeparationRule`, `deleteSeparationRule`
   - Variables locales: `sodRules` → `separationRules`
@@ -153,21 +153,21 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   - `dispatch(deleteSodRule(...))` → `dispatch(deleteSeparationRule(...))`
   SPEC: naming convention.
 
-- [ ] [T-005] **REFACTOR** — `src/components/access/SeparationRulesValidator.jsx`.
+- [x] [T-005] **REFACTOR** — `src/components/access/SeparationRulesValidator.jsx`.
 
   - `const SOD_RULES_INFO` → `const SEPARATION_RULES_INFO`
   - Keys del objeto: `'SOD-001'` → `'SR-001'`, `'SOD-002'` → `'SR-002'`, `'SOD-003'` → `'SR-003'`
   - Uso: `SOD_RULES_INFO[conflict.rule]` → `SEPARATION_RULES_INFO[conflict.rule]`
   SPEC: naming convention.
 
-- [ ] [T-006] **REFACTOR** — `src/components/access/FunctionSelector.jsx`.
+- [x] [T-006] **REFACTOR** — `src/components/access/FunctionSelector.jsx`.
 
   - `const SOD_RULES` → `const SEPARATION_RULES`
   - Keys: `'SOD-001'` → `'SR-001'`, etc.
   - `Object.entries(SOD_RULES)` → `Object.entries(SEPARATION_RULES)`
   SPEC: naming convention.
 
-- [ ] [T-007] **REFACTOR** — Textos y datos residuales.
+- [x] [T-007] **REFACTOR** — Textos y datos residuales.
 
   En `src/pages/access/AssignFunctionsPage.jsx`:
   ```jsx
@@ -188,7 +188,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   ```
   SPEC: naming convention.
 
-- [ ] [T-008] **TDD** — Actualizar 5 test files que referencian naming antiguo.
+- [x] [T-008] **TDD** — Actualizar 5 test files que referencian naming antiguo.
 
   Archivos:
   - `src/redux/slices/__tests__/accessSlice.test.js` — imports y usos de `fetchSodRules` etc.
@@ -205,7 +205,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
 ## Bloque III — mockInterceptor alignment
 
-- [ ] [T-009] **FIX** — Corregir `_handleLogin` en `src/mocks/mockInterceptor.js`.
+- [x] [T-009] **FIX** — Corregir `_handleLogin` en `src/mocks/mockInterceptor.js`.
 
   ```js
   _handleLogin(credentials) {
@@ -248,7 +248,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   También actualizar `_handleGetUser` para retornar id=10 (demo analista).
   SPEC: H-01, H-06.
 
-- [ ] [T-010] **IMPLEMENT** — Completar `_handleAdminFunctions` con las 67 funciones canónicas.
+- [x] [T-010] **IMPLEMENT** — Completar `_handleAdminFunctions` con las 67 funciones canónicas.
 
   Reemplazar el array FUNCTIONS (20 entradas) con las 67 funciones activas del spec.
   Usar el orden de módulos del catálogo: MOD_Auth(4), MOD_Users(9), MOD_Access(12),
@@ -261,7 +261,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   Estructura de cada entrada: `{ id, codename, name, domain, active }`.
   SPEC: H-02, catalogo-funciones.rst §3.1..3.11.
 
-- [ ] [T-011] **FIX** — Corregir datos en `_handleAdminAGR` y `_handleSeparationRules`.
+- [x] [T-011] **FIX** — Corregir datos en `_handleAdminAGR` y `_handleSeparationRules`.
 
   `_handleAdminAGR`: Cambiar `functions_count: 6` → `functions_count: 9` para
   `system_admin_group` (id=10, AGR-010).
@@ -295,7 +295,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   ```
   SPEC: H-03, H-04.
 
-- [ ] [T-012] **IMPLEMENT** — Agregar handlers para endpoints faltantes en `mockInterceptor.js`.
+- [x] [T-012] **IMPLEMENT** — Agregar handlers para endpoints faltantes en `mockInterceptor.js`.
 
   **Verificar primero:** `/reports/historical` en el componente hace fetch a
   `/api/reports/history/` (ya existe handler `_handleReportHistory`) — NO crear duplicado.
@@ -371,7 +371,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
 ## Bloque IV — Alerts sub-menú
 
-- [ ] [T-013] **IMPLEMENT** — Registrar sub-rutas de Alertas en `src/router/AppRouter.jsx`.
+- [x] [T-013] **IMPLEMENT** — Registrar sub-rutas de Alertas en `src/router/AppRouter.jsx`.
 
   Agregar imports lazy:
   ```js
@@ -403,7 +403,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   Requires T-001 (VIEW_ALERT_HISTORY, CONFIGURE_TEAM_ALERTS, SUBSCRIBE_ALERT).
   SPEC: H-16.
 
-- [ ] [T-014] **IMPLEMENT** — Agregar children de Alertas a `ALL_NAV_LINKS` (id=6).
+- [x] [T-014] **IMPLEMENT** — Agregar children de Alertas a `ALL_NAV_LINKS` (id=6).
 
   Reemplazar la entrada plana de Alertas con:
   ```js
@@ -421,7 +421,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   ```
   Requires T-001, T-013. SPEC: H-16.
 
-- [ ] [T-015] **TDD** — Tests para nav de Alertas en `AppRouter.test.jsx`.
+- [x] [T-015] **TDD** — Tests para nav de Alertas en `AppRouter.test.jsx`.
 
   ```js
   describe('Alerts nav filtering')
@@ -437,7 +437,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
 ## Bloque V — Audit sub-menú
 
-- [ ] [T-016] **IMPLEMENT** — Registrar sub-rutas de Auditoría en `src/router/AppRouter.jsx`.
+- [x] [T-016] **IMPLEMENT** — Registrar sub-rutas de Auditoría en `src/router/AppRouter.jsx`.
 
   Agregar imports lazy:
   ```js
@@ -465,7 +465,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   Nota: SEARCH_AUDIT, EXPORT_AUDIT, VIEW_COMPLIANCE ya existen en catalog.js actual.
   SPEC: H-17.
 
-- [ ] [T-017] **IMPLEMENT** — Agregar children de Auditoría a `ALL_NAV_LINKS` (id=5).
+- [x] [T-017] **IMPLEMENT** — Agregar children de Auditoría a `ALL_NAV_LINKS` (id=5).
 
   Reemplazar la entrada plana de Auditoría con:
   ```js
@@ -482,7 +482,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
   ```
   Requires T-016. SPEC: H-17.
 
-- [ ] [T-018] **TDD** — Tests para nav de Auditoría en `AppRouter.test.jsx`.
+- [x] [T-018] **TDD** — Tests para nav de Auditoría en `AppRouter.test.jsx`.
 
   ```js
   describe('Audit nav filtering')
@@ -498,7 +498,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
 ## Bloque VI — Permission guard fixes
 
-- [ ] [T-019] **FIX** — Corregir guard del sub-ítem "Disponibilidad" en `ALL_NAV_LINKS`.
+- [x] [T-019] **FIX** — Corregir guard del sub-ítem "Disponibilidad" en `ALL_NAV_LINKS`.
 
   En el array children del grupo Logs (id=7):
   ```js
@@ -510,7 +510,7 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
   Requires T-001 (VIEW_DATA_AVAILABILITY). SPEC: H-15.
 
-- [ ] [T-020] **FIX** — Corregir semántica de `MANAGE_ACCESS` en nav items de Acceso.
+- [x] [T-020] **FIX** — Corregir semántica de `MANAGE_ACCESS` en nav items de Acceso.
 
   En `ALL_NAV_LINKS` children de Acceso (id=4), cambiar los tres items que usan
   `FunctionCatalog.MANAGE_ACCESS` por `FunctionCatalog.ASSIGN_FUNCTION_GROUPS`:
@@ -527,16 +527,16 @@ All → T-016 (full suite) → T-017..T-019 (cierre)
 
 ## Bloque VII — Cierre formal WP
 
-- [ ] [T-021] **VERIFY** — Suite completa. Target: ≥ 1769 tests + nuevos (sin regressions).
+- [x] [T-021] **VERIFY** — Suite completa. Target: ≥ 1769 tests + nuevos (sin regressions).
   ```bash
   npm test -- --watchAll=false 2>&1 | tail -10
   ```
 
-- [ ] [T-022] **TRACK** — Crear `track/mock-rbac-full-audit-changelog.md`.
+- [x] [T-022] **TRACK** — Crear `track/mock-rbac-full-audit-changelog.md`.
 
-- [ ] [T-023] **TRACK** — Crear `track/mock-rbac-full-audit-lessons.md` (≥ 3 lecciones).
+- [x] [T-023] **TRACK** — Crear `track/mock-rbac-full-audit-lessons.md` (≥ 3 lecciones).
 
-- [ ] [T-024] **CLOSE** — Actualizar `wp-state.md` + `now.md`. Push + validate-phase-completion.sh.
+- [x] [T-024] **CLOSE** — Actualizar `wp-state.md` + `now.md`. Push + validate-phase-completion.sh.
 
 ---
 

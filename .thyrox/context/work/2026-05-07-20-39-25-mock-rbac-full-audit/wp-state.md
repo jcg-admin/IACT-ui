@@ -2,10 +2,11 @@
 created_at: 2026-05-07 20:39:25
 project: IACT-ui
 work_package: 2026-05-07-20-39-25-mock-rbac-full-audit
-phase: Phase 3 — ANALYZE (activa)
-status: Activo
+phase: Phase 11 — TRACK/EVALUATE
+status: Cerrado
 author: claude
 size: grande
+closed_at: 2026-05-07 00:00:00
 ```
 
 # WP — Auditoría completa Mock + RBAC v5.6.x
