@@ -27,7 +27,7 @@ export const FunctionCatalog = {
     EDIT_USERS:         'users:update',
     DELETE_USERS:       'users:deactivate',
 
-    // MOD_Access — RBAC assignment and SoD (UC-010..011, UC_PERM_*)
+    // MOD_Access — RBAC assignment and separation rules (UC-010..011, UC_PERM_*)
     VIEW_ACCESS:        'access:view',
     MANAGE_ACCESS:      'access:assign',
     MANAGE_GROUPS:      'access:create_group',

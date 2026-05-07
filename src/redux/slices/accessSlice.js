@@ -1,7 +1,7 @@
 /**
  * Redux Access Control Slice
  * IACT v4.0 - Access Module
- * State management para control de acceso RBAC + SoD
+ * State management para control de acceso RBAC y reglas de separación
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';

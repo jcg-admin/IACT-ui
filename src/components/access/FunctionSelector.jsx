@@ -1,7 +1,7 @@
 /**
  * FunctionSelector.jsx
  * IACT v4.0 - Access Module
- * UC_ACC_01: Componente para seleccionar funciones con validación SoD
+ * UC_ACC_01: Componente para seleccionar funciones con validación de reglas de separación
  */
 
 import React, { useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ const FUNCTION_CATEGORIES = {
     DASHBOARD: 'Dashboard',
 };
 
-// SoD rules use predicate functions against codenames (e.g. 'view_pipeline_status').
+// Separation rules use predicate functions against codenames (e.g. 'view_pipeline_status').
 // Regex against function_id codes (PIP-*, AUD-*) was silently broken — those codes
 // never appear in func.code which carries the RBAC codename.
 const SEPARATION_RULES = {
@@ -78,7 +78,7 @@ export default function FunctionSelector({
     }, []);
 
     /**
-     * Detectar conflictos SoD
+     * Detectar conflictos de separación
      */
     const detectConflicts = (newSelection) => {
         const conflictList = [];

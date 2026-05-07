@@ -96,7 +96,7 @@ describe('transactionService', () => {
     it('debería retornar step, conflicts, errors', async () => {
       const _mockResponse = {
         step: 2,
-        conflicts: [{ id: 'c2', field: 'role', message: 'SoD conflict' }],
+        conflicts: [{ id: 'c2', field: 'role', message: 'Separation rule conflict' }],
         errors: null
       }
 

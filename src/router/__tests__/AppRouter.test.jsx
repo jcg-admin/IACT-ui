@@ -336,7 +336,7 @@ const ALL_NAV_LINKS_INTEGRATION = [
         children: [
             { label: 'Grupos de acceso', path: '/access/groups',             permission: FC.MANAGE_GROUPS },
             { label: 'Agrupadores',      path: '/access/groupers',           permission: FC.MANAGE_ACCESS },
-            { label: 'Reglas SoD',       path: '/access/separation-rules',   permission: FC.MANAGE_SEPARATION_RULES },
+            { label: 'Reglas Separación', path: '/access/separation-rules',   permission: FC.MANAGE_SEPARATION_RULES },
         ],
     },
     {

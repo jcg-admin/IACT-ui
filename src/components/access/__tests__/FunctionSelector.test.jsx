@@ -20,7 +20,7 @@ const ACCESS_FUNCS = [
 ];
 const ALL_FUNCTIONS = [...PIPELINE_FUNCS, ...AUDIT_FUNCS, ...USER_FUNCS, ...ACCESS_FUNCS];
 
-describe('FunctionSelector — SoD predicates', () => {
+describe('FunctionSelector — separation rule predicates', () => {
     afterEach(() => {
         document.body.innerHTML = '';
     });

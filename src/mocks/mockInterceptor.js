@@ -1124,7 +1124,7 @@ class MockInterceptor {
     if (!data) {
       return this._error(404, `Usuario ${userId} no encontrado en mock`)
     }
-    const capacidades = data.user.capacidades.map((c) => c.codename)
+    const capacidades = data.capacidades
     const allMenuItems = [
       { key: 'dashboard',   label: 'Dashboard',          required: 'reports:dashboard',     path: '/dashboard' },
       { key: 'pipeline',    label: 'Pipeline',           required: 'pipeline:view_status',  path: '/pipeline' },

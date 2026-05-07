@@ -54,7 +54,7 @@ describe('SeparationRulesPage — uc-adm-01', () => {
     expect(fetchSeparationRules).toHaveBeenCalled()
   })
 
-  it('renders SoD rules from redux store', () => {
+  it('renders separation rules from redux store', () => {
     renderPage()
     expect(screen.getByText(/Pipeline vs Auditoria/i)).toBeInTheDocument()
     expect(screen.getByText(/Usuario vs Auditoria/i)).toBeInTheDocument()

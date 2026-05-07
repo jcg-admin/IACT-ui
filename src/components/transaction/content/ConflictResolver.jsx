@@ -13,7 +13,7 @@ function ConflictResolver({ conflicts, onResolve }) {
 
   return (
     <div className="content-conflict-resolver">
-      <h3>Resolver Conflictos SoD</h3>
+      <h3>Resolver Conflictos de Separación</h3>
       {_unresolved.length === 0 ? (
         <p>Todos los conflictos resueltos.</p>
       ) : (

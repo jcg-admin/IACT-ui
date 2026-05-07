@@ -1,7 +1,7 @@
 /**
  * AccessPage — Control de Acceso (ITER4)
  *
- * Gestión de funciones asignadas al usuario activo y validación de reglas SoD.
+ * Gestión de funciones asignadas al usuario activo y validación de reglas de separación.
  * Requiere permiso VIEW_ACCESS.
  */
 
