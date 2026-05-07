@@ -348,7 +348,7 @@ class MockInterceptor {
           email: body.email,
           first_name: body.first_name || '',
           last_name: body.last_name || '',
-          role: 'user',
+          access_groups: [],
           date_joined: new Date().toISOString(),
         },
       };
@@ -361,7 +361,7 @@ class MockInterceptor {
    * Generate mock users
    */
   _generateMockUsers(count) {
-    const roles = ['admin', 'user', 'moderator'];
+    const sampleGroups = [['AGR-001'], ['AGR-002'], ['AGR-001', 'AGR-003'], []];
     // UC-USR-01: campo state con enum ACTIVE/INACTIVE/BLOCKED/ELIMINATED
     const states = ['ACTIVE', 'ACTIVE', 'ACTIVE', 'ACTIVE', 'INACTIVE', 'BLOCKED'];
     const users = [];
@@ -373,7 +373,7 @@ class MockInterceptor {
         email: `user${i + 1}@example.com`,
         first_name: `User${i + 1}`,
         last_name: `Test`,
-        role: roles[i % roles.length],
+        access_groups: sampleGroups[i % sampleGroups.length],
         state: states[i % states.length],
         date_joined: new Date(
           Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000

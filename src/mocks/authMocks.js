@@ -4,14 +4,12 @@ export const mockUsers = {
     email: 'admin@iact.com',
     password: 'password123',
     name: 'Admin User',
-    role: 'admin',
   },
   'user@iact.com': {
     id: '2',
     email: 'user@iact.com',
     password: 'password123',
     name: 'Regular User',
-    role: 'user',
   },
 };
 
@@ -26,7 +24,6 @@ export const mockLogin = (email, password) => {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role,
           },
         });
       } else {

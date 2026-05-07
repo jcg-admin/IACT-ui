@@ -12,7 +12,7 @@ const mockUser = {
   email: 'john@example.com',
   first_name: 'John',
   last_name: 'Doe',
-  role: 'Admin',
+  access_groups: ['AGR-010'],
   state: 'ACTIVE',
 }
 

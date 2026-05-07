@@ -26,7 +26,6 @@ export default function UserManagement() {
   const [showForm, setShowForm] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterRole, setFilterRole] = useState('all')
   const [groupModal, setGroupModal] = useState({ isOpen: false, mode: 'assign', userId: null })
 
   const notify = getNotificationService()
@@ -52,7 +51,7 @@ export default function UserManagement() {
           email: 'john@example.com',
           first_name: 'John',
           last_name: 'Doe',
-          role: 'Admin',
+          access_groups: ['AGR-010'],
           status: 'Active',
           created_at: '2024-01-15T10:30:00Z'
         },
@@ -62,7 +61,7 @@ export default function UserManagement() {
           email: 'jane@example.com',
           first_name: 'Jane',
           last_name: 'Smith',
-          role: 'User',
+          access_groups: ['AGR-001'],
           status: 'Active',
           created_at: '2024-02-20T14:45:00Z'
         },
@@ -72,7 +71,7 @@ export default function UserManagement() {
           email: 'bob@example.com',
           first_name: 'Bob',
           last_name: 'Wilson',
-          role: 'User',
+          access_groups: [],
           status: 'Inactive',
           created_at: '2024-03-10T09:15:00Z'
         }
@@ -107,7 +106,7 @@ export default function UserManagement() {
         email: newUser.email,
         first_name: userData.firstName,
         last_name: userData.lastName,
-        role: 'User',
+        access_groups: [],
         status: 'Active',
         created_at: new Date().toISOString()
       }])
@@ -140,7 +139,6 @@ export default function UserManagement() {
               email: userData.email,
               first_name: userData.firstName,
               last_name: userData.lastName,
-              role: userData.role,
               state: userData.state
             }
           : u
@@ -184,7 +182,7 @@ export default function UserManagement() {
           Email: u.email,
           'First Name': u.first_name,
           'Last Name': u.last_name,
-          Role: u.role,
+          Grupos: (u.access_groups || []).join(', '),
           Status: u.status,
           'Created': new Date(u.created_at).toLocaleDateString()
         })),
@@ -238,21 +236,13 @@ export default function UserManagement() {
     setGroupModal({ isOpen: false, mode: 'assign', userId: null })
   }
 
-  /**
-   * Filter users by search term and role
-   */
   const getFilteredUsers = () => {
-    return users.filter(user => {
-      const matchesSearch = 
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.last_name.toLowerCase().includes(searchTerm.toLowerCase())
-
-      const matchesRole = filterRole === 'all' || user.role === filterRole
-
-      return matchesSearch && matchesRole
-    })
+    return users.filter(user =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   }
 
   const filteredUsers = getFilteredUsers()
@@ -276,19 +266,6 @@ export default function UserManagement() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
               />
-            </div>
-
-            <div className="filter-group">
-              <select
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Roles</option>
-                <option value="Admin">Admin</option>
-                <option value="User">User</option>
-                <option value="Moderator">Moderator</option>
-              </select>
             </div>
 
             <div className="action-buttons">

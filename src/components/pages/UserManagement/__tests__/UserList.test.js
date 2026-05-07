@@ -12,7 +12,7 @@ const buildUser = (overrides = {}) => ({
   email: 'john@example.com',
   first_name: 'John',
   last_name: 'Doe',
-  role: 'Admin',
+  access_groups: ['AGR-010'],
   state: 'ACTIVE',
   created_at: '2024-01-15T10:30:00Z',
   ...overrides,

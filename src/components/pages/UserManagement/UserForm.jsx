@@ -14,7 +14,6 @@ export default function UserForm({ user, onSubmit, onCancel, onDeactivate }) {
     lastName: '',
     password: '',
     passwordConfirm: '',
-    role: 'User',
     state: 'ACTIVE',
   })
 
@@ -30,7 +29,6 @@ export default function UserForm({ user, onSubmit, onCancel, onDeactivate }) {
         lastName: user.last_name,
         password: '',
         passwordConfirm: '',
-        role: user.role,
         state: user.state || 'ACTIVE',
       })
     }
@@ -95,7 +93,6 @@ export default function UserForm({ user, onSubmit, onCancel, onDeactivate }) {
         first_name: formData.firstName,
         last_name: formData.lastName,
         password: formData.password,
-        role: formData.role,
         state: formData.state,
       })
     } catch (_) {
@@ -216,23 +213,9 @@ export default function UserForm({ user, onSubmit, onCancel, onDeactivate }) {
 
         {isEditMode && (
           <div className="form-section">
-            <h3>Rol y estado</h3>
+            <h3>Estado</h3>
 
             <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="role">Rol</label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                >
-                  <option value="User">User</option>
-                  <option value="Moderator">Moderator</option>
-                  <option value="Admin">Admin</option>
-                </select>
-              </div>
-
               <div className="form-group">
                 <label htmlFor="state">Estado</label>
                 <select

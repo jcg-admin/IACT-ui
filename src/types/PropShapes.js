@@ -18,7 +18,6 @@ export const userShape = PropTypes.shape({
   id: PropTypes.number.isRequired,
   email: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  role: PropTypes.oneOf(['admin', 'user']),
 });
 
 /**

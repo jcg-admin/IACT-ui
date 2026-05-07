@@ -74,9 +74,7 @@ export default function UserList({ users, loading, onEdit, onDeactivate }) {
             <th onClick={() => handleSort('first_name')} className="sortable">
               Nombre <SortIndicator field="first_name" />
             </th>
-            <th onClick={() => handleSort('role')} className="sortable">
-              Rol <SortIndicator field="role" />
-            </th>
+            <th>Grupos de acceso</th>
             <th onClick={() => handleSort('state')} className="sortable">
               Estado <SortIndicator field="state" />
             </th>
@@ -92,10 +90,10 @@ export default function UserList({ users, loading, onEdit, onDeactivate }) {
               <td className="username">{user.username}</td>
               <td className="email">{user.email}</td>
               <td className="name">{user.first_name} {user.last_name}</td>
-              <td className="role">
-                <span className={`badge role-${user.role?.toLowerCase()}`}>
-                  {user.role}
-                </span>
+              <td className="access-groups">
+                {(user.access_groups || []).length > 0
+                  ? (user.access_groups || []).join(', ')
+                  : <span className="text-muted">—</span>}
               </td>
               <td className="state">
                 <span className={`badge ${STATE_BADGE[user.state] || 'badge-secondary'}`}>
