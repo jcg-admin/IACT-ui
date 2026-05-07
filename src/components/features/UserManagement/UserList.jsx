@@ -160,7 +160,7 @@ function UserModal({ isOpen, user, onClose, onSave }) {
       first_name: '',
       last_name: '',
       email: '',
-      role: 'User',
+      access_groups: [],
       status: 'Activo',
     });
   }, [user]);
