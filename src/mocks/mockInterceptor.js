@@ -192,6 +192,14 @@ class MockInterceptor {
       return this._handleGetAlerts(url);
     }
 
+    if (url.match(/\/api\/permisos\/verificar\/(\d+)\/menu\//)) {
+      return this._handlePermisosMenu(url);
+    }
+
+    if (url.includes('/api/reports/scheduled/')) {
+      return this._handleScheduledReports(method, body);
+    }
+
     // Default 404
     return this._error(404, 'Not found');
   }
@@ -212,15 +220,30 @@ class MockInterceptor {
         status: 200,
         data: {
           user: {
-            id: 1,
+            id: 10,
             username: 'demo',
             email: 'demo@example.com',
             first_name: 'Demo',
             last_name: 'User',
-            role: 'admin',
             date_joined: new Date().toISOString(),
           },
           // NO retornar access/refresh (estan en cookies)
+        },
+      };
+    }
+
+    if (credentials.username === 'admin' && credentials.password === 'admin123') {
+      return {
+        status: 200,
+        data: {
+          user: {
+            id: 99,
+            username: 'admin',
+            email: 'admin@example.com',
+            first_name: 'Admin',
+            last_name: 'System',
+            date_joined: new Date().toISOString(),
+          },
         },
       };
     }
@@ -246,12 +269,11 @@ class MockInterceptor {
     return {
       status: 200,
       data: {
-        id: 1,
+        id: 10,
         username: 'demo',
         email: 'demo@example.com',
         first_name: 'Demo',
         last_name: 'User',
-        role: 'admin',
         date_joined: new Date().toISOString(),
       },
     };
@@ -895,26 +917,82 @@ class MockInterceptor {
       return this._error(405, 'Method not allowed')
     }
     const FUNCTIONS = [
-      { id:  1, codename: 'reports:view',         name: 'Ver reportes',               domain: 'reports',  active: true },
-      { id:  2, codename: 'reports:kpis',          name: 'Ver KPIs',                   domain: 'reports',  active: true },
-      { id:  3, codename: 'reports:save_view',     name: 'Guardar vista de reporte',   domain: 'reports',  active: true },
-      { id:  4, codename: 'users:view',            name: 'Ver usuarios',               domain: 'users',    active: true },
-      { id:  5, codename: 'users:create',          name: 'Crear usuarios',             domain: 'users',    active: true },
-      { id:  6, codename: 'access:view',           name: 'Ver asignaciones',           domain: 'access',   active: true },
-      { id:  7, codename: 'access:assign',         name: 'Asignar funciones',          domain: 'access',   active: true },
-      { id:  8, codename: 'audit:view',            name: 'Ver log de auditoría',       domain: 'audit',    active: true },
-      { id:  9, codename: 'alerts:view',           name: 'Ver alertas',                domain: 'alerts',   active: true },
-      { id: 10, codename: 'logs:view_app',         name: 'Ver logs de aplicación',     domain: 'logs',     active: true },
-      { id: 11, codename: 'logs:view_etl',         name: 'Ver logs ETL/pipeline',      domain: 'logs',     active: true },
-      { id: 12, codename: 'logs:view_infra',       name: 'Ver logs de infraestructura',domain: 'logs',     active: true },
-      { id: 13, codename: 'logs:view_health',      name: 'Ver salud del sistema',      domain: 'logs',     active: true },
-      { id: 14, codename: 'logs:view_metrics',     name: 'Ver métricas técnicas',      domain: 'logs',     active: true },
-      { id: 15, codename: 'pipeline:view_status',  name: 'Ver estado del pipeline',    domain: 'pipeline', active: true },
-      { id: 16, codename: 'pipeline:retry',        name: 'Reintentar pipeline',        domain: 'pipeline', active: true },
-      { id: 17, codename: 'auth:view_own_sessions',name: 'Ver sesiones propias',       domain: 'auth',     active: true },
-      { id: 18, codename: 'adm:manage_catalog',    name: 'Gestionar catálogo RBAC',    domain: 'admin',    active: true },
-      { id: 19, codename: 'adm:create_sod',        name: 'Crear regla de separación',  domain: 'admin',    active: true },
-      { id: 20, codename: 'access:view_sod',       name: 'Ver reglas de separación',   domain: 'access',   active: true },
+      // MOD_Pipeline (8)
+      { id:  1, codename: 'pipeline:view_status',  name: 'Ver estado del pipeline',         domain: 'pipeline', active: true },
+      { id:  2, codename: 'pipeline:execute',      name: 'Ejecutar pipeline',               domain: 'pipeline', active: true },
+      { id:  3, codename: 'pipeline:stop',         name: 'Detener pipeline',                domain: 'pipeline', active: true },
+      { id:  4, codename: 'pipeline:request',      name: 'Solicitar ejecución',             domain: 'pipeline', active: true },
+      { id:  5, codename: 'pipeline:view_data',    name: 'Ver datos del pipeline',          domain: 'pipeline', active: true },
+      { id:  6, codename: 'pipeline:view_logs',    name: 'Ver logs del pipeline',           domain: 'pipeline', active: true },
+      { id:  7, codename: 'pipeline:view_errors',  name: 'Ver errores del pipeline',        domain: 'pipeline', active: true },
+      { id:  8, codename: 'pipeline:availability', name: 'Ver disponibilidad de datos',     domain: 'pipeline', active: true },
+      // MOD_Users (10)
+      { id:  9, codename: 'users:view',            name: 'Ver usuarios',                    domain: 'users',    active: true },
+      { id: 10, codename: 'users:manage',          name: 'Gestionar usuarios',              domain: 'users',    active: true },
+      { id: 11, codename: 'users:create',          name: 'Crear usuarios',                  domain: 'users',    active: true },
+      { id: 12, codename: 'users:edit',            name: 'Editar usuarios',                 domain: 'users',    active: true },
+      { id: 13, codename: 'users:delete',          name: 'Eliminar usuarios',               domain: 'users',    active: true },
+      { id: 14, codename: 'users:list',            name: 'Listar usuarios',                 domain: 'users',    active: true },
+      { id: 15, codename: 'users:search',          name: 'Buscar usuarios',                 domain: 'users',    active: true },
+      { id: 16, codename: 'users:block',           name: 'Bloquear usuarios',               domain: 'users',    active: true },
+      { id: 17, codename: 'users:unblock',         name: 'Desbloquear usuarios',            domain: 'users',    active: true },
+      { id: 18, codename: 'users:reactivate',      name: 'Reactivar usuarios',              domain: 'users',    active: true },
+      // MOD_Access (12)
+      { id: 19, codename: 'access:view',           name: 'Ver asignaciones',                domain: 'access',   active: true },
+      { id: 20, codename: 'access:assign',         name: 'Asignar funciones',               domain: 'access',   active: true },
+      { id: 21, codename: 'access:assign_function',name: 'Asignar función individual',      domain: 'access',   active: true },
+      { id: 22, codename: 'access:revoke_function',name: 'Revocar función individual',      domain: 'access',   active: true },
+      { id: 23, codename: 'access:revoke_group',   name: 'Revocar grupo de funciones',      domain: 'access',   active: true },
+      { id: 24, codename: 'access:grant_exceptional',name:'Otorgar permiso excepcional',    domain: 'access',   active: true },
+      { id: 25, codename: 'access:revoke',         name: 'Revocar funciones',               domain: 'access',   active: true },
+      { id: 26, codename: 'access:assign_group',   name: 'Asignar grupo de funciones',      domain: 'access',   active: true },
+      { id: 27, codename: 'access:assign_to_group',name: 'Agregar usuario a grupo',         domain: 'access',   active: true },
+      { id: 28, codename: 'access:update_sod',     name: 'Actualizar regla de separación',  domain: 'access',   active: true },
+      { id: 29, codename: 'access:disable_sod',    name: 'Desactivar regla de separación',  domain: 'access',   active: true },
+      { id: 30, codename: 'access:revoke_exceptional', name: 'Revocar permiso excepcional', domain: 'access',   active: true },
+      // MOD_Audit (4)
+      { id: 31, codename: 'audit:view',            name: 'Ver log de auditoría',            domain: 'audit',    active: true },
+      { id: 32, codename: 'audit:search',          name: 'Buscar en auditoría',             domain: 'audit',    active: true },
+      { id: 33, codename: 'audit:export',          name: 'Exportar auditoría',              domain: 'audit',    active: true },
+      { id: 34, codename: 'audit:compliance',      name: 'Generar reporte de cumplimiento', domain: 'audit',    active: true },
+      // MOD_Alerts (10)
+      { id: 35, codename: 'alerts:view',           name: 'Ver alertas',                     domain: 'alerts',   active: true },
+      { id: 36, codename: 'alerts:configure',      name: 'Configurar alertas',              domain: 'alerts',   active: true },
+      { id: 37, codename: 'alerts:config_team',    name: 'Configurar alertas de equipo',    domain: 'alerts',   active: true },
+      { id: 38, codename: 'alerts:pause',          name: 'Pausar alertas',                  domain: 'alerts',   active: true },
+      { id: 39, codename: 'alerts:disable',        name: 'Deshabilitar alertas',            domain: 'alerts',   active: true },
+      { id: 40, codename: 'alerts:history',        name: 'Ver historial de alertas',        domain: 'alerts',   active: true },
+      { id: 41, codename: 'alerts:acknowledge',    name: 'Reconocer alerta',                domain: 'alerts',   active: true },
+      { id: 42, codename: 'alerts:subscribe',      name: 'Suscribirse a alertas',           domain: 'alerts',   active: true },
+      { id: 43, codename: 'alerts:unsubscribe',    name: 'Desuscribirse de alertas',        domain: 'alerts',   active: true },
+      { id: 44, codename: 'alerts:config_severity',name: 'Configurar severidad de alertas', domain: 'alerts',   active: true },
+      // MOD_Reports (4)
+      { id: 45, codename: 'reports:dashboard',     name: 'Ver dashboard',                   domain: 'reports',  active: true },
+      { id: 46, codename: 'reports:view',          name: 'Ver reportes',                    domain: 'reports',  active: true },
+      { id: 47, codename: 'reports:kpis',          name: 'Ver KPIs',                        domain: 'reports',  active: true },
+      { id: 48, codename: 'reports:export',        name: 'Exportar reportes',               domain: 'reports',  active: true },
+      // MOD_Logs (5)
+      { id: 49, codename: 'logs:view_app',         name: 'Ver logs de aplicación',          domain: 'logs',     active: true },
+      { id: 50, codename: 'logs:view_etl',         name: 'Ver logs ETL/pipeline',           domain: 'logs',     active: true },
+      { id: 51, codename: 'logs:view_infra',       name: 'Ver logs de infraestructura',     domain: 'logs',     active: true },
+      { id: 52, codename: 'logs:view_health',      name: 'Ver salud del sistema',           domain: 'logs',     active: true },
+      { id: 53, codename: 'logs:view_metrics',     name: 'Ver métricas técnicas',           domain: 'logs',     active: true },
+      // MOD_Auth (5)
+      { id: 54, codename: 'auth:view_own_sessions',name: 'Ver sesiones propias',            domain: 'auth',     active: true },
+      { id: 55, codename: 'auth:manage_sessions',  name: 'Gestionar sesiones',              domain: 'auth',     active: true },
+      { id: 56, codename: 'auth:view_all_sessions',name: 'Ver todas las sesiones',          domain: 'auth',     active: true },
+      { id: 57, codename: 'auth:close_session',    name: 'Cerrar sesión de usuario',        domain: 'auth',     active: true },
+      { id: 58, codename: 'auth:reset_password',   name: 'Resetear contraseña',             domain: 'auth',     active: true },
+      // MOD_Admin (9)
+      { id: 59, codename: 'adm:manage_menu',       name: 'Gestionar menú',                  domain: 'admin',    active: true },
+      { id: 60, codename: 'adm:manage_catalog',    name: 'Gestionar catálogo RBAC',         domain: 'admin',    active: true },
+      { id: 61, codename: 'adm:manage_functions',  name: 'Gestionar funciones RBAC',        domain: 'admin',    active: true },
+      { id: 62, codename: 'adm:manage_groups',     name: 'Gestionar grupos RBAC',           domain: 'admin',    active: true },
+      { id: 63, codename: 'adm:view_system',       name: 'Ver configuración del sistema',   domain: 'admin',    active: true },
+      { id: 64, codename: 'adm:manage_menu_catalog',name:'Gestionar catálogo de menú',      domain: 'admin',    active: true },
+      { id: 65, codename: 'adm:manage_menu_lifecycle',name:'Gestionar ciclo de vida menú',  domain: 'admin',    active: true },
+      { id: 66, codename: 'adm:manage_is_critical',name: 'Gestionar criticidad de menú',   domain: 'admin',    active: true },
+      { id: 67, codename: 'adm:create_sod',        name: 'Crear regla de separación',       domain: 'admin',    active: true },
     ]
     return { status: 200, data: { results: FUNCTIONS, count: FUNCTIONS.length } }
   }
@@ -955,7 +1033,7 @@ class MockInterceptor {
       { id:  7, codename: 'permission_admin_group',     name: 'Admin de Permisos',         description: 'Administrador de permisos',            functions_count: 5,  active: true },
       { id:  8, codename: 'auditor_group',              name: 'Auditor',                   description: 'Auditor de cumplimiento',              functions_count: 4,  active: true },
       { id:  9, codename: 'pipeline_admin_group',       name: 'Admin de Pipeline',         description: 'Administrador de pipelines ETL',       functions_count: 4,  active: true },
-      { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 6,  active: true },
+      { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 9,  active: true },
     ]
     return { status: 200, data: { results: AGRS, count: AGRS.length } }
   }
@@ -964,9 +1042,27 @@ class MockInterceptor {
     return {
       status: 200,
       data: [
-        { id: 1, name: 'SOD-001', code: 'SOD-001', description: 'Pipeline vs Auditoría', group_a: ['pipeline:execute'], group_b: ['audit:export'], state: 'ACTIVE', violations: 0 },
-        { id: 2, name: 'SOD-002', code: 'SOD-002', description: 'Usuario vs Auditoría', group_a: ['users:create'], group_b: ['audit:view'], state: 'ACTIVE', violations: 0 },
-        { id: 3, name: 'SOD-003', code: 'SOD-003', description: 'Acceso vs Admin', group_a: ['access:assign'], group_b: ['adm:manage_catalog'], state: 'ACTIVE', violations: 0 },
+        {
+          id: 1, code: 'SR-001', name: 'Pipeline vs Auditoría',
+          description: 'Quien ejecuta pipelines no puede auditarlos',
+          group_a: ['pipeline:view_status', 'pipeline:view_data', 'pipeline:request'],
+          group_b: ['audit:view', 'audit:search', 'audit:export', 'audit:compliance'],
+          isActive: true, violations: 0,
+        },
+        {
+          id: 2, code: 'SR-002', name: 'Usuarios vs Auditoría',
+          description: 'Quien gestiona usuarios no puede auditarlos',
+          group_a: ['users:manage', 'users:create', 'users:edit'],
+          group_b: ['audit:view', 'audit:search', 'audit:export'],
+          isActive: true, violations: 0,
+        },
+        {
+          id: 3, code: 'SR-003', name: 'Acceso vs Auditoría',
+          description: 'Quien asigna funciones no puede auditarlas',
+          group_a: ['access:assign', 'access:assign_function', 'access:revoke_function'],
+          group_b: ['audit:view', 'audit:search', 'audit:export'],
+          isActive: true, violations: 0,
+        },
       ],
     }
   }
@@ -1019,6 +1115,60 @@ class MockInterceptor {
         ]
       }
     };
+  }
+
+  _handlePermisosMenu(url) {
+    const match = url.match(/\/api\/permisos\/verificar\/(\d+)\/menu\//)
+    const userId = parseInt(match[1], 10)
+    const data = PERMISOS_BY_USER_ID[userId]
+    if (!data) {
+      return this._error(404, `Usuario ${userId} no encontrado en mock`)
+    }
+    const capacidades = data.user.capacidades.map((c) => c.codename)
+    const allMenuItems = [
+      { key: 'dashboard',   label: 'Dashboard',          required: 'reports:dashboard',     path: '/dashboard' },
+      { key: 'pipeline',    label: 'Pipeline',           required: 'pipeline:view_status',  path: '/pipeline' },
+      { key: 'logs',        label: 'Logs',               required: 'logs:view_app',         path: '/logs' },
+      { key: 'reports',     label: 'Reportes',           required: 'reports:view',          path: '/reports' },
+      { key: 'alerts',      label: 'Alertas',            required: 'alerts:view',           path: '/alerts' },
+      { key: 'audit',       label: 'Auditoría',          required: 'audit:view',            path: '/audit' },
+      { key: 'users',       label: 'Usuarios',           required: 'users:view',            path: '/users' },
+      { key: 'access',      label: 'Control de Acceso',  required: 'access:view',           path: '/access' },
+    ]
+    const allowedMenu = allMenuItems.filter((item) => capacidades.includes(item.required))
+    return { status: 200, data: { menu: allowedMenu } }
+  }
+
+  _handleScheduledReports(method, body) {
+    if (method === 'POST') {
+      if (!body || !body.name || !body.frequency) {
+        return this._error(400, 'name and frequency are required')
+      }
+      return {
+        status: 201,
+        data: {
+          id: Math.floor(Math.random() * 900) + 100,
+          name: body.name,
+          frequency: body.frequency,
+          format: body.format || 'PDF',
+          recipients: body.recipients || [],
+          active: true,
+          last_run: null,
+          next_run: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        },
+      }
+    }
+    return {
+      status: 200,
+      data: {
+        results: [
+          { id: 1, name: 'Reporte Diario KPIs',       frequency: 'DAILY',   format: 'PDF',  active: true, last_run: new Date(Date.now() - 86400000).toISOString(), next_run: new Date(Date.now() + 3600000).toISOString() },
+          { id: 2, name: 'Reporte Semanal Auditoría', frequency: 'WEEKLY',  format: 'XLSX', active: true, last_run: new Date(Date.now() - 604800000).toISOString(), next_run: new Date(Date.now() + 86400000).toISOString() },
+          { id: 3, name: 'Cumplimiento Mensual',      frequency: 'MONTHLY', format: 'PDF',  active: false, last_run: null, next_run: null },
+        ],
+        count: 3,
+      },
+    }
   }
 }
 
