@@ -12,7 +12,7 @@ export default function ComplianceReportPage() {
     const [reportConfig, setReportConfig] = useState({
         dateStart: '',
         dateEnd: '',
-        regulations: ['SOD'],
+        regulations: ['separation-rules'],
         includeMetrics: true,
         includeViolin: true,
     });

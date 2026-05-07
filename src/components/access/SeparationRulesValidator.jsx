@@ -6,22 +6,22 @@
 
 import React from 'react';
 
-const SOD_RULES_INFO = {
-    'SOD-001': {
+const SEPARATION_RULES_INFO = {
+    'SR-001': {
         name: 'Pipeline vs Auditoria',
         description: 'Quien ejecuta pipelines no puede auditarlos',
         setA: 'Funciones Pipeline (PIP-*)',
         setB: 'Funciones Auditoria (AUD-*)',
         reason: 'Separación de deberes: Ejecutor vs Auditor',
     },
-    'SOD-002': {
+    'SR-002': {
         name: 'Usuario vs Auditoria',
         description: 'Quien gestiona usuarios no puede auditarlos',
         setA: 'Funciones Usuario (USR-*)',
         setB: 'Funciones Auditoria (AUD-*)',
         reason: 'Separación de deberes: Gestor vs Auditor',
     },
-    'SOD-003': {
+    'SR-003': {
         name: 'Acceso vs Auditoria',
         description: 'Quien asigna funciones no puede auditarlas',
         setA: 'Funciones Acceso (ACC-*)',
@@ -61,7 +61,7 @@ export default function SeparationRulesValidator({ conflicts = [], selectedFunct
             </div>
 
             {conflicts.map((conflict, idx) => {
-                const ruleInfo = SOD_RULES_INFO[conflict.rule] || {};
+                const ruleInfo = SEPARATION_RULES_INFO[conflict.rule] || {};
 
                 return (
                     <div key={idx} style={{ marginBottom: '16px' }}>

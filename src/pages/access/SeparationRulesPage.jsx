@@ -7,32 +7,32 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    fetchSodRules, updateSodRule, deleteSodRule,
+    fetchSeparationRules, updateSeparationRule, deleteSeparationRule,
     selectSeparationRules, selectLoading, selectError,
 } from '../../redux/slices/accessSlice';
 
 export default function SeparationRulesPage() {
     const dispatch = useDispatch();
-    const sodRules = useSelector(selectSeparationRules);
+    const separationRules = useSelector(selectSeparationRules);
     const loading = useSelector(selectLoading);
     const error = useSelector(selectError);
     const [selectedRule, setSelectedRule] = useState(null);
     const [showViolations, setShowViolations] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchSodRules());
+        dispatch(fetchSeparationRules());
     }, [dispatch]);
 
     const handleToggleRule = (rule) => {
-        dispatch(updateSodRule({ id: rule.id, isActive: !rule.isActive }));
+        dispatch(updateSeparationRule({ id: rule.id, isActive: !rule.isActive }));
     };
 
     const handleDeleteRule = (id) => {
-        dispatch(deleteSodRule(id));
+        dispatch(deleteSeparationRule(id));
     };
 
-    const getTotalViolations = () => sodRules.reduce((sum, rule) => sum + (rule.violations || 0), 0);
-    const getActiveRules = () => sodRules.filter(rule => rule.isActive).length;
+    const getTotalViolations = () => separationRules.reduce((sum, rule) => sum + (rule.violations || 0), 0);
+    const getActiveRules = () => separationRules.filter(rule => rule.isActive).length;
 
     return (
         <div style={{ padding: '24px' }}>
@@ -61,7 +61,7 @@ export default function SeparationRulesPage() {
                 }}>
                     <div style={{ color: '#9ca3af', fontSize: '12px' }}>Reglas Activas</div>
                     <div style={{ color: '#0ea5e9', fontSize: '28px', fontWeight: 600, marginTop: '4px' }}>
-                        {getActiveRules()}/{sodRules.length}
+                        {getActiveRules()}/{separationRules.length}
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@ export default function SeparationRulesPage() {
                     <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Reglas de Separación Configuradas</h2>
 
                     <div style={{ display: 'grid', gap: '12px' }}>
-                        {sodRules.map(rule => (
+                        {separationRules.map(rule => (
                             <div
                                 key={rule.id}
                                 onClick={() => setSelectedRule(rule)}

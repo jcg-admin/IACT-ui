@@ -57,7 +57,7 @@ describe('SeparationRulesValidator', () => {
 
   it('shows conflict count when conflicts exist', () => {
     const conflicts = [{
-      rule: 'SOD-001',
+      rule: 'SR-001',
       message: 'Cannot combine pipeline and audit',
       setA: ['PIP-001'],
       setB: ['AUD-001'],

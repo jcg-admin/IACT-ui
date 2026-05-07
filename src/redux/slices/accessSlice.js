@@ -85,8 +85,8 @@ export const revokeGroupFromUser = createAsyncThunk(
     }
 );
 
-export const fetchSodRules = createAsyncThunk(
-    'access/fetchSodRules',
+export const fetchSeparationRules = createAsyncThunk(
+    'access/fetchSeparationRules',
     async (_, { rejectWithValue }) => {
         try {
             return await accessService.getSeparationRules();
@@ -96,8 +96,8 @@ export const fetchSodRules = createAsyncThunk(
     }
 );
 
-export const createSodRule = createAsyncThunk(
-    'access/createSodRule',
+export const createSeparationRule = createAsyncThunk(
+    'access/createSeparationRule',
     async (data, { rejectWithValue }) => {
         try {
             return await accessService.createSeparationRule(data);
@@ -107,8 +107,8 @@ export const createSodRule = createAsyncThunk(
     }
 );
 
-export const updateSodRule = createAsyncThunk(
-    'access/updateSodRule',
+export const updateSeparationRule = createAsyncThunk(
+    'access/updateSeparationRule',
     async ({ id, ...data }, { rejectWithValue }) => {
         try {
             return await accessService.updateSeparationRule(id, data);
@@ -118,8 +118,8 @@ export const updateSodRule = createAsyncThunk(
     }
 );
 
-export const deleteSodRule = createAsyncThunk(
-    'access/deleteSodRule',
+export const deleteSeparationRule = createAsyncThunk(
+    'access/deleteSeparationRule',
     async (id, { rejectWithValue }) => {
         try {
             await accessService.deleteSeparationRule(id);
@@ -388,34 +388,34 @@ const accessSlice = createSlice({
             .addCase(revokeGroupFromUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         /**
-         * SoD Rules CRUD (uc-adm-01)
+         * Separation Rules CRUD (uc-adm-01)
          */
         builder
-            .addCase(fetchSodRules.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(fetchSodRules.fulfilled, (state, action) => { state.loading = false; state.separationRules = action.payload; })
-            .addCase(fetchSodRules.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+            .addCase(fetchSeparationRules.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(fetchSeparationRules.fulfilled, (state, action) => { state.loading = false; state.separationRules = action.payload; })
+            .addCase(fetchSeparationRules.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         builder
-            .addCase(createSodRule.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(createSodRule.fulfilled, (state, action) => { state.loading = false; state.separationRules.push(action.payload); })
-            .addCase(createSodRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+            .addCase(createSeparationRule.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(createSeparationRule.fulfilled, (state, action) => { state.loading = false; state.separationRules.push(action.payload); })
+            .addCase(createSeparationRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         builder
-            .addCase(updateSodRule.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(updateSodRule.fulfilled, (state, action) => {
+            .addCase(updateSeparationRule.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(updateSeparationRule.fulfilled, (state, action) => {
                 state.loading = false;
                 const idx = state.separationRules.findIndex(r => r.id === action.payload.id);
                 if (idx !== -1) state.separationRules[idx] = action.payload;
             })
-            .addCase(updateSodRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+            .addCase(updateSeparationRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         builder
-            .addCase(deleteSodRule.pending, (state) => { state.loading = true; state.error = null; })
-            .addCase(deleteSodRule.fulfilled, (state, action) => {
+            .addCase(deleteSeparationRule.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(deleteSeparationRule.fulfilled, (state, action) => {
                 state.loading = false;
                 state.separationRules = state.separationRules.filter(r => r.id !== action.payload);
             })
-            .addCase(deleteSodRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+            .addCase(deleteSeparationRule.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         /**
          * Fetch Access Audit

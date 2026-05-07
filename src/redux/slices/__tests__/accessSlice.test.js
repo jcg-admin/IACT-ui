@@ -95,7 +95,7 @@ describe('validateSeparationRules thunk — functionPk invariant', () => {
     });
 
     it('almacena conflictos en separationConflicts al completarse', async () => {
-        const conflicts = [{ rule: 'SOD-001' }];
+        const conflicts = [{ rule: 'SR-001' }];
         accessService.validateSeparationRules.mockResolvedValue({ conflicts });
         const store = buildStore();
         await store.dispatch(validateSeparationRules({ userId: 1, functionPk: 5 }));

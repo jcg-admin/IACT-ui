@@ -7,9 +7,9 @@ import { MemoryRouter } from 'react-router-dom'
 jest.mock('../../../redux/slices/accessSlice', () => ({
   fetchAllFunctions: jest.fn(() => ({ type: 'access/fetchAllFunctions' })),
   fetchAccessAudit: jest.fn(() => ({ type: 'access/fetchAccessAudit' })),
-  fetchSodRules: jest.fn(() => ({ type: 'access/fetchSodRules' })),
-  updateSodRule: jest.fn((r) => ({ type: 'access/updateSodRule', payload: r })),
-  deleteSodRule: jest.fn((id) => ({ type: 'access/deleteSodRule', payload: id })),
+  fetchSeparationRules: jest.fn(() => ({ type: 'access/fetchSeparationRules' })),
+  updateSeparationRule: jest.fn((r) => ({ type: 'access/updateSeparationRule', payload: r })),
+  deleteSeparationRule: jest.fn((id) => ({ type: 'access/deleteSeparationRule', payload: id })),
   selectFunctions: (s) => s.access.functions,
   selectAuditLog: (s) => s.access.auditLog,
   selectSeparationRules: (s) => s.access.separationRules,

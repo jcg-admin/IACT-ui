@@ -25,32 +25,32 @@ describe('FunctionSelector — SoD predicates', () => {
         document.body.innerHTML = '';
     });
 
-    it('SOD-001: pipeline ∩ audit → conflict banner appears', () => {
+    it('SR-001: pipeline ∩ audit → conflict banner appears', () => {
         render(
             <FunctionSelector allFunctions={ALL_FUNCTIONS} selectedFunctionIds={[1, 3]} />
         );
-        expect(screen.getByText(/Conflictos SoD detectados/)).toBeInTheDocument();
+        expect(screen.getByText(/Conflictos de Separación detectados/)).toBeInTheDocument();
     });
 
-    it('SOD-001: pipeline ∩ pipeline → no conflict banner', () => {
+    it('SR-001: pipeline ∩ pipeline → no conflict banner', () => {
         render(
             <FunctionSelector allFunctions={ALL_FUNCTIONS} selectedFunctionIds={[1, 2]} />
         );
-        expect(screen.queryByText(/Conflictos SoD detectados/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Conflictos de Separación detectados/)).not.toBeInTheDocument();
     });
 
-    it('SOD-002: users ∩ audit → conflict banner appears', () => {
+    it('SR-002: users ∩ audit → conflict banner appears', () => {
         render(
             <FunctionSelector allFunctions={ALL_FUNCTIONS} selectedFunctionIds={[5, 3]} />
         );
-        expect(screen.getByText(/Conflictos SoD detectados/)).toBeInTheDocument();
+        expect(screen.getByText(/Conflictos de Separación detectados/)).toBeInTheDocument();
     });
 
-    it('SOD-003: access ∩ audit → conflict banner appears', () => {
+    it('SR-003: access ∩ audit → conflict banner appears', () => {
         render(
             <FunctionSelector allFunctions={ALL_FUNCTIONS} selectedFunctionIds={[6, 3]} />
         );
-        expect(screen.getByText(/Conflictos SoD detectados/)).toBeInTheDocument();
+        expect(screen.getByText(/Conflictos de Separación detectados/)).toBeInTheDocument();
     });
 
     it('codename with unknown prefix causes no false positive', () => {
@@ -58,7 +58,7 @@ describe('FunctionSelector — SoD predicates', () => {
         render(
             <FunctionSelector allFunctions={[unknownFunc]} selectedFunctionIds={[99]} />
         );
-        expect(screen.queryByText(/Conflictos SoD detectados/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Conflictos de Separación detectados/)).not.toBeInTheDocument();
     });
 });
 
@@ -122,14 +122,14 @@ describe('FunctionSelector — category filtering', () => {
 });
 
 describe('FunctionSelector — conflict status in UI', () => {
-    it('shows conflict banner when SoD rules are violated', () => {
+    it('shows conflict banner when separation rules are violated', () => {
         render(
             <FunctionSelector
                 allFunctions={ALL_FUNCTIONS}
                 selectedFunctionIds={[1, 3]}
             />
         );
-        expect(screen.getByText(/Conflictos SoD detectados/)).toBeInTheDocument();
+        expect(screen.getByText(/Conflictos de Separación detectados/)).toBeInTheDocument();
     });
 
     it('shows no conflict banner when selection is valid', () => {
@@ -139,6 +139,6 @@ describe('FunctionSelector — conflict status in UI', () => {
                 selectedFunctionIds={[1, 2]}
             />
         );
-        expect(screen.queryByText(/Conflictos SoD detectados/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Conflictos de Separación detectados/)).not.toBeInTheDocument();
     });
 });

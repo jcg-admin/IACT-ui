@@ -18,8 +18,8 @@ const FUNCTION_CATEGORIES = {
 // SoD rules use predicate functions against codenames (e.g. 'view_pipeline_status').
 // Regex against function_id codes (PIP-*, AUD-*) was silently broken — those codes
 // never appear in func.code which carries the RBAC codename.
-const SOD_RULES = {
-    'SOD-001': {
+const SEPARATION_RULES = {
+    'SR-001': {
         setA: (codename) =>
             codename.startsWith('view_pipeline') ||
             codename.startsWith('view_data') ||
@@ -31,7 +31,7 @@ const SOD_RULES = {
             codename.startsWith('generate_compliance'),
         desc: 'pipeline_audit_separation',
     },
-    'SOD-002': {
+    'SR-002': {
         setA: (codename) =>
             codename.startsWith('manage_users') ||
             codename.startsWith('create_user') ||
@@ -42,7 +42,7 @@ const SOD_RULES = {
             codename.startsWith('export_audit'),
         desc: 'users_audit_separation',
     },
-    'SOD-003': {
+    'SR-003': {
         setA: (codename) =>
             codename.startsWith('manage_access') ||
             codename.startsWith('assign_function') ||
@@ -88,7 +88,7 @@ export default function FunctionSelector({
             return func ? func.code : null;
         }).filter(Boolean);
 
-        for (const [ruleCode, rule] of Object.entries(SOD_RULES)) {
+        for (const [ruleCode, rule] of Object.entries(SEPARATION_RULES)) {
             const inSetA = selectedCodenames.filter(code => rule.setA(code));
             const inSetB = selectedCodenames.filter(code => rule.setB(code));
 
@@ -227,7 +227,7 @@ export default function FunctionSelector({
                         fontSize: '14px',
                     }}
                 >
-                    <strong>Conflictos SoD detectados:</strong>
+                    <strong>Conflictos de Separación detectados:</strong>
                     <ul style={{ margin: '8px 0 0 16px', paddingLeft: '16px' }}>
                         {conflicts.map((conflict, idx) => (
                             <li key={idx}>

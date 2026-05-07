@@ -261,9 +261,9 @@ export default function AssignFunctionsPage() {
                             <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#1f2937', borderRadius: '4px', fontSize: '12px', color: '#9ca3af' }}>
                                 <strong style={{ color: '#fff' }}>Reglas de separación activas:</strong>
                                 <ul style={{ margin: '8px 0 0 16px', paddingLeft: '16px' }}>
-                                    <li>SOD-001: PIP-* incompatible con AUD-*</li>
-                                    <li>SOD-002: USR-* incompatible con AUD-*</li>
-                                    <li>SOD-003: ACC-* incompatible con AUD-*</li>
+                                    <li>SR-001: PIP-* incompatible con AUD-*</li>
+                                    <li>SR-002: USR-* incompatible con AUD-*</li>
+                                    <li>SR-003: ACC-* incompatible con AUD-*</li>
                                 </ul>
                             </div>
                         </div>
