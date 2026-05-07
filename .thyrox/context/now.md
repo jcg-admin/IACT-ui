@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-06
-current_work: null
-phase: null
-updated_at: 2026-05-06 22:40:00
+current_work: .thyrox/context/work/2026-05-07-20-39-25-mock-rbac-full-audit
+phase: Phase 8 — PLAN EXECUTION
+updated_at: 2026-05-07 20:42:00
 blockers: []
 ```
 
@@ -16,11 +16,31 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Sin WP activo. Todos los WPs cerrados.
+**Estado:** WP activo: `2026-05-07-20-39-25-mock-rbac-full-audit` — Phase 8 PLAN EXECUTION.
 
 ## Métricas de test suite
 
 **1769 tests** passing (verificado 2026-05-06 — WP menu-submenu-ux Phase 11 completa, 212 suites)
+
+---
+
+## WP activo — mock-rbac-full-audit
+
+`2026-05-07-20-39-25-mock-rbac-full-audit` — Phase 8 PLAN EXECUTION.
+
+Auditoría completa del sistema mock + alineación con RBAC v5.6.x (67 funciones).
+18 hallazgos en 4 dominios. 17 tareas en task plan (T-001..T-017).
+
+Hallazgos críticos:
+- H-01: Login demo retorna userId=1, PERMISOS_BY_USER_ID solo tiene 10 y 99 → 404
+- H-02: _handleAdminFunctions tiene 20/67 funciones canónicas
+- H-09/16/17: FunctionCatalog missing 26 constants; Alerts y Audit sin sub-menús
+- H-15: "Disponibilidad" usa logs:view_etl en lugar de pipeline:availability
+
+Artefactos:
+- `discover/mock-rbac-full-audit-analysis.md` (18 hallazgos)
+- `analyze/mock-rbac-full-audit-diagnose.md` (diagnóstico por dominio)
+- `plan-execution/mock-rbac-full-audit-task-plan.md` (17 tareas)
 
 ---
 
