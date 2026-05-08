@@ -27,6 +27,8 @@ export default function FunctionCatalog() {
   const loading = useSelector(selectAdminLoading)
 
   const [search, setSearch] = useState('')
+  const [filterDomain, setFilterDomain] = useState('')
+  const [filterActive, setFilterActive] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
@@ -40,10 +42,14 @@ export default function FunctionCatalog() {
 
   const filtered = functions.filter((fn) => {
     const searchQuery = search.toLowerCase()
-    return (
+    const matchesSearch =
       fn.codename?.toLowerCase().includes(searchQuery) ||
       fn.name?.toLowerCase().includes(searchQuery)
-    )
+    const matchesDomain = !filterDomain || fn.domain === filterDomain
+    const matchesActive =
+      !filterActive ||
+      (filterActive === 'active' ? fn.active !== false : fn.active === false)
+    return matchesSearch && matchesDomain && matchesActive
   })
 
   // ── Formulario ───────────────────────────────────────────────────────────
@@ -128,15 +134,37 @@ export default function FunctionCatalog() {
         </button>
       </div>
 
-      {/* Barra de búsqueda */}
-      <div className="search-bar">
+      {/* Barra de búsqueda y filtros */}
+      <div className="search-bar" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
         <input
           className="search-input"
           type="text"
           placeholder="Buscar por codename o nombre..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{ flex: 1 }}
         />
+        <select
+          value={filterDomain}
+          onChange={(e) => setFilterDomain(e.target.value)}
+          aria-label="Filtrar por dominio"
+          style={{ padding: '8px', background: '#1f2937', color: '#fff', border: '1px solid #374151', borderRadius: '4px' }}
+        >
+          <option value="">Todos los dominios</option>
+          {[...new Set(functions.map((f) => f.domain).filter(Boolean))].sort().map((d) => (
+            <option key={d} value={d}>{d}</option>
+          ))}
+        </select>
+        <select
+          value={filterActive}
+          onChange={(e) => setFilterActive(e.target.value)}
+          aria-label="Filtrar por estado"
+          style={{ padding: '8px', background: '#1f2937', color: '#fff', border: '1px solid #374151', borderRadius: '4px' }}
+        >
+          <option value="">Todos los estados</option>
+          <option value="active">Solo activas</option>
+          <option value="inactive">Solo inactivas</option>
+        </select>
       </div>
 
       {/* Formulario inline create/edit */}

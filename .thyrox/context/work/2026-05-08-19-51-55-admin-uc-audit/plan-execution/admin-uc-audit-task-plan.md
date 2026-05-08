@@ -794,7 +794,7 @@ Block IV puede correr en paralelo con Block II o III.
 
 ## Block VI — GAP-ADM-02-FILTER: Filtros en catálogo de funciones (BAJA)
 
-- [ ] [T-019] **FunctionCatalog.jsx — Filtros domain y estado (client-side)**
+- [x] [T-019] **FunctionCatalog.jsx — Filtros domain y estado (client-side)**
 
   Añadir estado:
   ```js
