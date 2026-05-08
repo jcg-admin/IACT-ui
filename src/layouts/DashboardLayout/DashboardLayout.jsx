@@ -12,13 +12,32 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { Header, LogoBrand, MenuButton } from '@ui/shared/Header'
 import { Sidebar } from '@ui/shared/Sidebar'
 import { useMenuToggle } from '@hooks/useMenuToggle'
 import { logoutUser } from '@store/slices/auth'
+import ContextErrorBanner from '../../components/feedback/ContextErrorBanner'
 import './DashboardLayout.scss'
+
+const PATH_CONTEXT_MAP = [
+  ['/admin',       'admin'],
+  ['/reports',     'reports'],
+  ['/access',      'access'],
+  ['/permissions', 'access'],
+  ['/alerts',      'alerts'],
+  ['/audit',       'audit'],
+  ['/logs',        'logs'],
+  ['/users',       'user'],
+]
+
+function ModuleContextBanner() {
+  const { pathname } = useLocation()
+  const entry = PATH_CONTEXT_MAP.find(([prefix]) => pathname.startsWith(prefix))
+  if (!entry) return null
+  return <ContextErrorBanner context={entry[1]} />
+}
 
 export default function DashboardLayout({
   navLinks = [],
@@ -74,6 +93,7 @@ export default function DashboardLayout({
           role="main"
         >
           <div className="container">
+            <ModuleContextBanner />
             <Outlet />
           </div>
         </main>
