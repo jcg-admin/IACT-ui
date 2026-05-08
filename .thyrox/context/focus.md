@@ -2,23 +2,38 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 01:09:00
+updated_at: 2026-05-08 05:40:00
 branch: claude/project-analysis-N9IkV
-wp_activo: 2026-05-08-01-05-10-dashboard-cleanup-naming-conventions
+wp_activo: null
 ```
 
 # Focus — IACT-UI
 
-## WP activo — dashboard-cleanup-naming-conventions (Phase 1 DISCOVER)
+## Sin WP activo
 
-**WP:** `2026-05-08-01-05-10-dashboard-cleanup-naming-conventions`
-**Phase:** Phase 1 DISCOVER — completa, pendiente gate SP-01
-**Próximo:** Phase 3 ANALYZE (estrategia para HAL-1: deprecar vs. conectar `fetchDashboardData`)
+**Versión actual:** 0.1.x (feature branch — sin release en main aún)
+**Branch activo:** `claude/project-analysis-N9IkV`
+**Tests:** 1799 passing, 209 suites (verificado 2026-05-08)
 
-Scope del WP:
-- HAL-1: `dashboardSlice` mock hardcodeado → conectar endpoint real o migrar a `reportsSlice`
-- HAL-2..5: naming violations in-scope (AlertManager, CSRFManager/CSPHelper, single-letter vars, 5 filenames)
-- HAL-6: naming sistémico (56 Pages, 16 Slices, 20 Services, aliases) — documentado como TD-NM-001..006, FUERA DE SCOPE
+### Deuda técnica pendiente — TD-NM-001..006
+
+Registrada en `technical-debt.md`. Próximo WP recomendado:
+- TD-NM-001: 56 `*Page.jsx` con sufijo prohibido
+- TD-NM-002: 16 `*Slice.js` con sufijo prohibido
+- TD-NM-003: 20 `*Service.js` con sufijo prohibido
+- TD-NM-004: 8 Webpack aliases con nombres técnicos (ALTO riesgo — 500+ imports)
+- TD-NM-005: Hooks con nombres técnicos
+- TD-NM-006: Acrónimos en identifiers
+
+---
+
+## Completado — WP dashboard-cleanup-naming-conventions ✓
+
+**WP cerrado:** `2026-05-08-01-05-10-dashboard-cleanup-naming-conventions`
+**Phase 11 TRACK/EVALUATE:** completada
+
+29 tareas, 6 commits. 1799 tests, 0 regressions.
+Entregables: dashboardSlice eliminado, 5 renames de naming HAL-2..5, TD-NM-001..006 documentados.
 
 ---
 
@@ -41,24 +56,3 @@ Scope del WP:
 - 10 slices: `rejectWithValue(string)` → `rejectWithValue({ message, statusCode })`
 - Tests: ActiveSessions suite completa, 5 reportsService tests, 4 errorHandling normalization tests
 
-## Sin WP activo
-
-**Versión actual:** 0.1.x (feature branch — sin release en main aún)
-**Branch activo:** `claude/project-analysis-N9IkV`
-
-### Próximo en ROADMAP
-
-Iniciar nuevo WP para las deudas técnicas documentadas en T-DT-001..T-DT-004:
-- T-DT-002 (ALTA): `dashboardSlice` + `Dashboard.jsx` + `useDashboard.js` aún usan mock data
-- T-DT-001 (MEDIA): SSE mock para `/api/realtime/metrics/` (MSW o mock EventSource)
-- T-DT-003 (MEDIA): Tests para 10 páginas sin cobertura
-- T-DT-004 (BAJA): ProfilePage error visibility
-
-### Deuda técnica pendiente
-
-| ID | Descripción | Prioridad |
-|----|-------------|-----------|
-| T-DT-002 | `dashboardSlice.fetchDashboardData` usa `getMockDashboardData()` hardcodeado; `Dashboard.jsx` + `useDashboard.js` lo consumen | Alta |
-| T-DT-001 | SSE mock para `/api/realtime/metrics/` — `EventSource` no interceptable por axios | Media |
-| T-DT-003 | 10 pages/components sin test dedicado | Media |
-| T-DT-004 | `ProfilePage` no muestra errores al usuario | Baja |
