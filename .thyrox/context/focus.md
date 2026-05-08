@@ -2,7 +2,7 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 08:05:00
+updated_at: 2026-05-08 04:58:37
 branch: claude/project-analysis-N9IkV
 wp_activo: null
 ```
@@ -12,7 +12,24 @@ wp_activo: null
 ## Estado actual — 0 deuda técnica
 
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Todos los WPs cerrados. 0 deuda técnica activa. 1799 tests green.
+**Estado:** WP `uc-alignment-full-audit` en Phase 11 TRACK/EVALUATE (pendiente gate Phase 12). **1841 tests green.**
+
+---
+
+## Completado — WP uc-alignment-full-audit (Phase 11 pendiente gate)
+
+**WP:** `2026-05-08-04-19-25-uc-alignment-full-audit`
+**Tests:** 1841 passing / 214 suites / 0 failures
+
+Auditoría completa de 66 UCs de Fase 1 contra implementación real.
+4 categorías de gaps identificadas y resueltas:
+
+- **GAP-A (routing):** 3 rutas faltantes en AppRouter para páginas ACC ya implementadas
+- **GAP-B (páginas):** SeparationRulesCatalog (UC-ADM-01) + MenuItemCatalog (UC-ADM-04/05) implementados
+- **GAP-C (parciales):** UC-PIP-04, UC-RPT-08/09/11 confirmados pre-existentes y testeados
+- **GAP-D (estructura):** UserManagement movido a `src/pages/users/` (ubicación canónica)
+
+Artefactos: changelog + lessons-learned (6 lecciones) + risk-register actualizado.
 
 ---
 
