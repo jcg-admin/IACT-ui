@@ -7,7 +7,6 @@ export {
   useJobs,
   useExport,
   useForm,
-  useDashboard,
   useJobPolling,
   useMetrics,
   useTransaction,

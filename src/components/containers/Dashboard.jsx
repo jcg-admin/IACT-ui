@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchDashboardData } from '@redux/slices/dashboardSlice'
+import { fetchDashboardMetrics, selectMetrics, selectReportsLoading } from '@redux/slices/reportsSlice'
+import { selectContextError } from '@redux/slices/errorSlice'
 import LoadingSpinner from '@components/shared/LoadingSpinner'
 import styles from './Dashboard.module.scss'
 
 export default function Dashboard() {
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-  const { metrics, loading, error, lastUpdate } = useSelector((state) => state.dashboard)
+  const metrics = useSelector(selectMetrics)
+  const loading = useSelector(selectReportsLoading)
+  const error = useSelector(selectContextError('reports'))
 
   useEffect(() => {
-    dispatch(fetchDashboardData())
+    dispatch(fetchDashboardMetrics())
   }, [dispatch])
 
   return (
@@ -19,17 +22,12 @@ export default function Dashboard() {
         <h1>Bienvenido, {user?.first_name || 'Usuario'}</h1>
         <p className="page-subtitle">
           Dashboard IVR — Trimestre {metrics?.trimestre_activo ?? '…'}
-          {lastUpdate && (
-            <span className={styles.lastUpdate}>
-              · Actualizado: {new Date(lastUpdate).toLocaleTimeString()}
-            </span>
-          )}
         </p>
       </div>
 
-      {error && (
+      {error?.message && (
         <div className="error-banner" role="alert">
-          Error al cargar dashboard: {error}
+          Error al cargar dashboard: {error.message}
         </div>
       )}
 

@@ -13,7 +13,6 @@ import alertsReducer from './slices/alertsSlice'
 import auditReducer from './slices/auditSlice'
 import formReducer from './slices/formSlice'
 import reportsReducer from './slices/reportsSlice'
-import dashboardReducer from './slices/dashboardSlice'
 import errorReducer from './slices/errorSlice'
 import adminReducer from './slices/adminSlice'
 import logsReducer from './slices/logsSlice'
@@ -36,7 +35,6 @@ const store = configureStore({
     audit: auditReducer,
     form: formReducer,
     reports: reportsReducer,
-    dashboard: dashboardReducer,
     error: errorReducer,
     admin: adminReducer,
     logs: logsReducer,

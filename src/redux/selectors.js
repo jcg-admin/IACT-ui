@@ -22,21 +22,3 @@ export const selectAuthError = createSelector(
   selectAuthState,
   (auth) => auth.error
 );
-
-// Dashboard selectors
-export const selectDashboardState = (state) => state.dashboard;
-
-export const selectMetrics = createSelector(
-  selectDashboardState,
-  (dashboard) => dashboard.metrics
-);
-
-export const selectCharts = createSelector(
-  selectDashboardState,
-  (dashboard) => dashboard.charts
-);
-
-export const selectDashboardLoading = createSelector(
-  selectDashboardState,
-  (dashboard) => dashboard.loading
-);

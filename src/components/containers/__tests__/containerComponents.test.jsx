@@ -55,13 +55,6 @@ jest.mock('@components/presentational/DashboardHeader', () => ({
   ),
 }))
 
-jest.mock('@mocks/dashboardMocks', () => ({
-  mockFetchDashboardData: jest.fn().mockResolvedValue({
-    metrics: [],
-    charts: [],
-  }),
-}))
-
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => jest.fn(),
@@ -71,22 +64,12 @@ jest.mock('@redux/selectors', () => ({
   selectUser: (s) => s.auth?.user,
   selectAuthLoading: (s) => s.auth?.loading ?? false,
   selectAuthError: (s) => s.auth?.error ?? null,
-  selectDashboardLoading: (s) => s.dashboard?.loading ?? false,
-  selectMetrics: (s) => s.dashboard?.metrics ?? [],
-  selectCharts: (s) => s.dashboard?.charts ?? [],
 }))
 
 jest.mock('@redux/slices/authSlice', () => ({
   loginUser: jest.fn(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) })),
   logout: jest.fn(() => ({ type: 'auth/logout' })),
   setUser: jest.fn(() => ({ type: 'auth/setUser' })),
-}))
-
-jest.mock('@redux/slices/dashboardSlice', () => ({
-  setMetrics: jest.fn(() => ({ type: 'dashboard/setMetrics' })),
-  setCharts: jest.fn(() => ({ type: 'dashboard/setCharts' })),
-  setDashboardLoading: jest.fn(() => ({ type: 'dashboard/setDashboardLoading' })),
-  fetchDashboardData: jest.fn(() => ({ type: 'dashboard/fetchData/pending' })),
 }))
 
 jest.mock('@redux/slices/reportsSlice', () => ({
@@ -96,11 +79,10 @@ jest.mock('@redux/slices/reportsSlice', () => ({
   selectReportsLoading: (s) => s.reports?.loading ?? false,
 }))
 
-function buildStore(auth = {}, dashboard = {}, reports = {}) {
+function buildStore(auth = {}, reports = {}) {
   return configureStore({
     reducer: {
       auth: (state = { user: null, loading: false, error: null, ...auth }) => state,
-      dashboard: (state = { loading: false, metrics: [], charts: [], ...dashboard }) => state,
       reports: (state = { loading: false, metrics: null, ...reports }) => state,
     },
   })

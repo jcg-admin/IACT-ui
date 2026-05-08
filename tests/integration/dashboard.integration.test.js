@@ -4,7 +4,7 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import dashboardReducer from '@redux/slices/dashboardSlice';
+import reportsReducer from '@redux/slices/reportsSlice';
 import authReducer from '@redux/slices/authSlice';
 
 describe('Dashboard Integration', () => {
@@ -13,7 +13,7 @@ describe('Dashboard Integration', () => {
   beforeEach(() => {
     store = configureStore({
       reducer: {
-        dashboard: dashboardReducer,
+        reports: reportsReducer,
         auth: authReducer,
       },
     });
@@ -21,27 +21,27 @@ describe('Dashboard Integration', () => {
 
   test('Dashboard page can be rendered', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('Metrics are displayed in dashboard', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('Dashboard fetches metrics on mount', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('Dashboard handles loading state', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('Dashboard displays error messages', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('Dashboard requires authentication', () => {
@@ -52,11 +52,11 @@ describe('Dashboard Integration', () => {
 
   test('Dashboard live updates via WebSocket', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('Dashboard caches metrics appropriately', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 });
