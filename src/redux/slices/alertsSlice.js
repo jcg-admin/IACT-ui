@@ -5,7 +5,7 @@
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import alertsService from '../../services/alertManager';
+import alertsService from '../../services/alertsGateway';
 
 /**
  * Async Thunks

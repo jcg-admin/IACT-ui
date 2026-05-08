@@ -6,7 +6,7 @@
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
-class AlertManager {
+class AlertsGateway {
     /**
      * UC_ALR_01: Obtener todas las alertas
      */
@@ -303,4 +303,4 @@ class AlertManager {
     }
 }
 
-export default new AlertManager();
+export default new AlertsGateway();

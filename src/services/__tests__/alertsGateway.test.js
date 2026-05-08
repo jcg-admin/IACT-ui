@@ -1,4 +1,4 @@
-import alertManager from '../alertManager'
+import alertsGateway from '../alertsGateway'
 
 function mockFetch(data, ok = true) {
   global.fetch = jest.fn().mockResolvedValue({
@@ -16,10 +16,10 @@ afterEach(() => {
   jest.restoreAllMocks()
 })
 
-describe('alertManager.getAlerts', () => {
+describe('alertsGateway.getAlerts', () => {
   it('calls /alerts endpoint', async () => {
     mockFetch([{ id: 1, name: 'CPU Alert' }])
-    await alertManager.getAlerts()
+    await alertsGateway.getAlerts()
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('/alerts'),
       expect.objectContaining({ method: 'GET' })
@@ -27,10 +27,10 @@ describe('alertManager.getAlerts', () => {
   })
 })
 
-describe('alertManager.getTemplates', () => {
+describe('alertsGateway.getTemplates', () => {
   it('calls /alerts/templates endpoint', async () => {
     mockFetch([])
-    await alertManager.getTemplates()
+    await alertsGateway.getTemplates()
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('/alerts/templates'),
       expect.any(Object)
@@ -38,10 +38,10 @@ describe('alertManager.getTemplates', () => {
   })
 })
 
-describe('alertManager.getMySubscriptions', () => {
+describe('alertsGateway.getMySubscriptions', () => {
   it('calls /alerts/subscriptions endpoint', async () => {
     mockFetch([])
-    await alertManager.getMySubscriptions()
+    await alertsGateway.getMySubscriptions()
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('/alerts/subscriptions/me'),
       expect.any(Object)

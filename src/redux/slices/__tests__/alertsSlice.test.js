@@ -9,7 +9,7 @@ import alertsReducer, {
   selectError,
 } from '../alertsSlice'
 
-jest.mock('../../../services/alertManager', () => ({
+jest.mock('../../../services/alertsGateway', () => ({
   __esModule: true,
   default: {
     getAlerts: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('../../../services/alertManager', () => ({
   },
 }))
 
-const alertsService = require('../../../services/alertManager').default
+const alertsService = require('../../../services/alertsGateway').default
 
 function buildStore() {
   return configureStore({ reducer: { alerts: alertsReducer } })
