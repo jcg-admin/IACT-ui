@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSavedFilters, deleteFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFilters'
+import { fetchSavedFilters, deleteFilter, setDefaultFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFilters'
 import LoadingSpinner from '../shared/LoadingSpinner'
 
 export default function SavedFiltersPanel({ onApply }) {
@@ -12,9 +12,21 @@ export default function SavedFiltersPanel({ onApply }) {
     dispatch(fetchSavedFilters())
   }, [dispatch])
 
+  // Auto-apply default filter when panel mounts (UC_RPT_09 FA-04)
+  useEffect(() => {
+    if (savedFilters.length > 0 && onApply) {
+      const defaultFilter = savedFilters.find((sf) => sf.is_default)
+      if (defaultFilter) onApply(defaultFilter.filters)
+    }
+  }, [savedFilters, onApply])
+
   function handleDelete(id) {
     if (!window.confirm('¿Eliminar esta vista guardada?')) return
     dispatch(deleteFilter(id))
+  }
+
+  function handleSetDefault(id) {
+    dispatch(setDefaultFilter(id))
   }
 
   if (loading) return <LoadingSpinner size="sm" />
@@ -27,7 +39,16 @@ export default function SavedFiltersPanel({ onApply }) {
         {savedFilters.map((sf) => (
           <li key={sf.id} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
             <button className="btn btn-secondary" style={{ fontSize: '0.75rem' }} onClick={() => onApply(sf.filters)}>
-              {sf.name}
+              {sf.is_default ? '★ ' : ''}{sf.name}
+            </button>
+            <button
+              className="btn"
+              aria-label={`Marcar ${sf.name} como default`}
+              title="Marcar como filtro por defecto"
+              style={{ fontSize: '0.75rem', color: sf.is_default ? '#f59e0b' : '#9ca3af', border: 'none', background: 'none', cursor: 'pointer' }}
+              onClick={() => handleSetDefault(sf.id)}
+            >
+              ☆
             </button>
             <button
               className="btn"

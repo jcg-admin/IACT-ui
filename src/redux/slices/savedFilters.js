@@ -5,7 +5,7 @@ export const fetchSavedFilters = createAsyncThunk(
   'savedFilters/fetchSavedFilters',
   async (_, { rejectWithValue }) => {
     try {
-      return await apiService.get('/api/reports/saved-filters/')
+      return await apiService.get('/api/me/filters/')
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
@@ -16,7 +16,7 @@ export const saveFilter = createAsyncThunk(
   'savedFilters/saveFilter',
   async ({ name, filters }, { rejectWithValue }) => {
     try {
-      return await apiService.post('/api/reports/saved-filters/', { name, filters })
+      return await apiService.post('/api/me/filters/', { name, filters })
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
@@ -27,8 +27,30 @@ export const deleteFilter = createAsyncThunk(
   'savedFilters/deleteFilter',
   async (id, { rejectWithValue }) => {
     try {
-      await apiService.delete(`/api/reports/saved-filters/${id}/`)
+      await apiService.delete(`/api/me/filters/${id}/`)
       return id
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const updateFilter = createAsyncThunk(
+  'savedFilters/updateFilter',
+  async ({ id, name, filters }, { rejectWithValue }) => {
+    try {
+      return await apiService.patch(`/api/me/filters/${id}/`, { name, filters })
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const setDefaultFilter = createAsyncThunk(
+  'savedFilters/setDefaultFilter',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await apiService.patch(`/api/me/filters/${id}/`, { is_default: true })
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
@@ -65,6 +87,21 @@ const savedFiltersSlice = createSlice({
         state.savedFilters = state.savedFilters.filter((f) => f.id !== action.payload)
       })
       .addCase(deleteFilter.rejected, (state, action) => { state.loading = false; state.error = action.payload })
+
+      .addCase(updateFilter.pending, (state) => { state.loading = true })
+      .addCase(updateFilter.fulfilled, (state, action) => {
+        state.loading = false
+        const idx = state.savedFilters.findIndex((f) => f.id === action.payload.id)
+        if (idx !== -1) state.savedFilters[idx] = action.payload
+      })
+      .addCase(updateFilter.rejected, (state, action) => { state.loading = false; state.error = action.payload })
+
+      .addCase(setDefaultFilter.fulfilled, (state, action) => {
+        state.savedFilters = state.savedFilters.map((f) => ({
+          ...f,
+          is_default: f.id === action.payload.id,
+        }))
+      })
   },
 })
 

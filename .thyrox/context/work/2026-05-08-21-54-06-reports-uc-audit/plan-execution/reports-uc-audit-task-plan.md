@@ -60,15 +60,15 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
 > Gateway acepta params, mock filtra por status y frequency.
 > Commit al completar T-006.
 
-- [ ] [T-004] `src/services/reportsGateway.js` — modificar `getScheduledReports()`
+- [x] [T-004] `src/services/reportsGateway.js` — modificar `getScheduledReports()`
   para aceptar parámetro `params = {}` (objeto con `status`, `frequency`, etc.)
   y pasarlo a la request: `apiService.get('/api/reports/scheduled/', { params })`
 
-- [ ] [T-005] `src/redux/slices/reports.js` — modificar thunk
+- [x] [T-005] `src/redux/slices/reports.js` — modificar thunk
   `fetchScheduledReports` para aceptar `params` opcionalmente y
   pasarlo a `reportsService.getScheduledReports(params)`
 
-- [ ] [T-006] `src/mocks/mockInterceptor.js` — en `_handleScheduledReports`
+- [x] [T-006] `src/mocks/mockInterceptor.js` — en `_handleScheduledReports`
   método GET: extraer `params` de la URL (parseando query string) o del
   request body; filtrar `_scheduledReportsData()` por `status` si presente;
   filtrar por `frequency` si presente; retornar solo los que pasen el filtro
@@ -80,7 +80,7 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
 > Agregar 1 run con status 'failed' + error_code al fixture de runs.
 > Commit al completar T-007.
 
-- [ ] [T-007] `src/mocks/mockInterceptor.js` — en `_handleScheduleHistory`:
+- [x] [T-007] `src/mocks/mockInterceptor.js` — en `_handleScheduleHistory`:
   agregar al array de runs devueltos un tercer run con
   `{ id: 3, schedule_id: <id>, status: 'failed', error_code: 'TIMEOUT',
     started_at: '2026-05-07T08:00:00Z', ended_at: '2026-05-07T08:05:00Z',
@@ -94,7 +94,7 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
 > endpoints del savedFilters slice.
 > Commit al completar T-008.
 
-- [ ] [T-008] `src/redux/slices/savedFilters.js` — reemplazar todas las
+- [x] [T-008] `src/redux/slices/savedFilters.js` — reemplazar todas las
   ocurrencias de `'/api/reports/saved-filters/'` por `'/api/me/filters/'`
   en los thunks `fetchSavedFilters`, `saveFilter`, `deleteFilter`
   (y en `updateFilter` cuando se cree en T-009)
@@ -106,7 +106,7 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
 > Agregar PATCH /api/me/filters/{id}/ para completar CRUD.
 > Commit al completar T-009.
 
-- [ ] [T-009] `src/redux/slices/savedFilters.js` — agregar thunk
+- [x] [T-009] `src/redux/slices/savedFilters.js` — agregar thunk
   `updateFilter` usando `createAsyncThunk` que hace
   `PATCH /api/me/filters/${id}/` con `{ name, filters }`;
   agregar `extraReducers` para fulfilled (actualizar ítem en array `filters`
@@ -119,13 +119,13 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
 > Agregar campo is_default al slice y UI toggle en SavedFiltersPanel.
 > Commit al completar T-011.
 
-- [ ] [T-010] `src/redux/slices/savedFilters.js` — en el thunk `saveFilter`:
+- [x] [T-010] `src/redux/slices/savedFilters.js` — en el thunk `saveFilter`:
   incluir `is_default` en el body si viene en el payload; agregar thunk
   `setDefaultFilter` que hace `PATCH /api/me/filters/${id}/` con
   `{ is_default: true }` para marcar como default; en initialState agregar
   soporte implícito (el campo llega del backend en cada ítem)
 
-- [ ] [T-011] `src/components/reports/SavedFiltersPanel.jsx` — agregar botón
+- [x] [T-011] `src/components/reports/SavedFiltersPanel.jsx` — agregar botón
   "⭐" o "Default" por cada filtro en la lista; al hacer click, despachar
   `setDefaultFilter(sf.id)`; marcar con estilo visual el filtro que tiene
   `sf.is_default === true`; al montar el panel, si hay un filtro default,
@@ -139,7 +139,7 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
 > Crear handler completo para /api/me/filters/ con CRUD + 400 NAME_DUPLICATE.
 > Commit al completar T-013.
 
-- [ ] [T-012] `src/mocks/mockInterceptor.js` — agregar método
+- [x] [T-012] `src/mocks/mockInterceptor.js` — agregar método
   `_handleSavedFilters(url, method, body)`:
   - GET: retornar `{ status: 200, data: { results: this._savedFiltersData(), count: N } }`
   - POST: verificar nombre duplicado → `{ status: 400, data: { error: 'Nombre duplicado', code: 'NAME_DUPLICATE' } }`;
@@ -149,7 +149,7 @@ T-012 → T-013                 (Block VII — GAP-07/08: mock saved-filters han
   - agregar `_savedFiltersData()` con fixture de 2 filtros (nombres únicos, is_default: true/false)
   - agregar `_savedFiltersStore` array inicializado en constructor
 
-- [ ] [T-013] `src/mocks/mockInterceptor.js` — en el método `_routeRequest`
+- [x] [T-013] `src/mocks/mockInterceptor.js` — en el método `_routeRequest`
   (o equivalente de routing): agregar catch para URLs que coincidan con
   `/api/me/filters/` (con o sin id al final) → despachar a
   `this._handleSavedFilters(url, method, body)`
