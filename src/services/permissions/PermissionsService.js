@@ -1,7 +1,7 @@
 import { createResilientService } from '@services/createResilientService';
 import { loadMock } from '@mocks/registry';
 import { shouldUseMockForDomain } from '@services/flags/backendIntegrity';
-import { cloneData } from '@services/utils/cloneUtils';
+import { cloneData } from '@services/utils/cloneDeep';
 
 const PERMISSIONS_ENDPOINT = '/api/v1/permissions';
 const { data: permissionsMock } = loadMock('permissions');

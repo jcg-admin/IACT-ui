@@ -20,7 +20,7 @@ import {
 } from '../../../redux/slices/reportsSlice'
 import MetricsCard from './MetricsCard'
 import ChartComponent from './ChartComponent'
-import ReportBuilder from './ReportBuilder'
+import CustomReportForm from './CustomReportForm'
 import ScheduledReports from './ScheduledReports'
 import './Analytics.scss'
 
@@ -195,7 +195,7 @@ export default function AnalyticsDashboard() {
       {/* Reports Tab */}
       {activeTab === 'reports' && (
         <div className="tab-content">
-          <ReportBuilder onGenerateReport={setReportData} />
+          <CustomReportForm onGenerateReport={setReportData} />
         </div>
       )}
 

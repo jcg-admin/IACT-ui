@@ -52,7 +52,7 @@ jest.mock('../../../redux/slices/reportsSlice', () => ({
 
 jest.mock('../Analytics/MetricsCard', () => ({ __esModule: true, default: () => <div data-testid="metrics-card" /> }))
 jest.mock('../Analytics/ChartComponent', () => ({ __esModule: true, default: () => <div data-testid="chart-component" /> }))
-jest.mock('../Analytics/ReportBuilder', () => ({ __esModule: true, default: () => <div data-testid="report-builder" /> }))
+jest.mock('../Analytics/CustomReportForm', () => ({ __esModule: true, default: () => <div data-testid="report-builder" /> }))
 jest.mock('../Analytics/ScheduledReports', () => ({ __esModule: true, default: () => <div data-testid="scheduled-reports" /> }))
 
 jest.mock('../ExportHub/ExportTypeSelector', () => ({ __esModule: true, default: () => <div data-testid="export-type-selector" /> }))

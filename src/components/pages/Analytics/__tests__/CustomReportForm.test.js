@@ -1,10 +1,10 @@
 /**
- * ReportBuilder Tests
+ * CustomReportForm Tests
  */
 
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import ReportBuilder from '../ReportBuilder'
+import CustomReportForm from '../CustomReportForm'
 
 jest.mock('@services/notificationService', () => ({
   getNotificationService: jest.fn(() => ({
@@ -14,33 +14,33 @@ jest.mock('@services/notificationService', () => ({
   }))
 }))
 
-describe('ReportBuilder Component', () => {
+describe('CustomReportForm Component', () => {
   it('should render create report heading', () => {
-    render(<ReportBuilder onGenerateReport={jest.fn()} />)
+    render(<CustomReportForm onGenerateReport={jest.fn()} />)
     expect(screen.getByText('Create Custom Report')).toBeInTheDocument()
   })
 
   it('should render form labels', () => {
-    render(<ReportBuilder onGenerateReport={jest.fn()} />)
+    render(<CustomReportForm onGenerateReport={jest.fn()} />)
     expect(screen.getByText('Report Name')).toBeInTheDocument()
     expect(screen.getByText('Report Type')).toBeInTheDocument()
     expect(screen.getByText('Date Range')).toBeInTheDocument()
   })
 
   it('should have generate button', () => {
-    render(<ReportBuilder onGenerateReport={jest.fn()} />)
+    render(<CustomReportForm onGenerateReport={jest.fn()} />)
     expect(screen.getByText('Generate Report')).toBeInTheDocument()
   })
 
   it('should include metric checkboxes', () => {
-    render(<ReportBuilder onGenerateReport={jest.fn()} />)
+    render(<CustomReportForm onGenerateReport={jest.fn()} />)
     const userCheckbox = screen.getByLabelText(/Users/)
     expect(userCheckbox).toBeInTheDocument()
   })
 
   it('should call onGenerateReport when form submitted with name', async () => {
     const mockOnGenerateReport = jest.fn()
-    render(<ReportBuilder onGenerateReport={mockOnGenerateReport} />)
+    render(<CustomReportForm onGenerateReport={mockOnGenerateReport} />)
 
     const nameInput = screen.getByPlaceholderText(/Monthly Performance/)
     fireEvent.change(nameInput, { target: { value: 'Q1 Report' } })

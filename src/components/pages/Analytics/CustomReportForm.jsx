@@ -1,5 +1,5 @@
 /**
- * ReportBuilder Component
+ * CustomReportForm Component
  * 
  * Create custom reports with filters
  */
@@ -7,7 +7,7 @@
 import React, { useState } from 'react'
 import { getNotificationService } from '@services/notificationService'
 
-export default function ReportBuilder({ onGenerateReport }) {
+export default function CustomReportForm({ onGenerateReport }) {
   const [reportConfig, setReportConfig] = useState({
     name: '',
     type: 'summary',

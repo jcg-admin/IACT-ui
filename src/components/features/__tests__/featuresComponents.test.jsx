@@ -29,13 +29,13 @@ jest.mock('@services/notificationService', () => ({
   }),
 }))
 
-describe('SessionManager', () => {
+describe('SessionProvider', () => {
   it('renders children while loading', () => {
-    const SessionManager = require('../SessionManagement/SessionManager').default
+    const SessionProvider = require('../SessionManagement/SessionProvider').default
     render(
-      <SessionManager>
+      <SessionProvider>
         <p>child content</p>
-      </SessionManager>
+      </SessionProvider>
     )
     expect(screen.getByText('child content')).toBeInTheDocument()
   })

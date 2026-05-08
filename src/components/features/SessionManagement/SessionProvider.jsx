@@ -9,7 +9,7 @@ import userAuth from '../../../facades/UserAuth'
 
 export const SessionContext = createContext()
 
-export default function SessionManager({ children }) {
+export default function SessionProvider({ children }) {
   const [session, setSession] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)

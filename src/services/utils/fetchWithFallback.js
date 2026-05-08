@@ -1,4 +1,4 @@
-import { cloneData } from './cloneUtils';
+import { cloneData } from './cloneDeep';
 
 const DEFAULT_SHOULD_USE_MOCK = () => false;
 

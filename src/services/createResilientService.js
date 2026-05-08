@@ -1,5 +1,5 @@
 import { fetchWithFallback } from './utils/fetchWithFallback';
-import { cloneData } from './utils/cloneUtils';
+import { cloneData } from './utils/cloneDeep';
 import { recordMockUsage } from './utils/mockUsageTracker';
 
 const DEFAULT_SHOULD_USE_MOCK = () => false;
