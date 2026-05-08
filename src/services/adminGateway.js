@@ -145,7 +145,7 @@ class AdminService {
   }
 
   async updateMenuItem(id, data) {
-    return apiService.put(`/api/admin/menu-items/${id}/`, data)
+    return apiService.patch(`/api/admin/menu-items/${id}/`, data)
   }
 
   async publishMenuItem(id) {

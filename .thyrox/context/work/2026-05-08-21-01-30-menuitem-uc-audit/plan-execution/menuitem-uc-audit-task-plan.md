@@ -65,7 +65,7 @@ T-015                    (Block V independiente)
 > Corrección de 1 línea en adminGateway.js.
 > Commit al completar T-011.
 
-- [ ] [T-011] `adminGateway.js` — cambiar `apiService.put` por `apiService.patch` en método `updateMenuItem(id, data)` (línea 148)
+- [x] [T-011] `adminGateway.js` — cambiar `apiService.put` por `apiService.patch` en método `updateMenuItem(id, data)` (línea 148)
 
 ---
 
