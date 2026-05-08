@@ -39,10 +39,10 @@ export default function FunctionCatalogPage() {
   // ── Filtrado local ───────────────────────────────────────────────────────
 
   const filtered = functions.filter((fn) => {
-    const q = search.toLowerCase()
+    const searchQuery = search.toLowerCase()
     return (
-      fn.codename?.toLowerCase().includes(q) ||
-      fn.name?.toLowerCase().includes(q)
+      fn.codename?.toLowerCase().includes(searchQuery) ||
+      fn.name?.toLowerCase().includes(searchQuery)
     )
   })
 

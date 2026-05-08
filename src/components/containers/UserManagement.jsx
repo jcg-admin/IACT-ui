@@ -43,11 +43,11 @@ function UserManagement() {
 
     const filteredUsers = useMemo(() => {
         if (!search) return users
-        const q = search.toLowerCase()
+        const searchQuery = search.toLowerCase()
         return users.filter(u =>
-            u.username.toLowerCase().includes(q) ||
-            u.email.toLowerCase().includes(q) ||
-            (u.first_name || '').toLowerCase().includes(q)
+            u.username.toLowerCase().includes(searchQuery) ||
+            u.email.toLowerCase().includes(searchQuery) ||
+            (u.first_name || '').toLowerCase().includes(searchQuery)
         )
     }, [users, search])
 

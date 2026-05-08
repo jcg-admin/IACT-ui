@@ -105,10 +105,10 @@ export default function AccessAuditPage() {
 
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `access-audit-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = `access-audit-${new Date().toISOString().split('T')[0]}.csv`;
+            downloadLink.click();
         }
     };
 

@@ -39,10 +39,10 @@ export default function AGRCatalogPage() {
   // ── Filtrado local ───────────────────────────────────────────────────────
 
   const filtered = agrs.filter((agr) => {
-    const q = search.toLowerCase()
+    const searchQuery = search.toLowerCase()
     return (
-      agr.codename?.toLowerCase().includes(q) ||
-      agr.name?.toLowerCase().includes(q)
+      agr.codename?.toLowerCase().includes(searchQuery) ||
+      agr.name?.toLowerCase().includes(searchQuery)
     )
   })
 

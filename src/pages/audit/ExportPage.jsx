@@ -47,12 +47,12 @@ export default function ExportPage() {
 
             // Crear descarga
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
             const timestamp = new Date().toISOString().split('T')[0];
             const extension = exportConfig.format === 'csv' ? 'csv' : 'json';
-            a.download = `audit-logs-${timestamp}.${extension}`;
-            a.click();
+            downloadLink.download = `audit-logs-${timestamp}.${extension}`;
+            downloadLink.click();
             window.URL.revokeObjectURL(url);
 
             setExportProgress('Exportación completada');

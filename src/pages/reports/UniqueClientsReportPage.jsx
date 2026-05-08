@@ -72,7 +72,7 @@ export default function UniqueClientsReportPage() {
           <select
             id="uc-filter-trimestre"
             value={filters.trimestre}
-            onChange={(e) => { const v = e.target.value; setFilters({ trimestre: v }); loadData({ trimestre: v }) }}
+            onChange={(e) => { const trimesterValue = e.target.value; setFilters({ trimestre: trimesterValue }); loadData({ trimestre: trimesterValue }) }}
           >
             {TRIMESTRES.map((t) => <option key={t} value={t}>{t || 'Todos'}</option>)}
           </select>
