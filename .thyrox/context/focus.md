@@ -2,21 +2,22 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 04:58:37
+updated_at: 2026-05-08 15:42:47
 branch: claude/project-analysis-N9IkV
 wp_activo: null
 ```
 
 # Focus — IACT-UI
 
-## Estado actual — 0 deuda técnica
+## Estado actual — Sin WP activo
 
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP `uc-alignment-full-audit` en Phase 11 TRACK/EVALUATE (pendiente gate Phase 12). **1841 tests green.**
+**Estado:** WP `uc-alignment-full-audit` cerrado (Phase 12 STANDARDIZE completa). **1841 tests green.**
+**Próximo:** WP `auth-uc-audit` — revisión de UCs del módulo de autenticación.
 
 ---
 
-## Completado — WP uc-alignment-full-audit (Phase 11 pendiente gate)
+## Completado — WP uc-alignment-full-audit ✓
 
 **WP:** `2026-05-08-04-19-25-uc-alignment-full-audit`
 **Tests:** 1841 passing / 214 suites / 0 failures
