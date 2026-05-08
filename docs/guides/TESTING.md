@@ -102,6 +102,46 @@ fireEvent.click(screen.getByText('Click'))
 expect(mockFn).toHaveBeenCalled()
 ```
 
+### Mocking modules with `export default` — `__esModule: true` obligatorio
+
+Cualquier `jest.mock` de un módulo que use `export default` **debe** incluir
+`__esModule: true` en el objeto devuelto por la factory. Sin esta flag, Babel
+no puede hacer el unwrap del default export: el componente recibe `undefined`
+en lugar del mock function, cae silenciosamente al catch block si lo hay, y
+los spy assertions muestran 0 calls aunque el test pase por texto.
+
+```jsx
+// CORRECTO
+jest.mock('../../../services/accessGateway', () => ({
+  __esModule: true,          // ← obligatorio para export default
+  default: {
+    getGroupFunctions: jest.fn().mockResolvedValue([]),
+    getGroupCascadeImpact: jest.fn(),
+  },
+}))
+
+// INCORRECTO — accessService.getGroupCascadeImpact === undefined en el componente
+jest.mock('../../../services/accessGateway', () => ({
+  default: {
+    getGroupFunctions: jest.fn().mockResolvedValue([]),
+    getGroupCascadeImpact: jest.fn(),
+  },
+}))
+```
+
+Para obtener la referencia al mock function en los tests, usar `jest.requireMock`:
+
+```jsx
+const mockGateway = jest.requireMock('../../../services/accessGateway').default
+// En beforeEach:
+mockGateway.getGroupCascadeImpact.mockClear()
+mockGateway.getGroupCascadeImpact.mockResolvedValue({ count: 0 })
+```
+
+**Señal de que falta `__esModule: true`:** spy assertion falla con "Number of calls: 0"
+mientras que un text assertion sobre el mismo flujo pasa — el texto apareció
+via el catch block, no via el flujo correcto.
+
 ## Test Coverage
 
 Current coverage:
