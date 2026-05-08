@@ -15,17 +15,23 @@ jest.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
   useSelector: (selector) =>
     selector({
-      admin: { loading: false, error: null, agrs: AGRS, functions: [] },
+      admin: { loading: false, error: null, agrs: AGRS, functions: [], systemGroupCompositions: {} },
     }),
 }))
 
 jest.mock('../../../redux/slices/admin', () => ({
+  __esModule: true,
   fetchAGRCatalog: () => ({ type: 'admin/fetchAGRCatalog' }),
   createAGR: jest.fn((data) => ({ type: 'admin/createAGR', payload: data })),
   updateAGR: jest.fn((args) => ({ type: 'admin/updateAGR', payload: args })),
   deactivateAGR: jest.fn((id) => ({ type: 'admin/deactivateAGR', payload: id })),
+  fetchAGRComposition: jest.fn((id) => ({ type: 'admin/fetchAGRComposition', payload: id })),
+  fetchAGRImpact: jest.fn((id) => ({ type: 'admin/fetchAGRImpact', payload: id })),
+  addFunctionToAGR: jest.fn((args) => ({ type: 'admin/addFunctionToAGR', payload: args })),
+  removeFunctionFromAGR: jest.fn((args) => ({ type: 'admin/removeFunctionFromAGR', payload: args })),
   selectAGRs: (s) => s.admin.agrs,
   selectAdminLoading: (s) => s.admin.loading,
+  selectAGRComposition: (agrId) => (s) => s.admin.systemGroupCompositions[agrId] ?? { functions: [], impact: null },
 }))
 
 function wrapper(ui) {
@@ -33,7 +39,13 @@ function wrapper(ui) {
 }
 
 describe('AGRCatalog', () => {
-  beforeEach(() => mockDispatch.mockClear())
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({}),
+    }))
+  })
 
   it('renders page heading', () => {
     wrapper(<AGRCatalog />)
