@@ -4,9 +4,10 @@ import { MemoryRouter } from 'react-router-dom'
 import MenuItemCatalog from '../MenuItemCatalog'
 
 const ITEMS = [
-  { id: 1, label: 'Dashboard',   icon: 'grid-alt', route_path: '/dashboard', display_order: 1, function_codename: 'reports:view', parent: null, status: 'ACTIVE',     is_critical: false },
-  { id: 2, label: 'Beta Feature',icon: 'flask',    route_path: '/beta',       display_order: 9, function_codename: 'reports:view', parent: null, status: 'DRAFT',      is_critical: false },
-  { id: 3, label: 'Legacy View', icon: 'archive',  route_path: '/legacy',     display_order: 10,function_codename: 'reports:view', parent: null, status: 'DEPRECATED', is_critical: false },
+  { id: 1, label: 'Dashboard',    icon: 'grid-alt', route_path: '/dashboard', display_order: 1,  function_codename: 'reports:view', parent: null, status: 'ACTIVE',     is_critical: false },
+  { id: 2, label: 'Beta Feature', icon: 'flask',    route_path: '/beta',       display_order: 9,  function_codename: 'reports:view', parent: null, status: 'DRAFT',      is_critical: false },
+  { id: 3, label: 'Legacy View',  icon: 'archive',  route_path: '/legacy',     display_order: 10, function_codename: 'reports:view', parent: null, status: 'DEPRECATED', is_critical: false },
+  { id: 4, label: 'Old Module',   icon: 'box',      route_path: '/old',        display_order: 20, function_codename: 'reports:view', parent: null, status: 'ARCHIVED',   is_critical: false },
 ]
 
 const mockDispatch = jest.fn()
@@ -26,6 +27,8 @@ jest.mock('../../../redux/slices/admin', () => ({
   createMenuItem: jest.fn((data) => ({ type: 'admin/createMenuItem', payload: data })),
   updateMenuItem: jest.fn((args) => ({ type: 'admin/updateMenuItem', payload: args })),
   transitionMenuItemStatus: jest.fn((args) => ({ type: 'admin/transitionMenuItemStatus', payload: args })),
+  bulkReorderMenuItems: jest.fn((items) => ({ type: 'admin/bulkReorderMenuItems', payload: items })),
+  blockAutoArchive: jest.fn((args) => ({ type: 'admin/blockAutoArchive', payload: args })),
   selectMenuItems: (s) => s.admin.menuItems,
   selectAdminLoading: (s) => s.admin.loading,
 }))
@@ -39,9 +42,14 @@ function wrapper(ui) {
 describe('MenuItemCatalog', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
-    mockDispatch.mockResolvedValue({ payload: {} })
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ payload: {} }),
+    }))
     mockAdmin.createMenuItem.mockClear()
     mockAdmin.transitionMenuItemStatus.mockClear()
+    mockAdmin.bulkReorderMenuItems.mockClear()
+    mockAdmin.blockAutoArchive.mockClear()
   })
 
   it('renders page heading', () => {
@@ -89,5 +97,190 @@ describe('MenuItemCatalog', () => {
   it('shows guard-free edit button for catalog items', () => {
     wrapper(<MenuItemCatalog />)
     expect(screen.getByLabelText('Editar Dashboard')).toBeInTheDocument()
+  })
+})
+
+describe('MenuItemCatalog — bulk reorder (UC-ADM-04 CA-08)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ items: [] }),
+    }))
+    mockAdmin.bulkReorderMenuItems.mockClear()
+  })
+
+  it('shows order inputs when Reordenar is clicked', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByText('Reordenar'))
+    expect(screen.getByLabelText('Orden de Dashboard')).toBeInTheDocument()
+    expect(screen.getByLabelText('Orden de Beta Feature')).toBeInTheDocument()
+  })
+
+  it('hides order inputs and shows display_order when Cancelar reorden is clicked', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByText('Reordenar'))
+    fireEvent.click(screen.getByText('Cancelar reorden'))
+    expect(screen.queryByLabelText('Orden de Dashboard')).not.toBeInTheDocument()
+  })
+
+  it('dispatches bulkReorderMenuItems with all items on Guardar orden', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByText('Reordenar'))
+    fireEvent.click(screen.getByText('Guardar orden'))
+    await waitFor(() => {
+      expect(mockAdmin.bulkReorderMenuItems).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ id: 1 }),
+          expect.objectContaining({ id: 2 }),
+        ])
+      )
+    })
+  })
+
+  it('shows role=alert when bulkReorderMenuItems rejects with 422', async () => {
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'IDs inválidos en el batch' }),
+    }))
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByText('Reordenar'))
+    fireEvent.click(screen.getByText('Guardar orden'))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/IDs inválidos/i)
+    })
+  })
+})
+
+describe('MenuItemCatalog — edit guards (UC-ADM-04)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({}),
+    }))
+  })
+
+  it('edit button is disabled for ARCHIVED items', () => {
+    wrapper(<MenuItemCatalog />)
+    const btn = screen.getByLabelText('Editar Old Module')
+    expect(btn).toBeDisabled()
+  })
+
+  it('edit button is enabled for ACTIVE items', () => {
+    wrapper(<MenuItemCatalog />)
+    const btn = screen.getByLabelText('Editar Dashboard')
+    expect(btn).not.toBeDisabled()
+  })
+
+  it('shows role=alert per row when transition fails', async () => {
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'La función asociada está inactiva' }),
+    }))
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Transicionar Beta Feature a Activo'))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/función asociada está inactiva/i)
+    })
+  })
+
+  it('shows feedback when transition succeeds', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Transicionar Beta Feature a Activo'))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Beta Feature/i)
+    })
+  })
+})
+
+describe('MenuItemCatalog — block-archive (UC-ADM-05 CA-07)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({}),
+    }))
+    mockAdmin.blockAutoArchive.mockClear()
+  })
+
+  it('shows Bloquear archivado button only for DEPRECATED items', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    expect(screen.getByLabelText('Bloquear archivado de Legacy View')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Bloquear archivado de Dashboard')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Bloquear archivado de Beta Feature')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Bloquear archivado de Old Module')).not.toBeInTheDocument()
+  })
+
+  it('opens modal when Bloquear archivado is clicked', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Bloquear archivado de Legacy View'))
+    expect(screen.getByRole('dialog', { name: 'Bloquear archivado automático' })).toBeInTheDocument()
+  })
+
+  it('Confirmar bloqueo button is disabled when reason < 20 chars', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Bloquear archivado de Legacy View'))
+    fireEvent.change(screen.getByLabelText('Razón para bloquear el archivado'), {
+      target: { value: 'corto' },
+    })
+    expect(screen.getByText('Confirmar bloqueo')).toBeDisabled()
+  })
+
+  it('Confirmar bloqueo button is enabled when reason >= 20 chars', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Bloquear archivado de Legacy View'))
+    fireEvent.change(screen.getByLabelText('Razón para bloquear el archivado'), {
+      target: { value: 'Esta es la razon suficientemente larga' },
+    })
+    expect(screen.getByText('Confirmar bloqueo')).not.toBeDisabled()
+  })
+
+  it('dispatches blockAutoArchive on Confirmar bloqueo', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Bloquear archivado de Legacy View'))
+    fireEvent.change(screen.getByLabelText('Razón para bloquear el archivado'), {
+      target: { value: 'Bloquear porque hay dependencias' },
+    })
+    fireEvent.click(screen.getByText('Confirmar bloqueo'))
+    await waitFor(() => {
+      expect(mockAdmin.blockAutoArchive).toHaveBeenCalledWith({
+        id: 3,
+        blockReason: 'Bloquear porque hay dependencias',
+      })
+    })
+  })
+
+  it('shows role=alert inside modal when unwrap rejects', async () => {
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'La razón debe tener al menos 20 caracteres' }),
+    }))
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Bloquear archivado de Legacy View'))
+    const textarea = screen.getByLabelText('Razón para bloquear el archivado')
+    fireEvent.change(textarea, { target: { value: 'Esta es la razon suficiente ya' } })
+    fireEvent.click(screen.getByText('Confirmar bloqueo'))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: 'Bloquear archivado automático' })).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toHaveTextContent(/al menos 20 caracteres/i)
+    })
+  })
+
+  it('closes modal on Cancelar without dispatching', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Bloquear archivado de Legacy View'))
+    fireEvent.click(screen.getByText('Cancelar'))
+    expect(screen.queryByRole('dialog', { name: 'Bloquear archivado automático' })).not.toBeInTheDocument()
+    expect(mockAdmin.blockAutoArchive).not.toHaveBeenCalled()
   })
 })

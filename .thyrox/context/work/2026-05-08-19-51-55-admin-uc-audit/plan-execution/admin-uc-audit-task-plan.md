@@ -383,7 +383,7 @@ Block IV puede correr en paralelo con Block II o III.
 
 ## Block III — GAP-ADM-04-BULKREORDER: Bulk reorder de MenuItems
 
-- [ ] [T-009] **mockInterceptor.js + adminGateway.js — Endpoint bulk-reorder**
+- [x] [T-009] **mockInterceptor.js + adminGateway.js — Endpoint bulk-reorder**
 
   **mockInterceptor.js** — Routing ANTES del bloque genérico `/api/admin/menu-items/`:
   ```js
@@ -422,7 +422,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-04-BULKREORDER)*
 
-- [ ] [T-010] **admin.js slice — `bulkReorderMenuItems` thunk + reducer**
+- [x] [T-010] **admin.js slice — `bulkReorderMenuItems` thunk + reducer**
 
   Thunk:
   ```js
@@ -454,7 +454,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-04-BULKREORDER)*
 
-- [ ] [T-011] **MenuItemCatalog.jsx — UI de reordenamiento en catalog tab**
+- [x] [T-011] **MenuItemCatalog.jsx — UI de reordenamiento en catalog tab**
 
   Añadir estado en el componente:
   ```js
@@ -523,7 +523,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-04-BULKREORDER)*
 
-- [ ] [T-012] **Tests — Bulk reorder**
+- [x] [T-012] **Tests — Bulk reorder**
 
   Añadir casos en `MenuItemCatalogPage.test.jsx` o nuevo `MenuItemBulkReorder.test.jsx`.
 
@@ -541,7 +541,7 @@ Block IV puede correr en paralelo con Block II o III.
 
 ## Block IV — GAP-ADM-04-ARCHIVED-EDIT + GAP-ADM-05-PUBLISH-INACTIVE
 
-- [ ] [T-013] **MenuItemCatalog.jsx + mockInterceptor.js — Guards de UI**
+- [x] [T-013] **MenuItemCatalog.jsx + mockInterceptor.js — Guards de UI**
 
   **MenuItemCatalog.jsx — Catalog tab:**
   Botón "Editar" deshabilitado para items con `status === 'ARCHIVED'`:
@@ -595,7 +595,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-04-ARCHIVED-EDIT, GAP-ADM-05-PUBLISH-INACTIVE)*
 
-- [ ] [T-014] **Tests — Guards de edición y publicación**
+- [x] [T-014] **Tests — Guards de edición y publicación**
 
   Añadir casos en `MenuItemCatalogPage.test.jsx`.
 
@@ -613,7 +613,7 @@ Block IV puede correr en paralelo con Block II o III.
 
 ## Block V — GAP-ADM-05-BLOCKARCHIVE: Bloquear archivado automático
 
-- [ ] [T-015] **mockInterceptor.js + adminGateway.js — Endpoint block-archive**
+- [x] [T-015] **mockInterceptor.js + adminGateway.js — Endpoint block-archive**
 
   **mockInterceptor.js** — Constructor: añadir `this._blockedMenuItems = new Map()`.
   Routing ANTES del bloque genérico `/api/admin/menu-items/`:
@@ -669,7 +669,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-05-BLOCKARCHIVE)*
 
-- [ ] [T-016] **admin.js slice — `blockAutoArchive` thunk + reducer**
+- [x] [T-016] **admin.js slice — `blockAutoArchive` thunk + reducer**
 
   Thunk:
   ```js
@@ -699,7 +699,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-05-BLOCKARCHIVE)*
 
-- [ ] [T-017] **MenuItemCatalog.jsx — UI block-archive en lifecycle tab**
+- [x] [T-017] **MenuItemCatalog.jsx — UI block-archive en lifecycle tab**
 
   Añadir estado:
   ```js
@@ -772,7 +772,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-05-BLOCKARCHIVE)*
 
-- [ ] [T-018] **Tests — Block-archive lifecycle**
+- [x] [T-018] **Tests — Block-archive lifecycle**
 
   Crear `src/pages/admin/__tests__/MenuItemBlockArchive.test.jsx`.
 

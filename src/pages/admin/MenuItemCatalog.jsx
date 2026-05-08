@@ -12,6 +12,8 @@ import {
   createMenuItem,
   updateMenuItem,
   transitionMenuItemStatus,
+  bulkReorderMenuItems,
+  blockAutoArchive,
   selectMenuItems,
   selectAdminLoading,
 } from '../../redux/slices/admin'
@@ -28,6 +30,7 @@ const STATUS_LABELS = { DRAFT: 'Borrador', ACTIVE: 'Activo', DEPRECATED: 'Deprec
 const STATUS_BADGE  = { DRAFT: 'secondary', ACTIVE: 'success', DEPRECATED: 'warning', ARCHIVED: 'danger' }
 
 const EMPTY_FORM = { label: '', icon: '', route_path: '', display_order: '', function_codename: '', parent: '' }
+const BLOCK_REASON_MIN = 20
 
 export default function MenuItemCatalog() {
   const dispatch = useDispatch()
@@ -39,6 +42,17 @@ export default function MenuItemCatalog() {
   const [editingItem, setEditingItem] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [feedback, setFeedback] = useState(null)
+
+  // Reorder state
+  const [reorderMode, setReorderMode] = useState(false)
+  const [orderValues, setOrderValues] = useState({})
+  const [reorderError, setReorderError] = useState(null)
+
+  // Lifecycle transition errors
+  const [transitionErrors, setTransitionErrors] = useState({})
+
+  // Block-archive modal
+  const [blockArchiveModal, setBlockArchiveModal] = useState({ isOpen: false, itemId: null, reason: '', error: null })
 
   useEffect(() => {
     dispatch(fetchMenuItems())
@@ -83,10 +97,46 @@ export default function MenuItemCatalog() {
     }
   }
 
+  // ── Reorder handlers ─────────────────────────────────────────────────────
+
+  const enterReorderMode = () => {
+    setOrderValues(Object.fromEntries(items.map((i) => [i.id, i.display_order])))
+    setReorderError(null)
+    setReorderMode(true)
+  }
+
+  const handleSaveOrder = async () => {
+    const payload = items.map((i) => ({ id: i.id, display_order: orderValues[i.id] ?? i.display_order }))
+    try {
+      await dispatch(bulkReorderMenuItems(payload)).unwrap()
+      setReorderMode(false)
+      showFeedback('Orden actualizado')
+    } catch (err) {
+      setReorderError(err?.message || 'Error al guardar el orden')
+    }
+  }
+
+  // ── Lifecycle transition ─────────────────────────────────────────────────
+
   const handleTransition = async (item, newStatus) => {
-    const result = await dispatch(transitionMenuItemStatus({ id: item.id, newStatus }))
-    if (!result.error) {
+    try {
+      await dispatch(transitionMenuItemStatus({ id: item.id, newStatus })).unwrap()
+      setTransitionErrors((e) => ({ ...e, [item.id]: null }))
       showFeedback(`${item.label}: ${STATUS_LABELS[newStatus]}`)
+    } catch (err) {
+      setTransitionErrors((e) => ({ ...e, [item.id]: err?.message || 'Error en la transición' }))
+    }
+  }
+
+  // ── Block-archive handlers ────────────────────────────────────────────────
+
+  const handleConfirmBlockArchive = async () => {
+    try {
+      await dispatch(blockAutoArchive({ id: blockArchiveModal.itemId, blockReason: blockArchiveModal.reason })).unwrap()
+      setBlockArchiveModal({ isOpen: false, itemId: null, reason: '', error: null })
+      showFeedback('Archivado bloqueado correctamente')
+    } catch (err) {
+      setBlockArchiveModal((m) => ({ ...m, error: err?.message || 'Error al bloquear el archivado' }))
     }
   }
 
@@ -119,11 +169,19 @@ export default function MenuItemCatalog() {
         ))}
       </div>
 
+      {/* ── TAB CATÁLOGO ── */}
       {activeTab === 'catalog' && (
         <>
-          <button className="btn btn-primary" onClick={handleOpenCreate} style={{ marginBottom: '12px' }}>
-            Nuevo item
-          </button>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+            <button className="btn btn-primary" onClick={handleOpenCreate}>
+              Nuevo item
+            </button>
+            {!reorderMode && (
+              <button className="btn btn-secondary" onClick={enterReorderMode}>
+                Reordenar
+              </button>
+            )}
+          </div>
 
           {showForm && (
             <form className="form-card" onSubmit={handleSubmit} aria-label="Formulario MenuItem">
@@ -173,7 +231,21 @@ export default function MenuItemCatalog() {
                   <td>{item.label}</td>
                   <td>{item.route_path}</td>
                   <td>{item.function_codename}</td>
-                  <td>{item.display_order}</td>
+                  <td>
+                    {reorderMode ? (
+                      <input
+                        type="number"
+                        value={orderValues[item.id] ?? item.display_order}
+                        onChange={(e) =>
+                          setOrderValues((v) => ({ ...v, [item.id]: parseInt(e.target.value, 10) }))
+                        }
+                        style={{ width: '60px' }}
+                        aria-label={`Orden de ${item.label}`}
+                      />
+                    ) : (
+                      item.display_order
+                    )}
+                  </td>
                   <td>
                     <span className={`badge badge-${STATUS_BADGE[item.status] || 'secondary'}`}>
                       {STATUS_LABELS[item.status] || item.status}
@@ -184,6 +256,8 @@ export default function MenuItemCatalog() {
                       className="btn btn-sm btn-secondary"
                       onClick={() => handleOpenEdit(item)}
                       aria-label={`Editar ${item.label}`}
+                      disabled={item.status === 'ARCHIVED'}
+                      aria-disabled={item.status === 'ARCHIVED'}
                     >
                       Editar
                     </button>
@@ -195,50 +269,135 @@ export default function MenuItemCatalog() {
               )}
             </tbody>
           </table>
+
+          {reorderMode && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+              {reorderError && (
+                <div role="alert" style={{ color: '#ef4444', marginRight: '8px' }}>{reorderError}</div>
+              )}
+              <button className="btn btn-primary" onClick={handleSaveOrder}>
+                Guardar orden
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => { setReorderMode(false); setReorderError(null) }}
+              >
+                Cancelar reorden
+              </button>
+            </div>
+          )}
         </>
       )}
 
+      {/* ── TAB LIFECYCLE ── */}
       {activeTab === 'lifecycle' && (
-        <table className="data-table" aria-label="Lifecycle de menú items">
-          <thead>
-            <tr>
-              <th>Etiqueta</th>
-              <th>Estado actual</th>
-              <th>Transiciones disponibles</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => {
-              const transitions = STATUS_TRANSITIONS[item.status] || []
-              return (
-                <tr key={item.id}>
-                  <td>{item.label}</td>
-                  <td>
-                    <span className={`badge badge-${STATUS_BADGE[item.status] || 'secondary'}`}>
-                      {STATUS_LABELS[item.status] || item.status}
-                    </span>
-                  </td>
-                  <td>
-                    {transitions.map((t) => (
-                      <button
-                        key={t}
-                        className="btn btn-sm btn-outline"
-                        onClick={() => handleTransition(item, t)}
-                        aria-label={`Transicionar ${item.label} a ${STATUS_LABELS[t]}`}
-                      >
-                        → {STATUS_LABELS[t]}
-                      </button>
-                    ))}
-                    {transitions.length === 0 && <span className="text-muted">Sin transiciones</span>}
-                  </td>
-                </tr>
-              )
-            })}
-            {items.length === 0 && !loading && (
-              <tr><td colSpan={3}>No hay items</td></tr>
-            )}
-          </tbody>
-        </table>
+        <>
+          <table className="data-table" aria-label="Lifecycle de menú items">
+            <thead>
+              <tr>
+                <th>Etiqueta</th>
+                <th>Estado actual</th>
+                <th>Transiciones disponibles</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => {
+                const transitions = STATUS_TRANSITIONS[item.status] || []
+                return (
+                  <tr key={item.id}>
+                    <td>{item.label}</td>
+                    <td>
+                      <span className={`badge badge-${STATUS_BADGE[item.status] || 'secondary'}`}>
+                        {STATUS_LABELS[item.status] || item.status}
+                      </span>
+                    </td>
+                    <td>
+                      {transitions.map((t) => (
+                        <button
+                          key={t}
+                          className="btn btn-sm btn-outline"
+                          onClick={() => handleTransition(item, t)}
+                          aria-label={`Transicionar ${item.label} a ${STATUS_LABELS[t]}`}
+                        >
+                          → {STATUS_LABELS[t]}
+                        </button>
+                      ))}
+                      {item.status === 'DEPRECATED' && (
+                        <button
+                          className="btn btn-sm btn-outline"
+                          onClick={() =>
+                            setBlockArchiveModal({ isOpen: true, itemId: item.id, reason: '', error: null })
+                          }
+                          aria-label={`Bloquear archivado de ${item.label}`}
+                        >
+                          Bloquear archivado
+                        </button>
+                      )}
+                      {transitions.length === 0 && item.status !== 'DEPRECATED' && (
+                        <span className="text-muted">Sin transiciones</span>
+                      )}
+                      {transitionErrors[item.id] && (
+                        <div
+                          role="alert"
+                          style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}
+                        >
+                          {transitionErrors[item.id]}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+              {items.length === 0 && !loading && (
+                <tr><td colSpan={3}>No hay items</td></tr>
+              )}
+            </tbody>
+          </table>
+
+          {blockArchiveModal.isOpen && (
+            <div
+              role="dialog"
+              aria-label="Bloquear archivado automático"
+              style={{ marginTop: '20px', padding: '16px', border: '1px solid #374151', borderRadius: '8px', background: '#111827' }}
+            >
+              <h3 style={{ color: '#fff', marginTop: 0 }}>Bloquear archivado automático</h3>
+              <textarea
+                aria-label="Razón para bloquear el archivado"
+                maxLength={500}
+                value={blockArchiveModal.reason}
+                onChange={(e) => setBlockArchiveModal((m) => ({ ...m, reason: e.target.value }))}
+                placeholder="Describe el motivo del bloqueo (mínimo 20 caracteres)..."
+                rows={3}
+                style={{ width: '100%', padding: '8px', background: '#1f2937', color: '#fff', border: '1px solid #374151', borderRadius: '4px' }}
+              />
+              <small style={{ color: '#9ca3af' }}>
+                {blockArchiveModal.reason.length}/500 · mínimo {BLOCK_REASON_MIN}
+              </small>
+              {blockArchiveModal.error && (
+                <div role="alert" style={{ color: '#ef4444', marginTop: '8px' }}>
+                  {blockArchiveModal.error}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                <button
+                  className="btn btn-primary"
+                  disabled={blockArchiveModal.reason.length < BLOCK_REASON_MIN}
+                  onClick={handleConfirmBlockArchive}
+                >
+                  Confirmar bloqueo
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() =>
+                    setBlockArchiveModal({ isOpen: false, itemId: null, reason: '', error: null })
+                  }
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
