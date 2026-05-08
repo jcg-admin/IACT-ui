@@ -22,7 +22,7 @@ jest.mock('../../../facades/ReportExporter', () => ({
   default: { exportUsers: jest.fn().mockResolvedValue({ url: '/file' }) },
 }))
 
-jest.mock('../UserManagement/UserList', () => ({
+jest.mock('../../../pages/users/UserManagement/UserList', () => ({
   __esModule: true,
   default: ({ onEdit, onDelete }) => <div data-testid="user-list" />,
 }))
@@ -32,7 +32,7 @@ jest.mock('../../../components/access/GroupAssignModal', () => ({
   default: ({ isOpen }) => isOpen ? <div data-testid="group-assign-modal" /> : null,
 }))
 
-jest.mock('../UserManagement/UserForm', () => ({
+jest.mock('../../../pages/users/UserManagement/UserForm', () => ({
   __esModule: true,
   default: ({ onSubmit, onCancel }) => (
     <div data-testid="user-form">
@@ -92,7 +92,7 @@ function wrap(ui) {
 
 describe('UserManagement page', () => {
   it('renders user management heading', () => {
-    const UserManagement = require('../UserManagement/UserManagement').default
+    const UserManagement = require('../../../pages/users/UserManagement/UserManagement').default
     wrap(<UserManagement />)
     expect(screen.getByTestId('user-list')).toBeInTheDocument()
   })
