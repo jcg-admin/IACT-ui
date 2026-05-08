@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: .thyrox/context/work/2026-05-08-18-17-32-remaining-modules-gap-audit
-phase: Phase 8 — PLAN EXECUTION
-updated_at: 2026-05-08 19:40:00
+current_work: null
+phase: null
+updated_at: 2026-05-08 20:05:00
 blockers: []
 ```
 
@@ -16,13 +16,39 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP `remaining-modules-gap-audit` en Phase 8 — PLAN EXECUTION. SP-02 pendiente aprobación.
-**Tests:** 1859 passing / 215 suites / 0 failures (verificado 2026-05-08)
-**Gap encontrado:** GAP-ALR-01 (uc-alr-03 — Reconocer Alerta). 5 tareas T-001..T-005.
+**Estado:** WP `remaining-modules-gap-audit` cerrado (Phase 11 TRACK). Sin WP activo.
+**Tests:** 1866 passing / 216 suites / 0 failures (verificado 2026-05-08, +7 net new)
+**Próximo:** Sin WP pendiente identificado. Todos los módulos en-scope v5.6.0 auditados.
 
 ## Métricas de test suite
 
 **1856 tests** passing (verificado 2026-05-08 — WP auth-uc-audit Phase 11 TRACK completa, 215 suites)
+
+---
+
+## WP cerrado — remaining-modules-gap-audit ✓
+
+`2026-05-08-18-17-32-remaining-modules-gap-audit` — Phase 11 TRACK completa.
+
+Auditoría completa de 8 módulos (reports/alerts/admin/audit/access/permissions/logs/users).
+60+ UCs en scope v5.6.0. 1 gap PROVEN encontrado e implementado.
+5 tareas (T-001..T-005). 1 commit. 1866 tests (+7 nuevos), 0 regressions.
+
+Entregables:
+- GAP-ALR-01 (uc-alr-03): mockInterceptor `_handleAcknowledgeAlert` (200/409 idempotente)
+- alertsGateway: `acknowledgeAlert(alertId, note)` method
+- alerts slice: `acknowledgeAlert` thunk + extraReducer (state update on fulfilled)
+- Alerts.jsx: botón "Reconocer" (solo `state=firing`), modal con nota opcional ≤500 chars,
+  `role="alert"` para error 409
+- AlertAcknowledge.test.jsx: 7 tests (firing visible, acked oculto, modal, dispatch, 409)
+
+Key lessons: state field > isActive boolean (L-01); route ordering en mockInterceptor
+(L-02); note opcional ≠ validación mínima (L-03); PAT-UC-AUDIT-001 sobre 60+ UCs → 1 gap (L-04).
+
+Artefactos:
+- `track/remaining-modules-gap-audit-changelog.md`
+- `track/remaining-modules-gap-audit-lessons.md` (4 lecciones)
+- `plan-execution/remaining-modules-gap-audit-task-plan.md` (5/5 [x])
 
 ---
 
