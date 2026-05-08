@@ -328,6 +328,7 @@ const adminSlice = createSlice({
     separationRules: [],
     menuItems: [],
     systemGroupCompositions: {},
+    deactivateWarnings: {},
     loading: false,
     error: null,
   },
@@ -375,6 +376,11 @@ const adminSlice = createSlice({
         const updated = action.payload
         const idx = state.functions.findIndex((f) => f.id === updated.id)
         if (idx !== -1) state.functions[idx] = updated
+        if (updated.warnings?.length) {
+          state.deactivateWarnings[updated.id] = updated.warnings
+        } else {
+          delete state.deactivateWarnings[updated.id]
+        }
       })
       .addCase(deactivateFunction.rejected, (state, action) => {
         state.error = action.payload

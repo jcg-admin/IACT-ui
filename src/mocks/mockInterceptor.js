@@ -255,7 +255,7 @@ class MockInterceptor {
 
     // ADMIN — UC-ADM-02: catálogo de funciones RBAC
     if (url.includes('/api/admin/functions/')) {
-      return this._handleAdminFunctions(method, body)
+      return this._handleAdminFunctions(url, method, body)
     }
 
     // ADMIN — UC-ADM-03: composición de funciones de AGR de sistema
@@ -1056,7 +1056,7 @@ class MockInterceptor {
 
   // ====== ADMIN — RBAC CATALOG HANDLERS (ITER-C: GET only) ======
 
-  _handleAdminFunctions(method, body) {
+  _handleAdminFunctions(url, method, body) {
     if (method === 'POST') {
       if (!body || !body.codename || !body.name) {
         return this._error(400, 'codename and name are required')
@@ -1074,6 +1074,18 @@ class MockInterceptor {
       }
     }
     if (method === 'PATCH') {
+      if (body?.active === false) {
+        const CODENAMES_WITH_ASSIGNMENTS = ['pipeline:execute', 'users:manage', 'access:assign']
+        const id = parseInt(url.match(/\/api\/admin\/functions\/(\d+)\//)?.[1], 10)
+        const all = this._handleAdminFunctions(url, 'GET', null).data
+        const fn = all.find(f => f.id === id)
+        if (fn && CODENAMES_WITH_ASSIGNMENTS.includes(fn.codename)) {
+          return {
+            status: 202,
+            data: { id, codename: fn.codename, active: false, warnings: ['function_has_active_assignments'], affected_users: 3 },
+          }
+        }
+      }
       return {
         status: 200,
         data: { ...body, active: body.active !== false },

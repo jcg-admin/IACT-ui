@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import FunctionCatalog from '../FunctionCatalog'
 
@@ -103,5 +103,62 @@ describe('FunctionCatalog — CODENAME_REGEX (G-B1)', () => {
     fillAndSubmit('adm:create_sod')
     expect(screen.queryByText(/formato.*modulo:accion/i)).not.toBeInTheDocument()
     expect(mockDispatch).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('FunctionCatalog — deactivate 202 warning (UC_ADM_02 FA-04)', () => {
+  const { deactivateFunction } = require('../../../redux/slices/admin')
+
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    deactivateFunction.mockClear()
+  })
+
+  it('shows warning alert when deactivate returns 202 with warnings', async () => {
+    jest.spyOn(window, 'confirm').mockReturnValue(true)
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({
+        id: 1, codename: 'audit:view', active: false,
+        warnings: ['function_has_active_assignments'], affected_users: 3,
+      }),
+    }))
+    wrapper(<FunctionCatalog />)
+    const btn = screen.getAllByRole('button', { name: /desactivar/i })[0]
+    fireEvent.click(btn)
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/asignaciones activas/i)
+    })
+    window.confirm.mockRestore()
+  })
+
+  it('shows error alert when deactivate throws', async () => {
+    jest.spyOn(window, 'confirm').mockReturnValue(true)
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'Error de red' }),
+    }))
+    wrapper(<FunctionCatalog />)
+    const btn = screen.getAllByRole('button', { name: /desactivar/i })[0]
+    fireEvent.click(btn)
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Error de red/i)
+    })
+    window.confirm.mockRestore()
+  })
+
+  it('shows no alert when deactivate returns 200 without warnings', async () => {
+    jest.spyOn(window, 'confirm').mockReturnValue(true)
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ id: 1, active: false }),
+    }))
+    wrapper(<FunctionCatalog />)
+    const btn = screen.getAllByRole('button', { name: /desactivar/i })[0]
+    fireEvent.click(btn)
+    await waitFor(() => {
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+    window.confirm.mockRestore()
   })
 })

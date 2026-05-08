@@ -33,6 +33,8 @@ export default function FunctionCatalog() {
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [formError, setFormError] = useState('')
+  const [deactivateWarning, setDeactivateWarning] = useState(null)
+  const [deactivateError, setDeactivateError] = useState(null)
 
   useEffect(() => {
     dispatch(fetchFunctions())
@@ -118,9 +120,18 @@ export default function FunctionCatalog() {
 
   // ── Desactivar ───────────────────────────────────────────────────────────
 
-  const handleDeactivate = (fn) => {
+  const handleDeactivate = async (fn) => {
     if (!window.confirm(`¿Desactivar la función "${fn.codename}"? Esta acción puede afectar permisos activos.`)) return
-    dispatch(deactivateFunction(fn.id))
+    setDeactivateWarning(null)
+    setDeactivateError(null)
+    try {
+      const result = await dispatch(deactivateFunction(fn.id)).unwrap()
+      if (result.warnings?.length) {
+        setDeactivateWarning(`La función "${fn.codename}" se desactivó, pero tiene asignaciones activas (${result.affected_users ?? '?'} usuario(s) afectado(s)). Las asignaciones existentes no se renovarán.`)
+      }
+    } catch (err) {
+      setDeactivateError(err?.message ?? 'Error al desactivar la función')
+    }
   }
 
   // ── Render ───────────────────────────────────────────────────────────────
@@ -133,6 +144,17 @@ export default function FunctionCatalog() {
           Nueva función
         </button>
       </div>
+
+      {deactivateWarning && (
+        <div className="alert alert-warning" role="alert">
+          {deactivateWarning}
+        </div>
+      )}
+      {deactivateError && (
+        <div className="error-banner" role="alert">
+          {deactivateError}
+        </div>
+      )}
 
       {/* Barra de búsqueda y filtros */}
       <div className="search-bar" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
