@@ -4,7 +4,7 @@ project: IACT-UI
 work_package: 2026-05-08-04-19-25-uc-alignment-full-audit
 phase: Phase 12 — STANDARDIZE
 author: NestorMonroy
-status: Borrador
+status: Aprobado
 ```
 
 # Patterns — uc-alignment-full-audit
