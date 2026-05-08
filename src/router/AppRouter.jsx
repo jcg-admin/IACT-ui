@@ -116,6 +116,9 @@ const SegmentsPage = lazy(() => import('@screens/access/Segments'))
 const PermissionsAuditPage = lazy(() => import('@screens/access/PermissionsAudit'))
 const AssignGroupPage = lazy(() => import('@screens/access/AssignGroup'))
 const TemporaryPermissionsPage = lazy(() => import('@screens/access/TemporaryPermissions'))
+const AssignFunctionsPage = lazy(() => import('@screens/access/AssignFunctions'))
+const PermissionsPage = lazy(() => import('@screens/access/Permissions'))
+const AccessAuditPage = lazy(() => import('@screens/access/AccessAudit'))
 
 // ── Alerts pages ──────────────────────────────────────────────────────────────
 const TemplatesPage      = lazy(() => import('@screens/alerts/Templates'))
@@ -126,6 +129,8 @@ const SubscriptionsPage  = lazy(() => import('@screens/alerts/Subscriptions'))
 // ── Admin pages ──────────────────────────────────────────────────────────────
 const FunctionCatalogPage = lazy(() => import('@screens/admin/FunctionCatalog'))
 const AGRCatalogPage = lazy(() => import('@screens/admin/AGRCatalog'))
+const SeparationRulesCatalogPage = lazy(() => import('@screens/admin/SeparationRulesCatalog'))
+const MenuItemCatalogPage = lazy(() => import('@screens/admin/MenuItemCatalog'))
 
 // ── Nav config ───────────────────────────────────────────────────────────────
 // Groups that carry children — referenced when building ALL_NAV_LINKS children arrays
@@ -161,6 +166,9 @@ const ALL_NAV_LINKS = [
       { label: 'Reglas Separación',  icon: 'ban',          path: '/access/separation-rules',   permission: FunctionCatalog.MANAGE_SEPARATION_RULES },
       { label: 'Segmentos',         icon: 'filter',       path: '/access/segments',           permission: FunctionCatalog.ASSIGN_FUNCTION_GROUPS },
       { label: 'Asignar grupo',     icon: 'user-plus',    path: '/access/assign-group',       permission: FunctionCatalog.ASSIGN_TO_GROUP },
+      { label: 'Asignar funciones', icon: 'key',          path: '/access/assign-functions',   permission: FunctionCatalog.MANAGE_ACCESS },
+      { label: 'Permisos efectivos',icon: 'shield-alt',   path: '/access/permissions',        permission: FunctionCatalog.VIEW_ACCESS },
+      { label: 'Auditoría acceso',  icon: 'history',      path: '/access/audit/access',       permission: FunctionCatalog.VIEW_AUDIT },
     ],
   },
   {
@@ -203,8 +211,10 @@ const ALL_NAV_LINKS = [
     id: NAV_GROUP_IDS.ADMIN,
     label: 'Admin', icon: 'shield', path: '/admin', permission: FunctionCatalog.MANAGE_CATALOG,
     children: [
-      { label: 'Funciones RBAC',    icon: 'list-check', path: '/admin/functions', permission: FunctionCatalog.MANAGE_CATALOG },
-      { label: 'Grupos AGR',        icon: 'users-cog',  path: '/admin/groups',    permission: FunctionCatalog.MANAGE_CATALOG },
+      { label: 'Funciones RBAC',    icon: 'list-check', path: '/admin/functions',          permission: FunctionCatalog.MANAGE_CATALOG },
+      { label: 'Grupos AGR',        icon: 'users-cog',  path: '/admin/groups',             permission: FunctionCatalog.MANAGE_CATALOG },
+      { label: 'Reglas SoD',        icon: 'ban',        path: '/admin/separation-rules',   permission: FunctionCatalog.CREATE_SEPARATION_RULE },
+      { label: 'Menú Items',        icon: 'sitemap',    path: '/admin/menu-items',         permission: FunctionCatalog.MANAGE_MENU_CATALOG },
     ],
   },
   { id: 9, label: 'Ajustes',       icon: 'cog',       path: '/settings',   permission: FunctionCatalog.VIEW_OWN_SESSIONS },
@@ -840,7 +850,43 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Administración del sistema — MANAGE_CATALOG (UC-ADM-01..03) */}
+          {/* Acceso — asignar/revocar funciones (UC-ACC-01, UC-ACC-02) */}
+          <Route
+            path="/access/assign-functions"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AssignFunctionsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Acceso — permisos efectivos de usuario (UC-ACC-03) */}
+          <Route
+            path="/access/permissions"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_ACCESS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <PermissionsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Acceso — auditoría de cambios de acceso (UC-ACC-09) */}
+          <Route
+            path="/access/audit/access"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_AUDIT}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <AccessAuditPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Administración del sistema — MANAGE_CATALOG (UC-ADM-01..05) */}
           <Route
             path="/admin/functions"
             element={
@@ -861,6 +907,30 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
+          {/* Admin — ciclo de vida reglas SoD (UC-ADM-01) */}
+          <Route
+            path="/admin/separation-rules"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.CREATE_SEPARATION_RULE}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SeparationRulesCatalogPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin — catálogo + lifecycle de MenuItems (UC-ADM-04, UC-ADM-05) */}
+          <Route
+            path="/admin/menu-items"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.MANAGE_MENU_CATALOG}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <MenuItemCatalogPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/admin"
             element={<Navigate to="/admin/functions" replace />}
