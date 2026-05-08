@@ -56,7 +56,7 @@ export default function HistoricalReports() {
     const name = window.prompt('Nombre para esta vista:')
     if (!name) return
     try {
-      const { saveFilter } = await import('../../redux/slices/savedFiltersSlice')
+      const { saveFilter } = await import('../../redux/slices/savedFilters')
       dispatch(saveFilter({ name, filters }))
     } catch (_) { /* saveFilter is optional */ }
   }

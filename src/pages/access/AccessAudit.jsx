@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccessAudit, selectLoading, selectError } from '../../redux/slices/accessSlice';
+import { fetchAccessAudit, selectLoading, selectError } from '../../redux/slices/access';
 
 export default function AccessAudit() {
     const [selectedUser, setSelectedUser] = useState('');

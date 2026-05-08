@@ -12,7 +12,7 @@ import {
   searchAuditLogs,
   selectLogs,
   selectSearchResults,
-} from '@redux/slices/auditSlice'
+} from '@redux/slices/audit'
 import './AuditPage.scss'
 
 const selectAuditLoading = (state) => state.audit.loading

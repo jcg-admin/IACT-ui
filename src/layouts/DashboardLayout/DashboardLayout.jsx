@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux'
 import { Header, LogoBrand, MenuButton } from '@components/shared/Header'
 import { Sidebar } from '@components/shared/Sidebar'
 import { useMenuToggle } from '@hooks/useMenuToggle'
-import { logoutUser } from '@redux/slices/authSlice'
+import { logoutUser } from '@redux/slices/auth'
 import './DashboardLayout.scss'
 
 export default function DashboardLayout({

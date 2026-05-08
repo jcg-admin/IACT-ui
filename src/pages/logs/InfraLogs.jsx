@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchInfraLogs, selectInfraLogs, selectLogsLoading } from '../../redux/slices/logsSlice'
+import { fetchInfraLogs, selectInfraLogs, selectLogsLoading } from '../../redux/slices/logs'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function InfraLogs() {

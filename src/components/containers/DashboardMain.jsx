@@ -6,8 +6,8 @@ import {
   fetchDashboardMetrics,
   selectMetrics,
   selectReportsLoading,
-} from '@redux/slices/reportsSlice'
-import { logout } from '@redux/slices/authSlice'
+} from '@redux/slices/reports'
+import { logout } from '@redux/slices/auth'
 import DashboardHeader from '@components/presentational/DashboardHeader'
 import MetricsGrid from '@components/presentational/MetricsGrid'
 import ChartsSection from '@components/presentational/ChartsSection'

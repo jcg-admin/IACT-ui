@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAlertHistory, selectHistory, selectLoading, selectError } from '../../redux/slices/alertsSlice';
+import { fetchAlertHistory, selectHistory, selectLoading, selectError } from '../../redux/slices/alerts';
 
 export default function AlertHistory() {
     const [dateStart, setDateStart] = useState('');

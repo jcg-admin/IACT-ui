@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFunctions, selectLoading, selectError } from '../../redux/slices/accessSlice';
+import { fetchAllFunctions, selectLoading, selectError } from '../../redux/slices/access';
 
 export default function Groupers() {
     const [groupers, setGroupers] = useState([]);

@@ -43,7 +43,7 @@ describe('SessionProvider', () => {
 
 describe('ActiveSessions', () => {
   it('renders without crashing', () => {
-    const authReducer = require('@redux/slices/authSlice').default
+    const authReducer = require('@redux/slices/auth').default
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState: {

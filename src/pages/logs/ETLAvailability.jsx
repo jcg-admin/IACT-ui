@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchETLAvailability, selectETLAvailability } from '../../redux/slices/logsSlice'
+import { fetchETLAvailability, selectETLAvailability } from '../../redux/slices/logs'
 
 export default function ETLAvailability() {
   const dispatch = useDispatch()

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
 
-jest.mock('../../../redux/slices/alertsSlice', () => ({
+jest.mock('../../../redux/slices/alerts', () => ({
   fetchAlerts: jest.fn(() => ({ type: 'alerts/fetchAlerts' })),
   createAlert: jest.fn(() => ({ type: 'alerts/createAlert' })),
   updateAlert: jest.fn((payload) => ({ type: 'alerts/updateAlert', payload })),
@@ -113,7 +113,7 @@ describe('AlertsHub — uc-alr-03', () => {
   })
 
   it('does NOT dispatch updateAlert immediately when Confirmar is clicked', () => {
-    const { updateAlert } = require('../../../redux/slices/alertsSlice')
+    const { updateAlert } = require('../../../redux/slices/alerts')
     updateAlert.mockClear()
     wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
@@ -127,7 +127,7 @@ describe('AlertsHub — uc-alr-03', () => {
   })
 
   it('dispatches updateAlert with acknowledged status on confirm', () => {
-    const { updateAlert } = require('../../../redux/slices/alertsSlice')
+    const { updateAlert } = require('../../../redux/slices/alerts')
     updateAlert.mockClear()
     wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
@@ -136,7 +136,7 @@ describe('AlertsHub — uc-alr-03', () => {
   })
 
   it('closes modal without dispatching when cancel is clicked', () => {
-    const { updateAlert } = require('../../../redux/slices/alertsSlice')
+    const { updateAlert } = require('../../../redux/slices/alerts')
     updateAlert.mockClear()
     wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))

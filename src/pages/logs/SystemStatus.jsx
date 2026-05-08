@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSystemStatus, selectSystemStatus, selectLogsLoading } from '../../redux/slices/logsSlice'
+import { fetchSystemStatus, selectSystemStatus, selectLogsLoading } from '../../redux/slices/logs'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const STATUS_BADGE = { UP: 'badge-success', DOWN: 'badge-danger', DEGRADED: 'badge-warning' }

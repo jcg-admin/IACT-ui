@@ -51,14 +51,14 @@ jest.mock('../../access/FunctionSelector', () => ({
   default: () => <div data-testid="function-selector" />,
 }))
 
-jest.mock('@redux/slices/alertsSlice', () => ({
+jest.mock('@redux/slices/alerts', () => ({
   fetchAlerts: jest.fn(() => (dispatch) => Promise.resolve([])),
   updateAlert: jest.fn(() => ({ type: 'alerts/updateAlert' })),
   selectAlerts: (s) => s.alerts?.alerts ?? [],
   selectSubscriptions: (s) => s.alerts?.subscriptions ?? [],
 }))
 
-jest.mock('@redux/slices/accessSlice', () => ({
+jest.mock('@redux/slices/access', () => ({
   fetchUserPermissions: jest.fn(() => (dispatch) => Promise.resolve([])),
   fetchAllFunctions: jest.fn(() => (dispatch) => Promise.resolve([])),
   revokeFunction: jest.fn(() => (dispatch) => Promise.resolve(true)),

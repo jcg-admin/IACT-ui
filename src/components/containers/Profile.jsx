@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setUser } from '@redux/slices/authSlice'
+import { setUser } from '@redux/slices/auth'
 import { AnimatedButton } from '@components/animations'
 
 function Profile() {

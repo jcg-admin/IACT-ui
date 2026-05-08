@@ -25,7 +25,7 @@ jest.mock('../../../facades/JobOrchestrator', () => ({
   },
 }))
 
-jest.mock('../../../redux/slices/reportsSlice', () => ({
+jest.mock('../../../redux/slices/reports', () => ({
   fetchDashboardMetrics: jest.fn(() => (dispatch) => Promise.resolve({ type: 'reports/fetchDashboardMetrics' })),
   fetchReportHistory: jest.fn(() => ({ type: 'reports/fetchReportHistory' })),
   fetchScheduledReports: jest.fn(() => ({ type: 'reports/fetchScheduledReports' })),

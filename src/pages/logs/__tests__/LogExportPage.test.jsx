@@ -13,7 +13,7 @@ jest.mock('react-redux', () => ({
 }))
 
 // exportLogs uses .fulfilled.match() so needs a real createAsyncThunk
-jest.mock('../../../redux/slices/logsSlice', () => {
+jest.mock('../../../redux/slices/logs', () => {
   const { createAsyncThunk } = require('@reduxjs/toolkit')
   const exportLogs = createAsyncThunk('logs/exportLogs', jest.fn().mockResolvedValue({}))
   return {

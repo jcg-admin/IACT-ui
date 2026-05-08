@@ -5,7 +5,7 @@ import logsReducer, {
   selectLogs,
   selectETLLogs,
   selectLogsLoading,
-} from '../logsSlice'
+} from '../logs'
 
 jest.mock('../../../services/logsService', () => ({
   __esModule: true,

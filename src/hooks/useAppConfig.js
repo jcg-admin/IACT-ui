@@ -8,7 +8,7 @@ import {
   setConfig,
   setError,
   setLoading,
-} from '@state/slices/appConfigSlice';
+} from '@state/slices/appConfig';
 import { AppConfigService } from '@services/config/AppConfigService';
 
 export const useAppConfig = () => {

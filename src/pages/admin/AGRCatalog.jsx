@@ -13,7 +13,7 @@ import {
   deactivateAGR,
   selectAGRs,
   selectAdminLoading,
-} from '../../redux/slices/adminSlice'
+} from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 // Valida formato snake_case para codenames de AGR (ej: basic_operator_group)

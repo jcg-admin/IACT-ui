@@ -14,7 +14,7 @@ import {
   updateAlert,
   removeAlert,
   clearAlerts
-} from '@redux/slices/sessionSlice'
+} from '@redux/slices/session'
 import apiService from '@services/apiService'
 
 export function useAlertFeed(interval = 30000) {

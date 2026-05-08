@@ -11,7 +11,7 @@ import {
   selectReportsLoading,
   selectScheduleActionLoading,
   selectReportsError,
-} from '@redux/slices/reportsSlice'
+} from '@redux/slices/reports'
 
 const FREQUENCIES = ['daily', 'weekly', 'monthly', 'cron']
 const FREQUENCY_LABELS = { daily: 'Diario', weekly: 'Semanal', monthly: 'Mensual', cron: 'Cron' }

@@ -6,7 +6,7 @@ import reducer, {
   selectHealthSource,
   selectLastChecked,
   selectHealthError,
-} from './healthSlice';
+} from './health';
 
 describe('healthSlice', () => {
   it('provides initial state', () => {

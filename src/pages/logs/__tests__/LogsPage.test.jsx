@@ -17,12 +17,12 @@ jest.mock('react-redux', () => ({
     selector({ logs: { error: null, logs: LOGS, searchResults: [], systemStatus: null }, loading: { contexts: {} } }),
 }))
 
-jest.mock('../../../redux/slices/logsSlice', () => ({
+jest.mock('../../../redux/slices/logs', () => ({
   fetchLogs: () => ({ type: 'logs/fetchLogs' }),
   selectLogs: (s) => s.logs.logs,
 }))
 
-jest.mock('../../../redux/slices/loadingSlice', () => ({
+jest.mock('../../../redux/slices/loading', () => ({
   selectIsLoading: (context) => (s) => (s.loading?.contexts[context] ?? 0) > 0,
 }))
 

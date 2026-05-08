@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchSeparationRules, updateSeparationRule, deleteSeparationRule,
     selectSeparationRules, selectLoading, selectError,
-} from '../../redux/slices/accessSlice';
+} from '../../redux/slices/access';
 
 export default function SeparationRules() {
     const dispatch = useDispatch();

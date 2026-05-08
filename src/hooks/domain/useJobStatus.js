@@ -14,7 +14,7 @@ import {
   completeJob,
   setJobError,
   removeJob
-} from '@redux/slices/sessionSlice'
+} from '@redux/slices/session'
 import jobService from '@services/jobService'
 
 export function useJobStatus(_jobId, _interval = 5000) {

@@ -5,7 +5,7 @@ import savedFiltersReducer, {
   deleteFilter,
   selectSavedFilters,
   selectSavedFiltersLoading,
-} from '../savedFiltersSlice'
+} from '../savedFilters'
 
 jest.mock('../../../services/apiService', () => ({
   __esModule: true,

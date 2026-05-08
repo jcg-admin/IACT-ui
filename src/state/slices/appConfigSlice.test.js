@@ -6,7 +6,7 @@ import reducer, {
   selectIsLoading,
   selectError,
   selectSource,
-} from './appConfigSlice';
+} from './appConfig';
 
 describe('appConfigSlice', () => {
   it('handles loading state and resets error', () => {

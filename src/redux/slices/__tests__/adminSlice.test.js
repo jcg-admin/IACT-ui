@@ -6,7 +6,7 @@ import adminReducer, {
   selectFunctions,
   selectAGRs,
   selectAdminLoading,
-} from '../adminSlice'
+} from '../admin'
 
 jest.mock('../../../services/adminService', () => ({
   __esModule: true,

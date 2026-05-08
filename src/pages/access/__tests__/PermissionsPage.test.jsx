@@ -19,14 +19,14 @@ jest.mock('react-redux', () => ({
     }),
 }));
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
     fetchUserPermissions: () => ({ type: 'access/fetchUserPermissions' }),
     revokeFunction: jest.fn(args => ({ type: 'access/revokeFunction', payload: args })),
     selectLoading: (s) => s.access.loading,
     selectError: (s) => s.access.error,
 }));
 
-import { revokeFunction } from '../../../redux/slices/accessSlice';
+import { revokeFunction } from '../../../redux/slices/access';
 
 function renderPage() {
     return render(

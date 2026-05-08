@@ -23,7 +23,7 @@ jest.mock('react-redux', () => ({
     }),
 }))
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
   __esModule: true,
   revokeGroupFromUser: jest.fn((args) => ({ type: 'access/revokeGroupFromUser', payload: args })),
   selectGroups: (s) => s.access.groups,
@@ -34,7 +34,7 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
   resetState: () => ({ type: 'access/resetState' }),
 }))
 
-import { revokeGroupFromUser } from '../../../redux/slices/accessSlice'
+import { revokeGroupFromUser } from '../../../redux/slices/access'
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 

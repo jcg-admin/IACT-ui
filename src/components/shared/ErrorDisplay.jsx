@@ -9,7 +9,7 @@ import {
   selectGlobalError,
   clearGlobalError,
   selectErrorHistory,
-} from '@redux/slices/errorSlice';
+} from '@redux/slices/error';
 import { getErrorMessage } from '@utils/apiErrors';
 
 /**

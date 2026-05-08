@@ -6,7 +6,7 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
-import authReducer from '@redux/slices/authSlice'
+import authReducer from '@redux/slices/auth'
 import ActiveSessions from '../ActiveSessions'
 
 jest.mock('@services/authService', () => ({

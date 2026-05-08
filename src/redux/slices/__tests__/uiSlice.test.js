@@ -5,7 +5,7 @@ import uiReducer, {
   toggleDarkMode,
   addNotification,
   removeNotification,
-} from '../uiSlice'
+} from '../ui'
 
 function buildStore() {
   return configureStore({ reducer: { ui: uiReducer } })

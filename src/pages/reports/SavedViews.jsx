@@ -6,7 +6,7 @@ import {
   selectSavedViews,
   selectReportsLoading,
   selectReportsError,
-} from '@redux/slices/reportsSlice'
+} from '@redux/slices/reports'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const REPORT_TYPE_LABELS = {

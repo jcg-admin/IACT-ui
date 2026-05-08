@@ -19,7 +19,7 @@ jest.mock('react-redux', () => ({
   }),
 }))
 
-jest.mock('../../../redux/slices/logsSlice', () => ({
+jest.mock('../../../redux/slices/logs', () => ({
   fetchETLLogs: () => ({ type: 'logs/fetchETLLogs' }),
   retryPipeline: jest.fn((id) => ({ type: 'logs/retryPipeline', payload: id })),
   fetchPipelineStatus: jest.fn(() => ({ type: 'logs/fetchPipelineStatus' })),
@@ -29,11 +29,11 @@ jest.mock('../../../redux/slices/logsSlice', () => ({
   selectLogsError: (s) => s.logs.error ?? null,
 }))
 
-jest.mock('../../../redux/slices/loadingSlice', () => ({
+jest.mock('../../../redux/slices/loading', () => ({
   selectIsLoading: (context) => (s) => (s.loading?.contexts[context] ?? 0) > 0,
 }))
 
-import { retryPipeline } from '../../../redux/slices/logsSlice'
+import { retryPipeline } from '../../../redux/slices/logs'
 
 describe('ETLLogs — PipelineRetryModal (uc-pip-04)', () => {
   beforeEach(() => { mockDispatch.mockClear(); retryPipeline.mockClear() })

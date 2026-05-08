@@ -9,7 +9,7 @@ import {
   setChecking,
   setResult,
   setError,
-} from '@state/slices/healthSlice';
+} from '@state/slices/health';
 import { HealthService } from '@services/health/HealthService';
 
 export const useHealthStatus = () => {

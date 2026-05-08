@@ -7,8 +7,8 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer from '@redux/slices/authSlice'
-import sessionReducer from '@redux/slices/sessionSlice'
+import authReducer from '@redux/slices/auth'
+import sessionReducer from '@redux/slices/session'
 
 /**
  * Custom render function with Redux provider

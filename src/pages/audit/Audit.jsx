@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAuditLogs, selectLogs, selectLoading, selectError, setFilters } from '../../redux/slices/auditSlice';
+import { fetchAuditLogs, selectLogs, selectLoading, selectError, setFilters } from '../../redux/slices/audit';
 
 export default function Audit() {
     const [dateStart, setDateStart] = useState('');

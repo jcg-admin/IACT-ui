@@ -1,5 +1,5 @@
 import store from './store';
-import { setLoading } from './slices/appConfigSlice';
+import { setLoading } from './slices/appConfig';
 
 describe('store', () => {
   it('initializes reducers', () => {

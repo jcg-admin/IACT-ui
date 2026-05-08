@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchETLLogs, retryPipeline, selectETLLogs } from '../../redux/slices/logsSlice'
-import { selectIsLoading } from '../../redux/slices/loadingSlice'
+import { fetchETLLogs, retryPipeline, selectETLLogs } from '../../redux/slices/logs'
+import { selectIsLoading } from '../../redux/slices/loading'
 import ConfirmModal from '../../components/shared/ConfirmModal'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 

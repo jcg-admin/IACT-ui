@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchPerformanceMetrics, selectPerformanceMetrics, selectLogsLoading } from '../../redux/slices/logsSlice'
+import { fetchPerformanceMetrics, selectPerformanceMetrics, selectLogsLoading } from '../../redux/slices/logs'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function PerformanceMetrics() {

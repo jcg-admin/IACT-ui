@@ -19,7 +19,7 @@ jest.mock('react-redux', () => ({
     }),
 }))
 
-jest.mock('../../../redux/slices/adminSlice', () => ({
+jest.mock('../../../redux/slices/admin', () => ({
   fetchAGRCatalog: () => ({ type: 'admin/fetchAGRCatalog' }),
   createAGR: jest.fn((data) => ({ type: 'admin/createAGR', payload: data })),
   updateAGR: jest.fn((args) => ({ type: 'admin/updateAGR', payload: args })),
@@ -53,7 +53,7 @@ describe('AGRCatalog', () => {
 })
 
 describe('AGRCatalog — codename snake_case validation (G-B2)', () => {
-  const { createAGR } = require('../../../redux/slices/adminSlice')
+  const { createAGR } = require('../../../redux/slices/admin')
 
   beforeEach(() => {
     mockDispatch.mockClear()

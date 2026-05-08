@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer, { logout, clearError, loginUser, logoutUser } from '../authSlice'
+import authReducer, { logout, clearError, loginUser, logoutUser } from '../auth'
 
 jest.mock('@services/apiService', () => ({
   __esModule: true,
@@ -9,7 +9,7 @@ jest.mock('@services/apiService', () => ({
   },
 }))
 
-jest.mock('../sessionSlice', () => ({
+jest.mock('../session', () => ({
   clearSession: () => ({ type: 'session/clearSession' }),
 }))
 

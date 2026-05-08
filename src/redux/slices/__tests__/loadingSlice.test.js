@@ -4,7 +4,7 @@ import loadingReducer, {
   decrementContext,
   selectIsLoading,
   selectAnyLoading,
-} from '../loadingSlice'
+} from '../loading'
 
 function buildStore(loadingState) {
   const cfg = { reducer: { loading: loadingReducer } }

@@ -12,7 +12,7 @@ import {
   updateAlert,
   selectAlerts,
   selectSubscriptions,
-} from '@redux/slices/alertsSlice'
+} from '@redux/slices/alerts'
 import ConfirmModal from '@components/shared/ConfirmModal'
 import './AlertsPage.scss'
 

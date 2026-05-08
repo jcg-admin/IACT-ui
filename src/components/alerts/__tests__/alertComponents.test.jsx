@@ -5,7 +5,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import AlertItem from '../AlertItem'
 import AlertList from '../AlertList'
 
-jest.mock('@redux/slices/sessionSlice', () => ({
+jest.mock('@redux/slices/session', () => ({
   selectAlerts: (state) => state.session.alerts,
 }))
 

@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import appConfigReducer from '@state/slices/appConfigSlice';
-import homeReducer from '@modules/home/state/homeSlice';
-import healthReducer from '@state/slices/healthSlice';
+import appConfigReducer from '@state/slices/appConfig';
+import homeReducer from '@modules/home/state/home';
+import healthReducer from '@state/slices/health';
 import App from './App';
-import { setConfig } from '@state/slices/appConfigSlice';
+import { setConfig } from '@state/slices/appConfig';
 import { AppConfigService } from '@services/config/AppConfigService';
 import { CallsService } from '@services/calls/CallsService';
 import { HealthService } from '@services/health/HealthService';

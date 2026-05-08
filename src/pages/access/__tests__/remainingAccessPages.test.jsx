@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
   fetchAllFunctions: jest.fn(() => ({ type: 'access/fetchAllFunctions' })),
   fetchAccessAudit: jest.fn(() => ({ type: 'access/fetchAccessAudit' })),
   fetchSeparationRules: jest.fn(() => ({ type: 'access/fetchSeparationRules' })),

@@ -7,7 +7,7 @@ import {
   handleAPIError,
   setContextError,
   setErrorHandling,
-} from '@redux/slices/errorSlice';
+} from '@redux/slices/error';
 import {
   UnauthorizedError,
   RateLimitError,

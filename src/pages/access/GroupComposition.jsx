@@ -16,7 +16,7 @@ import {
     selectLoading,
     selectError,
     clearError,
-} from '../../redux/slices/accessSlice';
+} from '../../redux/slices/access';
 import accessService from '../../services/accessService';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 

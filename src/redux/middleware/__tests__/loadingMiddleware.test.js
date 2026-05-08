@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import loadingReducer, { selectIsLoading } from '../../slices/loadingSlice'
+import loadingReducer, { selectIsLoading } from '../../slices/loading'
 import { loadingMiddleware } from '../loadingMiddleware'
 
 function buildStore() {

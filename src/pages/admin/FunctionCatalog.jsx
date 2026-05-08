@@ -13,7 +13,7 @@ import {
   deactivateFunction,
   selectFunctions,
   selectAdminLoading,
-} from '../../redux/slices/adminSlice'
+} from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 // Valida el formato modulo:accion definido en RBAC v5.6.0

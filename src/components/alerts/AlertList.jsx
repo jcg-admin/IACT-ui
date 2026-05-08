@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
-import { selectAlerts } from '@redux/slices/sessionSlice'
+import { selectAlerts } from '@redux/slices/session'
 import AlertItem from './AlertItem'
 import '@styles/components/_alert-list.scss'
 

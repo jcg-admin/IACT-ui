@@ -15,7 +15,7 @@ import {
   resolveTxConflict,
   confirmTx,
   cancelTx
-} from '@redux/slices/sessionSlice'
+} from '@redux/slices/session'
 import transactionService from '@services/transactionService'
 
 export function useTransaction(_txType) {

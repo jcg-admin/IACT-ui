@@ -8,7 +8,7 @@ import formReducer, {
   resetForm,
   selectDateStart,
   selectDateEnd,
-} from '../formSlice'
+} from '../form'
 
 function buildStore() {
   return configureStore({ reducer: { form: formReducer } })

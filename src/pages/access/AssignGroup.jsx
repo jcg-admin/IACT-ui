@@ -8,7 +8,7 @@ import {
   selectSuccess,
   clearError,
   resetState,
-} from '@redux/slices/accessSlice'
+} from '@redux/slices/access'
 
 export default function AssignGroup() {
   const dispatch = useDispatch()

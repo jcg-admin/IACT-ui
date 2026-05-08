@@ -10,8 +10,8 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import DashboardLayout from '../../src/layouts/DashboardLayout/DashboardLayout'
 import { mockNavLinks, mockUserInfo } from '../helpers/mockData'
-import uiReducer from '../../src/redux/slices/uiSlice'
-import userReducer from '../../src/redux/slices/userSlice'
+import uiReducer from '../../src/redux/slices/ui'
+import userReducer from '../../src/redux/slices/user'
 
 function buildStore() {
   return configureStore({ reducer: { ui: uiReducer, user: userReducer } })

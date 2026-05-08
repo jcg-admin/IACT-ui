@@ -12,7 +12,7 @@ import {
   selectActiveSessions,
   selectSessionsLoading,
   selectSessionsError,
-} from '@redux/slices/authSlice'
+} from '@redux/slices/auth'
 
 export default function ActiveSessions() {
   const dispatch = useDispatch()

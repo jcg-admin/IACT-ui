@@ -38,14 +38,14 @@ jest.mock('react-redux', () => ({
   }),
 }))
 
-jest.mock('../../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../../redux/slices/access', () => ({
   selectGroups: (s) => s.access.groups,
   fetchGroupFunctions: jest.fn(() => ({ type: 'access/fetchGroupFunctions' })),
   assignGroupToUser: jest.fn((data) => ({ type: 'access/assignGroupToUser', payload: data })),
   revokeGroupFromUser: jest.fn((data) => ({ type: 'access/revokeGroupFromUser', payload: data })),
 }))
 
-import { assignGroupToUser, revokeGroupFromUser } from '../../../../redux/slices/accessSlice'
+import { assignGroupToUser, revokeGroupFromUser } from '../../../../redux/slices/access'
 
 describe('UserManagement — group assign/revoke (uc-perm-01/02)', () => {
   beforeEach(() => {

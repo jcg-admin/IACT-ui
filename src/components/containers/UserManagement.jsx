@@ -16,7 +16,7 @@ import {
     selectUsersLoading,
     selectUsersError,
     selectUsersTotal,
-} from '../../redux/slices/userSlice'
+} from '../../redux/slices/user'
 
 const STATE_BADGE_CLASS = {
     ACTIVE: 'badge-primary',

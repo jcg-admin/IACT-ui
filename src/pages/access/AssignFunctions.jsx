@@ -11,7 +11,7 @@ import {
     fetchUserAssignedFunctions,
     validateSeparationRules, selectLoading, selectError, selectSuccess,
     selectUserAssignedFunctions, clearSuccess,
-} from '../../redux/slices/accessSlice';
+} from '../../redux/slices/access';
 import FunctionSelector from '../../components/access/FunctionSelector';
 
 export default function AssignFunctions() {

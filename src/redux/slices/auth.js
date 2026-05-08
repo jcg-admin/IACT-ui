@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiService from '@services/apiService';
 import authService from '@services/authService';
-import { clearSession } from './sessionSlice';
+import { clearSession } from './session';
 
 /**
  * Auth Slice - SECURITY HARDENED

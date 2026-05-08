@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMySubscriptions, unsubscribeFromAlert, selectSubscriptions, selectLoading } from '../../redux/slices/alertsSlice';
+import { fetchMySubscriptions, unsubscribeFromAlert, selectSubscriptions, selectLoading } from '../../redux/slices/alerts';
 
 export default function Subscriptions() {
     const [subscriptions, setSubscriptions] = useState([]);

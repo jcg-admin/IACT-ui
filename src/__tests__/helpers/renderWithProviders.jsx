@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
-import accessReducer from '../../redux/slices/accessSlice';
+import accessReducer from '../../redux/slices/access';
 
 export function buildTestStore(preloadedState) {
     const config = { reducer: { access: accessReducer } };

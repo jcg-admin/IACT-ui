@@ -6,7 +6,7 @@ import ScheduledReport from '../ScheduledReport'
 
 const mockCreateScheduledReport = jest.fn(() => ({ type: 'reports/createScheduledReport' }))
 
-jest.mock('@redux/slices/reportsSlice', () => ({
+jest.mock('@redux/slices/reports', () => ({
   fetchScheduledReports: jest.fn(() => ({ type: 'reports/fetchScheduledReports' })),
   createScheduledReport: (...args) => mockCreateScheduledReport(...args),
   pauseSchedule: jest.fn(() => ({ type: 'reports/pauseSchedule' })),
@@ -53,7 +53,7 @@ describe('ScheduledReport', () => {
   })
 
   it('despacha fetchScheduledReports al montar', () => {
-    const { fetchScheduledReports } = require('@redux/slices/reportsSlice')
+    const { fetchScheduledReports } = require('@redux/slices/reports')
     wrap(<ScheduledReport />)
     expect(fetchScheduledReports).toHaveBeenCalled()
   })
@@ -154,7 +154,7 @@ describe('ScheduledReport', () => {
   })
 
   it('despacha pauseSchedule al hacer click en Pausar', () => {
-    const { pauseSchedule } = require('@redux/slices/reportsSlice')
+    const { pauseSchedule } = require('@redux/slices/reports')
     const store = buildStore({
       scheduledReports: [{ id: '1', name: 'Daily KPIs', frequency: 'daily', status: 'active' }],
     })
@@ -164,7 +164,7 @@ describe('ScheduledReport', () => {
   })
 
   it('despacha deleteSchedule al confirmar eliminación', () => {
-    const { deleteSchedule } = require('@redux/slices/reportsSlice')
+    const { deleteSchedule } = require('@redux/slices/reports')
     const store = buildStore({
       scheduledReports: [{ id: '1', name: 'Daily KPIs', frequency: 'daily', status: 'active' }],
     })

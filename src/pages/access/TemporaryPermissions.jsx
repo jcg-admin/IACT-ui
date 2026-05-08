@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllFunctions, assignFunction, revokeFunction, selectLoading, selectError, selectSuccess } from '../../redux/slices/accessSlice';
+import { fetchAllFunctions, assignFunction, revokeFunction, selectLoading, selectError, selectSuccess } from '../../redux/slices/access';
 
 export default function TemporaryPermissions() {
     const [activeTab, setActiveTab] = useState('assign');

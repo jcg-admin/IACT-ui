@@ -4,8 +4,8 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit'
-import uiReducer, { toggleSidebar, closeSidebar } from '../../src/redux/slices/uiSlice'
-import userReducer, { setUser, logout } from '../../src/redux/slices/userSlice'
+import uiReducer, { toggleSidebar, closeSidebar } from '../../src/redux/slices/ui'
+import userReducer, { setUser, logout } from '../../src/redux/slices/user'
 
 describe('Redux Store', () => {
   let store

@@ -28,7 +28,7 @@ jest.mock('react-redux', () => ({
     }),
 }))
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
   fetchAllFunctions: () => ({ type: 'access/fetchAllFunctions' }),
   fetchGroupFunctions: jest.fn((id) => ({ type: 'access/fetchGroupFunctions', payload: id })),
   assignFunctionsToGroup: jest.fn((args) => ({ type: 'access/assignFunctionsToGroup', payload: args })),

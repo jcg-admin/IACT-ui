@@ -15,7 +15,7 @@ import usersReducer, {
   selectUsersLoading,
   selectUsersError,
   selectUsersTotal,
-} from '../userSlice'
+} from '../user'
 import userService from '../../../services/userService'
 
 jest.mock('../../../services/userService')

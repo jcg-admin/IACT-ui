@@ -5,7 +5,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
 import SavedViews from '../SavedViews'
 
-jest.mock('@redux/slices/reportsSlice', () => ({
+jest.mock('@redux/slices/reports', () => ({
   fetchSavedViews: jest.fn(() => ({ type: 'reports/fetchSavedViews' })),
   deleteSavedView: jest.fn((id) => ({ type: 'reports/deleteSavedView', payload: id })),
   selectSavedViews: (s) => s.reports?.savedViews ?? [],
@@ -40,7 +40,7 @@ function wrap(ui, store = buildStore()) {
 }
 
 describe('SavedViews', () => {
-  const { fetchSavedViews, deleteSavedView } = require('@redux/slices/reportsSlice')
+  const { fetchSavedViews, deleteSavedView } = require('@redux/slices/reports')
 
   beforeEach(() => {
     fetchSavedViews.mockClear()

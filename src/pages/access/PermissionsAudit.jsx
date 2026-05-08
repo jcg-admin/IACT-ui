@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAccessAudit, selectLoading, selectError } from '../../redux/slices/accessSlice'
+import { fetchAccessAudit, selectLoading, selectError } from '../../redux/slices/access'
 
 const PERMISSION_ACTIONS = ['ASSIGN_PERMISSION', 'REVOKE_PERMISSION', 'ASSIGN_GROUP', 'REVOKE_GROUP']
 

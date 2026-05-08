@@ -17,12 +17,12 @@ jest.mock('react-redux', () => ({
     selector({ logs: { error: null, etlLogs: ETL_LOGS, searchResults: [], systemStatus: null }, loading: { contexts: {} } }),
 }))
 
-jest.mock('../../../redux/slices/logsSlice', () => ({
+jest.mock('../../../redux/slices/logs', () => ({
   fetchETLLogs: () => ({ type: 'logs/fetchETLLogs' }),
   selectETLLogs: (s) => s.logs.etlLogs,
 }))
 
-jest.mock('../../../redux/slices/loadingSlice', () => ({
+jest.mock('../../../redux/slices/loading', () => ({
   selectIsLoading: (context) => (s) => (s.loading?.contexts[context] ?? 0) > 0,
 }))
 
@@ -76,7 +76,7 @@ describe('ETLLogs — Solo errores quick-filter (uc-pip-02)', () => {
   })
 
   it('dispatches fetchETLLogs with status=error when Solo errores is clicked', () => {
-    const { fetchETLLogs } = require('../../../redux/slices/logsSlice')
+    const { fetchETLLogs } = require('../../../redux/slices/logs')
     wrapper(<ETLLogs />)
     fireEvent.click(screen.getByRole('button', { name: /solo errores/i }))
     expect(mockDispatch).toHaveBeenCalledWith(

@@ -18,7 +18,7 @@ jest.mock('react-redux', () => ({
   }),
 }))
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
   fetchSeparationRules: jest.fn(() => ({ type: 'access/fetchSeparationRules' })),
   createSeparationRule: jest.fn((data) => ({ type: 'access/createSeparationRule', payload: data })),
   updateSeparationRule: jest.fn((data) => ({ type: 'access/updateSeparationRule', payload: data })),
@@ -29,7 +29,7 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
   selectSeparationRules: (s) => s.access.separationRules,
 }))
 
-import { fetchSeparationRules, createSeparationRule, updateSeparationRule, deleteSeparationRule } from '../../../redux/slices/accessSlice'
+import { fetchSeparationRules, createSeparationRule, updateSeparationRule, deleteSeparationRule } from '../../../redux/slices/access'
 
 function renderPage() {
   return render(<MemoryRouter><SeparationRules /></MemoryRouter>)

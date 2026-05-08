@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchComplianceReport, selectComplianceReport, selectLoading, selectError } from '../../redux/slices/auditSlice';
+import { fetchComplianceReport, selectComplianceReport, selectLoading, selectError } from '../../redux/slices/audit';
 
 export default function ComplianceReport() {
     const [reportConfig, setReportConfig] = useState({

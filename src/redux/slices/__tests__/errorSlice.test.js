@@ -16,7 +16,7 @@ import errorReducer, {
   selectGlobalErrorIsRetryable,
   selectRetryAfter,
   selectIsPersistentError,
-} from '../errorSlice'
+} from '../error'
 
 function buildStore(preloaded) {
   return configureStore({

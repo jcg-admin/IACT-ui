@@ -5,7 +5,7 @@ import reducer, {
   selectIsLoading,
   selectError,
   selectAnnouncementSource,
-} from './homeSlice';
+} from './home';
 import { MICROFRONTENDS_ANNOUNCEMENT } from '../constants/announcementFallback';
 
 describe('homeSlice', () => {

@@ -16,7 +16,7 @@ jest.mock('react-redux', () => ({
     selector({ savedFilters: { filters: FILTERS, loading: false, error: null } }),
 }))
 
-jest.mock('../../../redux/slices/savedFiltersSlice', () => ({
+jest.mock('../../../redux/slices/savedFilters', () => ({
   fetchSavedFilters: () => ({ type: 'savedFilters/fetchSavedFilters' }),
   deleteFilter: jest.fn((id) => ({ type: 'savedFilters/deleteFilter', payload: id })),
   selectSavedFilters: (s) => s.savedFilters.filters,

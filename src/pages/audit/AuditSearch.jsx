@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchAuditLogs, selectSearchResults, selectLoading, selectError } from '../../redux/slices/auditSlice';
+import { searchAuditLogs, selectSearchResults, selectLoading, selectError } from '../../redux/slices/audit';
 
 export default function AuditSearch() {
     const [searchQuery, setSearchQuery] = useState('');

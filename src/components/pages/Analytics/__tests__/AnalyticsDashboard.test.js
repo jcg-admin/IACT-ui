@@ -7,7 +7,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import AnalyticsDashboard from '../AnalyticsDashboard'
-import reportsReducer from '../../../../redux/slices/reportsSlice'
+import reportsReducer from '../../../../redux/slices/reports'
 
 jest.mock('@facades/ReportExporter', () => ({
   default: {

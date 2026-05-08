@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { selectGlobalError, selectIsPersistentError } from '@redux/slices/errorSlice'
+import { selectGlobalError, selectIsPersistentError } from '@redux/slices/error'
 
 export default function ServerErrorBanner() {
   const error = useSelector(selectGlobalError)

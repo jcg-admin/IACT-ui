@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import PipelineStatus from '../PipelineStatus'
 
-jest.mock('@redux/slices/logsSlice', () => ({
+jest.mock('@redux/slices/logs', () => ({
   fetchPipelineStatus: jest.fn(() => ({ type: 'logs/fetchPipelineStatus' })),
   selectPipelineStatus: (s) => s.logs?.pipelineStatus ?? null,
   selectLogsLoading: (s) => s.logs?.loading ?? false,
@@ -61,7 +61,7 @@ describe('PipelineStatus — uc-pip-01', () => {
   })
 
   it('despacha fetchPipelineStatus al montar', () => {
-    const { fetchPipelineStatus } = require('@redux/slices/logsSlice')
+    const { fetchPipelineStatus } = require('@redux/slices/logs')
     wrap(<PipelineStatus />)
     expect(fetchPipelineStatus).toHaveBeenCalled()
   })

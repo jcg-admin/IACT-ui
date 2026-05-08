@@ -15,7 +15,7 @@ import reportsReducer, {
   selectScheduledReports,
   selectReportsLoading,
   selectReportsError,
-} from '../reportsSlice'
+} from '../reports'
 import reportsService from '../../../services/reportsService'
 
 jest.mock('../../../services/reportsService')

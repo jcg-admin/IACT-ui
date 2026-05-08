@@ -10,7 +10,7 @@ import sessionReducer, {
   selectIsSessionActive,
   selectAlerts,
   selectAllJobs,
-} from '../sessionSlice'
+} from '../session'
 
 function buildStore() {
   return configureStore({ reducer: { session: sessionReducer } })

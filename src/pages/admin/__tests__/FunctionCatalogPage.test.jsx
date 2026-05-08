@@ -19,7 +19,7 @@ jest.mock('react-redux', () => ({
     }),
 }))
 
-jest.mock('../../../redux/slices/adminSlice', () => ({
+jest.mock('../../../redux/slices/admin', () => ({
   fetchFunctions: () => ({ type: 'admin/fetchFunctions' }),
   createFunction: jest.fn((data) => ({ type: 'admin/createFunction', payload: data })),
   updateFunction: jest.fn((args) => ({ type: 'admin/updateFunction', payload: args })),
@@ -58,7 +58,7 @@ describe('FunctionCatalog', () => {
 })
 
 describe('FunctionCatalog — CODENAME_REGEX (G-B1)', () => {
-  const { createFunction } = require('../../../redux/slices/adminSlice')
+  const { createFunction } = require('../../../redux/slices/admin')
 
   beforeEach(() => {
     mockDispatch.mockClear()

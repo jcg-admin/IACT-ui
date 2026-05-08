@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSavedFilters, deleteFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFiltersSlice'
+import { fetchSavedFilters, deleteFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFilters'
 import LoadingSpinner from '../shared/LoadingSpinner'
 
 export default function SavedFiltersPanel({ onApply }) {

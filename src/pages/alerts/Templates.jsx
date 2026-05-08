@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTemplates, selectTemplates, selectLoading } from '../../redux/slices/alertsSlice';
+import { fetchTemplates, selectTemplates, selectLoading } from '../../redux/slices/alerts';
 
 export default function Templates() {
     const [templates, setTemplates] = useState([]);

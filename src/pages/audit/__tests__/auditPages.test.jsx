@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
 
-jest.mock('../../../redux/slices/auditSlice', () => ({
+jest.mock('../../../redux/slices/audit', () => ({
   fetchAuditLogs: jest.fn(() => ({ type: 'audit/fetchAuditLogs' })),
   searchAuditLogs: jest.fn(() => ({ type: 'audit/searchAuditLogs' })),
   fetchComplianceReport: jest.fn(() => ({ type: 'audit/fetchComplianceReport' })),
@@ -48,7 +48,7 @@ describe('Audit', () => {
   })
 
   it('dispatches fetchAuditLogs on mount', () => {
-    const { fetchAuditLogs } = require('../../../redux/slices/auditSlice')
+    const { fetchAuditLogs } = require('../../../redux/slices/audit')
     wrap(<Audit />)
     expect(fetchAuditLogs).toHaveBeenCalled()
   })

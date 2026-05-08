@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createAlert, fetchTemplates, selectLoading, selectError, selectSuccess } from '../../redux/slices/alertsSlice';
+import { createAlert, fetchTemplates, selectLoading, selectError, selectSuccess } from '../../redux/slices/alerts';
 
 const OPERATORS = ['>', '<', '=', '>=', '<=', '!=', 'CONTAINS', 'NOT_CONTAINS'];
 const FREQUENCIES = ['REALTIME', 'HOURLY', 'DAILY', 'WEEKLY'];

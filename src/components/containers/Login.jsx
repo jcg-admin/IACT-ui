@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '@redux/slices/authSlice';
+import { loginUser } from '@redux/slices/auth';
 import { selectAuthLoading, selectAuthError } from '@redux/selectors';
 import LoginForm from '@components/presentational/LoginForm';
 import { AnimatedLoadingSpinner } from '@components/animations';

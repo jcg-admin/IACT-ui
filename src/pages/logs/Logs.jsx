@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchLogs, selectLogs } from '../../redux/slices/logsSlice'
-import { selectIsLoading } from '../../redux/slices/loadingSlice'
+import { fetchLogs, selectLogs } from '../../redux/slices/logs'
+import { selectIsLoading } from '../../redux/slices/loading'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 const BADGE_CLASS = { ERROR: 'badge-danger', WARNING: 'badge-warning', INFO: 'badge-info' }

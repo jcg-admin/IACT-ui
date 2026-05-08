@@ -7,7 +7,7 @@ import alertsReducer, {
   selectTemplates,
   selectLoading,
   selectError,
-} from '../alertsSlice'
+} from '../alerts'
 
 jest.mock('../../../services/alertsGateway', () => ({
   __esModule: true,

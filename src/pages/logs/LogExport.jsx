@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { exportLogs, selectLogsLoading } from '../../redux/slices/logsSlice'
+import { exportLogs, selectLogsLoading } from '../../redux/slices/logs'
 
 export default function LogExport() {
   const dispatch = useDispatch()

@@ -13,7 +13,7 @@ import accessReducer, {
     selectFunctions,
     selectUserPermissions,
     selectSeparationConflicts,
-} from '../accessSlice';
+} from '../access';
 import accessService from '../../../services/accessService';
 
 jest.mock('../../../services/accessService');

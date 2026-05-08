@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAuditLogs, selectLoading, selectError } from '../../redux/slices/auditSlice';
+import { fetchAuditLogs, selectLoading, selectError } from '../../redux/slices/audit';
 import auditService from '../../services/auditService';
 
 export default function Export() {

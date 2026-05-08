@@ -8,7 +8,7 @@ import auditReducer, {
   selectSearchResults,
   selectLoading,
   selectError,
-} from '../auditSlice'
+} from '../audit'
 
 jest.mock('../../../services/auditService', () => ({
   __esModule: true,

@@ -66,13 +66,13 @@ jest.mock('@redux/selectors', () => ({
   selectAuthError: (s) => s.auth?.error ?? null,
 }))
 
-jest.mock('@redux/slices/authSlice', () => ({
+jest.mock('@redux/slices/auth', () => ({
   loginUser: jest.fn(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) })),
   logout: jest.fn(() => ({ type: 'auth/logout' })),
   setUser: jest.fn(() => ({ type: 'auth/setUser' })),
 }))
 
-jest.mock('@redux/slices/reportsSlice', () => ({
+jest.mock('@redux/slices/reports', () => ({
   __esModule: true,
   fetchDashboardMetrics: jest.fn(() => ({ type: 'reports/fetchDashboardMetrics/pending' })),
   selectMetrics: (s) => s.reports?.metrics ?? null,

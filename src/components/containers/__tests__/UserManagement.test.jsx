@@ -25,7 +25,7 @@ jest.mock('react-redux', () => ({
     }),
 }));
 
-jest.mock('../../../redux/slices/userSlice', () => ({
+jest.mock('../../../redux/slices/user', () => ({
     fetchUsers: jest.fn(() => ({ type: 'user/fetchUsers' })),
     deactivateUser: jest.fn(id => ({ type: 'user/deactivateUser', payload: id })),
     selectUsers: (s) => s.user.users,
@@ -34,7 +34,7 @@ jest.mock('../../../redux/slices/userSlice', () => ({
     selectUsersTotal: (s) => s.user.total,
 }));
 
-import { fetchUsers } from '../../../redux/slices/userSlice';
+import { fetchUsers } from '../../../redux/slices/user';
 
 function renderComponent() {
     return render(

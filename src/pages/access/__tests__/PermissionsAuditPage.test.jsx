@@ -18,7 +18,7 @@ jest.mock('react-redux', () => ({
   }),
 }))
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
   fetchAccessAudit: jest.fn(() => ({ type: 'access/fetchAccessAudit' })),
   selectLoading: (s) => s.access.loading,
   selectError: (s) => s.access.error,

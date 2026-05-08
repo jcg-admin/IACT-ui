@@ -24,7 +24,7 @@ jest.mock('react-redux', () => ({
     }),
 }))
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
   fetchAllFunctions: jest.fn(() => ({ type: 'access/fetchAllFunctions' })),
   assignGroupToUser: jest.fn((payload) => ({ type: 'access/assignGroupToUser', payload })),
   selectGroups: (s) => s.access.groups,
@@ -35,7 +35,7 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
   resetState: jest.fn(() => ({ type: 'access/resetState' })),
 }))
 
-import { assignGroupToUser } from '../../../redux/slices/accessSlice'
+import { assignGroupToUser } from '../../../redux/slices/access'
 
 function wrap() {
   return render(<MemoryRouter><AssignGroup /></MemoryRouter>)

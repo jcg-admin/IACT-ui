@@ -4,8 +4,8 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '@redux/slices/authSlice';
-import reportsReducer from '@redux/slices/reportsSlice';
+import authReducer from '@redux/slices/auth';
+import reportsReducer from '@redux/slices/reports';
 
 describe('WebSocket Integration', () => {
   let store;

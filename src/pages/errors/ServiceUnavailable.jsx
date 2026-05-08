@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { selectRetryAfter } from '@redux/slices/errorSlice'
+import { selectRetryAfter } from '@redux/slices/error'
 
 export default function ServiceUnavailable() {
   const retryAfter = useSelector(selectRetryAfter)

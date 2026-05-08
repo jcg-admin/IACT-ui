@@ -1,4 +1,4 @@
-import { incrementContext, decrementContext } from '@redux/slices/loadingSlice'
+import { incrementContext, decrementContext } from '@redux/slices/loading'
 
 // Contexts that manage their own loading state or use auth-level spinners
 const SILENT_CONTEXTS = new Set(['auth', 'session'])

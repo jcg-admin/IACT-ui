@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAlerts, selectAlerts, selectLoading, selectError } from '../../redux/slices/alertsSlice';
+import { fetchAlerts, selectAlerts, selectLoading, selectError } from '../../redux/slices/alerts';
 
 export default function Alerts() {
     const [categoryFilter, setCategoryFilter] = useState('');

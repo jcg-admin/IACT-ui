@@ -4,5 +4,5 @@
  */
 
 export { default as store } from './store'
-export * from './slices/uiSlice'
-export * from './slices/userSlice'
+export * from './slices/ui'
+export * from './slices/user'

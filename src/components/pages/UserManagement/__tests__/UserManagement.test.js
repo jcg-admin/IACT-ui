@@ -16,7 +16,7 @@ jest.mock('react-redux', () => ({
   }),
 }))
 
-jest.mock('../../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../../redux/slices/access', () => ({
   selectGroups: (s) => s.access?.groups ?? [],
   assignGroupToUser: jest.fn((p) => ({ type: 'access/assignGroupToUser', payload: p })),
   revokeGroupFromUser: jest.fn((p) => ({ type: 'access/revokeGroupFromUser', payload: p })),

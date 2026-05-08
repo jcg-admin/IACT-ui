@@ -3,7 +3,7 @@ import errorReducer, {
   selectGlobalError,
   selectContextError,
   selectRetryAfter,
-} from '@redux/slices/errorSlice'
+} from '@redux/slices/error'
 import {
   UnauthorizedError,
   RateLimitError,

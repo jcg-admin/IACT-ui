@@ -6,7 +6,7 @@ import {
   selectRetryAfter,
   selectIsPersistentError,
   clearGlobalError,
-} from '@redux/slices/errorSlice'
+} from '@redux/slices/error'
 
 const AUTO_CLOSE_MS = 6000
 

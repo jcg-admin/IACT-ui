@@ -17,7 +17,7 @@ import {
   selectMetrics,
   selectReportHistory,
   selectReportsLoading,
-} from '../../../redux/slices/reportsSlice'
+} from '../../../redux/slices/reports'
 import MetricsCard from './MetricsCard'
 import ChartComponent from './ChartComponent'
 import CustomReportForm from './CustomReportForm'

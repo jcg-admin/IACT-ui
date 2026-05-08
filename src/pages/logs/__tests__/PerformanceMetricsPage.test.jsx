@@ -20,7 +20,7 @@ jest.mock('react-redux', () => ({
     selector({ logs: { loading: false, error: null, logs: [], searchResults: [], systemStatus: null, performanceMetrics: METRICS } }),
 }))
 
-jest.mock('../../../redux/slices/logsSlice', () => ({
+jest.mock('../../../redux/slices/logs', () => ({
   fetchPerformanceMetrics: () => ({ type: 'logs/fetchPerformanceMetrics' }),
   selectPerformanceMetrics: (s) => s.logs.performanceMetrics,
   selectLogsLoading: (s) => s.logs.loading,

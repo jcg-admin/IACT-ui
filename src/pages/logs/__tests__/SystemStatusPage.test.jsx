@@ -20,7 +20,7 @@ jest.mock('react-redux', () => ({
     selector({ logs: { loading: false, error: null, logs: [], searchResults: [], systemStatus: SYSTEM_STATUS } }),
 }))
 
-jest.mock('../../../redux/slices/logsSlice', () => ({
+jest.mock('../../../redux/slices/logs', () => ({
   fetchSystemStatus: () => ({ type: 'logs/fetchSystemStatus' }),
   selectSystemStatus: (s) => s.logs.systemStatus,
   selectLogsLoading: (s) => s.logs.loading,

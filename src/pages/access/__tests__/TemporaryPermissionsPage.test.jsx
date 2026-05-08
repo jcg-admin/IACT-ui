@@ -16,7 +16,7 @@ jest.mock('react-redux', () => ({
     }),
 }));
 
-jest.mock('../../../redux/slices/accessSlice', () => ({
+jest.mock('../../../redux/slices/access', () => ({
     fetchAllFunctions: () => ({ type: 'access/fetchAllFunctions' }),
     assignFunction: jest.fn(args => ({ type: 'access/assignFunction', payload: args })),
     selectLoading: (s) => s.access.loading,
@@ -24,7 +24,7 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
     selectSuccess: (s) => s.access.success,
 }));
 
-import { assignFunction } from '../../../redux/slices/accessSlice';
+import { assignFunction } from '../../../redux/slices/access';
 
 function renderPage() {
     return render(

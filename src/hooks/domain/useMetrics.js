@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateMetrics, selectMetrics } from '@redux/slices/reportsSlice';
+import { updateMetrics, selectMetrics } from '@redux/slices/reports';
 
 export const useMetrics = () => {
   const dispatch = useDispatch();

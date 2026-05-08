@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { searchLogs, selectSearchResults, selectLogsLoading } from '../../redux/slices/logsSlice'
+import { searchLogs, selectSearchResults, selectLogsLoading } from '../../redux/slices/logs'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 
 export default function LogSearch() {
