@@ -1206,16 +1206,17 @@ class MockInterceptor {
       return this._error(405, 'Method not allowed')
     }
     const AGRS = [
-      { id:  1, codename: 'basic_operator_group',      name: 'Operador Básico',           description: 'Operador básico de call center',       functions_count: 6,  active: true },
-      { id:  2, codename: 'report_viewer_group',        name: 'Visualizador de Reportes',  description: 'Visualizador de reportes IVR',         functions_count: 8,  active: true },
-      { id:  3, codename: 'quality_supervisor_group',   name: 'Supervisor de Calidad',     description: 'Supervisor de calidad',                functions_count: 11, active: true },
-      { id:  4, codename: 'data_exporter_group',        name: 'Exportador de Datos',       description: 'Exportador de datos y reportes',       functions_count: 14, active: true },
-      { id:  5, codename: 'alert_manager_group',        name: 'Gestor de Alertas',         description: 'Gestor de alertas y notificaciones',   functions_count: 6,  active: true },
-      { id:  6, codename: 'user_admin_group',           name: 'Admin de Usuarios',         description: 'Administrador de usuarios',            functions_count: 9,  active: true },
-      { id:  7, codename: 'permission_admin_group',     name: 'Admin de Permisos',         description: 'Administrador de permisos',            functions_count: 5,  active: true },
-      { id:  8, codename: 'auditor_group',              name: 'Auditor',                   description: 'Auditor de cumplimiento',              functions_count: 4,  active: true },
-      { id:  9, codename: 'pipeline_admin_group',       name: 'Admin de Pipeline',         description: 'Administrador de pipelines ETL',       functions_count: 4,  active: true },
-      { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 9,  active: true },
+      { id:  1, codename: 'basic_operator_group',      name: 'Operador Básico',           description: 'Operador básico de call center',       functions_count: 6,  active: true, is_system: true },
+      { id:  2, codename: 'report_viewer_group',        name: 'Visualizador de Reportes',  description: 'Visualizador de reportes IVR',         functions_count: 8,  active: true, is_system: true },
+      { id:  3, codename: 'quality_supervisor_group',   name: 'Supervisor de Calidad',     description: 'Supervisor de calidad',                functions_count: 11, active: true, is_system: true },
+      { id:  4, codename: 'data_exporter_group',        name: 'Exportador de Datos',       description: 'Exportador de datos y reportes',       functions_count: 14, active: true, is_system: true },
+      { id:  5, codename: 'alert_manager_group',        name: 'Gestor de Alertas',         description: 'Gestor de alertas y notificaciones',   functions_count: 6,  active: true, is_system: true },
+      { id:  6, codename: 'user_admin_group',           name: 'Admin de Usuarios',         description: 'Administrador de usuarios',            functions_count: 9,  active: true, is_system: true },
+      { id:  7, codename: 'permission_admin_group',     name: 'Admin de Permisos',         description: 'Administrador de permisos',            functions_count: 5,  active: true, is_system: true },
+      { id:  8, codename: 'auditor_group',              name: 'Auditor',                   description: 'Auditor de cumplimiento',              functions_count: 4,  active: true, is_system: true },
+      { id:  9, codename: 'pipeline_admin_group',       name: 'Admin de Pipeline',         description: 'Administrador de pipelines ETL',       functions_count: 4,  active: true, is_system: true },
+      { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 9,  active: true, is_system: true },
+      { id: 20, codename: 'custom_user_group',          name: 'Grupo de Usuario Custom',   description: 'Grupo definido por usuario',           functions_count: 0,  active: true, is_system: false },
     ]
     return { status: 200, data: { results: AGRS, count: AGRS.length } }
   }
@@ -1832,10 +1833,28 @@ class MockInterceptor {
       return { status: 200, data: { functions: [...fns], count: fns.size } }
     }
     if (method === 'POST') {
+      const allAGRs = this._handleAdminAGR('GET', null).data.results
+      const agr = allAGRs.find(a => a.id === id)
+      if (agr && agr.is_system === false) {
+        return { status: 403, data: { error: 'AGR no es de sistema', code: 'NOT_SYSTEM_AGR' } }
+      }
       const codename = body?.function_codename
       if (!codename) return this._error(400, 'function_codename required')
       if (fns.has(codename)) {
         return { status: 409, data: { error: 'Función ya asignada al AGR', code: 'ALREADY_ASSIGNED' } }
+      }
+      const srData = this._separationRulesData()
+      for (const rule of srData) {
+        if (!rule.isActive) continue
+        const ruleA = rule.group_a ?? []
+        const ruleB = rule.group_b ?? []
+        const fnsList = [...fns]
+        if (ruleA.includes(codename) && fnsList.some(f => ruleB.includes(f))) {
+          return { status: 400, data: { error: 'Conflicto SoD', code: 'SOD_CONFLICT', rule_code: rule.code, conflicting_function: fnsList.find(f => ruleB.includes(f)) } }
+        }
+        if (ruleB.includes(codename) && fnsList.some(f => ruleA.includes(f))) {
+          return { status: 400, data: { error: 'Conflicto SoD', code: 'SOD_CONFLICT', rule_code: rule.code, conflicting_function: fnsList.find(f => ruleA.includes(f)) } }
+        }
       }
       fns.add(codename)
       this._systemGroupFunctions.set(id, fns)

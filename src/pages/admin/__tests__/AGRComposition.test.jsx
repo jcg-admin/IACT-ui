@@ -157,4 +157,22 @@ describe('AGRCatalog — Composición (UC-ADM-03)', () => {
     fireEvent.click(screen.getByLabelText('Cerrar panel de composición'))
     expect(screen.queryByLabelText('Panel composición Operador Básico')).not.toBeInTheDocument()
   })
+
+  it('shows role=alert when addFunctionToAGR rejects with 403 (non-system AGR)', async () => {
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'AGR no es de sistema', statusCode: 403 }),
+    }))
+    wrapper(<AGRCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Composición' }))
+    fireEvent.click(screen.getByLabelText('Gestionar composición de Operador Básico'))
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Codename de función a agregar' }),
+      { target: { value: 'reports:view' } }
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar función al AGR' }))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/no es de sistema/i)
+    })
+  })
 })
