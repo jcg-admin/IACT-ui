@@ -6,6 +6,7 @@ import {
   selectLogsLoading,
   selectLogsError,
 } from '@store/slices/logs'
+import ReportTable from '@ui/reports/ReportTable'
 
 const FRESCURA_BADGE = {
   fresco: 'badge-success',
@@ -13,15 +14,29 @@ const FRESCURA_BADGE = {
   vencido: 'badge-danger',
 }
 
-function FrescuraBadge({ estado }) {
-  const cls = FRESCURA_BADGE[estado] ?? 'badge-secondary'
-  return <span className={`badge ${cls}`}>{estado ?? '—'}</span>
-}
-
 function toRows(payload) {
   if (!payload) return []
   return Array.isArray(payload) ? payload : [payload]
 }
+
+const COLUMNS = [
+  { key: 'dataset', label: 'Dataset' },
+  {
+    key: 'estado_frescura',
+    label: 'Estado Frescura',
+    render: (estado) => (
+      <span className={`badge ${FRESCURA_BADGE[estado] ?? 'badge-secondary'}`}>
+        {estado ?? '—'}
+      </span>
+    ),
+  },
+  { key: 'minutos_desde_etl', label: 'Minutos desde ETL' },
+  {
+    key: 'ultima_actualizacion',
+    label: 'Última actualización',
+    render: (v) => (v ? new Date(v).toLocaleString() : '—'),
+  },
+]
 
 export default function ETLAvailability() {
   const dispatch = useDispatch()
@@ -57,34 +72,12 @@ export default function ETLAvailability() {
         </div>
       )}
 
-      {loading && rows.length === 0 ? (
-        <div role="status" aria-busy="true" style={{ color: '#9ca3af', padding: '48px', textAlign: 'center' }}>
-          Cargando disponibilidad…
-        </div>
-      ) : rows.length === 0 ? (
-        <div className="empty-state">No hay datos de disponibilidad ETL.</div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Dataset</th>
-              <th>Estado Frescura</th>
-              <th>Minutos desde ETL</th>
-              <th>Última actualización</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((item) => (
-              <tr key={item.dataset}>
-                <td>{item.dataset}</td>
-                <td><FrescuraBadge estado={item.estado_frescura} /></td>
-                <td>{item.minutos_desde_etl ?? '—'}</td>
-                <td>{item.ultima_actualizacion ? new Date(item.ultima_actualizacion).toLocaleString() : '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ReportTable
+        columns={COLUMNS}
+        data={rows}
+        loading={loading && rows.length === 0}
+        emptyMessage="No hay datos de disponibilidad ETL."
+      />
     </div>
   )
 }

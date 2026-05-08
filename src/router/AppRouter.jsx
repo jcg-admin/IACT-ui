@@ -88,6 +88,7 @@ const InfraLogsPage = lazy(() => import('@screens/logs/InfraLogs'))
 const SystemStatusPage = lazy(() => import('@screens/logs/SystemStatus'))
 const PerformanceMetricsPage = lazy(() => import('@screens/logs/PerformanceMetrics'))
 const PipelineStatusPage = lazy(() => import('@screens/logs/PipelineStatus'))
+const ETLErrorsPage = lazy(() => import('@screens/logs/ETLErrors'))
 
 // ── Reports pages ────────────────────────────────────────────────────────────
 const AgentsReportPage = lazy(() => import('@screens/reports/AgentsReport'))
@@ -199,6 +200,7 @@ const ALL_NAV_LINKS = [
       { label: 'App logs',          icon: 'file-alt',        path: '/logs',                  permission: FunctionCatalog.VIEW_LOGS },
       { label: 'ETL logs',          icon: 'exchange-alt',    path: '/logs/etl',              permission: FunctionCatalog.VIEW_PIPELINE_LOGS },
       { label: 'Disponibilidad',    icon: 'heartbeat',       path: '/logs/etl/availability', permission: FunctionCatalog.VIEW_DATA_AVAILABILITY },
+      { label: 'Errores pipeline',  icon: 'exclamation-triangle', path: '/logs/etl/errors', permission: FunctionCatalog.VIEW_PIPELINE_ERRORS },
       { label: 'Buscar',            icon: 'search',          path: '/logs/search',           permission: FunctionCatalog.SEARCH_LOGS },
       { label: 'Exportar',          icon: 'download',        path: '/logs/export',           permission: FunctionCatalog.EXPORT_LOGS },
       { label: 'Infraestructura',   icon: 'server',          path: '/logs/infra',            permission: FunctionCatalog.VIEW_INFRA_LOGS },
@@ -611,6 +613,16 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.VIEW_DATA_AVAILABILITY}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <ETLAvailabilityPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/logs/etl/errors"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_PIPELINE_ERRORS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ETLErrorsPage />
                 </Suspense>
               </ProtectedRoute>
             }

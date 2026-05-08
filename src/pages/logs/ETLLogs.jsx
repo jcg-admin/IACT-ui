@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchETLLogs, retryPipeline, selectETLLogs } from '../../redux/slices/logs'
-import { selectIsLoading } from '../../redux/slices/loading'
-import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import { fetchETLLogs, retryPipeline, selectETLLogs } from '@store/slices/logs'
+import { selectIsLoading } from '@store/slices/loading'
+import ReportTable from '@ui/reports/ReportTable'
 
 const STATUS_BADGE = { success: 'badge-success', failed: 'badge-danger', running: 'badge-warning' }
 const MOTIVO_MIN = 20
@@ -51,6 +51,33 @@ export default function ETLLogs() {
     }
   }
 
+  const columns = [
+    { key: 'timestamp',          label: 'Timestamp' },
+    { key: 'process',            label: 'Proceso' },
+    {
+      key: 'status',
+      label: 'Estado',
+      render: (s) => <span className={`badge ${STATUS_BADGE[s] ?? 'badge'}`}>{s}</span>,
+    },
+    { key: 'duration',           label: 'Duración' },
+    { key: 'records_processed',  label: 'Registros' },
+    {
+      key: 'id',
+      label: '',
+      render: (id, row) => row.status === 'failed'
+        ? (
+          <button
+            className="btn btn-secondary"
+            onClick={() => openRetryModal(id)}
+            style={{ fontSize: '12px', padding: '2px 8px' }}
+          >
+            Reintentar
+          </button>
+        )
+        : null,
+    },
+  ]
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -84,45 +111,12 @@ export default function ETLLogs() {
         </button>
       </div>
 
-      {loading ? (
-        <LoadingSpinner message="Cargando logs ETL..." />
-      ) : etlLogs.length === 0 ? (
-        <div className="empty-state">No hay logs ETL para los filtros seleccionados.</div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Proceso</th>
-              <th>Estado</th>
-              <th>Duración</th>
-              <th>Registros</th>
-            </tr>
-          </thead>
-          <tbody>
-            {etlLogs.map((log, i) => (
-              <tr key={log.id ?? i}>
-                <td>{log.timestamp}</td>
-                <td>{log.process}</td>
-                <td><span className={`badge ${STATUS_BADGE[log.status] ?? 'badge'}`}>{log.status}</span></td>
-                <td>{log.duration}</td>
-                <td>{log.records_processed}</td>
-                <td>
-                  {log.status === 'failed' && (
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => openRetryModal(log.id)}
-                      style={{ fontSize: '12px', padding: '2px 8px' }}
-                    >
-                      Reintentar
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ReportTable
+        columns={columns}
+        data={etlLogs}
+        loading={loading}
+        emptyMessage="No hay logs ETL para los filtros seleccionados."
+      />
 
       {retryModal.isOpen && (
         <div role="dialog" aria-modal="true" aria-labelledby="retry-modal-title" className="modal-overlay">
