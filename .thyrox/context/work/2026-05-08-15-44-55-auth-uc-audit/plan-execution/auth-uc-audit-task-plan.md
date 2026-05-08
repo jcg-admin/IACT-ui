@@ -89,9 +89,9 @@ pero Block IV depende de I (mismo flujo de login). En la práctica ejecutar I→
 
 ## Block VII — Estructura Login.jsx (GAP-AUTH-STRUCT)
 
-- [ ] [T-014] **git mv** — Mover `src/components/containers/Login.jsx` → `src/pages/auth/Login.jsx`. Actualizar imports internos si los hay. El test en `containerComponents.test.jsx` que importa desde `../Login` debe actualizarse para importar desde `@screens/auth/Login`. Crear `src/pages/auth/__tests__/Login.test.jsx` con los tests migrados desde `containerComponents.test.jsx` (la sección `describe('Login', ...)`). *(GAP-AUTH-STRUCT · move)*
+- [x] [T-014] **git mv** — Mover `src/components/containers/Login.jsx` → `src/pages/auth/Login.jsx`. Actualizar imports internos si los hay. El test en `containerComponents.test.jsx` que importa desde `../Login` debe actualizarse para importar desde `@screens/auth/Login`. Crear `src/pages/auth/__tests__/Login.test.jsx` con los tests migrados desde `containerComponents.test.jsx` (la sección `describe('Login', ...)`). *(GAP-AUTH-STRUCT · move)*
 
-- [ ] [T-015] **AppRouter.jsx** — Actualizar import lazy: `import('@ui/containers/Login')` → `import('@screens/auth/Login')`. Verificar que la ruta `/login` sigue funcionando. *(GAP-AUTH-STRUCT · router)*
+- [x] [T-015] **AppRouter.jsx** — Actualizar import lazy: `import('@ui/containers/Login')` → `import('@screens/auth/Login')`. Verificar que la ruta `/login` sigue funcionando. *(GAP-AUTH-STRUCT · router)*
 
 ---
 

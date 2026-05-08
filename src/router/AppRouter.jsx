@@ -35,7 +35,7 @@ import { usePermisos } from '../hooks/usePermisos'
 // ── Lazy imports ────────────────────────────────────────────────────────────
 
 const LoginPage = lazy(() =>
-  import('@ui/containers/Login').then(m => ({ default: m.default || m.Login }))
+  import('@screens/auth/Login').then(m => ({ default: m.default || m.Login }))
 )
 const DashboardPage = lazy(() =>
   import('@ui/containers/DashboardMain').then(m => ({ default: m.default }))

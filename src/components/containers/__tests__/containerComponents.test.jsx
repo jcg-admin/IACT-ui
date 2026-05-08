@@ -94,46 +94,6 @@ function wrap(ui, store = buildStore()) {
   return render(<Provider store={store}><MemoryRouter>{ui}</MemoryRouter></Provider>)
 }
 
-describe('Login', () => {
-  let LoginPage
-  beforeAll(() => {
-    LoginPage = require('../Login').default
-  })
-  beforeEach(() => {
-    mockNavigate.mockReset();
-    mockLoginUser.mockImplementation(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) }));
-  })
-
-  it('renders IACT Dashboard heading', () => {
-    wrap(<LoginPage />)
-    expect(screen.getByText('IACT Dashboard')).toBeInTheDocument()
-  })
-
-  it('renders demo credentials', () => {
-    wrap(<LoginPage />)
-    expect(screen.getByText('Demo credentials:')).toBeInTheDocument()
-  })
-
-  it('navigates to /dashboard on successful login without next_step', async () => {
-    mockLoginUser.mockImplementation(() => ({
-      type: 'auth/loginUser',
-      unwrap: () => Promise.resolve({}),
-    }));
-    wrap(<LoginPage />)
-    fireEvent.submit(screen.getByRole('button', { name: /login/i }).closest('form'))
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/dashboard'))
-  })
-
-  it('navigates to /change-password when next_step is change_password', async () => {
-    mockLoginUser.mockImplementation(() => ({
-      type: 'auth/loginUser',
-      unwrap: () => Promise.resolve({ next_step: 'change_password', first_login: true }),
-    }));
-    wrap(<LoginPage />)
-    fireEvent.submit(screen.getByRole('button', { name: /login/i }).closest('form'))
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/change-password'))
-  })
-})
 
 describe('Settings', () => {
   let Settings
