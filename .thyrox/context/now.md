@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: .thyrox/context/work/2026-05-08-02-25-15-permissions-fr-gaps-uml-conformance
-phase: Phase 8 — PLAN EXECUTION
-updated_at: 2026-05-08 02:26:42
+current_work: null
+phase: null
+updated_at: 2026-05-08 03:53:51
 blockers: []
 ```
 
@@ -16,11 +16,34 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP systemic-naming-violations — Phase 11 TRACK completa. 0 deuda técnica activa.
+**Estado:** 0 WPs activos. 0 deuda técnica activa.
 
 ## Métricas de test suite
 
-**1799 tests** passing (verificado 2026-05-08 — WP systemic-naming-violations Phase 11 TRACK completa, 209 suites)
+**1820 tests** passing (verificado 2026-05-08 — WP permissions-fr-gaps-uml-conformance Phase 11 TRACK completa, 211 suites)
+
+---
+
+## WP cerrado — permissions-fr-gaps-uml-conformance ✓
+
+`2026-05-08-02-25-15-permissions-fr-gaps-uml-conformance` — Phase 11 TRACK completa.
+
+25 tareas en 6 bloques (GAP-6, GAP-1, GAP-2, GAP-5, GAP-3, GAP-4). 2 commits. 1820 tests, 0 regressions.
+
+Entregables:
+- GAP-6: ComplianceReport label "SoD" → "Separación de Funciones"
+- GAP-1: SeparationRulesValidator HARD (rojo/bloqueo) vs SOFT (amarillo/confirm)
+- GAP-2: AssignGroup flujo 2 pasos — pre-validación separación antes del POST
+- GAP-5: GroupComposition cascade impact preview — primer click fetch, segundo commit
+- GAP-3: ExceptionalPermission.jsx (UC_PERM_03) — nueva página completa con anti-self
+- GAP-4: RevokeExceptionalPermission.jsx (UC-015) — nueva página con confirm modal
+
+Key lesson: `__esModule: true` obligatorio en `jest.mock` factories para módulos con `export default`.
+
+Artefactos:
+- `track/permissions-fr-gaps-changelog.md`
+- `track/permissions-fr-gaps-lessons.md` (4 lecciones)
+- `plan-execution/permissions-fr-gaps-task-plan.md` (25/25 [x])
 
 ---
 
