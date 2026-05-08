@@ -2,7 +2,7 @@
 type: Registro de Deuda Técnica
 project: IACT-UI
 version: 1.0
-updated_at: 2026-05-06 07:08:46
+updated_at: 2026-05-08 05:30:00
 ```
 
 # Deuda Técnica — IACT-UI
@@ -92,3 +92,55 @@ updated_at: 2026-05-06 07:08:46
   - ACC-04: recurso se llama `access-groups` (AGR), no `function-groups`
 - **Acción:** Implementar en WP `2026-05-05-17-08-27-sprint2-completion-reports`
 - **Referencia análisis:** `context/work/2026-05-05-17-08-27-sprint2-completion-reports/discover/api-url-debt-analysis.md`
+
+---
+
+## Deuda de Naming Sistémica — TD-NM-001..006
+
+> Registrada en WP `2026-05-08-01-05-10-dashboard-cleanup-naming-conventions` (HAL-6).
+> Estas violaciones son **sistémicas** — afectan decenas de archivos cada una.
+> Resueltas parcialmente: HAL-1..5 ejecutados. HAL-6 aplazado por volumen.
+> Próximo WP dedicado a renames sistémicos.
+
+### TD-NM-001 — 56 archivos `*Page.jsx` con sufijo prohibido
+
+- **Scope:** `src/components/pages/**/*Page.jsx` + `src/pages/**/*Page.jsx`
+- **Referencia:** frontend naming doc §1.2 — sufijo `Page` prohibido
+- **Rename destino:** `{Noun}{Verb}.jsx` o `{Domain}{Role}.jsx`
+- **Ejemplos:** `UserManagementPage.jsx` → `UserManagement.jsx` (ya correcto); `LogsPage.jsx` → `Logs.jsx`
+- **Impacto:** Sin comportamiento — solo naming; require actualizacion de imports y router
+
+### TD-NM-002 — 16 archivos `*Slice.js` con sufijo prohibido
+
+- **Scope:** `src/redux/slices/**/*Slice.js`
+- **Referencia:** frontend naming doc §3.1 — sufijo `Slice` prohibido (es un detalle de implementacion RTK)
+- **Rename destino:** nombre del dominio que gestiona: `reportsSlice.js` → `reports.js`
+- **Impacto:** Requiere actualizar todos los imports del slice y tests; riesgo medio
+
+### TD-NM-003 — 20 archivos `*Service.js` con sufijo prohibido
+
+- **Scope:** `src/services/**/*Service.js`
+- **Referencia:** frontend naming doc §6.2 — sufijo `Service` prohibido en logic files
+- **Rename destino:** gateway, client, api segun responsabilidad: `accessService.js` → `accessGateway.js`
+- **Impacto:** Actualizar imports en slices y componentes; riesgo medio
+
+### TD-NM-004 — 8 aliases Webpack con nombres tecnicos
+
+- **Scope:** `webpack.config.js` aliases: `@components`, `@utils`, `@services`, `@redux`, `@hooks`, `@mocks`, `@pages`, `@facades`
+- **Referencia:** frontend naming doc §9.2 — aliases deben ser nombres de dominio
+- **Rename destino:** `@ui` (components), `@shared` (utils), `@api` (services), `@state` (redux)
+- **Impacto:** ALTO — requiere actualizar todos los imports en todo el proyecto; 500+ referencias estimadas
+
+### TD-NM-005 — Hooks con nombres tecnicos en lugar de dominio
+
+- **Scope:** `useAuth`, `useAPI`, `useWebSocket`, `useJobPolling`, `useAlertPolling`
+- **Referencia:** frontend naming doc §2.2 — hooks deben expresar dominio, no tecnologia
+- **Ejemplos destino:** `useAuth` → `useIdentity`, `useAPI` → `useRequest`, `useWebSocket` → `useRealTimeChannel`
+- **Impacto:** Medio — actualizar consumidores de cada hook
+
+### TD-NM-006 — Acronimos en identifiers (`Auth`, `API`, `RBAC`, `SoD`, `ETL`)
+
+- **Scope:** Disperso en todo el proyecto — clase names, function names, variable names
+- **Referencia:** frontend naming doc §7 — acronimos prohibidos en identifiers
+- **Ejemplos destino:** `UserAuth` → `UserIdentity`, `useAPI` → `useRequest`, `RBACPermissions` → `RolePermissions`
+- **Impacto:** Medio-alto — disperso, requiere grep sistematico por acronimo
