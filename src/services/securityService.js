@@ -163,7 +163,7 @@ class RateLimiter {
  * CSRF Token Manager
  * Gestiona CSRF tokens
  */
-class CSRFManager {
+class CSRFTokenProvider {
   /**
    * Obtener CSRF token del cookie
    */
@@ -203,7 +203,7 @@ class CSRFManager {
 /**
  * Content Security Policy Helper
  */
-class CSPHelper {
+class ContentSecurityPolicyEnforcer {
   /**
    * Obtener nonce para scripts inline
    */
@@ -219,8 +219,8 @@ class CSPHelper {
 // Singleton instances
 const htmlSanitizer = new HTMLSanitizer();
 const inputValidator = InputValidator;
-const csrfManager = CSRFManager;
-const cspHelper = CSPHelper;
+const csrfManager = CSRFTokenProvider;
+const cspHelper = ContentSecurityPolicyEnforcer;
 
 export {
   htmlSanitizer,
