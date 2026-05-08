@@ -60,6 +60,12 @@ class MockInterceptor {
     if (url.includes('/api/auth/sessions/')) {
       return this._handleGetSessions();
     }
+    if (url.includes('/api/auth/recover-password/') && method === 'POST') {
+      return this._handleRecoverPassword(body);
+    }
+    if (url.includes('/api/auth/change-password/') && method === 'POST') {
+      return this._handleChangePassword(body);
+    }
     if (url.includes('/api/users')) {
       return this._handleUsers(method, body);
     }
@@ -1552,6 +1558,36 @@ class MockInterceptor {
       { id: 3, codename: 'audit:view',      name: 'Ver auditoría',   domain: 'audit',   granted_at: '2026-02-01', expires_at: null, is_temporary: false },
     ]
     return { status: 200, data: userId === 1 ? allPerms : allPerms.slice(0, 1) }
+  }
+
+  // UC-AUTH-03: recuperar contraseña
+  _handleRecoverPassword(body) {
+    const knownUsers = ['demo', 'admin', 'first_login_user'];
+    if (!body?.username) {
+      return this._error(400, 'username is required');
+    }
+    if (!knownUsers.includes(body.username)) {
+      return this._error(404, 'Usuario no encontrado');
+    }
+    return {
+      status: 200,
+      data: { message: 'Correo de recuperación enviado' },
+    };
+  }
+
+  // UC-AUTH-04: cambiar contraseña
+  _handleChangePassword(body) {
+    if (!body?.current_password || !body?.new_password) {
+      return this._error(400, 'current_password and new_password are required');
+    }
+    const validCurrentPasswords = ['demo123', 'admin123', 'changeme'];
+    if (!validCurrentPasswords.includes(body.current_password)) {
+      return this._error(400, 'Contraseña actual incorrecta');
+    }
+    return {
+      status: 200,
+      data: { message: 'Contraseña actualizada', next_step: null },
+    };
   }
 
   _handleGetAccessAuditLog(url) {

@@ -6,11 +6,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import PasswordStrength from '../../components/auth/PasswordStrength'
-
-const changePassword = ({ currentPassword, newPassword }) => async () => {
-  const apiService = (await import('@api/apiClient')).default
-  await apiService.post('/api/auth/change-password/', { currentPassword, newPassword })
-}
+import { changePassword } from '@store/slices/auth'
 
 export default function ChangePassword() {
   const [form, setForm] = useState({
@@ -66,12 +62,12 @@ export default function ChangePassword() {
     setErrors({})
 
     try {
-      await dispatch(changePassword({
+      const result = await dispatch(changePassword({
         currentPassword: form.currentPassword,
         newPassword: form.newPassword,
-      }))
+      })).unwrap()
       setSuccess(true)
-      setTimeout(() => navigate('/dashboard'), 2000)
+      setTimeout(() => navigate(result?.next_step || '/dashboard'), 2000)
     } catch (err) {
       setErrors({ form: err?.message || 'Error al cambiar la contraseña. Intenta de nuevo.' })
     } finally {

@@ -47,19 +47,19 @@ pero Block IV depende de I (mismo flujo de login). En la práctica ejecutar I→
 
 ## Block II — RecoverPassword (GAP-AUTH-03-B, GAP-AUTH-03-A)
 
-- [ ] [T-003] **mockInterceptor.js** — Agregar handler `POST /api/auth/recover-password/`. Request body: `{ username }`. Response 200: `{ message: "Correo de recuperación enviado" }`. Response 404 si username desconocido: `{ error: "Usuario no encontrado" }`. *(GAP-AUTH-03-B)*
+- [x] [T-003] **mockInterceptor.js** — Agregar handler `POST /api/auth/recover-password/`. Request body: `{ username }`. Response 200: `{ message: "Correo de recuperación enviado" }`. Response 404 si username desconocido: `{ error: "Usuario no encontrado" }`. *(GAP-AUTH-03-B)*
 
-- [ ] [T-004] **RecoverPassword.jsx** — Eliminar thunk local inline (`src/pages/auth/RecoverPassword.jsx:8-12`). Importar y usar `recoverPassword` de `authSlice`. Conectar al store con `useDispatch`. Actualizar `RecoverPasswordPage.test.jsx` para usar el thunk del slice (mock `authSlice`). *(GAP-AUTH-03-A)*
+- [x] [T-004] **RecoverPassword.jsx** — Eliminar thunk local inline (`src/pages/auth/RecoverPassword.jsx:8-12`). Importar y usar `recoverPassword` de `authSlice`. Conectar al store con `useDispatch`. Actualizar `RecoverPasswordPage.test.jsx` para usar el thunk del slice (mock `authSlice`). *(GAP-AUTH-03-A)*
 
 ---
 
 ## Block III — ChangePassword (GAP-AUTH-04-B, GAP-AUTH-04-A, GAP-AUTH-04-C)
 
-- [ ] [T-005] **mockInterceptor.js** — Agregar handler `POST /api/auth/change-password/`. Request body: `{ current_password, new_password }`. Response 200: `{ message: "Contraseña actualizada", next_step: null }`. Response 400 si `current_password` inválido: `{ error: "Contraseña actual incorrecta" }`. *(GAP-AUTH-04-B)*
+- [x] [T-005] **mockInterceptor.js** — Agregar handler `POST /api/auth/change-password/`. Request body: `{ current_password, new_password }`. Response 200: `{ message: "Contraseña actualizada", next_step: null }`. Response 400 si `current_password` inválido: `{ error: "Contraseña actual incorrecta" }`. *(GAP-AUTH-04-B)*
 
-- [ ] [T-006] **ChangePassword.jsx** — Eliminar thunk local inline (`src/pages/auth/ChangePassword.jsx:8-11`). Importar y usar `changePassword` de `authSlice`. Conectar al store con `useDispatch`. *(GAP-AUTH-04-A)*
+- [x] [T-006] **ChangePassword.jsx** — Eliminar thunk local inline (`src/pages/auth/ChangePassword.jsx:8-11`). Importar y usar `changePassword` de `authSlice`. Conectar al store con `useDispatch`. *(GAP-AUTH-04-A)*
 
-- [ ] [T-007] **ChangePassword.jsx** — Leer `next_step` / `scope_upgraded` del payload de `changePassword` fulfilled. Si `next_step` existe: navegar a esa ruta. Si no: navegar a `/dashboard`. Reemplazar `setTimeout(() => navigate('/dashboard'), 2000)` (línea 74) por navegación condicional. Actualizar `ChangePasswordPage.test.jsx`: (a) test que verifica navigate a `/dashboard` cuando `next_step` es null, (b) test que verifica navigate a ruta del `next_step` cuando está presente. *(GAP-AUTH-04-C)*
+- [x] [T-007] **ChangePassword.jsx** — Leer `next_step` / `scope_upgraded` del payload de `changePassword` fulfilled. Si `next_step` existe: navegar a esa ruta. Si no: navegar a `/dashboard`. Reemplazar `setTimeout(() => navigate('/dashboard'), 2000)` (línea 74) por navegación condicional. Actualizar `ChangePasswordPage.test.jsx`: (a) test que verifica navigate a `/dashboard` cuando `next_step` es null, (b) test que verifica navigate a ruta del `next_step` cuando está presente. *(GAP-AUTH-04-C)*
 
 ---
 

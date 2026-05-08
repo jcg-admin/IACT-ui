@@ -5,11 +5,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-
-const recoverPassword = (username) => async () => {
-  const apiService = (await import('@api/apiClient')).default
-  await apiService.post('/api/auth/recover-password/', { username })
-}
+import { recoverPassword } from '@store/slices/auth'
 
 export default function RecoverPassword() {
   const [username, setUsername] = useState('')
@@ -26,7 +22,7 @@ export default function RecoverPassword() {
     setError(null)
 
     try {
-      await dispatch(recoverPassword(username.trim()))
+      await dispatch(recoverPassword(username.trim())).unwrap()
       setSubmitted(true)
     } catch (err) {
       setError(err?.message || 'Error al enviar la solicitud. Intenta de nuevo.')

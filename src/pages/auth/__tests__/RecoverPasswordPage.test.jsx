@@ -4,10 +4,15 @@ import { MemoryRouter } from 'react-router-dom'
 import RecoverPassword from '../RecoverPassword'
 
 const mockDispatch = jest.fn()
+const mockRecoverPassword = jest.fn()
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
+}))
+
+jest.mock('@store/slices/auth', () => ({
+  recoverPassword: (...args) => mockRecoverPassword(...args),
 }))
 
 function renderPage() {
@@ -21,6 +26,12 @@ function renderPage() {
 describe('RecoverPassword', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
+    mockRecoverPassword.mockClear()
+    mockRecoverPassword.mockReturnValue({ type: 'auth/recoverPassword' })
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({}),
+    }))
   })
 
   it('renders without crash', () => {
@@ -33,9 +44,7 @@ describe('RecoverPassword', () => {
     expect(screen.getByLabelText('Nombre de usuario')).toBeInTheDocument()
   })
 
-  it('shows confirmation message after successful submit', async () => {
-    mockDispatch.mockResolvedValueOnce(undefined)
-
+  it('dispatches recoverPassword thunk from authSlice on submit', async () => {
     renderPage()
 
     fireEvent.change(screen.getByLabelText('Nombre de usuario'), {
@@ -44,9 +53,38 @@ describe('RecoverPassword', () => {
     fireEvent.click(screen.getByRole('button', { name: /enviar instrucciones/i }))
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/si el usuario existe/i)
-      ).toBeInTheDocument()
+      expect(mockRecoverPassword).toHaveBeenCalledWith('testuser')
+    })
+  })
+
+  it('shows confirmation message after successful submit', async () => {
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Nombre de usuario'), {
+      target: { value: 'testuser' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /enviar instrucciones/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/si el usuario existe/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows error message when dispatch rejects', async () => {
+    mockDispatch.mockImplementation(() => ({
+      type: 'auth/recoverPassword',
+      unwrap: () => Promise.reject(new Error('Error al enviar la solicitud. Intenta de nuevo.')),
+    }))
+
+    renderPage()
+
+    fireEvent.change(screen.getByLabelText('Nombre de usuario'), {
+      target: { value: 'unknown' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /enviar instrucciones/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeInTheDocument()
     })
   })
 
