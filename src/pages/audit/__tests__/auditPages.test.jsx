@@ -16,7 +16,7 @@ jest.mock('../../../redux/slices/audit', () => ({
   selectError: (s) => s.audit.error,
 }))
 
-jest.mock('../../../services/auditService', () => ({
+jest.mock('../../../services/auditGateway', () => ({
   __esModule: true,
   default: { exportLogs: jest.fn().mockResolvedValue({ url: '/download/audit.csv' }) },
 }))

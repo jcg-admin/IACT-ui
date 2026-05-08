@@ -1,6 +1,6 @@
-import adminService from '../adminService'
+import adminService from '../adminGateway'
 
-jest.mock('../apiService', () => ({
+jest.mock('../apiClient', () => ({
   __esModule: true,
   default: {
     get: jest.fn().mockResolvedValue([]),
@@ -9,7 +9,7 @@ jest.mock('../apiService', () => ({
   },
 }))
 
-const api = require('../apiService').default
+const api = require('../apiClient').default
 
 describe('adminService.getFunctions', () => {
   it('calls GET /api/admin/functions/', async () => {

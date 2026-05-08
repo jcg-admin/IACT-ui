@@ -6,7 +6,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import CustomReportForm from '../CustomReportForm'
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@services/notificationGateway', () => ({
   getNotificationService: jest.fn(() => ({
     success: jest.fn(),
     warning: jest.fn(),

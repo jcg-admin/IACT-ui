@@ -13,16 +13,16 @@ export {
   RateLimiter,
   csrfManager,
   cspHelper,
-} from './securityService';
+} from './security';
 
 // Secure Storage
 export { SecureStorage, secureStorage } from './secureStorage';
 
 // API Service (con CSRF y credentials)
-export { default as apiService, APIService } from './apiService';
+export { default as apiService, APIService } from './apiClient';
 
 // Configuration
 export { default as securityConfig } from '@config/securityConfig';
 
 // WebSocket Service
-export { default as websocketService } from './websocketService';
+export { default as websocketService } from './websocketGateway';

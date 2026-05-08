@@ -1,5 +1,5 @@
 import callsMock from '@mocks/llamadas.json';
-import { CallsService } from './CallsService';
+import { CallsService } from './CallsGateway';
 import { resetMockUsageMetrics, getMockUsageMetrics } from '@services/utils/mockUsageTracker';
 
 describe('CallsService', () => {

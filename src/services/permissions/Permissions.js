@@ -1,4 +1,4 @@
-import { createResilientService } from '@services/createResilientService';
+import { createResilientService } from '@services/createResilient';
 import { loadMock } from '@mocks/registry';
 import { shouldUseMockForDomain } from '@services/flags/backendIntegrity';
 import { cloneData } from '@services/utils/cloneDeep';

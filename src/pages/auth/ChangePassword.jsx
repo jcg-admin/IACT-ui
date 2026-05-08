@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import PasswordStrength from '../../components/auth/PasswordStrength'
 
 const changePassword = ({ currentPassword, newPassword }) => async () => {
-  const apiService = (await import('@services/apiService')).default
+  const apiService = (await import('@services/apiClient')).default
   await apiService.post('/api/auth/change-password/', { currentPassword, newPassword })
 }
 

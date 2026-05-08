@@ -1,4 +1,4 @@
-import { APIService } from '../apiService'
+import { APIService } from '../apiClient'
 
 function buildService() {
   return new APIService('http://test.example.com', { timeout: 5000, retryAttempts: 1, retryDelay: 0 })

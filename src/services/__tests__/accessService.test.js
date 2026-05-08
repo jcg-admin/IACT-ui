@@ -1,4 +1,4 @@
-import accessService from '../accessService';
+import accessService from '../accessGateway';
 
 const mockJson = jest.fn();
 const mockFetch = jest.fn();

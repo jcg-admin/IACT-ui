@@ -16,7 +16,7 @@ jest.mock('@facades/ReportExporter', () => ({
   }
 }))
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@services/notificationGateway', () => ({
   getNotificationService: jest.fn(() => ({
     success: jest.fn(),
     error: jest.fn(),
@@ -25,14 +25,14 @@ jest.mock('@services/notificationService', () => ({
   }))
 }))
 
-jest.mock('@services/websocketService', () => ({
+jest.mock('@services/websocketGateway', () => ({
   getWebSocketService: jest.fn(() => ({
     on: jest.fn(() => jest.fn()),
     off: jest.fn(),
   }))
 }))
 
-jest.mock('../../../../services/reportsService', () => ({
+jest.mock('../../../../services/reportsGateway', () => ({
   default: {
     getDashboardMetrics: jest.fn().mockResolvedValue({
       totalUsers: 2547,

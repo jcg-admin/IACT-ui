@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { getNotificationService } from '@services/notificationService'
+import { getNotificationService } from '@services/notificationGateway'
 
 export default function LoginHistory() {
   const [history, setHistory] = useState([])

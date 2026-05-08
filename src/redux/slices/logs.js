@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import logsService from '../../services/logsService'
+import logsService from '../../services/logsGateway'
 
 export const fetchLogs = createAsyncThunk(
   'logs/fetchLogs',

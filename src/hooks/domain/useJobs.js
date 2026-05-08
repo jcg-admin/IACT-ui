@@ -12,7 +12,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import jobService from '@services/jobService'
+import jobService from '@services/jobGateway'
 
 /**
  * useJobStatus - Fetch status of a single job

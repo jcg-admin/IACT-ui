@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAuditLogs, selectLoading, selectError } from '../../redux/slices/audit';
-import auditService from '../../services/auditService';
+import auditService from '../../services/auditGateway';
 
 export default function Export() {
     const [exportConfig, setExportConfig] = useState({

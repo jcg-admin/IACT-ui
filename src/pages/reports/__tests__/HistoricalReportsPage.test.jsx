@@ -12,7 +12,7 @@ const MOCK_ROW = {
   fecha_fin: '2026-05-06',
 }
 
-jest.mock('../../../services/reportsService', () => ({
+jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
     getReportHistory: jest.fn().mockResolvedValue([]),
@@ -20,7 +20,7 @@ jest.mock('../../../services/reportsService', () => ({
   },
 }))
 
-jest.mock('../../../services/apiService', () => ({
+jest.mock('../../../services/apiClient', () => ({
   default: { get: jest.fn().mockResolvedValue([]) },
 }))
 
@@ -125,7 +125,7 @@ describe('HistoricalReports — columnas del schema', () => {
 
 describe('HistoricalReports — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.getReportHistory.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
     wrapper(<HistoricalReports />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()

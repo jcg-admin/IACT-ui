@@ -6,7 +6,7 @@
  */
 
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import adminService from '../../services/adminService'
+import adminService from '../../services/adminGateway'
 
 // ── Thunks — Funciones RBAC ──────────────────────────────────────────────────
 

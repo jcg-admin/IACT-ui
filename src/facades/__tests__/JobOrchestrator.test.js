@@ -3,11 +3,11 @@
  */
 
 import jobOrchestrator from '../JobOrchestrator'
-import jobService from '@services/jobService'
-import { getNotificationService } from '@services/notificationService'
+import jobService from '@services/jobGateway'
+import { getNotificationService } from '@services/notificationGateway'
 
-jest.mock('@services/jobService')
-jest.mock('@services/notificationService')
+jest.mock('@services/jobGateway')
+jest.mock('@services/notificationGateway')
 jest.useFakeTimers()
 
 describe('JobOrchestrator Facade', () => {

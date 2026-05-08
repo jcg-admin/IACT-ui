@@ -10,7 +10,7 @@ import auditReducer, {
   selectError,
 } from '../audit'
 
-jest.mock('../../../services/auditService', () => ({
+jest.mock('../../../services/auditGateway', () => ({
   __esModule: true,
   default: {
     getAuditLogs: jest.fn(),
@@ -18,7 +18,7 @@ jest.mock('../../../services/auditService', () => ({
   },
 }))
 
-const auditService = require('../../../services/auditService').default
+const auditService = require('../../../services/auditGateway').default
 
 function buildStore() {
   return configureStore({ reducer: { audit: auditReducer } })

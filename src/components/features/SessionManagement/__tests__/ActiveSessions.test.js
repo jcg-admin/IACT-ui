@@ -9,7 +9,7 @@ import { Provider } from 'react-redux'
 import authReducer from '@redux/slices/auth'
 import ActiveSessions from '../ActiveSessions'
 
-jest.mock('@services/authService', () => ({
+jest.mock('@services/authGateway', () => ({
   __esModule: true,
   default: {
     getActiveSessions: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('@services/authService', () => ({
   },
 }))
 
-const { default: authService } = require('@services/authService')
+const { default: authService } = require('@services/authGateway')
 
 const mockSessions = [
   {

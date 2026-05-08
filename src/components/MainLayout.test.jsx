@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import MainLayout from './MainLayout';
-import { PermissionsService } from '@services/permissions/PermissionsService';
+import { PermissionsService } from '@services/permissions/Permissions';
 
-jest.mock('@services/permissions/PermissionsService', () => ({
+jest.mock('@services/permissions/Permissions', () => ({
   PermissionsService: {
     getNormalizedPermissions: jest.fn(),
   },

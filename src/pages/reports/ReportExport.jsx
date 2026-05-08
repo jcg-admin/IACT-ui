@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import reportsService from '../../services/reportsService'
+import reportsService from '../../services/reportsGateway'
 
 const REPORT_TYPES = [
   { value: 'agents',        label: 'Agentes IVR' },

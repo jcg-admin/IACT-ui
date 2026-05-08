@@ -13,7 +13,7 @@ const MOCK_ROW = {
   no_digito_telefono: 645671,
 }
 
-jest.mock('../../../services/reportsService', () => ({
+jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
     getQueuesReport: jest.fn().mockResolvedValue([]),
@@ -21,7 +21,7 @@ jest.mock('../../../services/reportsService', () => ({
   },
 }))
 
-jest.mock('../../../services/apiService', () => ({
+jest.mock('../../../services/apiClient', () => ({
   default: { get: jest.fn().mockResolvedValue([]) },
 }))
 
@@ -132,7 +132,7 @@ describe('QueuesReport — filtros reales (trimestre / segmento)', () => {
 
 describe('QueuesReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.getQueuesReport.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
     wrapper(<QueuesReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()

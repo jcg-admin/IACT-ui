@@ -39,7 +39,7 @@ jest.mock('../../../redux/slices/access', () => ({
   clearSuccess: () => ({ type: 'access/clearSuccess' }),
 }))
 
-jest.mock('../../../services/accessService', () => ({
+jest.mock('../../../services/accessGateway', () => ({
   default: { getGroups: jest.fn().mockResolvedValue([]) },
 }))
 

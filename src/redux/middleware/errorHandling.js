@@ -15,7 +15,7 @@ import {
   isRetryableError,
 } from '@utils/apiErrors';
 import { navigateTo } from '@utils/navigation';
-import auditService from '../../services/auditService';
+import auditService from '../../services/auditGateway';
 
 /**
  * Middleware para manejar errores de async thunks

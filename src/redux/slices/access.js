@@ -5,7 +5,7 @@
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import accessService from '../../services/accessService';
+import accessService from '../../services/accessGateway';
 
 /**
  * Async Thunks

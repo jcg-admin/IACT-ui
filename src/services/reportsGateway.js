@@ -13,7 +13,7 @@
  * POST /api/reports/export/             - Solicitar exportación de reporte (async → job_id)
  */
 
-import apiService from './apiService'
+import apiService from './apiClient'
 
 class ReportsService {
   /**

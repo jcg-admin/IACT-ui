@@ -18,7 +18,7 @@ import {
 } from '../errorHandling'
 import { navigateTo } from '@utils/navigation'
 
-jest.mock('../../../services/auditService', () => ({
+jest.mock('../../../services/auditGateway', () => ({
   __esModule: true,
   default: { logEvent: jest.fn().mockResolvedValue(undefined) },
 }))
@@ -150,7 +150,7 @@ describe('errorLoggingMiddleware — BR_008 audit logging', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    auditService = require('../../../services/auditService').default
+    auditService = require('../../../services/auditGateway').default
   })
 
   it('calls auditService.logEvent for authenticated 4xx errors', () => {

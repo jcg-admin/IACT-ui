@@ -1,4 +1,4 @@
-import apiService from '@services/apiService';
+import apiService from '@services/apiClient';
 
 const API_CALL = 'API_CALL';
 

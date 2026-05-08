@@ -1,4 +1,4 @@
-import auditService from '../auditService'
+import auditService from '../auditGateway'
 
 function mockFetch(data, ok = true) {
   global.fetch = jest.fn().mockResolvedValue({

@@ -8,7 +8,7 @@ import adminReducer, {
   selectAdminLoading,
 } from '../admin'
 
-jest.mock('../../../services/adminService', () => ({
+jest.mock('../../../services/adminGateway', () => ({
   __esModule: true,
   default: {
     getFunctions: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('../../../services/adminService', () => ({
   },
 }))
 
-const adminService = require('../../../services/adminService').default
+const adminService = require('../../../services/adminGateway').default
 
 function buildStore() {
   return configureStore({ reducer: { admin: adminReducer } })
@@ -51,7 +51,7 @@ describe('adminSlice — fetchAGRCatalog', () => {
 })
 
 describe('adminSlice — deactivateAGR (G-F1)', () => {
-  const adminService = require('../../../services/adminService').default
+  const adminService = require('../../../services/adminGateway').default
 
   beforeEach(() => {
     if (adminService.deactivateAGR) adminService.deactivateAGR.mockClear()

@@ -7,7 +7,7 @@ import logsReducer, {
   selectLogsLoading,
 } from '../logs'
 
-jest.mock('../../../services/logsService', () => ({
+jest.mock('../../../services/logsGateway', () => ({
   __esModule: true,
   default: {
     getLogs: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock('../../../services/logsService', () => ({
   },
 }))
 
-const logsService = require('../../../services/logsService').default
+const logsService = require('../../../services/logsGateway').default
 
 function buildStore() {
   return configureStore({ reducer: { logs: logsReducer } })

@@ -1,6 +1,6 @@
-import logsService from '../logsService'
+import logsService from '../logsGateway'
 
-jest.mock('../apiService', () => ({
+jest.mock('../apiClient', () => ({
   __esModule: true,
   default: {
     get: jest.fn().mockResolvedValue([]),
@@ -8,7 +8,7 @@ jest.mock('../apiService', () => ({
   },
 }))
 
-const apiService = require('../apiService').default
+const apiService = require('../apiClient').default
 
 describe('logsService.getLogs', () => {
   it('calls GET /api/logs/ with params', async () => {

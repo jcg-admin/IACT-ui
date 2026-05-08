@@ -13,8 +13,8 @@
  * POST   /api/register/               - Register
  */
 
-import apiService from './apiService'
-import { getNotificationService } from './notificationService'
+import apiService from './apiClient'
+import { getNotificationService } from './notificationGateway'
 import {
   withCaching,
   withLogging,

@@ -16,7 +16,7 @@ import {
   confirmTx,
   cancelTx
 } from '@redux/slices/session'
-import transactionService from '@services/transactionService'
+import transactionService from '@services/transactionGateway'
 
 export function useTransaction(_txType) {
   // Refs

@@ -13,7 +13,7 @@
  * GET   /api/admin/separation-rules/ - Listar reglas de separación
  */
 
-import apiService from './apiService'
+import apiService from './apiClient'
 
 class AdminService {
   // ── Funciones RBAC ───────────────────────────────────────────────────────

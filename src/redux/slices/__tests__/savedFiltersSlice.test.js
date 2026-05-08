@@ -7,7 +7,7 @@ import savedFiltersReducer, {
   selectSavedFiltersLoading,
 } from '../savedFilters'
 
-jest.mock('../../../services/apiService', () => ({
+jest.mock('../../../services/apiClient', () => ({
   __esModule: true,
   default: {
     get: jest.fn(),
@@ -16,7 +16,7 @@ jest.mock('../../../services/apiService', () => ({
   },
 }))
 
-const apiService = require('../../../services/apiService').default
+const apiService = require('../../../services/apiClient').default
 
 function buildStore() {
   return configureStore({ reducer: { savedFilters: savedFiltersReducer } })

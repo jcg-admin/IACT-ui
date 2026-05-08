@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import apiService from '../../services/apiService'
+import apiService from '../../services/apiClient'
 
 export const fetchSavedFilters = createAsyncThunk(
   'savedFilters/fetchSavedFilters',

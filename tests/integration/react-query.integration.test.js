@@ -14,11 +14,11 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useJobStatus, useStartJob } from '@hooks/useJobs'
 import { useAuthUser, useLogin, useLogout } from '@hooks/useIdentity'
-import jobService from '@services/jobService'
-import authService from '@services/authService'
+import jobService from '@services/jobGateway'
+import authService from '@services/authGateway'
 
-jest.mock('@services/jobService')
-jest.mock('@services/authService')
+jest.mock('@services/jobGateway')
+jest.mock('@services/authGateway')
 
 describe('React Query Integration Tests', () => {
   let queryClient

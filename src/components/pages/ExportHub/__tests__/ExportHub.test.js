@@ -15,7 +15,7 @@ jest.mock('@facades/ReportExporter', () => ({
   }
 }))
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@services/notificationGateway', () => ({
   getNotificationService: jest.fn(() => ({
     success: jest.fn(),
     error: jest.fn(),

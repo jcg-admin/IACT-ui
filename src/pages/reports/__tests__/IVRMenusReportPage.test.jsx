@@ -13,7 +13,7 @@ const MOCK_ROW = {
   total_llamadas: 2507905,
 }
 
-jest.mock('../../../services/reportsService', () => ({
+jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
     getIvrMenus: jest.fn().mockResolvedValue([]),
@@ -21,7 +21,7 @@ jest.mock('../../../services/reportsService', () => ({
   },
 }))
 
-jest.mock('../../../services/apiService', () => ({
+jest.mock('../../../services/apiClient', () => ({
   default: { get: jest.fn().mockResolvedValue([]) },
 }))
 
@@ -142,7 +142,7 @@ describe('IVRMenusReport — filtros reales (trimestre / segmento)', () => {
 
 describe('IVRMenusReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.getIvrMenus.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW, MOCK_ROW])
     wrapper(<IVRMenusReport />)
     expect(await screen.findByText('Rows: 3')).toBeInTheDocument()

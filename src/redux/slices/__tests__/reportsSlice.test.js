@@ -16,9 +16,9 @@ import reportsReducer, {
   selectReportsLoading,
   selectReportsError,
 } from '../reports'
-import reportsService from '../../../services/reportsService'
+import reportsService from '../../../services/reportsGateway'
 
-jest.mock('../../../services/reportsService')
+jest.mock('../../../services/reportsGateway')
 
 function buildStore(preloaded) {
   const config = { reducer: { reports: reportsReducer } }

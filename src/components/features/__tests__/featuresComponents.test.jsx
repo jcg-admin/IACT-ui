@@ -13,7 +13,7 @@ jest.mock('../../../facades/UserAuth', () => ({
   },
 }))
 
-jest.mock('@services/authService', () => ({
+jest.mock('@services/authGateway', () => ({
   __esModule: true,
   default: {
     getActiveSessions: jest.fn().mockResolvedValue([]),
@@ -21,7 +21,7 @@ jest.mock('@services/authService', () => ({
   },
 }))
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@services/notificationGateway', () => ({
   getNotificationService: () => ({
     success: jest.fn(),
     error: jest.fn(),

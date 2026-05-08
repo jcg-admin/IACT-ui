@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import ReportExport from '../ReportExport'
 
-jest.mock('../../../services/reportsService', () => ({
+jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
     exportReport: jest.fn().mockResolvedValue({ job_id: 'job-abc-123' }),
@@ -78,7 +78,7 @@ describe('ReportExport — botón de exportar', () => {
   })
 
   it('llama exportReport al hacer click y muestra job_id', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.exportReport.mockResolvedValueOnce({ job_id: 'job-test-456' })
     wrapper(<ReportExport />)
     fireEvent.click(screen.getByRole('button', { name: /exportar/i }))

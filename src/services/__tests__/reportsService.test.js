@@ -4,10 +4,10 @@
  * Cubre: endpoints, parámetros y error handling de cada método.
  */
 
-import reportsService from '../reportsService'
-import apiService from '../apiService'
+import reportsService from '../reportsGateway'
+import apiService from '../apiClient'
 
-jest.mock('../apiService')
+jest.mock('../apiClient')
 
 beforeEach(() => {
   jest.clearAllMocks()

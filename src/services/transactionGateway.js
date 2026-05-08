@@ -15,7 +15,7 @@
  * GET    /api/transaction/{id}/status/        - Obtener status
  */
 
-import apiService from './apiService'
+import apiService from './apiClient'
 import {
   withCaching,
   withLogging,

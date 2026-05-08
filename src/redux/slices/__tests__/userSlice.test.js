@@ -16,9 +16,9 @@ import usersReducer, {
   selectUsersError,
   selectUsersTotal,
 } from '../user'
-import userService from '../../../services/userService'
+import userService from '../../../services/userGateway'
 
-jest.mock('../../../services/userService')
+jest.mock('../../../services/userGateway')
 
 function buildStore(preloaded) {
   const config = { reducer: { user: usersReducer } }

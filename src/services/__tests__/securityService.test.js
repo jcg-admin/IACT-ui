@@ -1,4 +1,4 @@
-import { inputValidator, RateLimiter } from '../securityService'
+import { inputValidator, RateLimiter } from '../security'
 
 describe('InputValidator.isValidEmail', () => {
   it('accepts valid email', () => {

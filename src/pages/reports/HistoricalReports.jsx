@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import ReportTable from '../../components/reports/ReportTable'
 import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
 import ShareReportModal from '../../components/reports/ShareReportModal'
-import reportsService from '../../services/reportsService'
+import reportsService from '../../services/reportsGateway'
 
 const COLUMNS = [
   { key: 'periodo',         label: 'Periodo' },

@@ -18,7 +18,7 @@ import {
   registerNotificationService,
   NOTIFICATION_TYPES,
   DEFAULT_DURATIONS,
-} from '@services/notificationService'
+} from '@services/notificationGateway'
 
 describe('notificationService', () => {
   let mockToastContext

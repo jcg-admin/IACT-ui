@@ -25,8 +25,8 @@ import {
   exportTableToPDF,
   getFileNameWithTimestamp,
   validateExportData 
-} from '@services/exportService'
-import { useNotification } from '@services/notificationService'
+} from '@services/exportGateway'
+import { useNotification } from '@services/notificationGateway'
 
 /**
  * useExport Hook

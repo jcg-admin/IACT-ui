@@ -12,8 +12,8 @@
  * Uses: authService, Redux, notification system
  */
 
-import authService from '@services/authService'
-import { getNotificationService } from '@services/notificationService'
+import authService from '@services/authGateway'
+import { getNotificationService } from '@services/notificationGateway'
 
 class UserAuth {
   /**

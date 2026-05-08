@@ -17,7 +17,7 @@ const MOCK_ROW = {
   no_digito_telefono: 645671,
 }
 
-jest.mock('../../../services/reportsService', () => ({
+jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
     getTransfersByCentro: jest.fn().mockResolvedValue([]),
@@ -25,7 +25,7 @@ jest.mock('../../../services/reportsService', () => ({
   },
 }))
 
-jest.mock('../../../services/apiService', () => ({
+jest.mock('../../../services/apiClient', () => ({
   default: { get: jest.fn().mockResolvedValue([]) },
 }))
 
@@ -152,7 +152,7 @@ describe('TransfersReport — filtros reales (trimestre / segmento)', () => {
 
 describe('TransfersReport — llamada al servicio', () => {
   it('llama a reportsService.getTransfersByCentro en mount', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.getTransfersByCentro.mockClear()
     wrapper(<TransfersReport />)
     await screen.findByRole('heading', { level: 1 })
@@ -160,7 +160,7 @@ describe('TransfersReport — llamada al servicio', () => {
   })
 
   it('llama con filtros que incluyen trimestre y segmento', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.getTransfersByCentro.mockClear()
     wrapper(<TransfersReport />)
     await screen.findByRole('heading', { level: 1 })
@@ -170,7 +170,7 @@ describe('TransfersReport — llamada al servicio', () => {
   })
 
   it('renderiza filas cuando el servicio retorna datos', async () => {
-    const svc = jest.requireMock('../../../services/reportsService').default
+    const svc = jest.requireMock('../../../services/reportsGateway').default
     svc.getTransfersByCentro.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
     wrapper(<TransfersReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()

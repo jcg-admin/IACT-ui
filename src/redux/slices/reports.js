@@ -6,7 +6,7 @@
  */
 
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import reportsService from '../../services/reportsService'
+import reportsService from '../../services/reportsGateway'
 
 // ── Thunks ──────────────────────────────────────────────────────────────────
 

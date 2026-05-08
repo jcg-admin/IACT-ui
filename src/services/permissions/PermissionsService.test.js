@@ -1,5 +1,5 @@
 import permissionsMock from '@mocks/permissions.json';
-import { PermissionsService } from './PermissionsService';
+import { PermissionsService } from './Permissions';
 import { resetMockUsageMetrics, getMockUsageMetrics } from '@services/utils/mockUsageTracker';
 
 const formatLabel = (value) =>

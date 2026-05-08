@@ -17,7 +17,7 @@ import {
     selectError,
     clearError,
 } from '../../redux/slices/access';
-import accessService from '../../services/accessService';
+import accessService from '../../services/accessGateway';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 export default function GroupComposition() {

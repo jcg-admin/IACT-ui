@@ -14,9 +14,9 @@ import accessReducer, {
     selectUserPermissions,
     selectSeparationConflicts,
 } from '../access';
-import accessService from '../../../services/accessService';
+import accessService from '../../../services/accessGateway';
 
-jest.mock('../../../services/accessService');
+jest.mock('../../../services/accessGateway');
 
 function buildStore(preloaded) {
     const config = { reducer: { access: accessReducer } };

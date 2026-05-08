@@ -6,7 +6,7 @@
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import auditService from '../../services/auditService';
+import auditService from '../../services/auditGateway';
 
 /**
  * Async Thunks - LECTURA ÚNICAMENTE

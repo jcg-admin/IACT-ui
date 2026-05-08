@@ -14,7 +14,7 @@ jest.mock('@facades/UserAuth', () => ({
   }
 }))
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@services/notificationGateway', () => ({
   getNotificationService: jest.fn(() => ({
     success: jest.fn(),
     error: jest.fn()

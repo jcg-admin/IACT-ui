@@ -13,8 +13,8 @@
  * Uses: jobService, notification system
  */
 
-import jobService from '@services/jobService'
-import { getNotificationService } from '@services/notificationService'
+import jobService from '@services/jobGateway'
+import { getNotificationService } from '@services/notificationGateway'
 
 // Constants
 const POLL_INTERVAL = 2000 // 2 seconds

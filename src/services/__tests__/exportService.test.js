@@ -9,7 +9,7 @@ import {
   exportToCSV,
   getFileNameWithTimestamp,
   validateExportData,
-} from '../exportService'
+} from '../exportGateway'
 
 // Mock ExcelJS
 jest.mock('exceljs', () => {
@@ -112,8 +112,8 @@ describe('Export Service', () => {
     it('should handle Excel export errors', async () => {
       // Mock error
       const originalExportToExcel = exportToExcel
-      jest.mock('../exportService', () => ({
-        ...jest.requireActual('../exportService'),
+      jest.mock('../exportGateway', () => ({
+        ...jest.requireActual('../exportGateway'),
         exportToExcel: jest.fn().mockRejectedValue(new Error('Write failed')),
       }))
 

@@ -1,4 +1,4 @@
-import { AppConfigService } from './AppConfigService';
+import { AppConfigService } from './AppConfig';
 import { resetMockUsageMetrics, getMockUsageMetrics } from '@services/utils/mockUsageTracker';
 import { loadMock } from '@mocks/registry';
 

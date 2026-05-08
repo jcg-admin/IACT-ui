@@ -17,7 +17,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import store from '@redux/store'
 import { queryClient } from '@lib/queryClient'
 import { ToastProvider, useToast } from './context/ToastContext'
-import { registerNotificationService } from '@services/notificationService'
+import { registerNotificationService } from '@services/notificationGateway'
 
 /**
  * Initializes notification service with toast context

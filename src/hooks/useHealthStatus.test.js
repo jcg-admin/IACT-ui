@@ -3,9 +3,9 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import healthReducer, { selectHealthStatus, selectHealthError } from '@state/slices/health';
 import { useHealthStatus } from './useHealthStatus';
-import { HealthService } from '@services/health/HealthService';
+import { HealthService } from '@services/health/HealthGateway';
 
-jest.mock('@services/health/HealthService', () => ({
+jest.mock('@services/health/HealthGateway', () => ({
   HealthService: {
     getStatus: jest.fn(),
   },

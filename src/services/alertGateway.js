@@ -1,4 +1,4 @@
-import apiService from './apiService'
+import apiService from './apiClient'
 
 const alertService = {
   async getNew(since) {

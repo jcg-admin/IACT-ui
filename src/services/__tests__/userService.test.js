@@ -5,10 +5,10 @@
  * deactivateUser (baja lógica), getActiveUsers
  */
 
-import userService from '../userService'
-import apiService from '@services/apiService'
+import userService from '../userGateway'
+import apiService from '@services/apiClient'
 
-jest.mock('@services/apiService')
+jest.mock('@services/apiClient')
 
 describe('userService', () => {
   beforeEach(() => {

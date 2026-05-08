@@ -1,4 +1,4 @@
-import { createResilientService } from './createResilientService';
+import { createResilientService } from './createResilient';
 import { resetMockUsageMetrics, getMockUsageMetrics } from './utils/mockUsageTracker';
 
 describe('createResilientService', () => {

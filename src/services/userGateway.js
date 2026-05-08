@@ -12,7 +12,7 @@
  * PATCH  /api/users/{id}/    - Baja lógica (status → INACTIVE)
  */
 
-import apiService from './apiService'
+import apiService from './apiClient'
 
 class UserService {
   /**

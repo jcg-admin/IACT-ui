@@ -1,4 +1,4 @@
-import apiService from './apiService'
+import apiService from './apiClient'
 
 class LogsService {
   async getLogs(params = {}) {

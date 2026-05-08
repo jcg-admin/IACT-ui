@@ -1,4 +1,4 @@
-import WebSocketService from '../websocketService'
+import WebSocketService from '../websocketGateway'
 
 describe('WebSocketService — event system', () => {
   let ws

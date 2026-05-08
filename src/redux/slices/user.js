@@ -6,7 +6,7 @@
  */
 
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
-import userService from '../../services/userService'
+import userService from '../../services/userGateway'
 
 // ── Thunks ──────────────────────────────────────────────────────────────────
 

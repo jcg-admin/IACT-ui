@@ -3,11 +3,11 @@ import { render, screen } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@services/notificationGateway', () => ({
   getNotificationService: () => ({ success: jest.fn(), error: jest.fn(), info: jest.fn() }),
 }))
 
-jest.mock('@services/websocketService', () => ({
+jest.mock('@services/websocketGateway', () => ({
   getWebSocketService: () => ({ on: jest.fn().mockReturnValue(jest.fn()), off: jest.fn(), emit: jest.fn() }),
 }))
 

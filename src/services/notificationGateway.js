@@ -5,7 +5,7 @@
  * Abstracts Toast Context for use in services and other parts of the app
  * 
  * Usage in components:
- *   import { useNotification } from '@services/notificationService'
+ *   import { useNotification } from '@services/notificationGateway'
  *   const notify = useNotification()
  *   notify.success('Success message')
  *   notify.error('Error message')
@@ -13,7 +13,7 @@
  *   notify.info('Info message')
  * 
  * Usage in services:
- *   import notificationService from '@services/notificationService'
+ *   import notificationService from '@services/notificationGateway'
  *   notificationService.success('Job started')
  *   notificationService.error('Job failed')
  */
@@ -180,7 +180,7 @@ export function useNotification() {
  * @returns {NotificationService} Global notification service instance
  * 
  * Example in service:
- *   import { getNotificationService } from '@services/notificationService'
+ *   import { getNotificationService } from '@services/notificationGateway'
  *   const notify = getNotificationService()
  *   notify.success('Job completed')
  */

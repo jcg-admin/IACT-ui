@@ -17,7 +17,7 @@ import {
     clearError,
     clearSuccess,
 } from '../../redux/slices/access';
-import accessService from '../../services/accessService';
+import accessService from '../../services/accessGateway';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 const EMPTY_FORM = { name: '', description: '' };

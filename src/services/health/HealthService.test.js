@@ -1,5 +1,5 @@
 import healthMock from '@mocks/health.json';
-import { HealthService } from './HealthService';
+import { HealthService } from './HealthGateway';
 import { getMockUsageMetrics, resetMockUsageMetrics } from '@services/utils/mockUsageTracker';
 
 describe('HealthService', () => {

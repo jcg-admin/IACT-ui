@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 const recoverPassword = (username) => async () => {
-  const apiService = (await import('@services/apiService')).default
+  const apiService = (await import('@services/apiClient')).default
   await apiService.post('/api/auth/recover-password/', { username })
 }
 

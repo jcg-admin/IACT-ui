@@ -10,10 +10,10 @@
  * - verifyToken
  */
 
-import authService from '@services/authService'
-import apiService from '@services/apiService'
+import authService from '@services/authGateway'
+import apiService from '@services/apiClient'
 
-jest.mock('@services/apiService')
+jest.mock('@services/apiClient')
 
 describe('authService', () => {
   beforeEach(() => {
