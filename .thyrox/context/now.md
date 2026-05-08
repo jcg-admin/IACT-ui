@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: null
-phase: null
-updated_at: 2026-05-08 00:46:45
+current_work: .thyrox/context/work/2026-05-08-01-05-10-dashboard-cleanup-naming-conventions
+phase: Phase 1 — DISCOVER
+updated_at: 2026-05-08 01:09:00
 blockers: []
 ```
 
@@ -16,7 +16,7 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP api-connectivity-ux-feedback — Phase 11 TRACK/EVALUATE completa. WP CERRADO. Sin WP activo.
+**Estado:** WP dashboard-cleanup-naming-conventions — Phase 1 DISCOVER completa. Pendiente gate SP-01 → Phase 3 ANALYZE.
 
 ## Métricas de test suite
 

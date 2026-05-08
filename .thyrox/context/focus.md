@@ -2,12 +2,25 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 00:46:45
+updated_at: 2026-05-08 01:09:00
 branch: claude/project-analysis-N9IkV
-wp_activo: null
+wp_activo: 2026-05-08-01-05-10-dashboard-cleanup-naming-conventions
 ```
 
 # Focus — IACT-UI
+
+## WP activo — dashboard-cleanup-naming-conventions (Phase 1 DISCOVER)
+
+**WP:** `2026-05-08-01-05-10-dashboard-cleanup-naming-conventions`
+**Phase:** Phase 1 DISCOVER — completa, pendiente gate SP-01
+**Próximo:** Phase 3 ANALYZE (estrategia para HAL-1: deprecar vs. conectar `fetchDashboardData`)
+
+Scope del WP:
+- HAL-1: `dashboardSlice` mock hardcodeado → conectar endpoint real o migrar a `reportsSlice`
+- HAL-2..5: naming violations in-scope (AlertManager, CSRFManager/CSPHelper, single-letter vars, 5 filenames)
+- HAL-6: naming sistémico (56 Pages, 16 Slices, 20 Services, aliases) — documentado como TD-NM-001..006, FUERA DE SCOPE
+
+---
 
 ## Completado — WP api-connectivity-ux-feedback ✓
 
