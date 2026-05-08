@@ -15,7 +15,7 @@
 
 import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
-import LoadingSpinner from '@components/shared/LoadingSpinner'
+import LoadingSpinner from '@ui/shared/LoadingSpinner'
 import '@styles/components/_form-stepper.scss'
 
 function FormStepper({

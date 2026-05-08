@@ -26,104 +26,104 @@ import PropTypes from 'prop-types'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { DashboardLayout } from '@layouts/DashboardLayout'
-import { PageTransition, AnimatedLoadingSpinner } from '@components/animations'
+import { PageTransition, AnimatedLoadingSpinner } from '@ui/animations'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { FunctionCatalog } from '../permissions/catalog'
-import { selectIsAuthenticated } from '@redux/selectors'
+import { selectIsAuthenticated } from '@store/selectors'
 import { usePermisos } from '../hooks/usePermisos'
 
 // ── Lazy imports ────────────────────────────────────────────────────────────
 
 const LoginPage = lazy(() =>
-  import('@components/containers/Login').then(m => ({ default: m.default || m.Login }))
+  import('@ui/containers/Login').then(m => ({ default: m.default || m.Login }))
 )
 const DashboardPage = lazy(() =>
-  import('@components/containers/DashboardMain').then(m => ({ default: m.default }))
+  import('@ui/containers/DashboardMain').then(m => ({ default: m.default }))
 )
 const SettingsPage = lazy(() =>
-  import('@components/features/Settings/Settings').then(m => ({ default: m.default }))
+  import('@ui/features/Settings/Settings').then(m => ({ default: m.default }))
 )
 const ProfilePage = lazy(() =>
-  import('@components/pages/Profile/Profile').then(m => ({ default: m.default }))
+  import('@ui/pages/Profile/Profile').then(m => ({ default: m.default }))
 )
 const AccessPage = lazy(() =>
-  import('@components/pages/Access/Access').then(m => ({ default: m.default }))
+  import('@ui/pages/Access/Access').then(m => ({ default: m.default }))
 )
 const AuditPage = lazy(() =>
-  import('@components/pages/Audit/Audit').then(m => ({ default: m.default }))
+  import('@ui/pages/Audit/Audit').then(m => ({ default: m.default }))
 )
-const AuditSearchPage      = lazy(() => import('@pages/audit/AuditSearch'))
-const AuditExportPage      = lazy(() => import('@pages/audit/Export'))
-const ComplianceReportPage = lazy(() => import('@pages/audit/ComplianceReport'))
+const AuditSearchPage      = lazy(() => import('@screens/audit/AuditSearch'))
+const AuditExportPage      = lazy(() => import('@screens/audit/Export'))
+const ComplianceReportPage = lazy(() => import('@screens/audit/ComplianceReport'))
 const AlertsPage = lazy(() =>
-  import('@components/pages/Alerts/Alerts').then(m => ({ default: m.default }))
+  import('@ui/pages/Alerts/Alerts').then(m => ({ default: m.default }))
 )
 
 const UserManagementPage = lazy(() =>
-  import('@components/pages/UserManagement').then(m => ({ default: m.UserManagement }))
+  import('@ui/pages/UserManagement').then(m => ({ default: m.UserManagement }))
 )
 const AnalyticsDashboardPage = lazy(() =>
-  import('@components/pages/Analytics').then(m => ({ default: m.AnalyticsDashboard }))
+  import('@ui/pages/Analytics').then(m => ({ default: m.AnalyticsDashboard }))
 )
 const ActiveSessionsPage = lazy(() =>
-  import('@components/features/SessionManagement').then(m => ({ default: m.ActiveSessions }))
+  import('@ui/features/SessionManagement').then(m => ({ default: m.ActiveSessions }))
 )
 
-const NotFoundPage = lazy(() => import('@pages/errors/NotFound'))
-const AccessDeniedPage = lazy(() => import('@pages/errors/AccessDenied'))
-const ServerErrorPage = lazy(() => import('@pages/errors/ServerError'))
-const ServiceUnavailablePage = lazy(() => import('@pages/errors/ServiceUnavailable'))
+const NotFoundPage = lazy(() => import('@screens/errors/NotFound'))
+const AccessDeniedPage = lazy(() => import('@screens/errors/AccessDenied'))
+const ServerErrorPage = lazy(() => import('@screens/errors/ServerError'))
+const ServiceUnavailablePage = lazy(() => import('@screens/errors/ServiceUnavailable'))
 
 // ── Auth pages ───────────────────────────────────────────────────────────────
-const RecoverPasswordPage = lazy(() => import('@pages/auth/RecoverPassword'))
-const ChangePasswordPage = lazy(() => import('@pages/auth/ChangePassword'))
+const RecoverPasswordPage = lazy(() => import('@screens/auth/RecoverPassword'))
+const ChangePasswordPage = lazy(() => import('@screens/auth/ChangePassword'))
 
 // ── Logs pages ───────────────────────────────────────────────────────────────
-const LogsPage = lazy(() => import('@pages/logs/Logs'))
-const ETLLogsPage = lazy(() => import('@pages/logs/ETLLogs'))
-const ETLAvailabilityPage = lazy(() => import('@pages/logs/ETLAvailability'))
-const LogSearchPage = lazy(() => import('@pages/logs/LogSearch'))
-const LogExportPage = lazy(() => import('@pages/logs/LogExport'))
-const InfraLogsPage = lazy(() => import('@pages/logs/InfraLogs'))
-const SystemStatusPage = lazy(() => import('@pages/logs/SystemStatus'))
-const PerformanceMetricsPage = lazy(() => import('@pages/logs/PerformanceMetrics'))
-const PipelineStatusPage = lazy(() => import('@pages/logs/PipelineStatus'))
+const LogsPage = lazy(() => import('@screens/logs/Logs'))
+const ETLLogsPage = lazy(() => import('@screens/logs/ETLLogs'))
+const ETLAvailabilityPage = lazy(() => import('@screens/logs/ETLAvailability'))
+const LogSearchPage = lazy(() => import('@screens/logs/LogSearch'))
+const LogExportPage = lazy(() => import('@screens/logs/LogExport'))
+const InfraLogsPage = lazy(() => import('@screens/logs/InfraLogs'))
+const SystemStatusPage = lazy(() => import('@screens/logs/SystemStatus'))
+const PerformanceMetricsPage = lazy(() => import('@screens/logs/PerformanceMetrics'))
+const PipelineStatusPage = lazy(() => import('@screens/logs/PipelineStatus'))
 
 // ── Reports pages ────────────────────────────────────────────────────────────
-const AgentsReportPage = lazy(() => import('@pages/reports/AgentsReport'))
-const QueuesReportPage = lazy(() => import('@pages/reports/QueuesReport'))
-const CampaignsReportPage = lazy(() => import('@pages/reports/CampaignsReport'))
-const TransfersReportPage = lazy(() => import('@pages/reports/TransfersReport'))
-const IVRMenusReportPage = lazy(() => import('@pages/reports/IVRMenusReport'))
-const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsReport'))
-const ScheduledReportPage = lazy(() => import('@pages/reports/ScheduledReport'))
-const RealTimeMetricsPage = lazy(() => import('@pages/reports/RealTimeMetrics'))
-const HistoricalReportsPage = lazy(() => import('@pages/reports/HistoricalReports'))
-const ReportExportPage = lazy(() => import('@pages/reports/ReportExport'))
-const SavedViewsPage = lazy(() => import('@pages/reports/SavedViews'))
+const AgentsReportPage = lazy(() => import('@screens/reports/AgentsReport'))
+const QueuesReportPage = lazy(() => import('@screens/reports/QueuesReport'))
+const CampaignsReportPage = lazy(() => import('@screens/reports/CampaignsReport'))
+const TransfersReportPage = lazy(() => import('@screens/reports/TransfersReport'))
+const IVRMenusReportPage = lazy(() => import('@screens/reports/IVRMenusReport'))
+const UniqueClientsReportPage = lazy(() => import('@screens/reports/UniqueClientsReport'))
+const ScheduledReportPage = lazy(() => import('@screens/reports/ScheduledReport'))
+const RealTimeMetricsPage = lazy(() => import('@screens/reports/RealTimeMetrics'))
+const HistoricalReportsPage = lazy(() => import('@screens/reports/HistoricalReports'))
+const ReportExportPage = lazy(() => import('@screens/reports/ReportExport'))
+const SavedViewsPage = lazy(() => import('@screens/reports/SavedViews'))
 
 // ── Permissions pages ─────────────────────────────────────────────────────────
-const RevokeGroupPage = lazy(() => import('@pages/permissions/RevokeGroup'))
+const RevokeGroupPage = lazy(() => import('@screens/permissions/RevokeGroup'))
 
 // ── Access pages ─────────────────────────────────────────────────────────────
-const GroupManagementPage = lazy(() => import('@pages/access/GroupManagement'))
-const GroupCompositionPage = lazy(() => import('@pages/access/GroupComposition'))
-const GroupersPage = lazy(() => import('@pages/access/Groupers'))
-const SeparationRulesPage = lazy(() => import('@pages/access/SeparationRules'))
-const SegmentsPage = lazy(() => import('@pages/access/Segments'))
-const PermissionsAuditPage = lazy(() => import('@pages/access/PermissionsAudit'))
-const AssignGroupPage = lazy(() => import('@pages/access/AssignGroup'))
-const TemporaryPermissionsPage = lazy(() => import('@pages/access/TemporaryPermissions'))
+const GroupManagementPage = lazy(() => import('@screens/access/GroupManagement'))
+const GroupCompositionPage = lazy(() => import('@screens/access/GroupComposition'))
+const GroupersPage = lazy(() => import('@screens/access/Groupers'))
+const SeparationRulesPage = lazy(() => import('@screens/access/SeparationRules'))
+const SegmentsPage = lazy(() => import('@screens/access/Segments'))
+const PermissionsAuditPage = lazy(() => import('@screens/access/PermissionsAudit'))
+const AssignGroupPage = lazy(() => import('@screens/access/AssignGroup'))
+const TemporaryPermissionsPage = lazy(() => import('@screens/access/TemporaryPermissions'))
 
 // ── Alerts pages ──────────────────────────────────────────────────────────────
-const TemplatesPage      = lazy(() => import('@pages/alerts/Templates'))
-const AlertConfigPage    = lazy(() => import('@pages/alerts/AlertConfig'))
-const AlertHistoryPage   = lazy(() => import('@pages/alerts/AlertHistory'))
-const SubscriptionsPage  = lazy(() => import('@pages/alerts/Subscriptions'))
+const TemplatesPage      = lazy(() => import('@screens/alerts/Templates'))
+const AlertConfigPage    = lazy(() => import('@screens/alerts/AlertConfig'))
+const AlertHistoryPage   = lazy(() => import('@screens/alerts/AlertHistory'))
+const SubscriptionsPage  = lazy(() => import('@screens/alerts/Subscriptions'))
 
 // ── Admin pages ──────────────────────────────────────────────────────────────
-const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalog'))
-const AGRCatalogPage = lazy(() => import('@pages/admin/AGRCatalog'))
+const FunctionCatalogPage = lazy(() => import('@screens/admin/FunctionCatalog'))
+const AGRCatalogPage = lazy(() => import('@screens/admin/AGRCatalog'))
 
 // ── Nav config ───────────────────────────────────────────────────────────────
 // Groups that carry children — referenced when building ALL_NAV_LINKS children arrays

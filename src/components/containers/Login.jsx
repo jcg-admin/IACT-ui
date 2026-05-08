@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '@redux/slices/auth';
-import { selectAuthLoading, selectAuthError } from '@redux/selectors';
-import LoginForm from '@components/presentational/LoginForm';
-import { AnimatedLoadingSpinner } from '@components/animations';
+import { loginUser } from '@store/slices/auth';
+import { selectAuthLoading, selectAuthError } from '@store/selectors';
+import LoginForm from '@ui/presentational/LoginForm';
+import { AnimatedLoadingSpinner } from '@ui/animations';
 
 function Login() {
   const dispatch = useDispatch();

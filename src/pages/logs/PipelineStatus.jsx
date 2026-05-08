@@ -5,7 +5,7 @@ import {
   selectPipelineStatus,
   selectLogsLoading,
   selectLogsError,
-} from '@redux/slices/logs'
+} from '@store/slices/logs'
 
 const ESTADO_COLOR = {
   ok: '#34d399',

@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useMockMetrics } from './useMockMetrics';
-import { recordMockUsage, resetMockUsageMetrics } from '@services/utils/mockUsageTracker';
+import { recordMockUsage, resetMockUsageMetrics } from '@api/utils/mockUsageTracker';
 
 describe('useMockMetrics', () => {
   beforeEach(() => {

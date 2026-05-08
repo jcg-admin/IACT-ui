@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react'
 import jobOrchestrator from '../../../facades/JobOrchestrator'
 import reportExporter from '../../../facades/ReportExporter'
-import { getNotificationService } from '@services/notificationGateway'
+import { getNotificationService } from '@api/notificationGateway'
 import JobList from './JobList'
 import JobProgressBar from './JobProgressBar'
 import JobStartForm from './JobStartForm'

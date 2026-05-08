@@ -1,6 +1,6 @@
 import healthMock from '@mocks/health.json';
 import { HealthService } from './HealthGateway';
-import { getMockUsageMetrics, resetMockUsageMetrics } from '@services/utils/mockUsageTracker';
+import { getMockUsageMetrics, resetMockUsageMetrics } from '@api/utils/mockUsageTracker';
 
 describe('HealthService', () => {
   let originalEnv;

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
-import errorReducer from '@redux/slices/error'
+import errorReducer from '@store/slices/error'
 import NotFound from '../NotFound'
 import AccessDenied from '../AccessDenied'
 import ServerError from '../ServerError'
@@ -15,7 +15,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }))
 
-jest.mock('@utils/navigation', () => ({
+jest.mock('@shared/navigation', () => ({
   reloadPage: jest.fn(),
 }))
 
@@ -98,7 +98,7 @@ describe('ServerError', () => {
   })
 
   it('has a reload button that calls reloadPage', () => {
-    const { reloadPage } = require('@utils/navigation')
+    const { reloadPage } = require('@shared/navigation')
     wrapper(<ServerError />)
     fireEvent.click(screen.getByRole('button', { name: /recargar página/i }))
     expect(reloadPage).toHaveBeenCalled()

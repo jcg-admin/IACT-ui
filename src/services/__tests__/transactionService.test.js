@@ -9,11 +9,11 @@
  * - Funcionar con mockInterceptor
  */
 
-import transactionService from '@services/transactionGateway'
-import apiService from '@services/apiClient'
+import transactionService from '@api/transactionGateway'
+import apiService from '@api/apiClient'
 
 // Mock apiService
-jest.mock('@services/apiClient')
+jest.mock('@api/apiClient')
 
 describe('transactionService', () => {
   beforeEach(() => {

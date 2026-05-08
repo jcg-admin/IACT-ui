@@ -14,8 +14,8 @@ import {
   completeJob,
   setJobError,
   removeJob
-} from '@redux/slices/session'
-import jobService from '@services/jobGateway'
+} from '@store/slices/session'
+import jobService from '@api/jobGateway'
 
 export function useJobStatus(_jobId, _interval = 5000) {
   // Refs

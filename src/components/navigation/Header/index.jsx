@@ -1,7 +1,7 @@
 /**
  * Header Component Barrel Export
  * REQUIRED pattern from Webpack5: Up and Running
- * Enables clean imports: import { Header, LogoBrand, ... } from '@components/shared/Header'
+ * Enables clean imports: import { Header, LogoBrand, ... } from '@ui/shared/Header'
  */
 
 export { default as Header } from './Header'

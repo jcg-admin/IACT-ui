@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import ConfirmModal from '@components/shared/ConfirmModal'
+import ConfirmModal from '@ui/shared/ConfirmModal'
 import './UserMenu.scss'
 
 export default function UserMenu({

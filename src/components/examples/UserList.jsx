@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useRequest from '@hooks/domain/useRequest';
-import apiService from '@services/apiClient';
+import apiService from '@api/apiClient';
 
 function UserList() {
   const [page, setPage] = useState(1);

@@ -5,7 +5,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import JobTracker from '../JobTracker'
 import ProgressBar from '../ProgressBar'
 
-jest.mock('@redux/slices/session', () => ({
+jest.mock('@store/slices/session', () => ({
   selectAllJobs: (state) => state.session.jobs,
 }))
 

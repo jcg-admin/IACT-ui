@@ -25,7 +25,7 @@ Sidebar/
 ## Imports (with barrel exports)
 
 ```javascript
-import { Sidebar, SidebarNav, NavLink } from '@components/common/Sidebar'
+import { Sidebar, SidebarNav, NavLink } from '@ui/common/Sidebar'
 ```
 
 ## Features

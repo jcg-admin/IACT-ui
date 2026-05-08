@@ -4,7 +4,7 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
-import { UnauthorizedError } from '@utils/apiErrors';
+import { UnauthorizedError } from '@shared/apiErrors';
 
 const initialState = {
   global: null, // Error global de la aplicación

@@ -1,6 +1,6 @@
-import { createResilientService } from '@services/createResilient';
+import { createResilientService } from '@api/createResilient';
 import { loadMock } from '@mocks/registry';
-import { shouldUseMockForDomain } from '@services/flags/backendIntegrity';
+import { shouldUseMockForDomain } from '@api/flags/backendIntegrity';
 
 const CALLS_ENDPOINT = '/api/v1/llamadas/';
 const { data: callsMock } = loadMock('calls');

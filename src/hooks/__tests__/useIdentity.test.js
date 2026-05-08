@@ -21,10 +21,10 @@ import {
   useVerifyToken,
   useIdentity,
 } from '@hooks/domain/useIdentity'
-import authService from '@services/authGateway'
+import authService from '@api/authGateway'
 
 // Mock authService
-jest.mock('@services/authGateway')
+jest.mock('@api/authGateway')
 
 /**
  * Test wrapper with QueryClientProvider

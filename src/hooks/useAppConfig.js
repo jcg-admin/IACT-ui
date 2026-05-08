@@ -9,7 +9,7 @@ import {
   setError,
   setLoading,
 } from '@state/slices/appConfig';
-import { AppConfigService } from '@services/config/AppConfig';
+import { AppConfigService } from '@api/config/AppConfig';
 
 export const useAppConfig = () => {
   const dispatch = useDispatch();

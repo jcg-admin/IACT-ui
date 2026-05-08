@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { useCallsSummary } from './useCallsSummary';
 import callsMock from '@mocks/llamadas.json';
-import { CallsService } from '@services/calls/CallsGateway';
+import { CallsService } from '@api/calls/CallsGateway';
 
-jest.mock('@services/calls/CallsGateway', () => ({
+jest.mock('@api/calls/CallsGateway', () => ({
   CallsService: {
     getCalls: jest.fn(),
   },

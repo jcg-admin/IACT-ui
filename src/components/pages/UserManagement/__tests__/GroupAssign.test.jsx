@@ -23,7 +23,7 @@ jest.mock('@facades/ReportExporter', () => ({
     batchExport: jest.fn().mockResolvedValue({ success: true }),
   },
 }))
-jest.mock('@services/notificationGateway', () => ({
+jest.mock('@api/notificationGateway', () => ({
   getNotificationService: jest.fn(() => ({
     success: jest.fn(), error: jest.fn(), warning: jest.fn(), info: jest.fn(),
   })),

@@ -6,7 +6,7 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import LoginHistory from '../LoginHistory'
 
-jest.mock('@services/notificationGateway', () => ({
+jest.mock('@api/notificationGateway', () => ({
   getNotificationService: jest.fn(() => ({
     success: jest.fn(),
     error: jest.fn()

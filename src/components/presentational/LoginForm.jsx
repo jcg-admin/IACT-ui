@@ -11,8 +11,8 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import LoginInput from '@components/auth/LoginInput'
-import PasswordStrength from '@components/auth/PasswordStrength'
+import LoginInput from '@ui/auth/LoginInput'
+import PasswordStrength from '@ui/auth/PasswordStrength'
 import '@styles/components/_login-page.scss'
 
 function LoginForm({ onSubmit, loading, error }) {

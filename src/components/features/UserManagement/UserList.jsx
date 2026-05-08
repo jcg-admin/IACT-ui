@@ -5,8 +5,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Table from '@components/presentational/Table';
-import Modal from '@components/shared/Modal';
+import Table from '@ui/presentational/Table';
+import Modal from '@ui/shared/Modal';
 import { useToast } from '../../context/ToastContext';
 
 function UserList() {

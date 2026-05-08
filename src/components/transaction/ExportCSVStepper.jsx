@@ -12,7 +12,7 @@ import useJobStatus from '@hooks/domain/useJobStatus'
 import FormStepper from './FormStepper'
 import FilterForm from './content/FilterForm'
 import PreviewResults from './content/PreviewResults'
-import ProgressBar from '@components/jobs/ProgressBar'
+import ProgressBar from '@ui/jobs/ProgressBar'
 
 function ExportCSVStepper({ onComplete }) {
   const [_stepData, setStepData] = useState({})

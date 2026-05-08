@@ -2,10 +2,10 @@
  * alertService Tests
  */
 
-import alertService from '@services/alertGateway'
-import apiService from '@services/apiClient'
+import alertService from '@api/alertGateway'
+import apiService from '@api/apiClient'
 
-jest.mock('@services/apiClient')
+jest.mock('@api/apiClient')
 
 describe('alertService', () => {
   beforeEach(() => {

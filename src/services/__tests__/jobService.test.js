@@ -8,10 +8,10 @@
  * - Manejar errores
  */
 
-import jobService from '@services/jobGateway'
-import apiService from '@services/apiClient'
+import jobService from '@api/jobGateway'
+import apiService from '@api/apiClient'
 
-jest.mock('@services/apiClient')
+jest.mock('@api/apiClient')
 
 describe('jobService', () => {
   beforeEach(() => {

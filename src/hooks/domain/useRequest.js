@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import apiService from '@services/apiClient';
+import apiService from '@api/apiClient';
 
 export function useRequest(endpoint, options = {}) {
   const {

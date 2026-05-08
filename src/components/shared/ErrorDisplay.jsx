@@ -9,8 +9,8 @@ import {
   selectGlobalError,
   clearGlobalError,
   selectErrorHistory,
-} from '@redux/slices/error';
-import { getErrorMessage } from '@utils/apiErrors';
+} from '@store/slices/error';
+import { getErrorMessage } from '@shared/apiErrors';
 
 /**
  * Global Error Toast

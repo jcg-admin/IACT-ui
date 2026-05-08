@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { AnimatedButton } from '@components/animations'
+import { AnimatedButton } from '@ui/animations'
 
 function Settings() {
   const [activeTab, setActiveTab] = useState('general')

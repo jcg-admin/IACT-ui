@@ -6,9 +6,9 @@
  */
 
 import userService from '../userGateway'
-import apiService from '@services/apiClient'
+import apiService from '@api/apiClient'
 
-jest.mock('@services/apiClient')
+jest.mock('@api/apiClient')
 
 describe('userService', () => {
   beforeEach(() => {

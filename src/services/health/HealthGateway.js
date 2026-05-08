@@ -1,6 +1,6 @@
-import { createResilientService } from '@services/createResilient';
+import { createResilientService } from '@api/createResilient';
 import { loadMock } from '@mocks/registry';
-import { shouldUseMockForDomain } from '@services/flags/backendIntegrity';
+import { shouldUseMockForDomain } from '@api/flags/backendIntegrity';
 
 const HEALTH_ENDPOINT = '/health/';
 const { data: healthMock } = loadMock('health');

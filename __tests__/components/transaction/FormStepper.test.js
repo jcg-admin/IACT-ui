@@ -6,7 +6,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import FormStepper from '@components/transaction/FormStepper'
+import FormStepper from '@ui/transaction/FormStepper'
 
 describe('FormStepper Component', () => {
   const _mockSteps = [

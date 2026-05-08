@@ -42,7 +42,7 @@ jest.mock('../content/PreviewUser', () => ({ __esModule: true, default: () => <d
 jest.mock('../content/ConfirmUser', () => ({ __esModule: true, default: () => <div /> }))
 jest.mock('../content/FilterForm', () => ({ __esModule: true, default: () => <div /> }))
 jest.mock('../content/PreviewResults', () => ({ __esModule: true, default: () => <div /> }))
-jest.mock('@components/jobs/ProgressBar', () => ({ __esModule: true, default: () => <div /> }))
+jest.mock('@ui/jobs/ProgressBar', () => ({ __esModule: true, default: () => <div /> }))
 
 describe('AssignFunctionStepper', () => {
   it('renders without crashing', () => {

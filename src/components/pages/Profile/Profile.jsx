@@ -7,8 +7,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { selectUser } from '@redux/selectors'
-import { selectIsSessionActive, selectSessionExpiresAt } from '@redux/slices/session'
+import { selectUser } from '@store/selectors'
+import { selectIsSessionActive, selectSessionExpiresAt } from '@store/slices/session'
 import './ProfilePage.scss'
 
 export default function Profile() {

@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react'
 import userAuth from '../../../facades/UserIdentity'
-import { getNotificationService } from '@services/notificationGateway'
+import { getNotificationService } from '@api/notificationGateway'
 
 export default function SessionWarning() {
   const [showWarning, setShowWarning] = useState(false)

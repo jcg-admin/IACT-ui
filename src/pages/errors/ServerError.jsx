@@ -1,5 +1,5 @@
 import React from 'react'
-import { reloadPage } from '@utils/navigation'
+import { reloadPage } from '@shared/navigation'
 
 export default function ServerError() {
   return (

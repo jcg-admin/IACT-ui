@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { AnimatedButton } from '@components/animations'
+import { AnimatedButton } from '@ui/animations'
 import { useExport } from '@hooks/domain/useExport'
 
 /**

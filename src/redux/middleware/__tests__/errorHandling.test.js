@@ -3,7 +3,7 @@ import errorReducer, {
   selectGlobalError,
   selectContextError,
   selectRetryAfter,
-} from '@redux/slices/error'
+} from '@store/slices/error'
 import {
   UnauthorizedError,
   RateLimitError,
@@ -11,19 +11,19 @@ import {
   InternalServerError,
   NotFoundError,
   TimeoutError,
-} from '@utils/apiErrors'
+} from '@shared/apiErrors'
 import {
   errorHandlingMiddleware,
   errorLoggingMiddleware,
 } from '../errorHandling'
-import { navigateTo } from '@utils/navigation'
+import { navigateTo } from '@shared/navigation'
 
 jest.mock('../../../services/auditGateway', () => ({
   __esModule: true,
   default: { logEvent: jest.fn().mockResolvedValue(undefined) },
 }))
 
-jest.mock('@utils/navigation', () => ({
+jest.mock('@shared/navigation', () => ({
   navigateTo: jest.fn(),
 }))
 

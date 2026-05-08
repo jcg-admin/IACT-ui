@@ -4,7 +4,7 @@
 
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import ProgressBar from '@components/jobs/ProgressBar'
+import ProgressBar from '@ui/jobs/ProgressBar'
 
 describe('ProgressBar Component', () => {
   it('should render progress bar', () => {

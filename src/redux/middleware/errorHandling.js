@@ -7,14 +7,14 @@ import {
   handleHttpError,
   setContextError,
   setErrorHandling,
-} from '@redux/slices/error';
+} from '@store/slices/error';
 import {
   UnauthorizedError,
   RateLimitError,
   NetworkAuthRequiredError,
   isRetryableError,
-} from '@utils/apiErrors';
-import { navigateTo } from '@utils/navigation';
+} from '@shared/apiErrors';
+import { navigateTo } from '@shared/navigation';
 import auditService from '../../services/auditGateway';
 
 /**

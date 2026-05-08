@@ -6,23 +6,23 @@ import homeReducer from '@modules/home/state/home';
 import healthReducer from '@state/slices/health';
 import App from './App';
 import { setConfig } from '@state/slices/appConfig';
-import { AppConfigService } from '@services/config/AppConfig';
-import { CallsService } from '@services/calls/CallsGateway';
-import { HealthService } from '@services/health/HealthGateway';
+import { AppConfigService } from '@api/config/AppConfig';
+import { CallsService } from '@api/calls/CallsGateway';
+import { HealthService } from '@api/health/HealthGateway';
 
-jest.mock('@services/config/AppConfig', () => ({
+jest.mock('@api/config/AppConfig', () => ({
   AppConfigService: {
     getConfig: jest.fn(),
   },
 }));
 
-jest.mock('@services/calls/CallsGateway', () => ({
+jest.mock('@api/calls/CallsGateway', () => ({
   CallsService: {
     getCalls: jest.fn(),
   },
 }));
 
-jest.mock('@services/health/HealthGateway', () => ({
+jest.mock('@api/health/HealthGateway', () => ({
   HealthService: {
     getStatus: jest.fn(),
   },

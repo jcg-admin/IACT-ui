@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Table from '@components/presentational/Table';
+import Table from '@ui/presentational/Table';
 import { useToast } from '../../context/ToastContext';
 
 function TransactionList() {

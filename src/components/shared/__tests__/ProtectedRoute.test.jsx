@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import ProtectedRoute from '../ProtectedRoute'
 
-jest.mock('@redux/selectors', () => ({
+jest.mock('@store/selectors', () => ({
   selectIsAuthenticated: (s) => s.auth.isAuthenticated,
 }))
 

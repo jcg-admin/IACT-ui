@@ -7,7 +7,7 @@ import React from 'react'
 import { render as tlRender, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import LoginForm from '@components/presentational/LoginForm'
+import LoginForm from '@ui/presentational/LoginForm'
 
 // LoginForm uses <Link> internally — all renders need a router context
 function render(ui, options) {

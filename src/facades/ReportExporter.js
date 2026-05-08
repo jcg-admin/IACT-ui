@@ -12,8 +12,8 @@
  * Uses: exportService, notification system
  */
 
-import exportService from '@services/exportGateway'
-import { getNotificationService } from '@services/notificationGateway'
+import exportService from '@api/exportGateway'
+import { getNotificationService } from '@api/notificationGateway'
 
 class ReportExporter {
   /**

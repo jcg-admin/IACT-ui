@@ -15,8 +15,8 @@ import {
   selectFunctions,
   selectLoading,
   selectError,
-} from '@redux/slices/access'
-import { selectUser } from '@redux/selectors'
+} from '@store/slices/access'
+import { selectUser } from '@store/selectors'
 import PermissionsTable from '../../access/PermissionsTable'
 import FunctionSelector from '../../access/FunctionSelector'
 import './AccessPage.scss'

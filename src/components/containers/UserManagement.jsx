@@ -7,8 +7,8 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AnimatedButton } from '@components/animations'
-import ExportButtons from '@components/shared/ExportButtons'
+import { AnimatedButton } from '@ui/animations'
+import ExportButtons from '@ui/shared/ExportButtons'
 import {
     fetchUsers,
     deactivateUser,

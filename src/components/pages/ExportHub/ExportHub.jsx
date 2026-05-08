@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react'
 import reportExporter from '../../../facades/ReportExporter'
-import { getNotificationService } from '@services/notificationGateway'
+import { getNotificationService } from '@api/notificationGateway'
 import ExportTypeSelector from './ExportTypeSelector'
 import ExportOptions from './ExportOptions'
 import ExportPreview from './ExportPreview'

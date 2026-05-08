@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@redux/slices/auth';
+import { logout } from '@store/slices/auth';
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);

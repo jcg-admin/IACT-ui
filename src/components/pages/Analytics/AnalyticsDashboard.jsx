@@ -8,8 +8,8 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import reportExporter from '../../../facades/ReportExporter'
-import { getNotificationService } from '@services/notificationGateway'
-import { getWebSocketService } from '@services/websocketGateway'
+import { getNotificationService } from '@api/notificationGateway'
+import { getWebSocketService } from '@api/websocketGateway'
 import {
   fetchDashboardMetrics,
   fetchReportHistory,

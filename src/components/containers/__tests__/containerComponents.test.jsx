@@ -18,24 +18,24 @@ jest.mock('framer-motion', () => {
   }
 })
 
-jest.mock('@components/animations', () => ({
+jest.mock('@ui/animations', () => ({
   AnimatedButton: ({ children, onClick, disabled, type }) => (
     <button onClick={onClick} disabled={disabled} type={type}>{children}</button>
   ),
   AnimatedLoadingSpinner: ({ message }) => <div>{message || 'loading'}</div>,
 }))
 
-jest.mock('@components/presentational/MetricsGrid', () => ({
+jest.mock('@ui/presentational/MetricsGrid', () => ({
   __esModule: true,
   default: () => <div data-testid="metrics-grid" />,
 }))
 
-jest.mock('@components/presentational/ChartsSection', () => ({
+jest.mock('@ui/presentational/ChartsSection', () => ({
   __esModule: true,
   default: () => <div data-testid="charts-section" />,
 }))
 
-jest.mock('@components/presentational/LoginForm', () => ({
+jest.mock('@ui/presentational/LoginForm', () => ({
   __esModule: true,
   default: ({ onSubmit, loading, error }) => (
     <form onSubmit={(e) => { e.preventDefault(); onSubmit({ email: 'a', password: 'b' }) }}>
@@ -45,7 +45,7 @@ jest.mock('@components/presentational/LoginForm', () => ({
   ),
 }))
 
-jest.mock('@components/presentational/DashboardHeader', () => ({
+jest.mock('@ui/presentational/DashboardHeader', () => ({
   __esModule: true,
   default: ({ user, onLogout }) => (
     <div>
@@ -60,19 +60,19 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
 }))
 
-jest.mock('@redux/selectors', () => ({
+jest.mock('@store/selectors', () => ({
   selectUser: (s) => s.auth?.user,
   selectAuthLoading: (s) => s.auth?.loading ?? false,
   selectAuthError: (s) => s.auth?.error ?? null,
 }))
 
-jest.mock('@redux/slices/auth', () => ({
+jest.mock('@store/slices/auth', () => ({
   loginUser: jest.fn(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) })),
   logout: jest.fn(() => ({ type: 'auth/logout' })),
   setUser: jest.fn(() => ({ type: 'auth/setUser' })),
 }))
 
-jest.mock('@redux/slices/reports', () => ({
+jest.mock('@store/slices/reports', () => ({
   __esModule: true,
   fetchDashboardMetrics: jest.fn(() => ({ type: 'reports/fetchDashboardMetrics/pending' })),
   selectMetrics: (s) => s.reports?.metrics ?? null,

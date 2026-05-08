@@ -364,7 +364,7 @@ export const logoutAllSessions = createAsyncThunk(
   async (_, { dispatch, rejectWithValue }) => {
     try {
       // Mock-first: endpoint DELETE /auth/sessions/all will be wired when backend ready
-      const { apiService } = await import('@services/apiClient')
+      const { apiService } = await import('@api/apiClient')
       await apiService.delete('/auth/sessions/all')
     } catch {
       // Swallow error — local session cleared regardless

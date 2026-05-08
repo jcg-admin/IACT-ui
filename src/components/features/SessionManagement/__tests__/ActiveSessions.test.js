@@ -6,10 +6,10 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
-import authReducer from '@redux/slices/auth'
+import authReducer from '@store/slices/auth'
 import ActiveSessions from '../ActiveSessions'
 
-jest.mock('@services/authGateway', () => ({
+jest.mock('@api/authGateway', () => ({
   __esModule: true,
   default: {
     getActiveSessions: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('@services/authGateway', () => ({
   },
 }))
 
-const { default: authService } = require('@services/authGateway')
+const { default: authService } = require('@api/authGateway')
 
 const mockSessions = [
   {

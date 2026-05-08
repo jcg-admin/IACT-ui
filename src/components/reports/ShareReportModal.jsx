@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Modal from '@components/shared/Modal'
+import Modal from '@ui/shared/Modal'
 
 export default function ShareReportModal({ isOpen, url = '', onClose }) {
   const [copied, setCopied] = useState(false)

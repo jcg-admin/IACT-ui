@@ -20,7 +20,7 @@ import {
   isRetryableError,
   logError,
   createErrorFromResponse,
-} from '@utils/apiErrors';
+} from '@shared/apiErrors';
 
 import mockInterceptor from '@mocks/mockInterceptor';
 

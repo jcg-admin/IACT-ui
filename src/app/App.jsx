@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import MainLayout from '@components/MainLayout';
+import MainLayout from '@ui/MainLayout';
 import Home from '../pages/Home';
 import { useAppConfig } from '@hooks/useAppConfig';
 import { useHealthStatus } from '@hooks/useHealthStatus';

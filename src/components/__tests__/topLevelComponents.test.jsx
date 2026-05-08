@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 import MockDataNotice from '../MockDataNotice'
 
-jest.mock('@redux/slices/auth', () => ({
+jest.mock('@store/slices/auth', () => ({
   logout: jest.fn(() => ({ type: 'auth/logout' })),
 }))
 

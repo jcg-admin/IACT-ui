@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import LoginForm from '../LoginForm'
 
-jest.mock('@components/auth/LoginInput', () => ({
+jest.mock('@ui/auth/LoginInput', () => ({
   __esModule: true,
   default: ({ label, name, value, onChange, error }) => (
     <div>
@@ -19,7 +19,7 @@ jest.mock('@components/auth/LoginInput', () => ({
   ),
 }))
 
-jest.mock('@components/auth/PasswordStrength', () => ({
+jest.mock('@ui/auth/PasswordStrength', () => ({
   __esModule: true,
   default: ({ password }) => password ? <div data-testid="password-strength" /> : null,
 }))

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
-import { selectAllJobs } from '@redux/slices/session'
+import { selectAllJobs } from '@store/slices/session'
 import ProgressBar from './ProgressBar'
 import '@styles/components/_job-tracker.scss'
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-jest.mock('@components/shared/ExportButtons', () => () => <div data-testid="export-buttons" />);
-jest.mock('@components/animations', () => ({
+jest.mock('@ui/shared/ExportButtons', () => () => <div data-testid="export-buttons" />);
+jest.mock('@ui/animations', () => ({
     AnimatedButton: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
 }));
 

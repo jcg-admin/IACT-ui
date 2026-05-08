@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import Modal from '@components/shared/Modal'
+import Modal from '@ui/shared/Modal'
 
 export default function GroupAssignModal({
   isOpen,

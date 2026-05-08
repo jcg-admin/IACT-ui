@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 
-jest.mock('@services/notificationGateway', () => ({
+jest.mock('@api/notificationGateway', () => ({
   getNotificationService: () => ({ success: jest.fn(), error: jest.fn(), info: jest.fn() }),
 }))
 
@@ -51,14 +51,14 @@ jest.mock('../../access/FunctionSelector', () => ({
   default: () => <div data-testid="function-selector" />,
 }))
 
-jest.mock('@redux/slices/alerts', () => ({
+jest.mock('@store/slices/alerts', () => ({
   fetchAlerts: jest.fn(() => (dispatch) => Promise.resolve([])),
   updateAlert: jest.fn(() => ({ type: 'alerts/updateAlert' })),
   selectAlerts: (s) => s.alerts?.alerts ?? [],
   selectSubscriptions: (s) => s.alerts?.subscriptions ?? [],
 }))
 
-jest.mock('@redux/slices/access', () => ({
+jest.mock('@store/slices/access', () => ({
   fetchUserPermissions: jest.fn(() => (dispatch) => Promise.resolve([])),
   fetchAllFunctions: jest.fn(() => (dispatch) => Promise.resolve([])),
   revokeFunction: jest.fn(() => (dispatch) => Promise.resolve(true)),
@@ -71,7 +71,7 @@ jest.mock('@redux/slices/access', () => ({
   selectError: (s) => s.access?.error ?? null,
 }))
 
-jest.mock('@redux/selectors', () => ({
+jest.mock('@store/selectors', () => ({
   selectUser: (s) => s.auth?.user ?? null,
   selectIsAuthenticated: (s) => s.auth?.isAuthenticated ?? false,
 }))

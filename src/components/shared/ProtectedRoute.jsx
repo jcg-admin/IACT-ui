@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import { selectIsAuthenticated } from '@redux/selectors';
+import { selectIsAuthenticated } from '@store/selectors';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = useSelector(selectIsAuthenticated);

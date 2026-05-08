@@ -1,4 +1,4 @@
-import { persistConfig } from '@redux/persistConfig';
+import { persistConfig } from '@store/persistConfig';
 import storage from 'redux-persist/lib/storage';
 
 describe('persistConfig', () => {

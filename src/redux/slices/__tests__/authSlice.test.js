@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer, { logout, clearError, loginUser, logoutUser } from '../auth'
 
-jest.mock('@services/apiClient', () => ({
+jest.mock('@api/apiClient', () => ({
   __esModule: true,
   default: {
     post: jest.fn(),
@@ -13,7 +13,7 @@ jest.mock('../session', () => ({
   clearSession: () => ({ type: 'session/clearSession' }),
 }))
 
-const apiService = require('@services/apiClient').default
+const apiService = require('@api/apiClient').default
 
 function buildStore(preloaded) {
   const cfg = { reducer: { auth: authReducer } }

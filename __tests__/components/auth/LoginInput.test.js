@@ -6,7 +6,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import LoginInput from '@components/auth/LoginInput'
+import LoginInput from '@ui/auth/LoginInput'
 
 describe('LoginInput Component', () => {
   const _defaultProps = {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CallsService } from '@services/calls/CallsGateway';
+import { CallsService } from '@api/calls/CallsGateway';
 
 const INITIAL_SUMMARY = Object.freeze({
   totalCalls: 0,

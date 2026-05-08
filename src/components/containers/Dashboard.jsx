@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchDashboardMetrics, selectMetrics, selectReportsLoading } from '@redux/slices/reports'
-import { selectContextError } from '@redux/slices/error'
-import LoadingSpinner from '@components/shared/LoadingSpinner'
+import { fetchDashboardMetrics, selectMetrics, selectReportsLoading } from '@store/slices/reports'
+import { selectContextError } from '@store/slices/error'
+import LoadingSpinner from '@ui/shared/LoadingSpinner'
 import styles from './Dashboard.module.scss'
 
 export default function Dashboard() {

@@ -14,8 +14,8 @@ import {
   updateAlert,
   removeAlert,
   clearAlerts
-} from '@redux/slices/session'
-import apiService from '@services/apiClient'
+} from '@store/slices/session'
+import apiService from '@api/apiClient'
 
 export function useAlertFeed(interval = 30000) {
   // Refs

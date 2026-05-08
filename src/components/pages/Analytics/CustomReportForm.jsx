@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react'
-import { getNotificationService } from '@services/notificationGateway'
+import { getNotificationService } from '@api/notificationGateway'
 
 export default function CustomReportForm({ onGenerateReport }) {
   const [reportConfig, setReportConfig] = useState({

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import apiService from '@services/apiClient';
-import authService from '@services/authGateway';
+import apiService from '@api/apiClient';
+import authService from '@api/authGateway';
 import { clearSession } from './session';
 
 /**

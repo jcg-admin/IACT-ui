@@ -5,12 +5,12 @@
  */
 
 import userAuth from '../UserIdentity'
-import authService from '@services/authGateway'
-import { getNotificationService } from '@services/notificationGateway'
+import authService from '@api/authGateway'
+import { getNotificationService } from '@api/notificationGateway'
 
 // Mock dependencies
-jest.mock('@services/authGateway')
-jest.mock('@services/notificationGateway')
+jest.mock('@api/authGateway')
+jest.mock('@api/notificationGateway')
 
 describe('UserIdentity Facade', () => {
   let mockNotify

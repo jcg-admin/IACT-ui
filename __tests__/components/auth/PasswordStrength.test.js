@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import PasswordStrength from '@components/auth/PasswordStrength'
+import PasswordStrength from '@ui/auth/PasswordStrength'
 
 describe('PasswordStrength Component', () => {
   describe('Rendering', () => {

@@ -12,8 +12,8 @@ import {
   updateAlert,
   selectAlerts,
   selectSubscriptions,
-} from '@redux/slices/alerts'
-import ConfirmModal from '@components/shared/ConfirmModal'
+} from '@store/slices/alerts'
+import ConfirmModal from '@ui/shared/ConfirmModal'
 import './AlertsPage.scss'
 
 const selectAlertsLoading = (state) => state.alerts.loading

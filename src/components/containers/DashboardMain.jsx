@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { selectUser } from '@redux/selectors'
+import { selectUser } from '@store/selectors'
 import {
   fetchDashboardMetrics,
   selectMetrics,
   selectReportsLoading,
-} from '@redux/slices/reports'
-import { logout } from '@redux/slices/auth'
-import DashboardHeader from '@components/presentational/DashboardHeader'
-import MetricsGrid from '@components/presentational/MetricsGrid'
-import ChartsSection from '@components/presentational/ChartsSection'
-import { AnimatedLoadingSpinner } from '@components/animations'
+} from '@store/slices/reports'
+import { logout } from '@store/slices/auth'
+import DashboardHeader from '@ui/presentational/DashboardHeader'
+import MetricsGrid from '@ui/presentational/MetricsGrid'
+import ChartsSection from '@ui/presentational/ChartsSection'
+import { AnimatedLoadingSpinner } from '@ui/animations'
 
 function DashboardMain() {
   const dispatch = useDispatch();

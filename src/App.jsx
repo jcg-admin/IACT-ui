@@ -8,9 +8,9 @@
 import React, { Suspense } from 'react'
 import { AppRouter } from '@router'
 import { AppProviders } from './AppProviders'
-import ToastContainer from '@components/shared/Toast/ToastContainer'
-import ApiErrorAlert from '@components/feedback/ApiErrorAlert'
-import ServerErrorBanner from '@components/feedback/ServerErrorBanner'
+import ToastContainer from '@ui/shared/Toast/ToastContainer'
+import ApiErrorAlert from '@ui/feedback/ApiErrorAlert'
+import ServerErrorBanner from '@ui/feedback/ServerErrorBanner'
 import '@styles/main.scss'
 
 /**

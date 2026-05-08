@@ -10,7 +10,7 @@ import {
   setResult,
   setError,
 } from '@state/slices/health';
-import { HealthService } from '@services/health/HealthGateway';
+import { HealthService } from '@api/health/HealthGateway';
 
 export const useHealthStatus = () => {
   const dispatch = useDispatch();

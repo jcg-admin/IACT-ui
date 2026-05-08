@@ -19,10 +19,10 @@ import {
   useCancelJob,
   useDownloadJob,
 } from '@hooks/domain/useJobs'
-import jobService from '@services/jobGateway'
+import jobService from '@api/jobGateway'
 
 // Mock jobService
-jest.mock('@services/jobGateway')
+jest.mock('@api/jobGateway')
 
 /**
  * Test wrapper with QueryClientProvider

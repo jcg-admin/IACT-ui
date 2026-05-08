@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import MockDataNotice from './MockDataNotice';
-import { PermissionsService } from '@services/permissions/Permissions';
+import { PermissionsService } from '@api/permissions/Permissions';
 import BackendStatusPanel from './BackendStatusPanel';
 
 const MainLayout = memo(({ children, mockNotice, backendStatus, mockSummary }) => {

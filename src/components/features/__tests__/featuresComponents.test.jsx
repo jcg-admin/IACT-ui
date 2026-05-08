@@ -13,7 +13,7 @@ jest.mock('../../../facades/UserIdentity', () => ({
   },
 }))
 
-jest.mock('@services/authGateway', () => ({
+jest.mock('@api/authGateway', () => ({
   __esModule: true,
   default: {
     getActiveSessions: jest.fn().mockResolvedValue([]),
@@ -21,7 +21,7 @@ jest.mock('@services/authGateway', () => ({
   },
 }))
 
-jest.mock('@services/notificationGateway', () => ({
+jest.mock('@api/notificationGateway', () => ({
   getNotificationService: () => ({
     success: jest.fn(),
     error: jest.fn(),
@@ -43,7 +43,7 @@ describe('SessionProvider', () => {
 
 describe('ActiveSessions', () => {
   it('renders without crashing', () => {
-    const authReducer = require('@redux/slices/auth').default
+    const authReducer = require('@store/slices/auth').default
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState: {

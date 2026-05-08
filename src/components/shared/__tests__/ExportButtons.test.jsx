@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import ExportButtons from '../ExportButtons'
 
-jest.mock('@components/animations', () => ({
+jest.mock('@ui/animations', () => ({
   AnimatedButton: ({ children, onClick, disabled }) => (
     <button onClick={onClick} disabled={disabled}>{children}</button>
   ),

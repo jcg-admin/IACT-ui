@@ -4,8 +4,8 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import reportsReducer from '@redux/slices/reports';
-import authReducer from '@redux/slices/auth';
+import reportsReducer from '@store/slices/reports';
+import authReducer from '@store/slices/auth';
 
 describe('Dashboard Integration', () => {
   let store;

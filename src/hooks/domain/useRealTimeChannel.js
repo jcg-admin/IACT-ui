@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getWebSocketService, resetWebSocketService } from '@services/websocketGateway';
+import { getWebSocketService, resetWebSocketService } from '@api/websocketGateway';
 
 /**
  * Custom hook para usar WebSocket en componentes React

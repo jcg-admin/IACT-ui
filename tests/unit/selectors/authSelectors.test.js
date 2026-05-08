@@ -6,7 +6,7 @@ import {
   selectUserEmail,
   selectUserRole,
   selectAuthStatus,
-} from '@redux/selectors/authSelectors';
+} from '@store/selectors/authSelectors';
 
 describe('authSelectors', () => {
   const mockState = {

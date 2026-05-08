@@ -14,10 +14,10 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { Header, LogoBrand, MenuButton } from '@components/shared/Header'
-import { Sidebar } from '@components/shared/Sidebar'
+import { Header, LogoBrand, MenuButton } from '@ui/shared/Header'
+import { Sidebar } from '@ui/shared/Sidebar'
 import { useMenuToggle } from '@hooks/useMenuToggle'
-import { logoutUser } from '@redux/slices/auth'
+import { logoutUser } from '@store/slices/auth'
 import './DashboardLayout.scss'
 
 export default function DashboardLayout({

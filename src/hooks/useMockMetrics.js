@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getMockUsageMetrics, subscribeMockUsage } from '@services/utils/mockUsageTracker';
+import { getMockUsageMetrics, subscribeMockUsage } from '@api/utils/mockUsageTracker';
 
 const buildSummary = (metrics) => {
   const entries = Object.values(metrics || {});
