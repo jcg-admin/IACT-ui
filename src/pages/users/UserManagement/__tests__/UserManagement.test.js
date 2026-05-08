@@ -22,7 +22,7 @@ jest.mock('../../../../redux/slices/access', () => ({
   revokeGroupFromUser: jest.fn((p) => ({ type: 'access/revokeGroupFromUser', payload: p })),
 }))
 
-jest.mock('../../../access/GroupAssignModal', () => ({
+jest.mock('../../../../components/access/GroupAssignModal', () => ({
   __esModule: true,
   default: ({ isOpen }) => isOpen ? <div data-testid="group-assign-modal" /> : null,
 }))
