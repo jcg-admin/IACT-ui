@@ -17,7 +17,7 @@ import {
 } from '@redux/slices/sessionSlice'
 import apiService from '@services/apiService'
 
-export function useAlertPolling(interval = 30000) {
+export function useAlertFeed(interval = 30000) {
   // Refs
   const dispatch = useDispatch()
   const isMounted = useRef(true)
@@ -207,4 +207,4 @@ export function useAlertPolling(interval = 30000) {
   }
 }
 
-export default useAlertPolling
+export default useAlertFeed

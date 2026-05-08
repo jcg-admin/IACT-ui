@@ -6,7 +6,7 @@ import { getWebSocketService, resetWebSocketService } from '@services/websocketS
  * Custom hook para usar WebSocket en componentes React
  * Maneja conexión, desconexión, y eventos
  */
-export const useWebSocket = (url, token, enabled = true) => {
+export const useRealTimeChannel = (url, token, enabled = true) => {
   const wsRef = useRef(null);
   const dispatch = useDispatch();
   const [isReady, setIsReady] = useState(false);
@@ -131,4 +131,4 @@ export const useWebSocket = (url, token, enabled = true) => {
   };
 };
 
-export default useWebSocket;
+export default useRealTimeChannel;

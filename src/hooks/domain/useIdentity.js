@@ -156,7 +156,7 @@ export function useVerifyToken() {
  * NOTE: This is for migration period only
  * Eventually migrate components to use individual hooks
  */
-export function useAuth() {
+export function useIdentity() {
   const { data: user, isLoading: loading, error } = useAuthUser()
   const { mutate: login } = useLogin()
   const { mutate: logout } = useLogout()
@@ -175,4 +175,4 @@ export function useAuth() {
   }
 }
 
-export default useAuth
+export default useIdentity

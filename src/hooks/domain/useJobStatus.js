@@ -17,7 +17,7 @@ import {
 } from '@redux/slices/sessionSlice'
 import jobService from '@services/jobService'
 
-export function useJobPolling(_jobId, _interval = 5000) {
+export function useJobStatus(_jobId, _interval = 5000) {
   // Refs
   const _dispatch = useDispatch()
   const _isMounted = useRef(true)
@@ -231,4 +231,4 @@ export function useJobPolling(_jobId, _interval = 5000) {
   }
 }
 
-export default useJobPolling
+export default useJobStatus

@@ -6,7 +6,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import useAuth from '../../../src/hooks/useAuth';
+import useAuth from '../../../src/hooks/useIdentity';
 import useDashboard from '../../../src/hooks/useDashboard';
 import useMetrics from '../../../src/hooks/useMetrics';
 
@@ -16,7 +16,7 @@ const mockStore = configureStore([]);
 // tests/unit/hooks/useAuth.test.js
 // ============================================================================
 
-describe('useAuth Hook', () => {
+describe("useIdentity Hook', () => {
   let store;
 
   beforeEach(() => {

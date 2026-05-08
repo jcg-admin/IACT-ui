@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAPI from '@hooks/domain/useAPI';
+import useRequest from '@hooks/domain/useRequest';
 
 function UserProfile({ userId }) {
   const [editMode, setEditMode] = useState(false);
@@ -10,7 +10,7 @@ function UserProfile({ userId }) {
     loading: userLoading,
     error: userError,
     execute: fetchUser,
-  } = useAPI(`/api/users/${userId}`, {
+  } = useRequest(`/api/users/${userId}`, {
     method: 'GET',
     autoFetch: true,
     dependencies: [userId],
@@ -24,7 +24,7 @@ function UserProfile({ userId }) {
     loading: updateLoading,
     error: updateError,
     execute: updateUser,
-  } = useAPI(`/api/users/${userId}`, {
+  } = useRequest(`/api/users/${userId}`, {
     method: 'PUT',
     autoFetch: false,
   });

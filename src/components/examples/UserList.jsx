@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAPI from '@hooks/domain/useAPI';
+import useRequest from '@hooks/domain/useRequest';
 import apiService from '@services/apiService';
 
 function UserList() {
@@ -11,7 +11,7 @@ function UserList() {
     loading,
     error,
     execute: fetchUsers,
-  } = useAPI('/api/users', {
+  } = useRequest('/api/users', {
     method: 'GET',
     autoFetch: true,
     dependencies: [page, limit],

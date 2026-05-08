@@ -1,5 +1,5 @@
 /**
- * useAuth Hooks Tests
+ * useIdentity Hooks Tests
  * 
  * Test React Query hooks for authentication
  * Tests cover:
@@ -19,8 +19,8 @@ import {
   useLogout,
   useRegister,
   useVerifyToken,
-  useAuth,
-} from '@hooks/domain/useAuth'
+  useIdentity,
+} from '@hooks/domain/useIdentity'
 import authService from '@services/authService'
 
 // Mock authService
@@ -50,7 +50,7 @@ function createTestWrapper() {
   }
 }
 
-describe('useAuth Hooks', () => {
+describe('useIdentity Hooks', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -295,7 +295,7 @@ describe('useAuth Hooks', () => {
     })
   })
 
-  describe('useAuth (legacy hook)', () => {
+  describe('useIdentity (legacy hook)', () => {
     it('should provide backward-compatible interface', async () => {
       const mockUser = {
         user_id: 1,
@@ -307,7 +307,7 @@ describe('useAuth Hooks', () => {
 
       authService.getCurrentUser.mockResolvedValue(mockUser)
 
-      const { result } = renderHook(() => useAuth(), {
+      const { result } = renderHook(() => useIdentity(), {
         wrapper: createTestWrapper(),
       })
 
@@ -324,7 +324,7 @@ describe('useAuth Hooks', () => {
     it('should show not authenticated when no user', async () => {
       authService.getCurrentUser.mockRejectedValue(new Error('Not authenticated'))
 
-      const { result } = renderHook(() => useAuth(), {
+      const { result } = renderHook(() => useIdentity(), {
         wrapper: createTestWrapper(),
       })
 

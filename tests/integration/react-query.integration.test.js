@@ -13,7 +13,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useJobStatus, useStartJob } from '@hooks/useJobs'
-import { useAuthUser, useLogin, useLogout } from '@hooks/useAuth'
+import { useAuthUser, useLogin, useLogout } from '@hooks/useIdentity'
 import jobService from '@services/jobService'
 import authService from '@services/authService'
 

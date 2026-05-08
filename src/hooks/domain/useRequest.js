@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import apiService from '@services/apiService';
 
-export function useAPI(endpoint, options = {}) {
+export function useRequest(endpoint, options = {}) {
   const {
     method = 'GET',
     initialData = null,
@@ -78,4 +78,4 @@ export function useAPI(endpoint, options = {}) {
   };
 }
 
-export default useAPI;
+export default useRequest;

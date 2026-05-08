@@ -8,7 +8,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import useTransaction from '@hooks/domain/useTransaction'
-import useJobPolling from '@hooks/domain/useJobPolling'
+import useJobStatus from '@hooks/domain/useJobStatus'
 import FormStepper from './FormStepper'
 import FilterForm from './content/FilterForm'
 import PreviewResults from './content/PreviewResults'
@@ -28,7 +28,7 @@ function ExportCSVStepper({ onComplete }) {
     cancelTx
   } = useTransaction('export_csv')
 
-  const { job, progress, downloadResult, stopPolling } = useJobPolling(_jobId)
+  const { job, progress, downloadResult, stopPolling } = useJobStatus(_jobId)
 
   // Iniciar transacción al montar
   React.useEffect(() => {

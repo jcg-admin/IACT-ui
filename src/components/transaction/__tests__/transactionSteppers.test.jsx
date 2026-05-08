@@ -18,7 +18,7 @@ jest.mock('@hooks/domain/useTransaction', () => ({
   default: jest.fn(() => mockTransaction),
 }))
 
-jest.mock('@hooks/domain/useJobPolling', () => ({
+jest.mock('@hooks/domain/useJobStatus', () => ({
   __esModule: true,
   default: jest.fn(() => ({ job: null, progress: 0, downloadResult: jest.fn(), stopPolling: jest.fn() })),
 }))

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import UserList from '../UserList'
 import UserProfile from '../UserProfile'
 
-jest.mock('@hooks/domain/useAPI', () => ({
+jest.mock('@hooks/domain/useRequest', () => ({
   __esModule: true,
   default: jest.fn((url, opts) => ({
     data: opts?.method === 'GET' && url === '/api/users'
