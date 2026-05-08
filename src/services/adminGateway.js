@@ -107,7 +107,7 @@ class AdminService {
   }
 
   async updateSeparationRule(id, data) {
-    return apiService.put(`/api/admin/separation-rules/${id}/`, data)
+    return apiService.patch(`/api/admin/separation-rules/${id}/`, data)
   }
 
   async toggleSeparationRuleStatus(id) {
