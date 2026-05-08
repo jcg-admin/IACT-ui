@@ -301,6 +301,27 @@ class AlertsGateway {
 
         return response.json();
     }
+
+    async acknowledgeAlert(alertId, note = null) {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`${API_BASE_URL}/alerts/${alertId}/ack/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ note }),
+        });
+
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            const error = new Error(err.error || 'Failed to acknowledge alert');
+            error.response = { status: response.status };
+            throw error;
+        }
+
+        return response.json();
+    }
 }
 
 export default new AlertsGateway();

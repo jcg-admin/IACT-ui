@@ -119,6 +119,17 @@ export const fetchMySubscriptions = createAsyncThunk(
     }
 );
 
+export const acknowledgeAlert = createAsyncThunk(
+    'alerts/acknowledgeAlert',
+    async ({ alertId, note }, { rejectWithValue }) => {
+        try {
+            return await alertsService.acknowledgeAlert(alertId, note);
+        } catch (error) {
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
+        }
+    }
+);
+
 /**
  * Initial State
  */
@@ -303,6 +314,21 @@ const alertsSlice = createSlice({
             })
             .addCase(fetchMySubscriptions.rejected, (state, action) => {
                 state.loading = false;
+                state.error = action.payload;
+            })
+            /**
+             * Acknowledge Alert (uc-alr-03)
+             */
+            .addCase(acknowledgeAlert.pending, (state) => {
+                state.error = null;
+            })
+            .addCase(acknowledgeAlert.fulfilled, (state, action) => {
+                const idx = state.alerts.findIndex(a => String(a.id) === String(action.payload.id));
+                if (idx !== -1) {
+                    state.alerts[idx] = { ...state.alerts[idx], state: 'acknowledged' };
+                }
+            })
+            .addCase(acknowledgeAlert.rejected, (state, action) => {
                 state.error = action.payload;
             });
     },

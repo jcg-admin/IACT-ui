@@ -2,15 +2,25 @@
  * AlertsPage.jsx
  * IACT v4.0 - Alerts Module
  * UC_ALR_01: Ver alertas disponibles y activas
+ * UC_ALR_03: Reconocer Alerta (acknowledge)
  */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAlerts, selectAlerts, selectLoading, selectError } from '../../redux/slices/alerts';
+import {
+    fetchAlerts,
+    acknowledgeAlert,
+    selectAlerts,
+    selectLoading,
+    selectError,
+} from '../../redux/slices/alerts';
+
+const NOTE_MAX = 500;
 
 export default function Alerts() {
     const [categoryFilter, setCategoryFilter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [ackModal, setAckModal] = useState({ isOpen: false, alertId: null, note: '', error: null });
 
     const dispatch = useDispatch();
     const alerts = useSelector(selectAlerts);
@@ -21,6 +31,22 @@ export default function Alerts() {
         dispatch(fetchAlerts());
     }, [dispatch]);
 
+    const openAckModal = (alertId) => setAckModal({ isOpen: true, alertId, note: '', error: null });
+    const closeAckModal = () => setAckModal({ isOpen: false, alertId: null, note: '', error: null });
+
+    const handleConfirmAck = async () => {
+        const { alertId, note } = ackModal;
+        try {
+            await dispatch(acknowledgeAlert({ alertId, note })).unwrap();
+            closeAckModal();
+        } catch (err) {
+            const msg = err?.statusCode === 409
+                ? 'Esta alerta ya fue reconocida.'
+                : err?.message ?? 'Error al reconocer la alerta.';
+            setAckModal(m => ({ ...m, error: msg }));
+        }
+    };
+
     const getFilteredAlerts = () => {
         let filtered = alerts || [];
 
@@ -30,8 +56,8 @@ export default function Alerts() {
 
         if (searchTerm) {
             filtered = filtered.filter(a =>
-                a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                a.code.toLowerCase().includes(searchTerm.toLowerCase())
+                (a.name ?? a.title ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (a.code ?? '').toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
@@ -48,10 +74,9 @@ export default function Alerts() {
         return colors[category] || '#6b7280';
     };
 
-    const getStatusBadge = (isActive) => {
-        if (isActive) {
-            return { color: '#10b981', label: 'Activa' };
-        }
+    const getStatusBadge = (alert) => {
+        if (alert.state === 'acknowledged') return { color: '#6b7280', label: 'Reconocida' };
+        if (alert.state === 'firing' || alert.is_active) return { color: '#10b981', label: 'Activa' };
         return { color: '#6b7280', label: 'Inactiva' };
     };
 
@@ -137,7 +162,7 @@ export default function Alerts() {
                 {/* Header */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: '150px 200px 1fr 150px 150px 100px',
+                    gridTemplateColumns: '150px 200px 1fr 150px 150px 120px',
                     gap: '12px',
                     padding: '14px',
                     backgroundColor: '#0f172a',
@@ -161,14 +186,15 @@ export default function Alerts() {
                     </div>
                 ) : filteredAlerts.length > 0 ? (
                     filteredAlerts.map((alert, idx) => {
-                        const statusBadge = getStatusBadge(alert.is_active);
+                        const statusBadge = getStatusBadge(alert);
+                        const isFiring = alert.state === 'firing';
 
                         return (
                             <div
-                                key={idx}
+                                key={alert.id ?? idx}
                                 style={{
                                     display: 'grid',
-                                    gridTemplateColumns: '150px 200px 1fr 150px 150px 100px',
+                                    gridTemplateColumns: '150px 200px 1fr 150px 150px 120px',
                                     gap: '12px',
                                     padding: '12px 14px',
                                     borderBottom: '1px solid #374151',
@@ -177,24 +203,18 @@ export default function Alerts() {
                                 }}
                             >
                                 {/* Código */}
-                                <span
-                                    style={{
-                                        color: '#fff',
-                                        fontWeight: 600,
-                                        fontSize: '11px',
-                                    }}
-                                >
-                                    {alert.code}
+                                <span style={{ color: '#fff', fontWeight: 600, fontSize: '11px' }}>
+                                    {alert.code ?? alert.id}
                                 </span>
 
                                 {/* Nombre */}
                                 <div style={{ color: '#fff', fontSize: '12px' }}>
-                                    {alert.name}
+                                    {alert.name ?? alert.title}
                                 </div>
 
                                 {/* Descripción */}
                                 <div style={{ color: '#9ca3af', fontSize: '12px' }}>
-                                    {alert.description}
+                                    {alert.description ?? alert.message}
                                 </div>
 
                                 {/* Categoría */}
@@ -209,7 +229,7 @@ export default function Alerts() {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {alert.category}
+                                    {alert.category ?? alert.severity}
                                 </span>
 
                                 {/* Estado */}
@@ -227,20 +247,24 @@ export default function Alerts() {
                                     {statusBadge.label}
                                 </span>
 
-                                {/* Acción */}
-                                <button
-                                    style={{
-                                        padding: '6px 12px',
-                                        backgroundColor: '#0ea5e9',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        color: '#fff',
-                                        cursor: 'pointer',
-                                        fontSize: '11px',
-                                    }}
-                                >
-                                    Suscribir
-                                </button>
+                                {/* Acción — reconocer solo si firing */}
+                                {isFiring && (
+                                    <button
+                                        onClick={() => openAckModal(alert.id)}
+                                        style={{
+                                            padding: '6px 10px',
+                                            backgroundColor: '#f59e0b',
+                                            border: 'none',
+                                            borderRadius: '4px',
+                                            color: '#fff',
+                                            cursor: 'pointer',
+                                            fontSize: '11px',
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Reconocer
+                                    </button>
+                                )}
                             </div>
                         );
                     })
@@ -279,7 +303,119 @@ export default function Alerts() {
                     color: '#fca5a5',
                     fontSize: '14px',
                 }}>
-                    Error: {error}
+                    Error: {typeof error === 'string' ? error : error?.message ?? 'Error desconocido'}
+                </div>
+            )}
+
+            {/* Modal reconocer alerta (uc-alr-03) */}
+            {ackModal.isOpen && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="ack-modal-title"
+                    style={{
+                        position: 'fixed', inset: 0,
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        zIndex: 1000,
+                    }}
+                >
+                    <div style={{
+                        backgroundColor: '#1f2937',
+                        border: '1px solid #374151',
+                        borderRadius: '8px',
+                        padding: '24px',
+                        width: '480px',
+                        maxWidth: '90vw',
+                    }}>
+                        <h2
+                            id="ack-modal-title"
+                            style={{ margin: '0 0 16px 0', color: '#fff', fontSize: '18px' }}
+                        >
+                            Reconocer Alerta
+                        </h2>
+
+                        <div style={{ marginBottom: '16px' }}>
+                            <label
+                                htmlFor="ack-note"
+                                style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#9ca3af' }}
+                            >
+                                Nota de reconocimiento (opcional)
+                            </label>
+                            <textarea
+                                id="ack-note"
+                                aria-label="Nota de reconocimiento"
+                                value={ackModal.note}
+                                onChange={(e) => setAckModal(m => ({ ...m, note: e.target.value, error: null }))}
+                                maxLength={NOTE_MAX}
+                                rows={3}
+                                placeholder="Añade una nota opcional sobre el reconocimiento..."
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #4b5563',
+                                    borderRadius: '4px',
+                                    backgroundColor: '#111827',
+                                    color: '#fff',
+                                    fontSize: '13px',
+                                    resize: 'vertical',
+                                    boxSizing: 'border-box',
+                                }}
+                            />
+                            <div style={{ textAlign: 'right', fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+                                {ackModal.note.length}/{NOTE_MAX}
+                            </div>
+                        </div>
+
+                        {ackModal.error && (
+                            <div
+                                role="alert"
+                                style={{
+                                    marginBottom: '16px',
+                                    padding: '10px 12px',
+                                    backgroundColor: '#7f1d1d',
+                                    border: '1px solid #dc2626',
+                                    borderRadius: '4px',
+                                    color: '#fca5a5',
+                                    fontSize: '13px',
+                                }}
+                            >
+                                {ackModal.error}
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                            <button
+                                onClick={closeAckModal}
+                                style={{
+                                    padding: '8px 20px',
+                                    backgroundColor: 'transparent',
+                                    border: '1px solid #4b5563',
+                                    borderRadius: '4px',
+                                    color: '#9ca3af',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                }}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleConfirmAck}
+                                style={{
+                                    padding: '8px 20px',
+                                    backgroundColor: '#f59e0b',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    fontWeight: 600,
+                                }}
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

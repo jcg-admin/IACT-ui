@@ -20,6 +20,7 @@ class MockInterceptor {
     this.enabled = process.env.REACT_APP_USE_MOCKS === 'true';
     this.mockDelay = 800; // ms
     this._pipelineRunning = false;
+    this._acknowledgedAlerts = new Set();
   }
 
   /**
@@ -257,6 +258,10 @@ class MockInterceptor {
     }
 
     // ALERT ENDPOINTS
+    if (url.match(/\/api\/alerts\/([^/]+)\/ack\//) && method === 'POST') {
+      return this._handleAcknowledgeAlert(url, body);
+    }
+
     if (url.includes('/api/alerts')) {
       return this._handleGetAlerts(url);
     }
@@ -1312,7 +1317,8 @@ class MockInterceptor {
             message: 'User logged in from new device',
             severity: 'info',
             timestamp: new Date().toISOString(),
-            isRead: false
+            isRead: false,
+            state: this._acknowledgedAlerts.has('alert-1') ? 'acknowledged' : 'firing',
           },
           {
             id: 'alert-2',
@@ -1320,11 +1326,31 @@ class MockInterceptor {
             message: 'Multiple failed login attempts detected',
             severity: 'warning',
             timestamp: new Date(Date.now() - 60000).toISOString(),
-            isRead: false
-          }
-        ]
-      }
+            isRead: false,
+            state: this._acknowledgedAlerts.has('alert-2') ? 'acknowledged' : 'firing',
+          },
+        ],
+      },
     };
+  }
+
+  _handleAcknowledgeAlert(url, body) {
+    const match = url.match(/\/api\/alerts\/([^/]+)\/ack\//)
+    const alertId = match ? match[1] : null
+    if (this._acknowledgedAlerts.has(alertId)) {
+      return { status: 409, data: { error: 'Ya reconocida', code: 'ALREADY_ACKNOWLEDGED' } }
+    }
+    this._acknowledgedAlerts.add(alertId)
+    return {
+      status: 200,
+      data: {
+        id: alertId,
+        state: 'acknowledged',
+        acknowledged_by: 'demo',
+        acknowledged_at: new Date().toISOString(),
+        note: body?.note ?? null,
+      },
+    }
   }
 
   _handlePermisosMenu(url) {
