@@ -175,7 +175,7 @@ export default function FunctionCatalog() {
           </h3>
 
           {formError && (
-            <div className="error-banner" style={{ marginBottom: '12px' }}>
+            <div className="error-banner" role="alert">
               {formError}
             </div>
           )}

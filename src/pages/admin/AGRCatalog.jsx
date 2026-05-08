@@ -214,7 +214,7 @@ export default function AGRCatalog() {
               </h3>
 
               {formError && (
-                <div className="error-banner" style={{ marginBottom: '12px' }}>
+                <div className="error-banner" role="alert">
                   {formError}
                 </div>
               )}
@@ -375,7 +375,7 @@ export default function AGRCatalog() {
               )}
 
               {compositionError && (
-                <div role="alert" style={{ color: '#ef4444', marginBottom: '12px', padding: '8px', background: '#1f2937', borderRadius: '4px' }}>
+                <div className="error-banner" role="alert">
                   {compositionError}
                 </div>
               )}

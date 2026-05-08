@@ -271,9 +271,9 @@ export default function MenuItemCatalog() {
           </table>
 
           {reorderMode && (
-            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
               {reorderError && (
-                <div role="alert" style={{ color: '#ef4444', marginRight: '8px' }}>{reorderError}</div>
+                <div className="error-banner" role="alert">{reorderError}</div>
               )}
               <button className="btn btn-primary" onClick={handleSaveOrder}>
                 Guardar orden
@@ -337,10 +337,7 @@ export default function MenuItemCatalog() {
                         <span className="text-muted">Sin transiciones</span>
                       )}
                       {transitionErrors[item.id] && (
-                        <div
-                          role="alert"
-                          style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}
-                        >
+                        <div className="error-banner" role="alert">
                           {transitionErrors[item.id]}
                         </div>
                       )}
@@ -374,7 +371,7 @@ export default function MenuItemCatalog() {
                 {blockArchiveModal.reason.length}/500 · mínimo {BLOCK_REASON_MIN}
               </small>
               {blockArchiveModal.error && (
-                <div role="alert" style={{ color: '#ef4444', marginTop: '8px' }}>
+                <div className="error-banner" role="alert">
                   {blockArchiveModal.error}
                 </div>
               )}
