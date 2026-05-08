@@ -38,8 +38,12 @@ function wrapper(ui) {
 describe('SeparationRulesCatalog', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
-    mockDispatch.mockResolvedValue({ payload: {} })
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ id: 99 }),
+    }))
     mockAdmin.createSeparationRule.mockClear()
+    mockAdmin.updateSeparationRule.mockClear()
     mockAdmin.toggleSeparationRuleStatus.mockClear()
   })
 
@@ -68,7 +72,7 @@ describe('SeparationRulesCatalog', () => {
   it('shows create form on Nueva regla click', () => {
     wrapper(<SeparationRulesCatalog />)
     fireEvent.click(screen.getByText('Nueva regla'))
-    expect(screen.getByLabelText('Formulario regla SoD')).toBeInTheDocument()
+    expect(screen.getByLabelText('Formulario regla de separación')).toBeInTheDocument()
   })
 
   it('dispatches toggleSeparationRuleStatus on Desactivar click', async () => {
@@ -81,5 +85,75 @@ describe('SeparationRulesCatalog', () => {
   it('shows Activar for inactive rule', () => {
     wrapper(<SeparationRulesCatalog />)
     expect(screen.getByLabelText('Activar Usuarios vs Auditoría')).toBeInTheDocument()
+  })
+})
+
+describe('SeparationRulesCatalog — validación disjunción (UC-ADM-01)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ id: 99 }),
+    }))
+    mockAdmin.createSeparationRule.mockClear()
+    mockAdmin.updateSeparationRule.mockClear()
+  })
+
+  function openForm() {
+    wrapper(<SeparationRulesCatalog />)
+    fireEvent.click(screen.getByText('Nueva regla'))
+  }
+
+  it('shows role=alert when group_a and group_b share a function', async () => {
+    openForm()
+    fireEvent.change(screen.getByPlaceholderText('reports:view, audit:view'), { target: { value: 'audit:view, pipeline:view' } })
+    fireEvent.change(screen.getByPlaceholderText('access:assign, users:create'), { target: { value: 'audit:view, users:manage' } })
+    fireEvent.submit(screen.getByLabelText('Formulario regla de separación'))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/no pueden tener funciones en común/i)
+    })
+    expect(mockAdmin.createSeparationRule).not.toHaveBeenCalled()
+  })
+
+  it('dispatches createSeparationRule when groups are disjoint', async () => {
+    openForm()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Nombre' }), { target: { value: 'Test rule' } })
+    fireEvent.change(screen.getByPlaceholderText('reports:view, audit:view'), { target: { value: 'reports:view' } })
+    fireEvent.change(screen.getByPlaceholderText('access:assign, users:create'), { target: { value: 'users:create' } })
+    fireEvent.submit(screen.getByLabelText('Formulario regla de separación'))
+    await waitFor(() => {
+      expect(mockAdmin.createSeparationRule).toHaveBeenCalledWith(
+        expect.objectContaining({ group_a: ['reports:view'], group_b: ['users:create'] })
+      )
+    })
+  })
+
+  it('shows backend error message when unwrap rejects', async () => {
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'Error remoto del servidor' }),
+    }))
+    openForm()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Nombre' }), { target: { value: 'Test' } })
+    fireEvent.change(screen.getByPlaceholderText('reports:view, audit:view'), { target: { value: 'reports:view' } })
+    fireEvent.change(screen.getByPlaceholderText('access:assign, users:create'), { target: { value: 'users:create' } })
+    fireEvent.submit(screen.getByLabelText('Formulario regla de separación'))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Error remoto del servidor/i)
+    })
+    expect(screen.getByLabelText('Formulario regla de separación')).toBeInTheDocument()
+  })
+
+  it('clears previous error when form is reopened', async () => {
+    wrapper(<SeparationRulesCatalog />)
+    fireEvent.click(screen.getByText('Nueva regla'))
+    fireEvent.change(screen.getByPlaceholderText('reports:view, audit:view'), { target: { value: 'audit:view' } })
+    fireEvent.change(screen.getByPlaceholderText('access:assign, users:create'), { target: { value: 'audit:view' } })
+    fireEvent.submit(screen.getByLabelText('Formulario regla de separación'))
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
+
+    fireEvent.click(screen.getByText('Cancelar'))
+    fireEvent.click(screen.getByText('Nueva regla'))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

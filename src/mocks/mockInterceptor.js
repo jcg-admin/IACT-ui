@@ -1307,6 +1307,19 @@ class MockInterceptor {
       return { status: 200, data: rules }
     }
     if (method === 'POST') {
+      const groupA = body?.group_a ?? []
+      const groupB = body?.group_b ?? []
+      const overlap = groupA.filter(f => groupB.includes(f))
+      if (overlap.length > 0) {
+        return {
+          status: 400,
+          data: {
+            error: 'Los grupos A y B no pueden tener funciones en común',
+            code: 'NON_DISJOINT_GROUPS',
+            overlap,
+          },
+        }
+      }
       const newRule = { id: rules.length + 1, code: `SR-00${rules.length + 1}`, isActive: true, violations: 0, ...body }
       return { status: 201, data: newRule }
     }
@@ -1314,6 +1327,19 @@ class MockInterceptor {
     const id = parseInt(match?.[1], 10)
     const rule = rules.find(r => r.id === id) || rules[0]
     if (method === 'PUT') {
+      const groupA = body?.group_a ?? []
+      const groupB = body?.group_b ?? []
+      const overlap = groupA.filter(f => groupB.includes(f))
+      if (overlap.length > 0) {
+        return {
+          status: 400,
+          data: {
+            error: 'Los grupos A y B no pueden tener funciones en común',
+            code: 'NON_DISJOINT_GROUPS',
+            overlap,
+          },
+        }
+      }
       return { status: 200, data: { ...rule, ...body } }
     }
     if (method === 'PATCH') {

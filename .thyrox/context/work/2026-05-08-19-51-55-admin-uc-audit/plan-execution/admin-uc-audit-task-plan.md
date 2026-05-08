@@ -285,7 +285,7 @@ Block IV puede correr en paralelo con Block II o III.
 
 ## Block II — GAP-ADM-01: Validación disjunción SoD + display de errores
 
-- [ ] [T-006] **mockInterceptor.js — Validación disjunción en `_handleAdminSeparationRules`**
+- [x] [T-006] **mockInterceptor.js — Validación disjunción en `_handleAdminSeparationRules`**
 
   En el handler POST (antes de construir `newRule`):
   ```js
@@ -321,7 +321,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-01)*
 
-- [ ] [T-007] **SeparationRulesCatalog.jsx — Validación client-side + display de errores**
+- [x] [T-007] **SeparationRulesCatalog.jsx — Validación client-side + display de errores**
 
   1. Añadir estado `[formError, setFormError] = useState(null)`.
 
@@ -365,7 +365,7 @@ Block IV puede correr en paralelo con Block II o III.
   4. Al abrir el formulario (create o edit), resetear `setFormError(null)`.
   *(GAP-ADM-01)*
 
-- [ ] [T-008] **Tests — SoD form validation**
+- [x] [T-008] **Tests — SoD form validation**
 
   Añadir casos en `SeparationRulesCatalogPage.test.jsx` (o nuevo
   `src/pages/admin/__tests__/SeparationRulesValidation.test.jsx` si el archivo es grande).
