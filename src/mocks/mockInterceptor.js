@@ -1324,6 +1324,9 @@ class MockInterceptor {
       return { status: 200, data: rules }
     }
     if (method === 'POST') {
+      if (body?.name && rules.some(r => r.name === body.name)) {
+        return { status: 409, data: { error: 'Nombre de regla duplicado', code: 'DUPLICATE_NAME' } }
+      }
       const groupA = body?.group_a ?? []
       const groupB = body?.group_b ?? []
       const overlap = groupA.filter(f => groupB.includes(f))
