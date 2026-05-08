@@ -71,9 +71,9 @@ pero Block IV depende de I (mismo flujo de login). En la práctica ejecutar I→
 
 ## Block V — Close-all sessions (GAP-AUTH-05-B, GAP-AUTH-05-A)
 
-- [ ] [T-009] **session.js** — Corregir endpoint de `logoutAllSessions` thunk: de `DELETE /auth/sessions/all` a `POST /api/users/{id}/close-all-sessions/`. El `id` del usuario viene del store (selector `selectCurrentUserId` o equivalente). Actualizar `sessionSlice.test.js` para mockear el endpoint correcto. *(GAP-AUTH-05-B)*
+- [x] [T-009] **session.js** — Corregir endpoint de `logoutAllSessions` thunk: de `DELETE /auth/sessions/all` a `POST /api/users/{id}/close-all-sessions/`. El `id` del usuario viene del store (selector `selectCurrentUserId` o equivalente). Actualizar `sessionSlice.test.js` para mockear el endpoint correcto. *(GAP-AUTH-05-B)*
 
-- [ ] [T-010] **ActiveSessions.jsx** — Agregar botón "Cerrar todas las sesiones" que despache `logoutAllSessions()`. El botón debe aparecer solo cuando hay más de una sesión activa. Confirmar acción con dialog `window.confirm` antes de despachar. Actualizar `ActiveSessions.test.js`: test que verifica que el botón aparece cuando sessions.length > 1 y que llama al thunk al confirmar. *(GAP-AUTH-05-A)*
+- [x] [T-010] **ActiveSessions.jsx** — Agregar botón "Cerrar todas las sesiones" que despache `logoutAllSessions()`. El botón debe aparecer solo cuando hay más de una sesión activa. Confirmar acción con dialog `window.confirm` antes de despachar. Actualizar `ActiveSessions.test.js`: test que verifica que el botón aparece cuando sessions.length > 1 y que llama al thunk al confirmar. *(GAP-AUTH-05-A)*
 
 ---
 

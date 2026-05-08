@@ -13,6 +13,7 @@ import {
   selectSessionsLoading,
   selectSessionsError,
 } from '@store/slices/auth'
+import { logoutAllSessions } from '@store/slices/session'
 
 export default function ActiveSessions() {
   const dispatch = useDispatch()
@@ -29,6 +30,11 @@ export default function ActiveSessions() {
     dispatch(revokeSession(sessionId))
   }
 
+  const handleCloseAllSessions = () => {
+    if (!window.confirm('¿Cerrar todas las sesiones activas? Serás desconectado de todos los dispositivos.')) return
+    dispatch(logoutAllSessions())
+  }
+
   if (loading) {
     return <div className="active-sessions loading" role="status" aria-busy="true">Loading sessions...</div>
   }
@@ -38,6 +44,15 @@ export default function ActiveSessions() {
       <div className="page-header">
         <h1>Active Sessions</h1>
         <p>Manage your active sessions and devices</p>
+        {sessions.length > 1 && (
+          <button
+            onClick={handleCloseAllSessions}
+            className="btn btn-danger"
+            data-testid="close-all-btn"
+          >
+            Cerrar todas las sesiones
+          </button>
+        )}
       </div>
 
       {error && (

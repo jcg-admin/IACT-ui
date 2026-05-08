@@ -361,11 +361,11 @@ export default sessionSlice.reducer
 // Async thunks defined after slice to avoid circular reference with clearSession
 export const logoutAllSessions = createAsyncThunk(
   'session/logoutAllSessions',
-  async (_, { dispatch, rejectWithValue }) => {
+  async (_, { dispatch, getState }) => {
     try {
-      // Mock-first: endpoint DELETE /auth/sessions/all will be wired when backend ready
+      const userId = getState().auth?.user?.id
       const { apiService } = await import('@api/apiClient')
-      await apiService.delete('/auth/sessions/all')
+      await apiService.post(`/api/users/${userId}/close-all-sessions/`)
     } catch {
       // Swallow error — local session cleared regardless
     } finally {

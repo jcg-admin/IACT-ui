@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import authReducer from '@store/slices/auth'
@@ -15,6 +15,11 @@ jest.mock('@api/authGateway', () => ({
     getActiveSessions: jest.fn(),
     revokeSession: jest.fn().mockResolvedValue({}),
   },
+}))
+
+const mockLogoutAllSessions = jest.fn(() => ({ type: 'session/logoutAllSessions' }))
+jest.mock('@store/slices/session', () => ({
+  logoutAllSessions: (...args) => mockLogoutAllSessions(...args),
 }))
 
 const { default: authService } = require('@api/authGateway')
@@ -103,6 +108,42 @@ describe('ActiveSessions Component', () => {
       </Provider>
     )
     expect(screen.getByRole('status')).toBeInTheDocument()
+  })
+
+  it('should show close-all button when more than one session', async () => {
+    render(<Provider store={makeStore()}><ActiveSessions /></Provider>)
+    await waitFor(() => {
+      expect(screen.getByTestId('close-all-btn')).toBeInTheDocument()
+    })
+  })
+
+  it('should not show close-all button with only one session', async () => {
+    render(
+      <Provider store={makeStore({ sessions: [mockSessions[0]] })}>
+        <ActiveSessions />
+      </Provider>
+    )
+    await waitFor(() => {
+      expect(screen.queryByTestId('close-all-btn')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should dispatch logoutAllSessions when close-all confirmed', async () => {
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(true)
+    render(<Provider store={makeStore()}><ActiveSessions /></Provider>)
+    await waitFor(() => screen.getByTestId('close-all-btn'))
+    fireEvent.click(screen.getByTestId('close-all-btn'))
+    expect(mockLogoutAllSessions).toHaveBeenCalled()
+    jest.restoreAllMocks()
+  })
+
+  it('should not dispatch logoutAllSessions when close-all cancelled', async () => {
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(false)
+    render(<Provider store={makeStore()}><ActiveSessions /></Provider>)
+    await waitFor(() => screen.getByTestId('close-all-btn'))
+    fireEvent.click(screen.getByTestId('close-all-btn'))
+    expect(mockLogoutAllSessions).not.toHaveBeenCalled()
+    jest.restoreAllMocks()
   })
 
   it('should show error message when sessionsError is set', async () => {
