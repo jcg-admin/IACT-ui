@@ -5,8 +5,8 @@ project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
 current_work: .thyrox/context/work/2026-05-08-15-44-55-auth-uc-audit
-phase: Phase 8 — PLAN EXECUTION
-updated_at: 2026-05-08 15:59:30
+phase: Phase 11 — TRACK/EVALUATE
+updated_at: 2026-05-08 16:31:18
 blockers: []
 ```
 
@@ -16,13 +16,39 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP activo — `uc-alignment-full-audit` — Phase 10 IMPLEMENT **completa**. Pendiente Phase 11 TRACK/EVALUATE.
-**Tests:** 1841 passing / 214 suites / 0 failures (verificado 2026-05-08)
-**Próximo:** `/thyrox:track` para cerrar el WP
+**Estado:** WP `auth-uc-audit` — Phase 11 TRACK/EVALUATE completa. WP cerrado.
+**Tests:** 1856 passing / 215 suites / 0 failures (verificado 2026-05-08, +15 net new)
+**Próximo:** Sin WP activo. Usar `/thyrox:discover` para nuevo WP.
 
 ## Métricas de test suite
 
-**1841 tests** passing (verificado 2026-05-08 — WP uc-alignment-full-audit Phase 10 IMPLEMENT completa, 214 suites)
+**1856 tests** passing (verificado 2026-05-08 — WP auth-uc-audit Phase 11 TRACK completa, 215 suites)
+
+---
+
+## WP cerrado — auth-uc-audit ✓
+
+`2026-05-08-15-44-55-auth-uc-audit` — Phase 11 TRACK completa.
+
+15 tareas en 7 bloques (I..VII). 7 commits + 1 regression fix. 1856 tests (+15 nuevos), 0 regressions.
+
+Entregables:
+- T-001/T-002: first_login mock + Login.jsx conditional navigate to `/change-password`
+- T-003/T-004: RecoverPassword mock + thunk migration (inline → authSlice)
+- T-005/T-006/T-007: ChangePassword mock + thunk migration + next_step navigation
+- T-008: MainLayout integrates Header.jsx with `onLogout` prop; nav moved to sibling `<nav>`
+- T-009: `logoutAllSessions` endpoint corrected to `POST /api/users/{id}/close-all-sessions/`
+- T-010: ActiveSessions "Cerrar todas las sesiones" button (only when sessions > 1, with confirm)
+- T-011/T-012/T-013: audit/logs mock + `fetchLoginHistory` thunk + LoginHistory Redux-connected
+- T-014/T-015: `git mv` Login.jsx → `pages/auth/`; AppRouter lazy import updated
+
+Key lessons: `.unwrap()` mandatory for reading thunk payloads (L-01); module-level mockNavigate
+reference for navigation tests (L-02); consumer audit before structural moves (L-06).
+
+Artefactos:
+- `track/auth-uc-audit-changelog.md`
+- `track/auth-uc-audit-lessons.md` (6 lecciones)
+- `plan-execution/auth-uc-audit-task-plan.md` (15/15 [x])
 
 ---
 
