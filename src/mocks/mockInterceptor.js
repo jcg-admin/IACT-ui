@@ -24,6 +24,13 @@ class MockInterceptor {
     this._blockedMenuItems = new Map();
     this._inactiveFunctionsByItemId = new Set();
 
+    // UC_RPT_09: saved filters store (mutable, initialized from fixture)
+    this._savedFiltersStore = [
+      { id: 1, name: 'Filtro Nacional Q1', filters: { trimestre: 'Q01_25', segmento: 'Nacional' }, is_default: true,  created_at: '2026-01-10T10:00:00Z' },
+      { id: 2, name: 'Puebla Semanal',     filters: { trimestre: 'Q02_25', segmento: 'Puebla'   }, is_default: false, created_at: '2026-02-15T14:30:00Z' },
+    ]
+    this._savedFiltersNextId = 3
+
     // UC-ADM-03: composición de funciones por AGR de sistema
     this._systemGroupFunctions = new Map();
     const defaultCompositions = {
@@ -335,15 +342,22 @@ class MockInterceptor {
       return this._handleRetryPipeline(url, body);
     }
 
-    if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method !== 'GET') {
-      return this._handleScheduleSubAction(url, method);
-    }
     if (url.match(/\/api\/reports\/scheduled\/\d+\/runs\//)) {
       return this._handleScheduleHistory(url);
     }
+    if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method !== 'GET') {
+      return this._handleScheduleSubAction(url, method);
+    }
+    if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method === 'GET') {
+      return this._handleScheduleDetail(url);
+    }
 
     if (url.includes('/api/reports/scheduled/')) {
-      return this._handleScheduledReports(method, body);
+      return this._handleScheduledReports(url, method, body);
+    }
+
+    if (url.match(/\/api\/me\/filters\/\d+\//) || url.includes('/api/me/filters/')) {
+      return this._handleSavedFilters(url, method, body);
     }
 
     // Default 404
@@ -1587,6 +1601,63 @@ class MockInterceptor {
     return this._error(404, 'Unknown schedule action')
   }
 
+  _handleScheduleDetail(url) {
+    const parts = url.split('/').filter(Boolean)
+    const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
+    const all = this._handleScheduledReports(url, 'GET', null).data.results
+    const schedule = all.find((s) => s.id === id)
+    if (!schedule) return this._error(404, 'Scheduled report not found')
+    return { status: 200, data: schedule }
+  }
+
+  _handleSavedFilters(url, method, body) {
+    const idMatch = url.match(/\/api\/me\/filters\/(\d+)\//)
+    const id = idMatch ? parseInt(idMatch[1], 10) : null
+
+    if (method === 'GET') {
+      return { status: 200, data: { results: this._savedFiltersStore, count: this._savedFiltersStore.length } }
+    }
+
+    if (method === 'POST') {
+      const name = body?.name
+      if (!name) return this._error(400, 'name is required')
+      if (this._savedFiltersStore.some((f) => f.name === name)) {
+        return { status: 400, data: { error: 'Nombre duplicado', code: 'NAME_DUPLICATE' } }
+      }
+      const newFilter = {
+        id: this._savedFiltersNextId++,
+        name,
+        filters: body.filters ?? {},
+        is_default: body.is_default ?? false,
+        created_at: new Date().toISOString(),
+      }
+      this._savedFiltersStore.push(newFilter)
+      return { status: 201, data: newFilter }
+    }
+
+    if (method === 'PATCH') {
+      if (!id) return this._error(400, 'id required')
+      const idx = this._savedFiltersStore.findIndex((f) => f.id === id)
+      if (idx === -1) return this._error(404, 'Saved filter not found')
+      if (body?.is_default === true) {
+        this._savedFiltersStore = this._savedFiltersStore.map((f) => ({ ...f, is_default: f.id === id }))
+      } else {
+        this._savedFiltersStore[idx] = { ...this._savedFiltersStore[idx], ...body }
+      }
+      return { status: 200, data: this._savedFiltersStore.find((f) => f.id === id) }
+    }
+
+    if (method === 'DELETE') {
+      if (!id) return this._error(400, 'id required')
+      const before = this._savedFiltersStore.length
+      this._savedFiltersStore = this._savedFiltersStore.filter((f) => f.id !== id)
+      if (this._savedFiltersStore.length === before) return this._error(404, 'Saved filter not found')
+      return { status: 204, data: null }
+    }
+
+    return this._error(405, 'Method not allowed')
+  }
+
   _handleScheduleHistory(url) {
     const parts = url.split('/').filter(Boolean)
     const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
@@ -1612,13 +1683,31 @@ class MockInterceptor {
             export_job_id: 'job-abc-2',
             error_code: null,
           },
+          {
+            id: '3',
+            scheduled_report_id: id,
+            started_at: new Date(Date.now() - 259_200_000).toISOString(),
+            completed_at: new Date(Date.now() - 259_200_000 + 300_000).toISOString(),
+            status: 'failed',
+            export_job_id: null,
+            error_code: 'TIMEOUT',
+            rows_processed: 0,
+          },
         ],
-        pagination: { page: 1, page_size: 20, total: 2 },
+        pagination: { page: 1, page_size: 20, total: 3 },
       },
     }
   }
 
-  _handleScheduledReports(method, body) {
+  _scheduledReportsData() {
+    return [
+      { id: 1, name: 'Reporte Diario KPIs',       frequency: 'DAILY',   format: 'PDF',  active: true,  status: 'active',   last_run: new Date(Date.now() - 86400000).toISOString(),   next_run: new Date(Date.now() + 3600000).toISOString() },
+      { id: 2, name: 'Reporte Semanal Auditoría', frequency: 'WEEKLY',  format: 'XLSX', active: true,  status: 'active',   last_run: new Date(Date.now() - 604800000).toISOString(),  next_run: new Date(Date.now() + 86400000).toISOString() },
+      { id: 3, name: 'Cumplimiento Mensual',      frequency: 'MONTHLY', format: 'PDF',  active: false, status: 'inactive', last_run: null, next_run: null },
+    ]
+  }
+
+  _handleScheduledReports(url, method, body) {
     if (method === 'POST') {
       if (!body || !body.name || !body.frequency) {
         return this._error(400, 'name and frequency are required')
@@ -1632,22 +1721,21 @@ class MockInterceptor {
           format: body.format || 'PDF',
           recipients: body.recipients || [],
           active: true,
+          status: 'active',
           last_run: null,
           next_run: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         },
       }
     }
-    return {
-      status: 200,
-      data: {
-        results: [
-          { id: 1, name: 'Reporte Diario KPIs',       frequency: 'DAILY',   format: 'PDF',  active: true, last_run: new Date(Date.now() - 86400000).toISOString(), next_run: new Date(Date.now() + 3600000).toISOString() },
-          { id: 2, name: 'Reporte Semanal Auditoría', frequency: 'WEEKLY',  format: 'XLSX', active: true, last_run: new Date(Date.now() - 604800000).toISOString(), next_run: new Date(Date.now() + 86400000).toISOString() },
-          { id: 3, name: 'Cumplimiento Mensual',      frequency: 'MONTHLY', format: 'PDF',  active: false, last_run: null, next_run: null },
-        ],
-        count: 3,
-      },
-    }
+    let results = this._scheduledReportsData()
+    try {
+      const params = new URL(url, 'http://localhost').searchParams
+      const statusFilter = params.get('status')
+      const frequencyFilter = params.get('frequency')
+      if (statusFilter) results = results.filter((r) => r.status === statusFilter)
+      if (frequencyFilter) results = results.filter((r) => r.frequency === frequencyFilter)
+    } catch (_) { /* URL may not have query string */ }
+    return { status: 200, data: { results, count: results.length } }
   }
 
   // ====== ADMIN MENU ITEMS (UC-ADM-04/05) ======

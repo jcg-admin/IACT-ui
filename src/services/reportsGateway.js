@@ -102,10 +102,20 @@ class ReportsService {
 
   /**
    * Obtiene la lista de reportes programados.
+   * @param {Object} params - Filtros opcionales: status, frequency
    * @returns {Promise<Object>} Respuesta paginada con reportes programados
    */
-  async getScheduledReports() {
-    return apiService.get('/api/reports/scheduled/')
+  async getScheduledReports(params = {}) {
+    return apiService.get('/api/reports/scheduled/', { params })
+  }
+
+  /**
+   * Obtiene el detalle de un reporte programado.
+   * @param {number} id
+   * @returns {Promise<Object>} Reporte programado
+   */
+  async getScheduledDetail(id) {
+    return apiService.get(`/api/reports/scheduled/${id}/`)
   }
 
   /**

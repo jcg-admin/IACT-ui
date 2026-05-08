@@ -77,7 +77,7 @@ describe('reportsService.getScheduledReports', () => {
   it('llama GET /api/reports/scheduled/', async () => {
     apiService.get.mockResolvedValue({ results: [] })
     await reportsService.getScheduledReports()
-    expect(apiService.get).toHaveBeenCalledWith('/api/reports/scheduled/')
+    expect(apiService.get).toHaveBeenCalledWith('/api/reports/scheduled/', { params: {} })
   })
 })
 

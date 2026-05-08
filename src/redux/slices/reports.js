@@ -25,9 +25,21 @@ export const fetchDashboardMetrics = createAsyncThunk(
 /** Obtiene la lista de reportes programados. */
 export const fetchScheduledReports = createAsyncThunk(
   'reports/fetchScheduledReports',
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      return await reportsService.getScheduledReports()
+      return await reportsService.getScheduledReports(params)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+/** Obtiene el detalle de un reporte programado. */
+export const fetchScheduledDetail = createAsyncThunk(
+  'reports/fetchScheduledDetail',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await reportsService.getScheduledDetail(id)
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
@@ -157,6 +169,7 @@ const reportsSlice = createSlice({
   initialState: {
     metrics: null,
     scheduledReports: [],
+    scheduledDetail: null,
     scheduleHistory: [],
     reportHistory: [],
     savedViews: [],
@@ -198,6 +211,18 @@ const reportsSlice = createSlice({
         state.loading = false
       })
       .addCase(fetchScheduledReports.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
+    // fetchScheduledDetail
+    builder
+      .addCase(fetchScheduledDetail.pending, (state) => { state.loading = true; state.error = null })
+      .addCase(fetchScheduledDetail.fulfilled, (state, action) => {
+        state.scheduledDetail = action.payload
+        state.loading = false
+      })
+      .addCase(fetchScheduledDetail.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
