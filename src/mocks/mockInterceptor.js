@@ -331,7 +331,7 @@ class MockInterceptor {
     }
 
     if (url.includes('/api/v1/etl/supervision/')) {
-      return this._handlePipelineStatus();
+      return this._handlePipelineStatus(url);
     }
 
     if (url.match(/\/api\/etl\/logs\/\d+\/retry\//) && method === 'POST') {
@@ -354,6 +354,14 @@ class MockInterceptor {
 
     if (url.match(/\/api\/me\/filters\/\d+\//) || url.includes('/api/me/filters/')) {
       return this._handleSavedFilters(url, method, body);
+    }
+
+    if (url.includes('/api/v1/etl/errores/')) {
+      return this._handlePipelineErrors(url);
+    }
+
+    if (url.includes('/api/v1/datos/disponibilidad/')) {
+      return this._handleETLAvailability(url);
     }
 
     // Default 404
@@ -1545,7 +1553,65 @@ class MockInterceptor {
     return { status: 204, data: { revoked: true, id: sessionId } }
   }
 
-  _handlePipelineStatus() {
+  _handlePipelineStatus(url) {
+    let testEstado = 'ok'
+    try {
+      testEstado = new URL(url, 'http://localhost').searchParams.get('test_estado') ?? 'ok'
+    } catch (_) {}
+
+    if (testEstado === 'stale') {
+      return {
+        status: 200,
+        data: {
+          estado_general: 'stale',
+          ultima_ejecucion_exitosa: null,
+          ejecucion_en_curso: null,
+          ultima_ejecucion_fallida: null,
+          total_exitosas_24h: 0,
+          total_fallidas_24h: 0,
+        },
+      }
+    }
+    if (testEstado === 'degradado') {
+      return {
+        status: 200,
+        data: {
+          estado_general: 'degradado',
+          ultima_ejecucion_exitosa: {
+            trimestre: 'Q1_26',
+            finished_at: new Date(Date.now() - 8 * 3_600_000).toISOString(),
+            base_records: 987_654,
+          },
+          ejecucion_en_curso: null,
+          ultima_ejecucion_fallida: {
+            trimestre: 'Q1_26',
+            started_at: new Date(Date.now() - 6 * 3_600_000).toISOString(),
+          },
+          total_exitosas_24h: 1,
+          total_fallidas_24h: 1,
+        },
+      }
+    }
+    if (testEstado === 'critico') {
+      return {
+        status: 200,
+        data: {
+          estado_general: 'critico',
+          ultima_ejecucion_exitosa: {
+            trimestre: 'Q4_25',
+            finished_at: new Date(Date.now() - 36 * 3_600_000).toISOString(),
+            base_records: 500_000,
+          },
+          ejecucion_en_curso: null,
+          ultima_ejecucion_fallida: {
+            trimestre: 'Q1_26',
+            started_at: new Date(Date.now() - 4 * 3_600_000).toISOString(),
+          },
+          total_exitosas_24h: 0,
+          total_fallidas_24h: 3,
+        },
+      }
+    }
     return {
       status: 200,
       data: {
@@ -1561,6 +1627,93 @@ class MockInterceptor {
         total_fallidas_24h: 0,
       },
     }
+  }
+
+  _handlePipelineErrors(url) {
+    let params = {}
+    try {
+      const sp = new URL(url, 'http://localhost').searchParams
+      params = { error_type: sp.get('error_type'), trimestre: sp.get('trimestre') }
+    } catch (_) {}
+
+    const errors = [
+      {
+        id: 1,
+        pipeline_name: 'etl-ivr-nacional',
+        trimestre: 'Q1_26',
+        started_at: new Date(Date.now() - 6 * 3_600_000).toISOString(),
+        finished_at: new Date(Date.now() - 5.8 * 3_600_000).toISOString(),
+        error_message: 'Pipeline timed out after 720s waiting for source extract',
+        error_type: 'TIMEOUT',
+        correlation_id: 'corr-001-timeout',
+      },
+      {
+        id: 2,
+        pipeline_name: 'etl-ivr-puebla',
+        trimestre: 'Q1_26',
+        started_at: new Date(Date.now() - 12 * 3_600_000).toISOString(),
+        finished_at: new Date(Date.now() - 11.9 * 3_600_000).toISOString(),
+        error_message: 'Validation failed: campo promedio_llamadas contiene valores negativos (3 filas)',
+        error_type: 'DATA_VALIDATION',
+        correlation_id: 'corr-002-validation',
+      },
+      {
+        id: 3,
+        pipeline_name: 'etl-ivr-nacional',
+        trimestre: 'Q4_25',
+        started_at: new Date(Date.now() - 36 * 3_600_000).toISOString(),
+        finished_at: new Date(Date.now() - 35.8 * 3_600_000).toISOString(),
+        error_message: 'Pipeline timed out after 720s — source DB unreachable',
+        error_type: 'TIMEOUT',
+        correlation_id: 'corr-003-timeout',
+      },
+    ]
+
+    let results = errors
+    if (params.error_type) {
+      results = results.filter((e) => e.error_type === params.error_type)
+    }
+    if (params.trimestre) {
+      results = results.filter((e) => e.trimestre === params.trimestre)
+    }
+
+    return { status: 200, data: results }
+  }
+
+  _handleETLAvailability(url) {
+    let testState = null
+    try {
+      testState = new URL(url, 'http://localhost').searchParams.get('test_state')
+    } catch (_) {}
+
+    const frescoDataset = {
+      dataset: 'ivr_llamadas_nacional',
+      trimestre: 'Q2_26',
+      minutos_desde_etl: 45,
+      estado_frescura: 'fresco',
+      ultima_actualizacion: new Date(Date.now() - 45 * 60_000).toISOString(),
+      registros_disponibles: 1_234_567,
+    }
+    const vencidoDataset = {
+      dataset: 'ivr_llamadas_puebla',
+      trimestre: 'Q1_26',
+      minutos_desde_etl: 1_560,
+      estado_frescura: 'vencido',
+      ultima_actualizacion: new Date(Date.now() - 1_560 * 60_000).toISOString(),
+      registros_disponibles: 404_483,
+    }
+
+    if (testState === 'vencido') {
+      return {
+        status: 200,
+        data: [
+          { ...frescoDataset, estado_frescura: 'vencido', minutos_desde_etl: 900 },
+          vencidoDataset,
+        ],
+      }
+    }
+
+    return { status: 200, data: [frescoDataset, vencidoDataset] }
   }
 
   _handleRetryPipeline(url, body) {

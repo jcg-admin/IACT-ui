@@ -5,8 +5,22 @@ import ETLAvailability from '../ETLAvailability'
 
 const mockDispatch = jest.fn()
 const AVAILABILITY_DATA = [
-  { id: 1, process: 'import_users', available: true, last_run: '2026-05-05T08:00:00Z', next_run: '2026-05-06T08:00:00Z' },
-  { id: 2, process: 'export_reports', available: false, last_run: '2026-05-05T09:00:00Z', next_run: null },
+  {
+    dataset: 'ivr_llamadas_nacional',
+    trimestre: 'Q2_26',
+    minutos_desde_etl: 45,
+    estado_frescura: 'fresco',
+    ultima_actualizacion: '2026-05-08T10:00:00Z',
+    registros_disponibles: 1_234_567,
+  },
+  {
+    dataset: 'ivr_llamadas_puebla',
+    trimestre: 'Q1_26',
+    minutos_desde_etl: 1_560,
+    estado_frescura: 'vencido',
+    ultima_actualizacion: '2026-05-06T18:00:00Z',
+    registros_disponibles: 404_483,
+  },
 ]
 
 jest.mock('react-redux', () => ({
@@ -17,27 +31,25 @@ jest.mock('react-redux', () => ({
   }),
 }))
 
-jest.mock('../../../redux/slices/logs', () => ({
+jest.mock('@store/slices/logs', () => ({
   fetchETLAvailability: jest.fn(() => ({ type: 'logs/fetchETLAvailability' })),
-  fetchPipelineStatus: jest.fn(() => ({ type: 'logs/fetchPipelineStatus' })),
   selectETLAvailability: (s) => s.logs.etlAvailability,
-  selectPipelineStatus: (s) => s.logs.pipelineStatus ?? null,
   selectLogsLoading: (s) => s.logs.loading ?? false,
   selectLogsError: (s) => s.logs.error ?? null,
 }))
 
-import { fetchETLAvailability } from '../../../redux/slices/logs'
+import { fetchETLAvailability } from '@store/slices/logs'
 
 function wrap() {
   return render(<MemoryRouter><ETLAvailability /></MemoryRouter>)
 }
 
-describe('ETLAvailability — uc-pip-03', () => {
+describe('ETLAvailability — UC_PIP_03', () => {
   beforeEach(() => { mockDispatch.mockClear(); fetchETLAvailability.mockClear() })
 
   it('renders page title', () => {
     wrap()
-    expect(screen.getByRole('heading', { name: /disponibilidad.*etl/i, level: 1 })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('dispatches fetchETLAvailability on mount', () => {
@@ -45,15 +57,37 @@ describe('ETLAvailability — uc-pip-03', () => {
     expect(fetchETLAvailability).toHaveBeenCalled()
   })
 
-  it('renders availability entries', () => {
+  it('renders dataset names', () => {
     wrap()
-    expect(screen.getByText('import_users')).toBeInTheDocument()
-    expect(screen.getByText('export_reports')).toBeInTheDocument()
+    expect(screen.getByText('ivr_llamadas_nacional')).toBeInTheDocument()
+    expect(screen.getByText('ivr_llamadas_puebla')).toBeInTheDocument()
   })
 
-  it('shows available/unavailable status', () => {
+  it('renders estado_frescura badges', () => {
     wrap()
-    expect(screen.getAllByText(/disponible/i).length).toBeGreaterThanOrEqual(2)
-    expect(screen.getByText('No disponible')).toBeInTheDocument()
+    expect(screen.getByText('fresco')).toBeInTheDocument()
+    expect(screen.getByText('vencido')).toBeInTheDocument()
+  })
+
+  it('shows FA-01 stale banner when any dataset is vencido', () => {
+    wrap()
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(/vencido/i)
+  })
+
+  it('does not show stale banner when all datasets are fresco', () => {
+    const frescoOnly = [AVAILABILITY_DATA[0]]
+    jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
+      selector({ logs: { etlAvailability: frescoOnly, loading: false, error: null } })
+    )
+    wrap()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    jest.restoreAllMocks()
+  })
+
+  it('renders minutos_desde_etl column', () => {
+    wrap()
+    expect(screen.getByText('45')).toBeInTheDocument()
+    expect(screen.getByText('1560')).toBeInTheDocument()
   })
 })

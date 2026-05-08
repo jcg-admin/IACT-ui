@@ -91,9 +91,20 @@ export const retryPipeline = createAsyncThunk(
 
 export const fetchETLAvailability = createAsyncThunk(
   'logs/fetchETLAvailability',
-  async (_, { rejectWithValue }) => {
+  async ({ trimestre } = {}, { rejectWithValue }) => {
     try {
-      return await logsService.getETLAvailability()
+      return await logsService.getETLAvailability(trimestre)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const fetchPipelineErrors = createAsyncThunk(
+  'logs/fetchPipelineErrors',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      return await logsService.getPipelineErrors(params)
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
@@ -117,6 +128,7 @@ const logsSlice = createSlice({
     logs: [],
     etlLogs: [],
     etlAvailability: [],
+    pipelineErrors: [],
     pipelineStatus: null,
     searchResults: [],
     infraLogs: [],
@@ -194,6 +206,13 @@ const logsSlice = createSlice({
         state.pipelineStatus = action.payload
       })
       .addCase(fetchPipelineStatus.rejected, rejected)
+
+      .addCase(fetchPipelineErrors.pending, pending)
+      .addCase(fetchPipelineErrors.fulfilled, (state, action) => {
+        state.loading = false
+        state.pipelineErrors = action.payload?.results ?? action.payload ?? []
+      })
+      .addCase(fetchPipelineErrors.rejected, rejected)
   },
 })
 
@@ -209,5 +228,6 @@ export const selectSearchResults = createSelector(selectLogsState, (s) => s.sear
 export const selectInfraLogs = createSelector(selectLogsState, (s) => s.infraLogs)
 export const selectSystemStatus = createSelector(selectLogsState, (s) => s.systemStatus)
 export const selectPerformanceMetrics = createSelector(selectLogsState, (s) => s.performanceMetrics)
+export const selectPipelineErrors = createSelector(selectLogsState, (s) => s.pipelineErrors)
 export const selectLogsLoading = createSelector(selectLogsState, (s) => s.loading)
 export const selectLogsError = createSelector(selectLogsState, (s) => s.error)
