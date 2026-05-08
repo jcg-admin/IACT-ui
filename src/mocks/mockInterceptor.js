@@ -1061,6 +1061,10 @@ class MockInterceptor {
       if (!body || !body.codename || !body.name) {
         return this._error(400, 'codename and name are required')
       }
+      const existing = this._handleAdminFunctions(url, 'GET', null).data
+      if (existing.some(f => f.codename === body.codename)) {
+        return { status: 409, data: { error: 'Codename ya existe', code: 'DUPLICATE_CODENAME' } }
+      }
       return {
         status: 201,
         data: {
