@@ -2,7 +2,7 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 16:45:00
+updated_at: 2026-05-08 20:27:28
 branch: claude/project-analysis-N9IkV
 wp_activo: null
 ```
@@ -12,8 +12,8 @@ wp_activo: null
 ## Estado actual — Sin WP activo
 
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP `auth-uc-audit` cerrado (Phase 11 TRACK completa). **1856 tests green.**
-**Próximo:** Definir siguiente WP — ver opciones abajo.
+**Estado:** WP `admin-uc-audit` cerrado (Phase 11 TRACK completa). **1894 tests green.**
+**Próximo:** Phase 12 STANDARDIZE para propagar lecciones. Luego definir siguiente WP.
 
 ---
 
