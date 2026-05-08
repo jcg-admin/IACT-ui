@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: .thyrox/context/work/2026-05-08-01-31-21-systemic-naming-violations
-phase: Phase 1 — DISCOVER
-updated_at: 2026-05-08 05:50:00
+current_work: null
+phase: null
+updated_at: 2026-05-08 08:05:00
 blockers: []
 ```
 
@@ -16,11 +16,32 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP systemic-naming-violations — Phase 1 DISCOVER completa. Pendiente SP-01 (gate: ¿incluir HAL-4 aliases en scope?).
+**Estado:** WP systemic-naming-violations — Phase 11 TRACK completa. 0 deuda técnica activa.
 
 ## Métricas de test suite
 
-**1799 tests** passing (verificado 2026-05-08 — WP dashboard-cleanup-naming-conventions Phase 11 TRACK completa, 209 suites)
+**1799 tests** passing (verificado 2026-05-08 — WP systemic-naming-violations Phase 11 TRACK completa, 209 suites)
+
+---
+
+## WP cerrado — systemic-naming-violations ✓
+
+`2026-05-08-01-31-21-systemic-naming-violations` — Phase 11 TRACK completa.
+
+115 tareas en 6 bloques (HAL-5, HAL-1, HAL-2, HAL-3, HAL-6, HAL-4). 6 commits. 1799 tests, 0 regressions.
+
+Entregables:
+- HAL-5: 5 hooks renombrados (useAuth→useIdentity, useAPI→useRequest, useWebSocket→useRealTimeChannel, useJobPolling→useJobStatus, useAlertPolling→useAlertFeed)
+- HAL-1: 57 archivos *Page.jsx renombrados (sufijo Page eliminado)
+- HAL-2: 17 archivos *Slice.js renombrados (sufijo Slice eliminado)
+- HAL-3: 20 archivos *Service.js renombrados (→Gateway/Client/dominio)
+- HAL-6: UserAuth→UserIdentity, APIError→HttpError, handleAPIError→handleHttpError
+- HAL-4: 5 aliases Webpack renombrados (@components→@ui, @services→@api, @redux→@store, @utils→@shared, @pages→@screens)
+
+Artefactos:
+- `track/systemic-naming-violations-changelog.md`
+- `track/systemic-naming-violations-lessons.md` (6 lecciones)
+- `plan-execution/systemic-naming-violations-task-plan.md` (115/115 [x])
 
 ---
 
