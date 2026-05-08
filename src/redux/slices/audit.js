@@ -60,6 +60,18 @@ export const fetchAuditSummary = createAsyncThunk(
     }
 );
 
+export const fetchLoginHistory = createAsyncThunk(
+    'audit/fetchLoginHistory',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await auditService.getAuditLogs({ type: 'LOGIN', user: 'current' });
+            return response;
+        } catch (error) {
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
+        }
+    }
+);
+
 /**
  * Initial State
  */
@@ -74,6 +86,9 @@ const initialState = {
         logsByUser: {},
         dateRange: null,
     },
+    loginHistory: [],
+    loginHistoryLoading: false,
+    loginHistoryError: null,
     loading: false,
     error: null,
     filters: {
@@ -174,6 +189,20 @@ const auditSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
+
+        builder
+            .addCase(fetchLoginHistory.pending, (state) => {
+                state.loginHistoryLoading = true;
+                state.loginHistoryError = null;
+            })
+            .addCase(fetchLoginHistory.fulfilled, (state, action) => {
+                state.loginHistoryLoading = false;
+                state.loginHistory = action.payload;
+            })
+            .addCase(fetchLoginHistory.rejected, (state, action) => {
+                state.loginHistoryLoading = false;
+                state.loginHistoryError = action.payload;
+            });
     },
 });
 
@@ -188,6 +217,8 @@ export const selectSummary = (state) => state.audit.summary;
 export const selectLoading = (state) => state.audit.loading;
 export const selectError = (state) => state.audit.error;
 export const selectFilters = (state) => state.audit.filters;
+export const selectLoginHistory = (state) => state.audit.loginHistory;
+export const selectLoginHistoryLoading = (state) => state.audit.loginHistoryLoading;
 
 export const selectLogsByUser = (state, userId) =>
     state.audit.logs.filter(log => log.user_id === userId);

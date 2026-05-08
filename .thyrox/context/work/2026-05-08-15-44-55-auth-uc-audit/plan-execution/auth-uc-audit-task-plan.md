@@ -79,11 +79,11 @@ pero Block IV depende de I (mismo flujo de login). En la práctica ejecutar I→
 
 ## Block VI — LoginHistory (GAP-AUTH-05-C)
 
-- [ ] [T-011] **mockInterceptor.js** — Agregar handler `GET /api/audit/logs` con filtros `type=LOGIN` y `user=current`. Response: array de eventos `{ id, timestamp, ip_address, user_agent, status, location }`. Incluir al menos 3 entradas mock. *(GAP-AUTH-05-C · mock)*
+- [x] [T-011] **mockInterceptor.js** — Agregar handler `GET /api/audit/logs` con filtros `type=LOGIN` y `user=current`. Response: array de eventos `{ id, timestamp, ip_address, user_agent, status, location }`. Incluir al menos 3 entradas mock. *(GAP-AUTH-05-C · mock)*
 
-- [ ] [T-012] **auditSlice.js** — Agregar thunk `fetchLoginHistory` que llama `auditGateway.getAuditLogs({ type: 'LOGIN', user: 'current' })`. Agregar estado `loginHistory`, `loginHistoryLoading`, `loginHistoryError` al slice. Agregar selectores `selectLoginHistory`, `selectLoginHistoryLoading`. Actualizar `auditSlice.test.js` con tests del nuevo thunk. *(GAP-AUTH-05-C · Redux)*
+- [x] [T-012] **auditSlice.js** — Agregar thunk `fetchLoginHistory` que llama `auditGateway.getAuditLogs({ type: 'LOGIN', user: 'current' })`. Agregar estado `loginHistory`, `loginHistoryLoading`, `loginHistoryError` al slice. Agregar selectores `selectLoginHistory`, `selectLoginHistoryLoading`. Actualizar `auditSlice.test.js` con tests del nuevo thunk. *(GAP-AUTH-05-C · Redux)*
 
-- [ ] [T-013] **LoginHistory.jsx** — Eliminar datos hardcoded. Conectar al store con `useSelector(selectLoginHistory)` y `useDispatch`. Despachar `fetchLoginHistory` en `useEffect`. Mostrar loading state. Actualizar `LoginHistory.test.js`: tests con store mock, verificar que dispatcha `fetchLoginHistory` y renderiza los datos del store. *(GAP-AUTH-05-C · UI)*
+- [x] [T-013] **LoginHistory.jsx** — Eliminar datos hardcoded. Conectar al store con `useSelector(selectLoginHistory)` y `useDispatch`. Despachar `fetchLoginHistory` en `useEffect`. Mostrar loading state. Actualizar `LoginHistory.test.js`: tests con store mock, verificar que dispatcha `fetchLoginHistory` y renderiza los datos del store. *(GAP-AUTH-05-C · UI)*
 
 ---
 

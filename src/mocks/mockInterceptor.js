@@ -66,6 +66,9 @@ class MockInterceptor {
     if (url.includes('/api/auth/change-password/') && method === 'POST') {
       return this._handleChangePassword(body);
     }
+    if (url.includes('/api/audit/logs') && method === 'GET') {
+      return this._handleGetAuditLogs(url);
+    }
     if (url.includes('/api/users')) {
       return this._handleUsers(method, body);
     }
@@ -1558,6 +1561,19 @@ class MockInterceptor {
       { id: 3, codename: 'audit:view',      name: 'Ver auditoría',   domain: 'audit',   granted_at: '2026-02-01', expires_at: null, is_temporary: false },
     ]
     return { status: 200, data: userId === 1 ? allPerms : allPerms.slice(0, 1) }
+  }
+
+  // UC-AUD-01 / UC-AUTH-05-C: logs de auditoría (filtrables por type, user)
+  _handleGetAuditLogs(url) {
+    const urlObj = new URL(url, 'http://localhost');
+    const type = urlObj.searchParams.get('type');
+    const allLogs = [
+      { id: '1', timestamp: new Date(Date.now() - 300_000).toISOString(),  device: 'Chrome on MacOS',   ip: '192.168.1.100', location: 'San Francisco, CA', status: 'success', event_type: 'LOGIN' },
+      { id: '2', timestamp: new Date(Date.now() - 3_600_000).toISOString(), device: 'Safari on iPhone',  ip: '192.168.1.101', location: 'San Francisco, CA', status: 'success', event_type: 'LOGIN' },
+      { id: '3', timestamp: new Date(Date.now() - 86_400_000).toISOString(), device: 'Unknown Browser',  ip: '203.0.113.50',  location: 'Unknown',           status: 'failed',  event_type: 'LOGIN' },
+    ];
+    const data = type ? allLogs.filter((l) => l.event_type === type) : allLogs;
+    return { status: 200, data };
   }
 
   // UC-AUTH-03: recuperar contraseña

@@ -1,64 +1,29 @@
 /**
  * LoginHistory Component
- * 
- * Display login attempts and history
+ *
+ * Display login attempts and history — UC-AUTH-05
+ * Connected to /api/audit/logs?type=LOGIN&user=current via auditSlice
  */
 
-import React, { useState, useEffect } from 'react'
-import { getNotificationService } from '@api/notificationGateway'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  fetchLoginHistory,
+  selectLoginHistory,
+  selectLoginHistoryLoading,
+} from '@store/slices/audit'
 
 export default function LoginHistory() {
-  const [history, setHistory] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  const notify = getNotificationService()
+  const dispatch = useDispatch()
+  const history = useSelector(selectLoginHistory)
+  const loading = useSelector(selectLoginHistoryLoading)
 
   useEffect(() => {
-    loadHistory()
-  }, [])
-
-  const loadHistory = async () => {
-    try {
-      setLoading(true)
-      
-      // Mock data - in production, call API
-      const mockHistory = [
-        {
-          id: '1',
-          timestamp: new Date(Date.now() - 300000).toISOString(),
-          device: 'Chrome on MacOS',
-          ip: '192.168.1.100',
-          location: 'San Francisco, CA',
-          status: 'success'
-        },
-        {
-          id: '2',
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          device: 'Safari on iPhone',
-          ip: '192.168.1.101',
-          location: 'San Francisco, CA',
-          status: 'success'
-        },
-        {
-          id: '3',
-          timestamp: new Date(Date.now() - 172800000).toISOString(),
-          device: 'Unknown Browser',
-          ip: '203.0.113.50',
-          location: 'Unknown',
-          status: 'failed'
-        }
-      ]
-
-      setHistory(mockHistory)
-      setLoading(false)
-    } catch (error) {
-      notify.error(`Failed to load history: ${error.message}`)
-      setLoading(false)
-    }
-  }
+    dispatch(fetchLoginHistory())
+  }, [dispatch])
 
   if (loading) {
-    return <div className="login-history loading">Loading history...</div>
+    return <div className="login-history loading" role="status">Loading history...</div>
   }
 
   return (
