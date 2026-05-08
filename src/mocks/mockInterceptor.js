@@ -283,6 +283,19 @@ class MockInterceptor {
     if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'POST') {
       return this._handleBlockAutoArchive(url, body)
     }
+    // ADMIN — UC-ADM-05: endpoints de transición de lifecycle (ANTES del handler genérico)
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/publish\//) && method === 'POST') {
+      return this._handleMenuItemPublish(url)
+    }
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/deprecate\//) && method === 'POST') {
+      return this._handleMenuItemDeprecate(url)
+    }
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/reactivate\//) && method === 'POST') {
+      return this._handleMenuItemReactivate(url)
+    }
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/archive\//) && method === 'POST') {
+      return this._handleMenuItemArchive(url)
+    }
     // ADMIN — UC-ADM-04/05: catálogo + lifecycle de MenuItems
     if (url.includes('/api/admin/menu-items/')) {
       return this._handleAdminMenuItems(method, url, body)
@@ -1643,6 +1656,54 @@ class MockInterceptor {
       return { status: 200, data: { ...item, status: newStatus } }
     }
     return this._error(405, 'Method not allowed')
+  }
+
+  _menuItemById(url) {
+    const id = parseInt(url.match(/\/menu-items\/(\d+)\//)?.[1], 10)
+    return this._menuItemsData().find(i => i.id === id) || { id }
+  }
+
+  _handleMenuItemPublish(url) {
+    const item = this._menuItemById(url)
+    return { status: 200, data: { ...item, status: 'ACTIVE', deprecated_at: null, archived_at: null } }
+  }
+
+  _handleMenuItemDeprecate(url) {
+    const item = this._menuItemById(url)
+    return { status: 200, data: { ...item, status: 'DEPRECATED', deprecated_at: new Date().toISOString() } }
+  }
+
+  _handleMenuItemReactivate(url) {
+    const item = this._menuItemById(url)
+    return {
+      status: 200,
+      data: {
+        ...item,
+        status: 'ACTIVE',
+        deprecated_at: null,
+        archived_at: null,
+        block_auto_archive: false,
+        block_reason: '',
+        block_set_by: null,
+        block_set_at: null,
+      },
+    }
+  }
+
+  _handleMenuItemArchive(url) {
+    const item = this._menuItemById(url)
+    return {
+      status: 200,
+      data: {
+        ...item,
+        status: 'ARCHIVED',
+        archived_at: new Date().toISOString(),
+        block_auto_archive: false,
+        block_reason: '',
+        block_set_by: null,
+        block_set_at: null,
+      },
+    }
   }
 
   // ====== ACCESS HANDLERS (UC-ACC-01/03/09) ======

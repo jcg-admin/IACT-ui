@@ -148,8 +148,20 @@ class AdminService {
     return apiService.put(`/api/admin/menu-items/${id}/`, data)
   }
 
-  async transitionMenuItemStatus(id, newStatus) {
-    return apiService.patch(`/api/admin/menu-items/${id}/`, { status: newStatus })
+  async publishMenuItem(id) {
+    return apiService.post(`/api/admin/menu-items/${id}/publish/`)
+  }
+
+  async deprecateMenuItem(id) {
+    return apiService.post(`/api/admin/menu-items/${id}/deprecate/`)
+  }
+
+  async reactivateMenuItem(id) {
+    return apiService.post(`/api/admin/menu-items/${id}/reactivate/`)
+  }
+
+  async archiveMenuItem(id) {
+    return apiService.post(`/api/admin/menu-items/${id}/archive/`)
   }
 
   async bulkReorderMenuItems(items) {

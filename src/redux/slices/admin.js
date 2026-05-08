@@ -189,11 +189,44 @@ export const updateMenuItem = createAsyncThunk(
   }
 )
 
-export const transitionMenuItemStatus = createAsyncThunk(
-  'admin/transitionMenuItemStatus',
-  async ({ id, newStatus }, { rejectWithValue }) => {
+export const publishMenuItem = createAsyncThunk(
+  'admin/publishMenuItem',
+  async (id, { rejectWithValue }) => {
     try {
-      return await adminService.transitionMenuItemStatus(id, newStatus)
+      return await adminService.publishMenuItem(id)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const deprecateMenuItem = createAsyncThunk(
+  'admin/deprecateMenuItem',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await adminService.deprecateMenuItem(id)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const reactivateMenuItem = createAsyncThunk(
+  'admin/reactivateMenuItem',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await adminService.reactivateMenuItem(id)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const archiveMenuItem = createAsyncThunk(
+  'admin/archiveMenuItem',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await adminService.archiveMenuItem(id)
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
@@ -430,12 +463,26 @@ const adminSlice = createSlice({
       })
       .addCase(updateMenuItem.rejected, (state, action) => { state.error = action.payload })
 
+    const updateMenuItemInState = (state, action) => {
+      const idx = state.menuItems.findIndex((i) => i.id === action.payload.id)
+      if (idx !== -1) state.menuItems[idx] = action.payload
+    }
+
     builder
-      .addCase(transitionMenuItemStatus.fulfilled, (state, action) => {
-        const idx = state.menuItems.findIndex((i) => i.id === action.payload.id)
-        if (idx !== -1) state.menuItems[idx] = action.payload
-      })
-      .addCase(transitionMenuItemStatus.rejected, (state, action) => { state.error = action.payload })
+      .addCase(publishMenuItem.fulfilled, updateMenuItemInState)
+      .addCase(publishMenuItem.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(deprecateMenuItem.fulfilled, updateMenuItemInState)
+      .addCase(deprecateMenuItem.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(reactivateMenuItem.fulfilled, updateMenuItemInState)
+      .addCase(reactivateMenuItem.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(archiveMenuItem.fulfilled, updateMenuItemInState)
+      .addCase(archiveMenuItem.rejected, (state, action) => { state.error = action.payload })
 
     // fetchAGRComposition
     builder

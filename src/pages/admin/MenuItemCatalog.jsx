@@ -11,7 +11,10 @@ import {
   fetchMenuItems,
   createMenuItem,
   updateMenuItem,
-  transitionMenuItemStatus,
+  publishMenuItem,
+  deprecateMenuItem,
+  reactivateMenuItem,
+  archiveMenuItem,
   bulkReorderMenuItems,
   blockAutoArchive,
   selectMenuItems,
@@ -119,8 +122,13 @@ export default function MenuItemCatalog() {
   // ── Lifecycle transition ─────────────────────────────────────────────────
 
   const handleTransition = async (item, newStatus) => {
+    const thunk = newStatus === 'ACTIVE'
+      ? (item.status === 'DRAFT' ? publishMenuItem(item.id) : reactivateMenuItem(item.id))
+      : newStatus === 'DEPRECATED'
+        ? deprecateMenuItem(item.id)
+        : archiveMenuItem(item.id)
     try {
-      await dispatch(transitionMenuItemStatus({ id: item.id, newStatus })).unwrap()
+      await dispatch(thunk).unwrap()
       setTransitionErrors((e) => ({ ...e, [item.id]: null }))
       showFeedback(`${item.label}: ${STATUS_LABELS[newStatus]}`)
     } catch (err) {

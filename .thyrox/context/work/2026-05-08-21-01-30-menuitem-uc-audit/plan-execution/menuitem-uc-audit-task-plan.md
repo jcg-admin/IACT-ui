@@ -39,11 +39,11 @@ T-015                    (Block V independiente)
 > Reemplazar el PATCH genérico `/{id}/` por 4 POST a endpoints específicos.
 > Commit al completar T-005.
 
-- [ ] [T-001] `adminGateway.js` — eliminar `transitionMenuItemStatus`; agregar 4 métodos: `publishMenuItem(id)` → `POST /{id}/publish/`, `deprecateMenuItem(id)` → `POST /{id}/deprecate/`, `reactivateMenuItem(id)` → `POST /{id}/reactivate/`, `archiveMenuItem(id)` → `POST /{id}/archive/`
-- [ ] [T-002] `admin.js` — eliminar thunk `transitionMenuItemStatus` y su reducer; agregar 4 thunks (`publishMenuItem`, `deprecateMenuItem`, `reactivateMenuItem`, `archiveMenuItem`) + 4 pares de reducers `.fulfilled`/`.rejected` que actualizan `menuItems` por id
-- [ ] [T-003] `MenuItemCatalog.jsx` — actualizar imports (quitar `transitionMenuItemStatus`, agregar 4 thunks); actualizar `handleTransition(item, newStatus)` para despachar el thunk correcto según `newStatus` (ACTIVE → publish/reactivate según `item.status`, DEPRECATED → deprecate, ARCHIVED → archive)
-- [ ] [T-004] `mockInterceptor.js` — agregar 4 handlers ANTES del handler genérico de menu-items: `/publish/` (200, status=ACTIVE, published_at), `/deprecate/` (200, status=DEPRECATED, deprecated_at), `/reactivate/` (200, status=ACTIVE, limpia deprecated_at+archived_at+block_*), `/archive/` (200, status=ARCHIVED, archived_at, preserva deprecated_at)
-- [ ] [T-005] `MenuItemCatalogPage.test.jsx` — actualizar mock de imports para los 4 thunks nuevos; agregar 4 tests: cada botón de transición despacha el thunk correcto (publish para DRAFT→ACTIVE, deprecate para ACTIVE→DEPRECATED, reactivate para DEPRECATED→ACTIVE, archive para DEPRECATED→ARCHIVED)
+- [x] [T-001] `adminGateway.js` — eliminar `transitionMenuItemStatus`; agregar 4 métodos: `publishMenuItem(id)` → `POST /{id}/publish/`, `deprecateMenuItem(id)` → `POST /{id}/deprecate/`, `reactivateMenuItem(id)` → `POST /{id}/reactivate/`, `archiveMenuItem(id)` → `POST /{id}/archive/`
+- [x] [T-002] `admin.js` — eliminar thunk `transitionMenuItemStatus` y su reducer; agregar 4 thunks (`publishMenuItem`, `deprecateMenuItem`, `reactivateMenuItem`, `archiveMenuItem`) + 4 pares de reducers `.fulfilled`/`.rejected` que actualizan `menuItems` por id
+- [x] [T-003] `MenuItemCatalog.jsx` — actualizar imports (quitar `transitionMenuItemStatus`, agregar 4 thunks); actualizar `handleTransition(item, newStatus)` para despachar el thunk correcto según `newStatus` (ACTIVE → publish/reactivate según `item.status`, DEPRECATED → deprecate, ARCHIVED → archive)
+- [x] [T-004] `mockInterceptor.js` — agregar 4 handlers ANTES del handler genérico de menu-items: `/publish/` (200, status=ACTIVE, published_at), `/deprecate/` (200, status=DEPRECATED, deprecated_at), `/reactivate/` (200, status=ACTIVE, limpia deprecated_at+archived_at+block_*), `/archive/` (200, status=ARCHIVED, archived_at, preserva deprecated_at)
+- [x] [T-005] `MenuItemCatalogPage.test.jsx` — actualizar mock de imports para los 4 thunks nuevos; agregar 4 tests: cada botón de transición despacha el thunk correcto (publish para DRAFT→ACTIVE, deprecate para ACTIVE→DEPRECATED, reactivate para DEPRECATED→ACTIVE, archive para DEPRECATED→ARCHIVED)
 
 ---
 

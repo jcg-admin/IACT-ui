@@ -26,7 +26,10 @@ jest.mock('../../../redux/slices/admin', () => ({
   fetchMenuItems: () => ({ type: 'admin/fetchMenuItems' }),
   createMenuItem: jest.fn((data) => ({ type: 'admin/createMenuItem', payload: data })),
   updateMenuItem: jest.fn((args) => ({ type: 'admin/updateMenuItem', payload: args })),
-  transitionMenuItemStatus: jest.fn((args) => ({ type: 'admin/transitionMenuItemStatus', payload: args })),
+  publishMenuItem: jest.fn((id) => ({ type: 'admin/publishMenuItem', payload: id })),
+  deprecateMenuItem: jest.fn((id) => ({ type: 'admin/deprecateMenuItem', payload: id })),
+  reactivateMenuItem: jest.fn((id) => ({ type: 'admin/reactivateMenuItem', payload: id })),
+  archiveMenuItem: jest.fn((id) => ({ type: 'admin/archiveMenuItem', payload: id })),
   bulkReorderMenuItems: jest.fn((items) => ({ type: 'admin/bulkReorderMenuItems', payload: items })),
   blockAutoArchive: jest.fn((args) => ({ type: 'admin/blockAutoArchive', payload: args })),
   selectMenuItems: (s) => s.admin.menuItems,
@@ -47,7 +50,10 @@ describe('MenuItemCatalog', () => {
       unwrap: () => Promise.resolve({ payload: {} }),
     }))
     mockAdmin.createMenuItem.mockClear()
-    mockAdmin.transitionMenuItemStatus.mockClear()
+    mockAdmin.publishMenuItem.mockClear()
+    mockAdmin.deprecateMenuItem.mockClear()
+    mockAdmin.reactivateMenuItem.mockClear()
+    mockAdmin.archiveMenuItem.mockClear()
     mockAdmin.bulkReorderMenuItems.mockClear()
     mockAdmin.blockAutoArchive.mockClear()
   })
@@ -192,6 +198,56 @@ describe('MenuItemCatalog — edit guards (UC-ADM-04)', () => {
     fireEvent.click(screen.getByLabelText('Transicionar Beta Feature a Activo'))
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/Beta Feature/i)
+    })
+  })
+})
+
+describe('MenuItemCatalog — transition thunk routing (UC-ADM-05 GAP-01)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ id: action.payload, status: 'ACTIVE' }),
+    }))
+    mockAdmin.publishMenuItem.mockClear()
+    mockAdmin.deprecateMenuItem.mockClear()
+    mockAdmin.reactivateMenuItem.mockClear()
+    mockAdmin.archiveMenuItem.mockClear()
+  })
+
+  it('DRAFT → ACTIVE dispatches publishMenuItem', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Transicionar Beta Feature a Activo'))
+    await waitFor(() => {
+      expect(mockAdmin.publishMenuItem).toHaveBeenCalledWith(2)
+    })
+  })
+
+  it('ACTIVE → DEPRECATED dispatches deprecateMenuItem', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Transicionar Dashboard a Deprecado'))
+    await waitFor(() => {
+      expect(mockAdmin.deprecateMenuItem).toHaveBeenCalledWith(1)
+    })
+  })
+
+  it('DEPRECATED → ACTIVE dispatches reactivateMenuItem', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Transicionar Legacy View a Activo'))
+    await waitFor(() => {
+      expect(mockAdmin.reactivateMenuItem).toHaveBeenCalledWith(3)
+    })
+  })
+
+  it('DEPRECATED → ARCHIVED dispatches archiveMenuItem', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Transicionar Legacy View a Archivado'))
+    await waitFor(() => {
+      expect(mockAdmin.archiveMenuItem).toHaveBeenCalledWith(3)
     })
   })
 })
