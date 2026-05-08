@@ -114,6 +114,26 @@ class AdminService {
     return apiService.patch(`/api/admin/separation-rules/${id}/`, {})
   }
 
+  // ── Composición de AGR de sistema (UC-ADM-03) ────────────────────────────
+
+  async getAGRComposition(agrId) {
+    return apiService.get(`/api/admin/system-groups/${agrId}/functions/`)
+  }
+
+  async addFunctionToAGR(agrId, functionCodename) {
+    return apiService.post(`/api/admin/system-groups/${agrId}/functions/`, {
+      function_codename: functionCodename,
+    })
+  }
+
+  async removeFunctionFromAGR(agrId, functionCodename) {
+    return apiService.delete(`/api/admin/system-groups/${agrId}/functions/${functionCodename}/`)
+  }
+
+  async getAGRImpact(agrId) {
+    return apiService.get(`/api/admin/system-groups/${agrId}/impact/`)
+  }
+
   // ── Catálogo de MenuItems (UC-ADM-04/05) ────────────────────────────────
 
   async getMenuItems() {
@@ -130,6 +150,16 @@ class AdminService {
 
   async transitionMenuItemStatus(id, newStatus) {
     return apiService.patch(`/api/admin/menu-items/${id}/`, { status: newStatus })
+  }
+
+  async bulkReorderMenuItems(items) {
+    return apiService.patch('/api/admin/menu-items/bulk-reorder/', { items })
+  }
+
+  async blockAutoArchive(id, blockReason) {
+    return apiService.post(`/api/admin/menu-items/${id}/block-archive/`, {
+      block_reason: blockReason,
+    })
   }
 }
 

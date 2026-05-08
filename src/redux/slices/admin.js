@@ -200,6 +200,80 @@ export const transitionMenuItemStatus = createAsyncThunk(
   }
 )
 
+// ── Thunks — Composición de AGR de sistema (UC-ADM-03) ───────────────────────
+
+export const fetchAGRComposition = createAsyncThunk(
+  'admin/fetchAGRComposition',
+  async (agrId, { rejectWithValue }) => {
+    try {
+      const data = await adminService.getAGRComposition(agrId)
+      return { agrId, ...data }
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const addFunctionToAGR = createAsyncThunk(
+  'admin/addFunctionToAGR',
+  async ({ agrId, functionCodename }, { rejectWithValue }) => {
+    try {
+      const data = await adminService.addFunctionToAGR(agrId, functionCodename)
+      return { agrId, functionCodename, ...data }
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const removeFunctionFromAGR = createAsyncThunk(
+  'admin/removeFunctionFromAGR',
+  async ({ agrId, functionCodename }, { rejectWithValue }) => {
+    try {
+      await adminService.removeFunctionFromAGR(agrId, functionCodename)
+      return { agrId, functionCodename }
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const fetchAGRImpact = createAsyncThunk(
+  'admin/fetchAGRImpact',
+  async (agrId, { rejectWithValue }) => {
+    try {
+      const data = await adminService.getAGRImpact(agrId)
+      return { agrId, ...data }
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+// ── Thunks — Bulk reorder + block-archive (UC-ADM-04/05) ─────────────────────
+
+export const bulkReorderMenuItems = createAsyncThunk(
+  'admin/bulkReorderMenuItems',
+  async (items, { rejectWithValue }) => {
+    try {
+      return await adminService.bulkReorderMenuItems(items)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const blockAutoArchive = createAsyncThunk(
+  'admin/blockAutoArchive',
+  async ({ id, blockReason }, { rejectWithValue }) => {
+    try {
+      return await adminService.blockAutoArchive(id, blockReason)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const adminSlice = createSlice({
@@ -209,6 +283,7 @@ const adminSlice = createSlice({
     agrs: [],
     separationRules: [],
     menuItems: [],
+    systemGroupCompositions: {},
     loading: false,
     error: null,
   },
@@ -361,6 +436,66 @@ const adminSlice = createSlice({
         if (idx !== -1) state.menuItems[idx] = action.payload
       })
       .addCase(transitionMenuItemStatus.rejected, (state, action) => { state.error = action.payload })
+
+    // fetchAGRComposition
+    builder
+      .addCase(fetchAGRComposition.fulfilled, (state, action) => {
+        const { agrId, functions } = action.payload
+        if (!state.systemGroupCompositions[agrId]) state.systemGroupCompositions[agrId] = {}
+        state.systemGroupCompositions[agrId].functions = functions ?? []
+        state.systemGroupCompositions[agrId].error = null
+      })
+      .addCase(fetchAGRComposition.rejected, (state, action) => { state.error = action.payload })
+
+    // addFunctionToAGR
+    builder
+      .addCase(addFunctionToAGR.fulfilled, (state, action) => {
+        const { agrId, functionCodename } = action.payload
+        if (!state.systemGroupCompositions[agrId]) state.systemGroupCompositions[agrId] = { functions: [] }
+        const fns = state.systemGroupCompositions[agrId].functions
+        if (!fns.includes(functionCodename)) fns.push(functionCodename)
+      })
+      .addCase(addFunctionToAGR.rejected, (state, action) => { state.error = action.payload })
+
+    // removeFunctionFromAGR
+    builder
+      .addCase(removeFunctionFromAGR.fulfilled, (state, action) => {
+        const { agrId, functionCodename } = action.payload
+        if (state.systemGroupCompositions[agrId]?.functions) {
+          state.systemGroupCompositions[agrId].functions =
+            state.systemGroupCompositions[agrId].functions.filter(f => f !== functionCodename)
+        }
+      })
+      .addCase(removeFunctionFromAGR.rejected, (state, action) => { state.error = action.payload })
+
+    // fetchAGRImpact
+    builder
+      .addCase(fetchAGRImpact.fulfilled, (state, action) => {
+        const { agrId, ...impact } = action.payload
+        if (!state.systemGroupCompositions[agrId]) state.systemGroupCompositions[agrId] = {}
+        state.systemGroupCompositions[agrId].impact = impact
+      })
+      .addCase(fetchAGRImpact.rejected, (state, action) => { state.error = action.payload })
+
+    // bulkReorderMenuItems
+    builder
+      .addCase(bulkReorderMenuItems.fulfilled, (state, action) => {
+        const updated = action.payload?.items ?? []
+        updated.forEach(({ id, display_order }) => {
+          const item = state.menuItems.find(i => i.id === id)
+          if (item) item.display_order = display_order
+        })
+      })
+      .addCase(bulkReorderMenuItems.rejected, (state, action) => { state.error = action.payload })
+
+    // blockAutoArchive
+    builder
+      .addCase(blockAutoArchive.fulfilled, (state, action) => {
+        const updated = action.payload
+        const idx = state.menuItems.findIndex(i => i.id === updated.id)
+        if (idx !== -1) state.menuItems[idx] = updated
+      })
+      .addCase(blockAutoArchive.rejected, (state, action) => { state.error = action.payload })
   },
 })
 
@@ -374,5 +509,7 @@ export const selectAdminSeparationRules = createSelector(selectAdminState, (s) =
 export const selectMenuItems = createSelector(selectAdminState, (s) => s.menuItems)
 export const selectAdminLoading = createSelector(selectAdminState, (s) => s.loading)
 export const selectAdminError = createSelector(selectAdminState, (s) => s.error)
+export const selectAGRComposition = (agrId) => (state) =>
+  state.admin.systemGroupCompositions[agrId] ?? { functions: [], impact: null }
 
 export default adminSlice.reducer

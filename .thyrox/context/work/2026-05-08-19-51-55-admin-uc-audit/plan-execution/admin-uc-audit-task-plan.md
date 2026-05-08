@@ -69,7 +69,7 @@ Block IV puede correr en paralelo con Block II o III.
 
 ## Block I — GAP-ADM-03: Composición de AGR de sistema (ALTA)
 
-- [ ] [T-001] **mockInterceptor.js — State + handlers system-groups**
+- [x] [T-001] **mockInterceptor.js — State + handlers system-groups**
 
   Constructor: añadir `this._systemGroupFunctions = new Map()` con composiciones
   default:
@@ -151,7 +151,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-03)*
 
-- [ ] [T-002] **adminGateway.js — Métodos composición AGR**
+- [x] [T-002] **adminGateway.js — Métodos composición AGR**
 
   Añadir en la clase `AdminService`, debajo del bloque AGRs existente:
   ```js
@@ -180,7 +180,7 @@ Block IV puede correr en paralelo con Block II o III.
   `apiService.request('DELETE', url)` o equivalent.
   *(GAP-ADM-03)*
 
-- [ ] [T-003] **admin.js slice — Thunks + estado composición**
+- [x] [T-003] **admin.js slice — Thunks + estado composición**
 
   Añadir al `initialState`:
   ```js
@@ -221,7 +221,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-03)*
 
-- [ ] [T-004] **AGRCatalog.jsx — Tab "Composición"**
+- [x] [T-004] **AGRCatalog.jsx — Tab "Composición"**
 
   Convertir AGRCatalog de página plana a layout con tabs `['catalog', 'composition']`
   (mismo patrón que MenuItemCatalog). Tab actual de CRUD pasa a ser "Catálogo".
@@ -263,7 +263,7 @@ Block IV puede correr en paralelo con Block II o III.
   ```
   *(GAP-ADM-03)*
 
-- [ ] [T-005] **Tests — AGR composition**
+- [x] [T-005] **Tests — AGR composition**
 
   Crear `src/pages/admin/__tests__/AGRComposition.test.jsx`.
 

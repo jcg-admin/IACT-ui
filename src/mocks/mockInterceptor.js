@@ -21,6 +21,26 @@ class MockInterceptor {
     this.mockDelay = 800; // ms
     this._pipelineRunning = false;
     this._acknowledgedAlerts = new Set();
+    this._blockedMenuItems = new Map();
+    this._inactiveFunctionsByItemId = new Set();
+
+    // UC-ADM-03: composición de funciones por AGR de sistema
+    this._systemGroupFunctions = new Map();
+    const defaultCompositions = {
+      1: ['pipeline:view_status', 'pipeline:execute'],
+      2: ['reports:view', 'reports:export', 'reports:kpis'],
+      3: ['audit:view', 'audit:search', 'audit:compliance'],
+      4: [],
+      5: ['alerts:view', 'alerts:acknowledge'],
+      6: ['users:view', 'users:manage', 'users:create'],
+      7: ['access:assign', 'access:revoke', 'access:view'],
+      8: ['audit:view', 'audit:export'],
+      9: ['pipeline:execute', 'pipeline:stop'],
+      10: ['adm:manage_functions', 'adm:manage_catalog'],
+    };
+    Object.entries(defaultCompositions).forEach(([id, fns]) =>
+      this._systemGroupFunctions.set(parseInt(id), new Set(fns))
+    );
   }
 
   /**
@@ -238,11 +258,31 @@ class MockInterceptor {
       return this._handleAdminFunctions(method, body)
     }
 
+    // ADMIN — UC-ADM-03: composición de funciones de AGR de sistema
+    // Rutas específicas ANTES del bloque genérico agr/
+    if (url.match(/\/api\/admin\/system-groups\/(\d+)\/impact\//) && method === 'GET') {
+      return this._handleAGRImpact(url)
+    }
+    if (url.match(/\/api\/admin\/system-groups\/(\d+)\/functions\/([^/]+)\//) && method === 'DELETE') {
+      return this._handleAGRRemoveFunction(url)
+    }
+    if (url.match(/\/api\/admin\/system-groups\/(\d+)\/functions\//)) {
+      return this._handleAGRFunctions(url, method, body)
+    }
+
     // ADMIN — UC-ADM-03: catálogo de AGRs
     if (url.includes('/api/admin/agr/')) {
       return this._handleAdminAGR(method, body)
     }
 
+    // ADMIN — UC-ADM-04 CA-08: bulk reorder atómico (ANTES del bloque genérico)
+    if (url.includes('/api/admin/menu-items/bulk-reorder/') && method === 'PATCH') {
+      return this._handleMenuItemsBulkReorder(body)
+    }
+    // ADMIN — UC-ADM-05 CA-07: bloquear archivado automático
+    if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'POST') {
+      return this._handleBlockAutoArchive(url, body)
+    }
     // ADMIN — UC-ADM-04/05: catálogo + lifecycle de MenuItems
     if (url.includes('/api/admin/menu-items/')) {
       return this._handleAdminMenuItems(method, url, body)
@@ -1657,6 +1697,105 @@ class MockInterceptor {
       data: { message: 'Contraseña actualizada', next_step: null },
     };
   }
+
+  // ====== UC-ADM-03: AGR COMPOSITION HANDLERS (system-groups) ======
+
+  _handleAGRFunctions(url, method, body) {
+    const id = parseInt(url.match(/\/system-groups\/(\d+)\//)[1])
+    const fns = this._systemGroupFunctions.get(id) || new Set()
+    if (method === 'GET') {
+      return { status: 200, data: { functions: [...fns], count: fns.size } }
+    }
+    if (method === 'POST') {
+      const codename = body?.function_codename
+      if (!codename) return this._error(400, 'function_codename required')
+      if (fns.has(codename)) {
+        return { status: 409, data: { error: 'Función ya asignada al AGR', code: 'ALREADY_ASSIGNED' } }
+      }
+      fns.add(codename)
+      this._systemGroupFunctions.set(id, fns)
+      return { status: 201, data: { agr_id: id, function_codename: codename, assigned_at: new Date().toISOString() } }
+    }
+    return this._error(405, 'Method not allowed')
+  }
+
+  _handleAGRRemoveFunction(url) {
+    const match = url.match(/\/system-groups\/(\d+)\/functions\/([^/]+)\//)
+    const groupId = parseInt(match[1])
+    const codename = match[2]
+    const fns = this._systemGroupFunctions.get(groupId)
+    if (fns) fns.delete(codename)
+    return { status: 204, data: null }
+  }
+
+  _handleAGRImpact(url) {
+    const id = parseInt(url.match(/\/system-groups\/(\d+)\//)[1])
+    const fns = this._systemGroupFunctions.get(id) || new Set()
+    return {
+      status: 200,
+      data: {
+        agr_id: id,
+        affected_users: fns.size * 2,
+        preview_function_count: fns.size,
+        functions_preview: [...fns].slice(0, 5),
+      },
+    }
+  }
+
+  // ====== UC-ADM-04 CA-08: BULK REORDER HANDLER ======
+
+  _handleMenuItemsBulkReorder(body) {
+    const items = body?.items ?? []
+    if (!Array.isArray(items) || items.length === 0) {
+      return this._error(400, 'items array required')
+    }
+    const validIds = new Set(this._menuItemsData().map(i => i.id))
+    const invalidIds = items.filter(i => !validIds.has(i.id)).map(i => i.id)
+    if (invalidIds.length > 0) {
+      return { status: 422, data: { error: 'invalid_ids', invalid_ids: invalidIds } }
+    }
+    const updated = items.map(({ id, display_order }) => ({
+      ...this._menuItemsData().find(i => i.id === id),
+      display_order,
+    }))
+    return { status: 200, data: { items: updated, audit: 'MENU_ITEM_BULK_REORDERED' } }
+  }
+
+  // ====== UC-ADM-05 CA-07: BLOCK AUTO-ARCHIVE HANDLER ======
+
+  _handleBlockAutoArchive(url, body) {
+    const id = parseInt(url.match(/\/menu-items\/(\d+)\//)[1])
+    const reason = body?.block_reason ?? ''
+    if (reason.length < 20) {
+      return {
+        status: 422,
+        data: {
+          error: 'block_reason_too_short',
+          message: `La razón debe tener al menos 20 caracteres (actual: ${reason.length})`,
+          min_length: 20,
+        },
+      }
+    }
+    this._blockedMenuItems.set(id, {
+      block_auto_archive: true,
+      block_reason: reason,
+      block_set_by: 'demo',
+      block_set_at: new Date().toISOString(),
+    })
+    const item = this._menuItemsData().find(i => i.id === id) || { id }
+    return {
+      status: 200,
+      data: {
+        ...item,
+        block_auto_archive: true,
+        block_reason: reason,
+        block_set_by: 'demo',
+        block_set_at: new Date().toISOString(),
+      },
+    }
+  }
+
+  // ====== EXISTING ACCESS AUDIT LOG ======
 
   _handleGetAccessAuditLog(url) {
     const match = url.match(/\/api\/access\/audit\/(\d+)/)
