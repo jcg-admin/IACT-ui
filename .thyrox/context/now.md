@@ -6,7 +6,7 @@ cold_boot: false
 last_session: 2026-05-08
 current_work: null
 phase: null
-updated_at: 2026-05-08 22:30:00
+updated_at: 2026-05-08 23:35:00
 blockers: []
 ```
 
@@ -16,13 +16,39 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Sin WP activo. WPs cerrados: `admin-uc-audit` (Phase 11 — UC_ADM_01..03, 7 gaps), `reports-uc-audit` (Phase 11 — UC_RPT_08/09, 8 gaps; GAP-09/UC_RPT_11 → WP recommendation `reports-share-backend`).
-**Tests:** 1921 passing / 218 suites / 0 failures (verificado 2026-05-08)
-**Próximo:** `pipeline-scope-audit` (UC_PIP_01..03) o `reports-share-backend` (UC_RPT_11 backend share feature).
+**Estado:** Sin WP activo. WPs cerrados: `admin-uc-audit` (Phase 11), `reports-uc-audit` (Phase 11), `pipeline-scope-audit` (Phase 11 — UC_PIP_01/02/03, 9 gaps).
+**Tests:** 1927 passing / 218 suites / 0 failures (verificado 2026-05-08)
+**Próximo:** `reports-share-backend` (UC_RPT_11 backend share feature).
 
 ## Métricas de test suite
 
-**1921 tests** passing (verificado 2026-05-08 — WP admin-uc-audit Phase 11 TRACK completa, 218 suites)
+**1927 tests** passing (verificado 2026-05-08 — WP pipeline-scope-audit Phase 11 TRACK completa, 218 suites)
+
+---
+
+## WP cerrado — pipeline-scope-audit ✓
+
+`2026-05-08-22-24-13-pipeline-scope-audit` — Phase 11 TRACK completa.
+
+9 gaps en 3 bloques (GAP-01..10). 2 commits. 1927 tests (+6 nuevos), 0 regressions.
+
+Entregables:
+- GAP-01/02: `stale` state en ESTADO_COLOR + mock `?test_estado=` param
+- GAP-04/05/06: `getPipelineErrors` gateway + `fetchPipelineErrors` thunk + mock handler
+  `/api/v1/etl/errores/` (TIMEOUT x2, DATA_VALIDATION x1; ?error_type= / ?trimestre= filters)
+- GAP-07: `getETLAvailability` URL corrected `/api/etl/availability/` → `/api/v1/datos/disponibilidad/`
+- GAP-08: `fetchETLAvailability` acepta `{ trimestre }` param
+- GAP-09/10: ETLAvailability.jsx reescrito — columnas correctas, `estado_frescura` badges,
+  FA-01 stale banner `role="alert"`, `toRows()` normalization; mock `_handleETLAvailability`
+
+Key lessons: URL audit must include schema verification (L-01); `toRows()` pattern for
+flexible single/array responses (L-02); test-param pattern for mock state variation (L-03);
+schema mismatch = full component rewrite (L-04); test files must be updated with component (L-05).
+
+Artefactos:
+- `track/pipeline-scope-audit-changelog.md`
+- `track/pipeline-scope-audit-lessons.md` (5 lecciones)
+- `plan-execution/pipeline-scope-audit-task-plan.md` (9/9 [x])
 
 ---
 
