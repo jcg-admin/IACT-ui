@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
@@ -55,9 +55,10 @@ jest.mock('@ui/presentational/DashboardHeader', () => ({
   ),
 }))
 
+const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+  useNavigate: () => mockNavigate,
 }))
 
 jest.mock('@store/selectors', () => ({
@@ -66,8 +67,9 @@ jest.mock('@store/selectors', () => ({
   selectAuthError: (s) => s.auth?.error ?? null,
 }))
 
+const mockLoginUser = jest.fn(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) }));
 jest.mock('@store/slices/auth', () => ({
-  loginUser: jest.fn(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) })),
+  loginUser: (...args) => mockLoginUser(...args),
   logout: jest.fn(() => ({ type: 'auth/logout' })),
   setUser: jest.fn(() => ({ type: 'auth/setUser' })),
 }))
@@ -97,6 +99,10 @@ describe('Login', () => {
   beforeAll(() => {
     LoginPage = require('../Login').default
   })
+  beforeEach(() => {
+    mockNavigate.mockReset();
+    mockLoginUser.mockImplementation(() => ({ type: 'auth/loginUser', unwrap: () => Promise.resolve({}) }));
+  })
 
   it('renders IACT Dashboard heading', () => {
     wrap(<LoginPage />)
@@ -106,6 +112,26 @@ describe('Login', () => {
   it('renders demo credentials', () => {
     wrap(<LoginPage />)
     expect(screen.getByText('Demo credentials:')).toBeInTheDocument()
+  })
+
+  it('navigates to /dashboard on successful login without next_step', async () => {
+    mockLoginUser.mockImplementation(() => ({
+      type: 'auth/loginUser',
+      unwrap: () => Promise.resolve({}),
+    }));
+    wrap(<LoginPage />)
+    fireEvent.submit(screen.getByRole('button', { name: /login/i }).closest('form'))
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/dashboard'))
+  })
+
+  it('navigates to /change-password when next_step is change_password', async () => {
+    mockLoginUser.mockImplementation(() => ({
+      type: 'auth/loginUser',
+      unwrap: () => Promise.resolve({ next_step: 'change_password', first_login: true }),
+    }));
+    wrap(<LoginPage />)
+    fireEvent.submit(screen.getByRole('button', { name: /login/i }).closest('form'))
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/change-password'))
   })
 })
 

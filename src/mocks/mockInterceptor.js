@@ -318,6 +318,26 @@ class MockInterceptor {
       };
     }
 
+    // UC-AUTH-01 FA-01: primer login — backend indica que debe cambiar contraseña
+    if (credentials.username === 'first_login_user' && credentials.password === 'changeme') {
+      return {
+        status: 200,
+        data: {
+          user: {
+            id: 11,
+            username: 'first_login_user',
+            email: 'firstlogin@example.com',
+            first_name: 'First',
+            last_name: 'Login',
+            date_joined: new Date().toISOString(),
+          },
+          next_step: 'change_password',
+          first_login: true,
+          warning: null,
+        },
+      };
+    }
+
     return this._error(401, 'Invalid credentials');
   }
 

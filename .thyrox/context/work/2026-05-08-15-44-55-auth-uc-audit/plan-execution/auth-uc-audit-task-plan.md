@@ -39,9 +39,9 @@ pero Block IV depende de I (mismo flujo de login). En la práctica ejecutar I→
 
 ## Block I — first_login flow (GAP-AUTH-01-B, GAP-AUTH-01-A)
 
-- [ ] [T-001] **mockInterceptor.js** — Agregar respuesta variante `first_login: true` al handler `POST /api/token/`. Cuando el body incluye `username: "first_login_user"` (o flag de prueba), retornar `{ access: "...", refresh: "...", next_step: "change_password", first_login: true }`. Agregar datos de usuario `first_login_user` en `MOCK_USERS`. Tests: verificar que el handler retorna `next_step` cuando corresponde. *(GAP-AUTH-01-B)*
+- [x] [T-001] **mockInterceptor.js** — Agregar respuesta variante `first_login: true` al handler `POST /api/token/`. Cuando el body incluye `username: "first_login_user"` (o flag de prueba), retornar `{ access: "...", refresh: "...", next_step: "change_password", first_login: true }`. Agregar datos de usuario `first_login_user` en `MOCK_USERS`. Tests: verificar que el handler retorna `next_step` cuando corresponde. *(GAP-AUTH-01-B)*
 
-- [ ] [T-002] **Login.jsx** — Leer `next_step` del payload de `loginUser` fulfilled. Si `next_step === "change_password"`, navegar a `/change-password` en lugar de `/dashboard`. Actualizar test en `containerComponents.test.jsx`: test case que verifica redirect a `/change-password` cuando `next_step: "change_password"`. *(GAP-AUTH-01-A)*
+- [x] [T-002] **Login.jsx** — Leer `next_step` del payload de `loginUser` fulfilled. Si `next_step === "change_password"`, navegar a `/change-password` en lugar de `/dashboard`. Actualizar test en `containerComponents.test.jsx`: test case que verifica redirect a `/change-password` cuando `next_step: "change_password"`. *(GAP-AUTH-01-A)*
 
 ---
 

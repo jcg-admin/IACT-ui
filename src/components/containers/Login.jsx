@@ -15,9 +15,13 @@ function Login() {
   const handleLogin = async (credentials) => {
     try {
       const result = await dispatch(loginUser(credentials)).unwrap();
-      navigate('/dashboard');
+      if (result?.next_step === 'change_password') {
+        navigate('/change-password');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      // Error ya está en Redux state, no necesita hacer nada
+      // Error ya está en Redux state
     }
   };
 
