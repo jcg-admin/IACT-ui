@@ -85,7 +85,7 @@ T-015                    (Block V independiente)
 > Una sola modificación en el handler POST del mock.
 > Commit al completar T-015.
 
-- [ ] [T-015] `mockInterceptor.js` — en `_handleAdminMenuItems` POST, verificar si `body.function_codename` ya existe en `_menuItemsData()`; si existe → retornar `{ status: 409, data: { error: 'function_already_has_menu_item', existing_menu_item_id: <id> } }`; si no → retornar 201 como antes
+- [x] [T-015] `mockInterceptor.js` — en `_handleAdminMenuItems` POST, verificar si `body.function_codename` ya existe en `_menuItemsData()`; si existe → retornar `{ status: 409, data: { error: 'function_already_has_menu_item', existing_menu_item_id: <id> } }`; si no → retornar 201 como antes
 
 ---
 

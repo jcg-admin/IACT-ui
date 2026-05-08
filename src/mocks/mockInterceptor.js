@@ -1651,6 +1651,13 @@ class MockInterceptor {
       return { status: 200, data: items }
     }
     if (method === 'POST') {
+      const existing = items.find(i => i.function_codename === body?.function_codename)
+      if (existing) {
+        return {
+          status: 409,
+          data: { error: 'function_already_has_menu_item', existing_menu_item_id: existing.id },
+        }
+      }
       return { status: 201, data: { id: items.length + 1, status: 'DRAFT', ...body } }
     }
     const match = url.match(/\/api\/admin\/menu-items\/(\d+)\//)
