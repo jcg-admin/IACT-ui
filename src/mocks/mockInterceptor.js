@@ -27,6 +27,9 @@ class MockInterceptor {
     // UC_RPT_09: saved filters store (mutable, initialized from fixture)
     this.resetSavedFilters()
 
+    // UC_RPT_11: shares store (mutable, initialized from fixture)
+    this.resetSharesStore()
+
     // UC-ADM-03: composición de funciones por AGR de sistema
     this._systemGroupFunctions = new Map();
     const defaultCompositions = {
@@ -356,6 +359,10 @@ class MockInterceptor {
       return this._handleSavedFilters(url, method, body);
     }
 
+    if (url.match(/\/api\/me\/shares\/\d+\//) || url.includes('/api/me/shares/')) {
+      return this._handleShares(url, method, body);
+    }
+
     if (url.includes('/api/v1/etl/errores/')) {
       return this._handlePipelineErrors(url);
     }
@@ -626,12 +633,13 @@ class MockInterceptor {
   /**
    * Error response
    */
-  _error(status, message) {
+  _error(status, message, code) {
     return {
       status,
       data: {
         detail: message,
         error: message,
+        ...(code ? { code } : {}),
       },
     };
   }
@@ -1714,6 +1722,86 @@ class MockInterceptor {
     }
 
     return { status: 200, data: [frescoDataset, vencidoDataset] }
+  }
+
+  resetSharesStore() {
+    const now = new Date().toISOString()
+    const future = new Date(Date.now() + 7 * 86_400_000).toISOString()
+    const past = new Date(Date.now() - 2 * 86_400_000).toISOString()
+    this._sharesSentStore = [
+      {
+        id: 100, view_id: 1, owner_id: 1,
+        target_type: 'user', target_id: 2, permission: 'read',
+        expires_at: future, revoked_at: null, created_at: now,
+        view_name: 'Filtro Nacional Q1',
+      },
+      {
+        id: 101, view_id: 2, owner_id: 1,
+        target_type: 'agr', target_id: 5, permission: 'clone',
+        expires_at: past, revoked_at: null, created_at: now,
+        view_name: 'Puebla Semanal',
+      },
+    ]
+    this._sharesReceivedStore = [
+      {
+        id: 200, view_id: 10, owner_id: 3,
+        target_type: 'user', target_id: 1, permission: 'read',
+        expires_at: future, revoked_at: null, created_at: now,
+        view_name: 'Nacional Mensual', owner_name: 'Ana López',
+      },
+      {
+        id: 201, view_id: 11, owner_id: 4,
+        target_type: 'user', target_id: 1, permission: 'clone',
+        expires_at: null, revoked_at: past, created_at: now,
+        view_name: 'Resumen Q4', owner_name: 'Carlos Rivera',
+      },
+    ]
+    this._sharesNextId = 102
+  }
+
+  _handleShares(url, method, body) {
+    if (url.includes('/sent/')) {
+      return { status: 200, data: this._sharesSentStore }
+    }
+    if (url.includes('/received/')) {
+      return { status: 200, data: this._sharesReceivedStore }
+    }
+
+    const idMatch = url.match(/\/api\/me\/shares\/(\d+)\//)
+
+    if (method === 'DELETE' && idMatch) {
+      const id = parseInt(idMatch[1], 10)
+      const share = this._sharesSentStore.find((s) => s.id === id)
+      if (!share) return this._error(404, 'Share not found')
+      share.revoked_at = new Date().toISOString()
+      return { status: 204, data: null }
+    }
+
+    if (method === 'POST') {
+      const { target_type, target_id, expires_at } = body ?? {}
+      if (target_type === 'user' && parseInt(target_id, 10) === 1) {
+        return this._error(400, 'Self-share not allowed', 'SELF_SHARE')
+      }
+      if (expires_at && new Date(expires_at) < new Date()) {
+        return this._error(400, 'expires_at must be in the future', 'INVALID_EXPIRES')
+      }
+      const newShare = {
+        id: this._sharesNextId++,
+        view_id: body.view_id,
+        owner_id: 1,
+        target_type,
+        target_id: body.target_id,
+        permission: body.permission ?? 'read',
+        expires_at: body.expires_at ?? null,
+        revoked_at: null,
+        created_at: new Date().toISOString(),
+        view_name: body.view_name ?? '',
+      }
+      this._sharesSentStore.unshift(newShare)
+      return { status: 201, data: newShare }
+    }
+
+    return this._error(405, 'Method not allowed')
   }
 
   _handleRetryPipeline(url, body) {

@@ -18,6 +18,7 @@ import adminReducer from './slices/admin'
 import logsReducer from './slices/logs'
 import savedFiltersReducer from './slices/savedFilters'
 import loadingReducer from './slices/loading'
+import sharesReducer from './slices/shares'
 import {
   errorHandlingMiddleware,
   errorLoggingMiddleware,
@@ -39,6 +40,7 @@ const store = configureStore({
     admin: adminReducer,
     logs: logsReducer,
     savedFilters: savedFiltersReducer,
+    shares: sharesReducer,
     loading: loadingReducer,
   },
   middleware: (getDefaultMiddleware) =>
