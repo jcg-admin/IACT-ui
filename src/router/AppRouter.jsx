@@ -60,7 +60,7 @@ const AlertsPage = lazy(() =>
 )
 
 const UserManagementPage = lazy(() =>
-  import('@ui/pages/UserManagement').then(m => ({ default: m.UserManagement }))
+  import('@screens/users/UserManagement').then(m => ({ default: m.UserManagement }))
 )
 const AnalyticsDashboardPage = lazy(() =>
   import('@ui/pages/Analytics').then(m => ({ default: m.AnalyticsDashboard }))
