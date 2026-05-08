@@ -81,6 +81,50 @@ describe('reportsService.getScheduledReports', () => {
   })
 })
 
+describe('reportsService.pauseSchedule', () => {
+  it('llama PATCH /api/reports/scheduled/{id}/pause/', async () => {
+    apiService.patch.mockResolvedValue({ status: 'paused' })
+    const result = await reportsService.pauseSchedule(42)
+    expect(apiService.patch).toHaveBeenCalledWith('/api/reports/scheduled/42/pause/')
+    expect(result.status).toBe('paused')
+  })
+})
+
+describe('reportsService.resumeSchedule', () => {
+  it('llama PATCH /api/reports/scheduled/{id}/resume/', async () => {
+    apiService.patch.mockResolvedValue({ status: 'active' })
+    const result = await reportsService.resumeSchedule(42)
+    expect(apiService.patch).toHaveBeenCalledWith('/api/reports/scheduled/42/resume/')
+    expect(result.status).toBe('active')
+  })
+})
+
+describe('reportsService.deleteSchedule', () => {
+  it('llama DELETE /api/reports/scheduled/{id}/', async () => {
+    apiService.delete.mockResolvedValue({})
+    await reportsService.deleteSchedule(42)
+    expect(apiService.delete).toHaveBeenCalledWith('/api/reports/scheduled/42/')
+  })
+})
+
+describe('reportsService.runScheduleNow', () => {
+  it('llama POST /api/reports/scheduled/{id}/run/', async () => {
+    apiService.post.mockResolvedValue({ job_id: 'run-1' })
+    const result = await reportsService.runScheduleNow(42)
+    expect(apiService.post).toHaveBeenCalledWith('/api/reports/scheduled/42/run/')
+    expect(result.job_id).toBe('run-1')
+  })
+})
+
+describe('reportsService.getScheduleHistory', () => {
+  it('llama GET /api/reports/scheduled/{id}/runs/', async () => {
+    apiService.get.mockResolvedValue([{ run_id: 'r-1' }])
+    const result = await reportsService.getScheduleHistory(42)
+    expect(apiService.get).toHaveBeenCalledWith('/api/reports/scheduled/42/runs/')
+    expect(result[0].run_id).toBe('r-1')
+  })
+})
+
 describe('reportsService.exportReport', () => {
   it('llama POST /api/reports/export/ con type, format y filters', async () => {
     apiService.post.mockResolvedValue({ job_id: 'j-1' })

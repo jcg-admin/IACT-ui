@@ -7,7 +7,7 @@ export const fetchLogs = createAsyncThunk(
     try {
       return await logsService.getLogs(params)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -18,7 +18,7 @@ export const fetchETLLogs = createAsyncThunk(
     try {
       return await logsService.getETLLogs(params)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -29,7 +29,7 @@ export const searchLogs = createAsyncThunk(
     try {
       return await logsService.searchLogs(query, params)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -40,7 +40,7 @@ export const exportLogs = createAsyncThunk(
     try {
       return await logsService.exportLogs(params)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -51,7 +51,7 @@ export const fetchInfraLogs = createAsyncThunk(
     try {
       return await logsService.getInfraLogs(params)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -62,7 +62,7 @@ export const fetchSystemStatus = createAsyncThunk(
     try {
       return await logsService.getSystemStatus()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -73,7 +73,7 @@ export const fetchPerformanceMetrics = createAsyncThunk(
     try {
       return await logsService.getPerformanceMetrics(params)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -84,7 +84,7 @@ export const retryPipeline = createAsyncThunk(
     try {
       return await logsService.retryPipeline(logId)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -95,7 +95,7 @@ export const fetchETLAvailability = createAsyncThunk(
     try {
       return await logsService.getETLAvailability()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -106,7 +106,7 @@ export const fetchPipelineStatus = createAsyncThunk(
     try {
       return await logsService.getPipelineStatus()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )

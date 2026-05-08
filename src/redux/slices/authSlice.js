@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import apiService from '@services/apiService';
+import authService from '@services/authService';
 import { clearSession } from './sessionSlice';
 
 /**
@@ -27,7 +28,7 @@ export const loginUser = createAsyncThunk(
       // Solo retornar datos de usuario
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
     }
   }
 );
@@ -58,7 +59,7 @@ export const getCurrentUser = createAsyncThunk(
       const response = await apiService.get('/api/user/');
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
     }
   }
 );
@@ -70,7 +71,7 @@ export const recoverPassword = createAsyncThunk(
       const res = await apiService.post('/api/auth/recover-password/', { username })
       return res
     } catch (err) {
-      return rejectWithValue(err.message || 'Error al recuperar contraseña')
+      return rejectWithValue({ message: err.message || 'Error al recuperar contraseña', statusCode: null })
     }
   }
 )
@@ -85,7 +86,30 @@ export const changePassword = createAsyncThunk(
       })
       return res
     } catch (err) {
-      return rejectWithValue(err.message || 'Error al cambiar contraseña')
+      return rejectWithValue({ message: err.message || 'Error al cambiar contraseña', statusCode: null })
+    }
+  }
+)
+
+export const fetchActiveSessions = createAsyncThunk(
+  'auth/fetchActiveSessions',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await authService.getActiveSessions()
+    } catch (err) {
+      return rejectWithValue({ message: err.message, statusCode: err.response?.status ?? null })
+    }
+  }
+)
+
+export const revokeSession = createAsyncThunk(
+  'auth/revokeSession',
+  async (sessionId, { rejectWithValue }) => {
+    try {
+      await authService.revokeSession(sessionId)
+      return sessionId
+    } catch (err) {
+      return rejectWithValue({ message: err.message, statusCode: err.response?.status ?? null })
     }
   }
 )
@@ -93,10 +117,13 @@ export const changePassword = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,           // Solo datos de usuario, NO tokens
+    user: null,
     isAuthenticated: false,
     isLoading: false,
     error: null,
+    sessions: [],
+    sessionsLoading: false,
+    sessionsError: null,
   },
   reducers: {
     // Logout local (llamar también logoutUser)
@@ -185,9 +212,34 @@ const authSlice = createSlice({
       .addCase(changePassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+
+      // Fetch active sessions
+      .addCase(fetchActiveSessions.pending, (state) => {
+        state.sessionsLoading = true;
+        state.sessionsError = null;
+      })
+      .addCase(fetchActiveSessions.fulfilled, (state, action) => {
+        state.sessions = action.payload;
+        state.sessionsLoading = false;
+      })
+      .addCase(fetchActiveSessions.rejected, (state, action) => {
+        state.sessionsLoading = false;
+        state.sessionsError = action.payload?.message ?? 'Error al cargar sesiones';
+      })
+
+      // Revoke session
+      .addCase(revokeSession.fulfilled, (state, action) => {
+        state.sessions = state.sessions.filter((s) => s.id !== action.payload);
+      })
+      .addCase(revokeSession.rejected, (state, action) => {
+        state.sessionsError = action.payload?.message ?? 'Error al revocar sesión';
       });
   },
 });
 
 export const { logout, clearError } = authSlice.actions;
+export const selectActiveSessions = (state) => state.auth.sessions;
+export const selectSessionsLoading = (state) => state.auth.sessionsLoading;
+export const selectSessionsError = (state) => state.auth.sessionsError;
 export default authSlice.reducer;

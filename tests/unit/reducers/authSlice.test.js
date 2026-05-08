@@ -6,6 +6,9 @@ describe('authSlice', () => {
     user: null,
     isLoading: false,
     error: null,
+    sessions: [],
+    sessionsLoading: false,
+    sessionsError: null,
   };
 
   describe('reducers', () => {

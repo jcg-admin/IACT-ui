@@ -37,20 +37,8 @@ class LogsService {
     return apiService.post(`/api/etl/logs/${logId}/retry/`)
   }
 
-  // TODO: replace mock — GET /api/v1/etl/supervision/
   async getPipelineStatus() {
-    return {
-      estado_general: 'ok',
-      ultima_ejecucion_exitosa: {
-        trimestre: 'Q2_26',
-        finished_at: new Date(Date.now() - 2 * 3_600_000).toISOString(),
-        base_records: 1_234_567,
-      },
-      ejecucion_en_curso: null,
-      ultima_ejecucion_fallida: null,
-      total_exitosas_24h: 2,
-      total_fallidas_24h: 0,
-    }
+    return apiService.get('/api/v1/etl/supervision/')
   }
 }
 

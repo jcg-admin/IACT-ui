@@ -17,7 +17,7 @@ export const fetchDashboardMetrics = createAsyncThunk(
     try {
       return await reportsService.getDashboardMetrics()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -29,7 +29,7 @@ export const fetchScheduledReports = createAsyncThunk(
     try {
       return await reportsService.getScheduledReports()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -41,7 +41,7 @@ export const shareReport = createAsyncThunk(
     try {
       return reportsService.generateShareUrl(type, filters)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -53,7 +53,7 @@ export const fetchReportHistory = createAsyncThunk(
     try {
       return await reportsService.getReportHistory()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -65,7 +65,7 @@ export const createScheduledReport = createAsyncThunk(
     try {
       return await reportsService.scheduleReport(config)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -76,7 +76,7 @@ export const pauseSchedule = createAsyncThunk(
     try {
       return await reportsService.pauseSchedule(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -87,7 +87,7 @@ export const resumeSchedule = createAsyncThunk(
     try {
       return await reportsService.resumeSchedule(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -98,7 +98,7 @@ export const deleteSchedule = createAsyncThunk(
     try {
       return await reportsService.deleteSchedule(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -109,7 +109,7 @@ export const runScheduleNow = createAsyncThunk(
     try {
       return await reportsService.runScheduleNow(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -120,7 +120,7 @@ export const fetchScheduleHistory = createAsyncThunk(
     try {
       return await reportsService.getScheduleHistory(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -132,7 +132,7 @@ export const fetchSavedViews = createAsyncThunk(
     try {
       return await reportsService.getSavedViews()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -145,7 +145,7 @@ export const deleteSavedView = createAsyncThunk(
       await reportsService.deleteSavedView(id)
       return id
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )

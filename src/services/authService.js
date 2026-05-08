@@ -225,13 +225,25 @@ const verifyToken = withCaching(
   () => 'auth:token-valid' // Clave fija
 )
 
+async function getActiveSessions() {
+  const response = await apiService.get('/api/auth/sessions/')
+  return response
+}
+
+async function revokeSession(sessionId) {
+  const response = await apiService.delete(`/api/auth/sessions/${sessionId}/`)
+  return response
+}
+
 const authService = {
   login,
   logout,
   getCurrentUser,
   register,
   verifyToken,
+  getActiveSessions,
+  revokeSession,
 }
 
 export default authService
-export { login, logout, getCurrentUser, register, verifyToken }
+export { login, logout, getCurrentUser, register, verifyToken, getActiveSessions, revokeSession }

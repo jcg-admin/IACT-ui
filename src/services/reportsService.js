@@ -194,69 +194,24 @@ class ReportsService {
     return apiService.get('/api/reports/unique-clients/', { params: filters })
   }
 
-  // TODO: replace mock — PATCH /api/reports/scheduled/{id}/pause/
   async pauseSchedule(id) {
-    return { id, status: 'paused' }
+    return apiService.patch(`/api/reports/scheduled/${id}/pause/`)
   }
 
-  // TODO: replace mock — PATCH /api/reports/scheduled/{id}/resume/
   async resumeSchedule(id) {
-    return { id, status: 'active' }
+    return apiService.patch(`/api/reports/scheduled/${id}/resume/`)
   }
 
-  // TODO: replace mock — DELETE /api/reports/scheduled/{id}/
   async deleteSchedule(id) {
-    return { id, deleted: true }
+    return apiService.delete(`/api/reports/scheduled/${id}/`)
   }
 
-  // TODO: replace mock — POST /api/reports/scheduled/{id}/run/
   async runScheduleNow(id) {
-    return { id, jobId: `job-${Date.now()}`, status: 'running' }
+    return apiService.post(`/api/reports/scheduled/${id}/run/`)
   }
 
-  // TODO: replace mock — GET /api/reports/scheduled/{id}/runs/?page=1
   async getScheduleHistory(id) {
-    return {
-      items: [
-        {
-          id: '1',
-          scheduled_report_id: id,
-          started_at: new Date(Date.now() - 86_400_000).toISOString(),
-          completed_at: new Date(Date.now() - 86_400_000 + 42_000).toISOString(),
-          status: 'ok',
-          export_job_id: 'job-abc-1',
-          error_code: null,
-        },
-        {
-          id: '2',
-          scheduled_report_id: id,
-          started_at: new Date(Date.now() - 172_800_000).toISOString(),
-          completed_at: new Date(Date.now() - 172_800_000 + 38_000).toISOString(),
-          status: 'ok',
-          export_job_id: 'job-abc-2',
-          error_code: null,
-        },
-      ],
-      pagination: { page: 1, page_size: 20, total: 2 },
-    }
-  }
-
-  // TODO: replace mock — GET /api/realtime/metrics/ (SSE: Connection: text/event-stream)
-  // Shape per uc-rpt-02: live call-center state via pub/sub (call_state_changes,
-  // agent_state_changes, queue_state_snapshots) — NOT ETL batch data.
-  async getRealTimeMetrics() {
-    return {
-      timestamp: new Date().toISOString(),
-      queue_count: 12,
-      agents_busy: 8,
-      agents_idle: 4,
-      answered_per_hour: 143,
-      abandon_rate_5min: 3.2,
-      service_level_15min: 87.5,
-      lag_seconds: 5,
-      segments_applied: [],
-      schema_version: 1,
-    }
+    return apiService.get(`/api/reports/scheduled/${id}/runs/`)
   }
 
   generateShareUrl(type, filters = {}) {

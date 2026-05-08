@@ -64,7 +64,7 @@ describe('assignFunction thunk — catalogId invariant', () => {
         accessService.assignFunctions.mockRejectedValue(new Error('Server error'));
         const store = buildStore();
         await store.dispatch(assignFunction({ userId: 1, catalogId: 2 }));
-        expect(selectError(store.getState())).toBe('Server error');
+        expect(selectError(store.getState()).message).toBe('Server error');
         expect(selectLoading(store.getState())).toBe(false);
     });
 });

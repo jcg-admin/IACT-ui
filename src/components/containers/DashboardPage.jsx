@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { selectUser, selectDashboardLoading, selectMetrics, selectCharts } from '@redux/selectors'
-import { setMetrics, setCharts, setDashboardLoading } from '@redux/slices/dashboardSlice'
+import { selectUser } from '@redux/selectors'
+import {
+  fetchDashboardMetrics,
+  selectMetrics,
+  selectReportsLoading,
+} from '@redux/slices/reportsSlice'
 import { logout } from '@redux/slices/authSlice'
-import { mockFetchDashboardData } from '@mocks/dashboardMocks'
 import DashboardHeader from '@components/presentational/DashboardHeader'
 import MetricsGrid from '@components/presentational/MetricsGrid'
 import ChartsSection from '@components/presentational/ChartsSection'
@@ -14,23 +17,11 @@ function DashboardPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectUser);
-  const loading = useSelector(selectDashboardLoading);
+  const loading = useSelector(selectReportsLoading);
   const metrics = useSelector(selectMetrics);
-  const charts = useSelector(selectCharts);
 
   useEffect(() => {
-    const fetchData = async () => {
-      dispatch(setDashboardLoading(true));
-      try {
-        const data = await mockFetchDashboardData();
-        dispatch(setMetrics(data.metrics));
-        dispatch(setCharts(data.charts));
-      } finally {
-        dispatch(setDashboardLoading(false));
-      }
-    };
-
-    fetchData();
+    dispatch(fetchDashboardMetrics());
   }, [dispatch]);
 
   const handleLogout = () => {
@@ -48,7 +39,7 @@ function DashboardPage() {
         ) : (
           <>
             <MetricsGrid metrics={metrics} />
-            <ChartsSection charts={charts} />
+            <ChartsSection charts={{}} />
           </>
         )}
       </main>

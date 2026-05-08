@@ -48,8 +48,17 @@ class MockInterceptor {
     if (url.includes('/api/user/')) {
       return this._handleGetUser();
     }
+    if (url.includes('/api/reports/metrics/dashboard/')) {
+      return this._handleDashboardMetrics();
+    }
     if (url.includes('/api/metrics')) {
       return this._handleMetrics();
+    }
+    if (url.match(/\/api\/auth\/sessions\/[^/]+\/$/) && method === 'DELETE') {
+      return this._handleRevokeSession(url);
+    }
+    if (url.includes('/api/auth/sessions/')) {
+      return this._handleGetSessions();
     }
     if (url.includes('/api/users')) {
       return this._handleUsers(method, body);
@@ -194,6 +203,17 @@ class MockInterceptor {
 
     if (url.match(/\/api\/permisos\/verificar\/(\d+)\/menu\//)) {
       return this._handlePermisosMenu(url);
+    }
+
+    if (url.includes('/api/v1/etl/supervision/')) {
+      return this._handlePipelineStatus();
+    }
+
+    if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method !== 'GET') {
+      return this._handleScheduleSubAction(url, method);
+    }
+    if (url.match(/\/api\/reports\/scheduled\/\d+\/runs\//)) {
+      return this._handleScheduleHistory(url);
     }
 
     if (url.includes('/api/reports/scheduled/')) {
@@ -1137,6 +1157,122 @@ class MockInterceptor {
     ]
     const allowedMenu = allMenuItems.filter((item) => capacidades.includes(item.required))
     return { status: 200, data: { menu: allowedMenu } }
+  }
+
+  _handleDashboardMetrics() {
+    return {
+      status: 200,
+      data: {
+        queue_count: 12,
+        agents_busy: 8,
+        agents_idle: 4,
+        answered_per_hour: 143,
+        abandon_rate_5min: 3.2,
+        service_level_15min: 87.5,
+        lag_seconds: 5,
+        timestamp: new Date().toISOString(),
+        schema_version: 1,
+      },
+    }
+  }
+
+  _handleGetSessions() {
+    return {
+      status: 200,
+      data: [
+        {
+          id: 'session-1',
+          device: 'Chrome on MacOS',
+          ip: '192.168.1.100',
+          location: 'San Francisco, CA',
+          lastActive: new Date(Date.now() - 300_000).toISOString(),
+          isCurrent: true,
+        },
+        {
+          id: 'session-2',
+          device: 'Safari on iPhone',
+          ip: '192.168.1.101',
+          location: 'San Francisco, CA',
+          lastActive: new Date(Date.now() - 3_600_000).toISOString(),
+          isCurrent: false,
+        },
+        {
+          id: 'session-3',
+          device: 'Firefox on Windows',
+          ip: '192.168.1.102',
+          location: 'New York, NY',
+          lastActive: new Date(Date.now() - 86_400_000).toISOString(),
+          isCurrent: false,
+        },
+      ],
+    }
+  }
+
+  _handleRevokeSession(url) {
+    const sessionId = url.split('/').filter(Boolean).pop()
+    return { status: 204, data: { revoked: true, id: sessionId } }
+  }
+
+  _handlePipelineStatus() {
+    return {
+      status: 200,
+      data: {
+        estado_general: 'ok',
+        ultima_ejecucion_exitosa: {
+          trimestre: 'Q2_26',
+          finished_at: new Date(Date.now() - 2 * 3_600_000).toISOString(),
+          base_records: 1_234_567,
+        },
+        ejecucion_en_curso: null,
+        ultima_ejecucion_fallida: null,
+        total_exitosas_24h: 2,
+        total_fallidas_24h: 0,
+      },
+    }
+  }
+
+  _handleScheduleSubAction(url, method) {
+    const parts = url.split('/').filter(Boolean)
+    const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
+    if (method === 'DELETE') {
+      return { status: 204, data: { id, deleted: true } }
+    }
+    const action = parts[parts.indexOf('scheduled') + 2]
+    if (action === 'pause') return { status: 200, data: { id, status: 'paused' } }
+    if (action === 'resume') return { status: 200, data: { id, status: 'active' } }
+    if (action === 'run') return { status: 202, data: { id, jobId: `job-${Date.now()}`, status: 'running' } }
+    return this._error(404, 'Unknown schedule action')
+  }
+
+  _handleScheduleHistory(url) {
+    const parts = url.split('/').filter(Boolean)
+    const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
+    return {
+      status: 200,
+      data: {
+        items: [
+          {
+            id: '1',
+            scheduled_report_id: id,
+            started_at: new Date(Date.now() - 86_400_000).toISOString(),
+            completed_at: new Date(Date.now() - 86_400_000 + 42_000).toISOString(),
+            status: 'ok',
+            export_job_id: 'job-abc-1',
+            error_code: null,
+          },
+          {
+            id: '2',
+            scheduled_report_id: id,
+            started_at: new Date(Date.now() - 172_800_000).toISOString(),
+            completed_at: new Date(Date.now() - 172_800_000 + 38_000).toISOString(),
+            status: 'ok',
+            export_job_id: 'job-abc-2',
+            error_code: null,
+          },
+        ],
+        pagination: { page: 1, page_size: 20, total: 2 },
+      },
+    }
   }
 
   _handleScheduledReports(method, body) {

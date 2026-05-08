@@ -17,7 +17,7 @@ export const fetchFunctions = createAsyncThunk(
     try {
       return await adminService.getFunctions()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -29,7 +29,7 @@ export const createFunction = createAsyncThunk(
     try {
       return await adminService.createFunction(data)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -41,7 +41,7 @@ export const updateFunction = createAsyncThunk(
     try {
       return await adminService.updateFunction(id, data)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -53,7 +53,7 @@ export const deactivateFunction = createAsyncThunk(
     try {
       return await adminService.deactivateFunction(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -67,7 +67,7 @@ export const fetchAGRCatalog = createAsyncThunk(
     try {
       return await adminService.getAGRCatalog()
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -79,7 +79,7 @@ export const createAGR = createAsyncThunk(
     try {
       return await adminService.createAGR(data)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -91,7 +91,7 @@ export const updateAGR = createAsyncThunk(
     try {
       return await adminService.updateAGR(id, data)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -103,7 +103,7 @@ export const deactivateAGR = createAsyncThunk(
     try {
       return await adminService.deactivateAGR(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )

@@ -19,7 +19,7 @@ export const fetchAuditLogs = createAsyncThunk(
             const response = await auditService.getAuditLogs(filters);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -31,7 +31,7 @@ export const searchAuditLogs = createAsyncThunk(
             const response = await auditService.searchLogs(searchParams);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -43,7 +43,7 @@ export const fetchComplianceReport = createAsyncThunk(
             const response = await auditService.getComplianceReport(filters);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -55,7 +55,7 @@ export const fetchAuditSummary = createAsyncThunk(
             const response = await auditService.getAuditSummary();
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );

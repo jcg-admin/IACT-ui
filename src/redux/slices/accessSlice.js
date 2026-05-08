@@ -18,7 +18,7 @@ export const fetchAllFunctions = createAsyncThunk(
             const response = await accessService.getAllFunctions();
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -30,7 +30,7 @@ export const fetchUserPermissions = createAsyncThunk(
             const response = await accessService.getUserPermissions(userId);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -44,7 +44,7 @@ export const assignFunction = createAsyncThunk(
             const response = await accessService.assignFunctions(userId, [catalogId], expiresAt);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -58,7 +58,7 @@ export const revokeFunction = createAsyncThunk(
             const response = await accessService.revokeFunctions(userId, [catalogId], revokeReason);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -69,7 +69,7 @@ export const assignGroupToUser = createAsyncThunk(
         try {
             return await accessService.assignAccessGroup(userId, groupId, expiresAt);
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -80,7 +80,7 @@ export const revokeGroupFromUser = createAsyncThunk(
         try {
             return await accessService.revokeAccessGroup(userId, groupId);
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -91,7 +91,7 @@ export const fetchSeparationRules = createAsyncThunk(
         try {
             return await accessService.getSeparationRules();
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -102,7 +102,7 @@ export const createSeparationRule = createAsyncThunk(
         try {
             return await accessService.createSeparationRule(data);
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -113,7 +113,7 @@ export const updateSeparationRule = createAsyncThunk(
         try {
             return await accessService.updateSeparationRule(id, data);
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -125,7 +125,7 @@ export const deleteSeparationRule = createAsyncThunk(
             await accessService.deleteSeparationRule(id);
             return id;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -137,7 +137,7 @@ export const fetchUserAssignedFunctions = createAsyncThunk(
             const response = await accessService.getUserPermissions(userId);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -150,7 +150,7 @@ export const validateSeparationRules = createAsyncThunk(
             const response = await accessService.validateSeparationRules(userId, functionPk);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -162,7 +162,7 @@ export const fetchAccessAudit = createAsyncThunk(
             const response = await accessService.getAccessAudit(userId);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -174,7 +174,7 @@ export const createGroup = createAsyncThunk(
             const response = await accessService.createGroup(data);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -186,7 +186,7 @@ export const updateGroup = createAsyncThunk(
             const response = await accessService.updateGroup(id, data);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -198,7 +198,7 @@ export const deactivateGroup = createAsyncThunk(
             const response = await accessService.deactivateGroup(id);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -210,7 +210,7 @@ export const fetchGroupFunctions = createAsyncThunk(
             const response = await accessService.getGroupFunctions(groupId);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -222,7 +222,7 @@ export const assignFunctionsToGroup = createAsyncThunk(
             const response = await accessService.assignFunctionsToGroup(groupId, functionIds);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );

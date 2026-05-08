@@ -89,11 +89,19 @@ jest.mock('@redux/slices/dashboardSlice', () => ({
   fetchDashboardData: jest.fn(() => ({ type: 'dashboard/fetchData/pending' })),
 }))
 
-function buildStore(auth = {}, dashboard = {}) {
+jest.mock('@redux/slices/reportsSlice', () => ({
+  __esModule: true,
+  fetchDashboardMetrics: jest.fn(() => ({ type: 'reports/fetchDashboardMetrics/pending' })),
+  selectMetrics: (s) => s.reports?.metrics ?? null,
+  selectReportsLoading: (s) => s.reports?.loading ?? false,
+}))
+
+function buildStore(auth = {}, dashboard = {}, reports = {}) {
   return configureStore({
     reducer: {
       auth: (state = { user: null, loading: false, error: null, ...auth }) => state,
       dashboard: (state = { loading: false, metrics: [], charts: [], ...dashboard }) => state,
+      reports: (state = { loading: false, metrics: null, ...reports }) => state,
     },
   })
 }

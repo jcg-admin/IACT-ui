@@ -17,7 +17,7 @@ export const fetchUsers = createAsyncThunk(
     try {
       return await userService.getUsers(filters)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -29,7 +29,7 @@ export const createUser = createAsyncThunk(
     try {
       return await userService.createUser(data)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -41,7 +41,7 @@ export const updateUser = createAsyncThunk(
     try {
       return await userService.updateUser(id, data)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -56,7 +56,7 @@ export const deactivateUser = createAsyncThunk(
     try {
       return await userService.deactivateUser(id)
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )

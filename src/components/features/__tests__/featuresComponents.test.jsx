@@ -1,5 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
 import { ToastProvider } from '../../../context/ToastContext'
 
 jest.mock('../../../facades/UserAuth', () => ({
@@ -8,6 +10,14 @@ jest.mock('../../../facades/UserAuth', () => ({
     checkSession: jest.fn().mockResolvedValue(true),
     loadProfile: jest.fn().mockResolvedValue({ name: 'Test User' }),
     terminateSession: jest.fn().mockResolvedValue(true),
+  },
+}))
+
+jest.mock('@services/authService', () => ({
+  __esModule: true,
+  default: {
+    getActiveSessions: jest.fn().mockResolvedValue([]),
+    revokeSession: jest.fn().mockResolvedValue({}),
   },
 }))
 
@@ -33,8 +43,15 @@ describe('SessionManager', () => {
 
 describe('ActiveSessions', () => {
   it('renders without crashing', () => {
+    const authReducer = require('@redux/slices/authSlice').default
+    const store = configureStore({
+      reducer: { auth: authReducer },
+      preloadedState: {
+        auth: { user: null, isAuthenticated: false, isLoading: false, error: null, sessions: [], sessionsLoading: false, sessionsError: null },
+      },
+    })
     const ActiveSessions = require('../SessionManagement/ActiveSessions').default
-    const { container } = render(<ActiveSessions />)
+    const { container } = render(<Provider store={store}><ActiveSessions /></Provider>)
     expect(container.firstChild).not.toBeNull()
   })
 })

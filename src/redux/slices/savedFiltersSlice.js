@@ -7,7 +7,7 @@ export const fetchSavedFilters = createAsyncThunk(
     try {
       return await apiService.get('/api/reports/saved-filters/')
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -18,7 +18,7 @@ export const saveFilter = createAsyncThunk(
     try {
       return await apiService.post('/api/reports/saved-filters/', { name, filters })
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -30,7 +30,7 @@ export const deleteFilter = createAsyncThunk(
       await apiService.delete(`/api/reports/saved-filters/${id}/`)
       return id
     } catch (error) {
-      return rejectWithValue(error.message)
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )

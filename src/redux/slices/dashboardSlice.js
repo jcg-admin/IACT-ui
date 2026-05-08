@@ -11,7 +11,7 @@ export const fetchDashboardData = createAsyncThunk(
       const data = getMockDashboardData();
       return data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
     }
   }
 );

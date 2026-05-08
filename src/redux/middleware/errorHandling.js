@@ -24,7 +24,10 @@ import auditService from '../../services/auditService';
 export const errorHandlingMiddleware = (store) => (next) => (action) => {
   // Detectar acciones rechazadas (async thunks que fallaron)
   if (action.type && action.type.endsWith('/rejected')) {
-    const error = action.payload;
+    const rawError = action.payload;
+    const error = typeof rawError === 'string'
+      ? { message: rawError, statusCode: null, code: 'UNKNOWN' }
+      : (rawError ?? { message: 'Error desconocido', statusCode: null, code: 'UNKNOWN' })
     const context = _extractContextFromAction(action.type);
 
     // Marcar que estamos manejando un error

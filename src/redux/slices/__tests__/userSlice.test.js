@@ -68,7 +68,7 @@ describe('fetchUsers thunk', () => {
     userService.getUsers.mockRejectedValue(new Error('Sin conexión'))
     const store = buildStore()
     await store.dispatch(fetchUsers())
-    expect(selectUsersError(store.getState())).toBe('Sin conexión')
+    expect(selectUsersError(store.getState()).message).toBe('Sin conexión')
     expect(selectUsersLoading(store.getState())).toBe(false)
   })
 

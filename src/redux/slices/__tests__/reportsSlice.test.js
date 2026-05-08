@@ -62,7 +62,7 @@ describe('fetchDashboardMetrics thunk', () => {
     reportsService.getDashboardMetrics.mockRejectedValue(new Error('Server error'))
     const store = buildStore()
     await store.dispatch(fetchDashboardMetrics())
-    expect(selectReportsError(store.getState())).toBe('Server error')
+    expect(selectReportsError(store.getState()).message).toBe('Server error')
     expect(selectReportsLoading(store.getState())).toBe(false)
   })
 })
@@ -97,7 +97,7 @@ describe('fetchScheduledReports thunk', () => {
     reportsService.getScheduledReports.mockRejectedValue(new Error('Forbidden'))
     const store = buildStore()
     await store.dispatch(fetchScheduledReports())
-    expect(selectReportsError(store.getState())).toBe('Forbidden')
+    expect(selectReportsError(store.getState()).message).toBe('Forbidden')
   })
 })
 
@@ -117,7 +117,7 @@ describe('createScheduledReport thunk', () => {
     reportsService.scheduleReport.mockRejectedValue(new Error('Validation error'))
     const store = buildStore()
     await store.dispatch(createScheduledReport({}))
-    expect(selectReportsError(store.getState())).toBe('Validation error')
+    expect(selectReportsError(store.getState()).message).toBe('Validation error')
   })
 })
 

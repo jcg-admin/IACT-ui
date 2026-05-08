@@ -200,6 +200,39 @@ describe('errorLoggingMiddleware — BR_008 audit logging', () => {
   })
 })
 
+// ── String payload normalization (F-HAL-6 fix) ────────────────────────────────
+
+describe('errorHandlingMiddleware — string payload normalization', () => {
+  it('normalises string payload to {message, statusCode, code} object', () => {
+    const store = buildStore()
+    store.dispatch({ type: 'auth/login/rejected', payload: 'Invalid credentials' })
+    // context error stored without crash (string safely wrapped)
+    const ctxErr = selectContextError('auth')(store.getState())
+    expect(ctxErr).toBeDefined()
+  })
+
+  it('sets message from string payload in context error', () => {
+    const store = buildStore()
+    store.dispatch({ type: 'reports/fetch/rejected', payload: 'Network error' })
+    const ctxErr = selectContextError('reports')(store.getState())
+    expect(ctxErr?.message).toBe('Network error')
+  })
+
+  it('uses fallback message when payload is null', () => {
+    const store = buildStore()
+    store.dispatch({ type: 'logs/fetch/rejected', payload: null })
+    const ctxErr = selectContextError('logs')(store.getState())
+    expect(ctxErr?.message).toBe('Error desconocido')
+  })
+
+  it('uses fallback message when payload is undefined', () => {
+    const store = buildStore()
+    store.dispatch({ type: 'etl/sync/rejected', payload: undefined })
+    const ctxErr = selectContextError('etl')(store.getState())
+    expect(ctxErr?.message).toBe('Error desconocido')
+  })
+})
+
 // ── Pass-through ──────────────────────────────────────────────────────────────
 
 describe('middleware — pass-through for non-rejected actions', () => {

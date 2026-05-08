@@ -18,7 +18,7 @@ export const fetchAlerts = createAsyncThunk(
             const response = await alertsService.getAlerts();
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -30,7 +30,7 @@ export const createAlert = createAsyncThunk(
             const response = await alertsService.createAlert(alertConfig);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -42,7 +42,7 @@ export const updateAlert = createAsyncThunk(
             const response = await alertsService.updateAlert(alertId, config);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -54,7 +54,7 @@ export const deleteAlert = createAsyncThunk(
             await alertsService.deleteAlert(alertId);
             return alertId;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -66,7 +66,7 @@ export const fetchAlertHistory = createAsyncThunk(
             const response = await alertsService.getAlertHistory(filters);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -78,7 +78,7 @@ export const fetchTemplates = createAsyncThunk(
             const response = await alertsService.getTemplates();
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -90,7 +90,7 @@ export const subscribeToAlert = createAsyncThunk(
             const response = await alertsService.subscribeToAlert(alertId, channels, frequency);
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -102,7 +102,7 @@ export const unsubscribeFromAlert = createAsyncThunk(
             await alertsService.unsubscribeFromAlert(alertId);
             return alertId;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
@@ -114,7 +114,7 @@ export const fetchMySubscriptions = createAsyncThunk(
             const response = await alertsService.getMySubscriptions();
             return response;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
         }
     }
 );
