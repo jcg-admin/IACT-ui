@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSavedFilters, deleteFilter, setDefaultFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFilters'
 import LoadingSpinner from '../shared/LoadingSpinner'
@@ -7,16 +7,22 @@ export default function SavedFiltersPanel({ onApply }) {
   const dispatch = useDispatch()
   const savedFilters = useSelector(selectSavedFilters)
   const loading = useSelector(selectSavedFiltersLoading)
+  const autoApplied = useRef(false)
 
   useEffect(() => {
     dispatch(fetchSavedFilters())
   }, [dispatch])
 
-  // Auto-apply default filter when panel mounts (UC_RPT_09 FA-04)
+  // Auto-apply default filter once after first data load (UC_RPT_09 FA-04).
+  // The ref guard prevents re-firing when the store updates later (e.g. after
+  // setDefaultFilter), which would overwrite filters the user applied manually.
   useEffect(() => {
-    if (savedFilters.length > 0 && onApply) {
+    if (savedFilters.length > 0 && onApply && !autoApplied.current) {
       const defaultFilter = savedFilters.find((sf) => sf.is_default)
-      if (defaultFilter) onApply(defaultFilter.filters)
+      if (defaultFilter) {
+        autoApplied.current = true
+        onApply(defaultFilter.filters)
+      }
     }
   }, [savedFilters, onApply])
 

@@ -25,11 +25,7 @@ class MockInterceptor {
     this._inactiveFunctionsByItemId = new Set();
 
     // UC_RPT_09: saved filters store (mutable, initialized from fixture)
-    this._savedFiltersStore = [
-      { id: 1, name: 'Filtro Nacional Q1', filters: { trimestre: 'Q01_25', segmento: 'Nacional' }, is_default: true,  created_at: '2026-01-10T10:00:00Z' },
-      { id: 2, name: 'Puebla Semanal',     filters: { trimestre: 'Q02_25', segmento: 'Puebla'   }, is_default: false, created_at: '2026-02-15T14:30:00Z' },
-    ]
-    this._savedFiltersNextId = 3
+    this.resetSavedFilters()
 
     // UC-ADM-03: composición de funciones por AGR de sistema
     this._systemGroupFunctions = new Map();
@@ -1608,6 +1604,14 @@ class MockInterceptor {
     const schedule = all.find((s) => s.id === id)
     if (!schedule) return this._error(404, 'Scheduled report not found')
     return { status: 200, data: schedule }
+  }
+
+  resetSavedFilters() {
+    this._savedFiltersStore = [
+      { id: 1, name: 'Filtro Nacional Q1', filters: { trimestre: 'Q01_25', segmento: 'Nacional' }, is_default: true,  created_at: '2026-01-10T10:00:00Z' },
+      { id: 2, name: 'Puebla Semanal',     filters: { trimestre: 'Q02_25', segmento: 'Puebla'   }, is_default: false, created_at: '2026-02-15T14:30:00Z' },
+    ]
+    this._savedFiltersNextId = 3
   }
 
   _handleSavedFilters(url, method, body) {
