@@ -1,13 +1,15 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSavedFilters, deleteFilter, setDefaultFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFilters'
 import LoadingSpinner from '../shared/LoadingSpinner'
+import ShareReportModal from './ShareReportModal'
 
 export default function SavedFiltersPanel({ onApply }) {
   const dispatch = useDispatch()
   const savedFilters = useSelector(selectSavedFilters)
   const loading = useSelector(selectSavedFiltersLoading)
   const autoApplied = useRef(false)
+  const [shareModal, setShareModal] = useState({ isOpen: false, viewId: null, viewName: '' })
 
   useEffect(() => {
     dispatch(fetchSavedFilters())
@@ -35,6 +37,14 @@ export default function SavedFiltersPanel({ onApply }) {
     dispatch(setDefaultFilter(id))
   }
 
+  function handleShare(sf) {
+    setShareModal({ isOpen: true, viewId: sf.id, viewName: sf.name })
+  }
+
+  function handleShareClose() {
+    setShareModal({ isOpen: false, viewId: null, viewName: '' })
+  }
+
   if (loading) return <LoadingSpinner size="sm" />
   if (savedFilters.length === 0) return null
 
@@ -58,6 +68,15 @@ export default function SavedFiltersPanel({ onApply }) {
             </button>
             <button
               className="btn"
+              aria-label={`Compartir ${sf.name}`}
+              title="Compartir vista"
+              style={{ fontSize: '0.75rem', color: '#60a5fa', border: 'none', background: 'none', cursor: 'pointer' }}
+              onClick={() => handleShare(sf)}
+            >
+              ↗
+            </button>
+            <button
+              className="btn"
               style={{ fontSize: '0.75rem', color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer' }}
               onClick={() => handleDelete(sf.id)}
             >
@@ -66,6 +85,12 @@ export default function SavedFiltersPanel({ onApply }) {
           </li>
         ))}
       </ul>
+      <ShareReportModal
+        isOpen={shareModal.isOpen}
+        onClose={handleShareClose}
+        viewId={shareModal.viewId}
+        viewName={shareModal.viewName}
+      />
     </div>
   )
 }

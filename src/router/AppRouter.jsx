@@ -102,6 +102,7 @@ const RealTimeMetricsPage = lazy(() => import('@screens/reports/RealTimeMetrics'
 const HistoricalReportsPage = lazy(() => import('@screens/reports/HistoricalReports'))
 const ReportExportPage = lazy(() => import('@screens/reports/ReportExport'))
 const SavedViewsPage = lazy(() => import('@screens/reports/SavedViews'))
+const SharedViewsPage = lazy(() => import('@screens/reports/SharedViews'))
 
 // ── Permissions pages ─────────────────────────────────────────────────────────
 const RevokeGroupPage = lazy(() => import('@screens/permissions/RevokeGroup'))
@@ -155,6 +156,7 @@ const ALL_NAV_LINKS = [
       { label: 'Programados',       icon: 'calendar-alt',   path: '/reports/scheduled',      permission: FunctionCatalog.SCHEDULE_REPORTS },
       { label: 'Exportar',          icon: 'file-export',    path: '/reports/export',         permission: FunctionCatalog.EXPORT_CSV },
       { label: 'Vistas guardadas',  icon: 'bookmark',       path: '/reports/saved',          permission: FunctionCatalog.SAVE_VIEW },
+      { label: 'Vistas compartidas', icon: 'share-alt',     path: '/reports/shares',         permission: FunctionCatalog.VIEW_REPORTS },
     ],
   },
   {
@@ -801,6 +803,17 @@ function RoutesWithTransitions() {
               <ProtectedRoute permission={FunctionCatalog.SAVE_VIEW}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <SavedViewsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* UC-RPT-11 — Vistas compartidas */}
+          <Route
+            path="/reports/shares"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.VIEW_REPORTS}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <SharedViewsPage />
                 </Suspense>
               </ProtectedRoute>
             }
