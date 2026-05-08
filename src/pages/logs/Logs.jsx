@@ -2,9 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchLogs, selectLogs } from '../../redux/slices/logs'
 import { selectIsLoading } from '../../redux/slices/loading'
-import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ReportTable from '../../components/reports/ReportTable'
 
 const BADGE_CLASS = { ERROR: 'badge-danger', WARNING: 'badge-warning', INFO: 'badge-info' }
+
+const COLUMNS = [
+  { key: 'timestamp', label: 'Timestamp' },
+  { key: 'level', label: 'Nivel', render: (level) => <span className={`badge ${BADGE_CLASS[level] ?? 'badge'}`}>{level}</span> },
+  { key: 'message', label: 'Mensaje' },
+  { key: 'source', label: 'Fuente' },
+]
 
 export default function Logs() {
   const dispatch = useDispatch()
@@ -50,32 +57,12 @@ export default function Logs() {
         <button className="btn btn-primary" onClick={handleApply}>Aplicar</button>
       </div>
 
-      {loading ? (
-        <LoadingSpinner message="Cargando logs..." />
-      ) : logs.length === 0 ? (
-        <div className="empty-state">No hay logs para los filtros seleccionados.</div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Nivel</th>
-              <th>Mensaje</th>
-              <th>Fuente</th>
-            </tr>
-          </thead>
-          <tbody>
-            {logs.map((log, i) => (
-              <tr key={log.id ?? i}>
-                <td>{log.timestamp}</td>
-                <td><span className={`badge ${BADGE_CLASS[log.level] ?? 'badge'}`}>{log.level}</span></td>
-                <td>{log.message}</td>
-                <td>{log.source}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ReportTable
+        columns={COLUMNS}
+        data={logs}
+        loading={loading}
+        emptyMessage="No hay logs para los filtros seleccionados."
+      />
     </div>
   )
 }

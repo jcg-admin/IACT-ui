@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchInfraLogs, selectInfraLogs, selectLogsLoading } from '../../redux/slices/logs'
-import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ReportTable from '../../components/reports/ReportTable'
+
+const COLUMNS = [
+  { key: 'timestamp', label: 'Timestamp' },
+  { key: 'component', label: 'Componente' },
+  { key: 'level', label: 'Nivel' },
+  { key: 'message', label: 'Mensaje' },
+]
 
 export default function InfraLogs() {
   const dispatch = useDispatch()
@@ -37,32 +44,12 @@ export default function InfraLogs() {
         <button className="btn btn-primary" onClick={handleApply}>Aplicar</button>
       </div>
 
-      {loading ? (
-        <LoadingSpinner message="Cargando logs de infraestructura..." />
-      ) : infraLogs.length === 0 ? (
-        <div className="empty-state">No hay logs de infraestructura.</div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Componente</th>
-              <th>Nivel</th>
-              <th>Mensaje</th>
-            </tr>
-          </thead>
-          <tbody>
-            {infraLogs.map((log, i) => (
-              <tr key={log.id ?? i}>
-                <td>{log.timestamp}</td>
-                <td>{log.component}</td>
-                <td>{log.level}</td>
-                <td>{log.message}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ReportTable
+        columns={COLUMNS}
+        data={infraLogs}
+        loading={loading}
+        emptyMessage="No hay logs de infraestructura."
+      />
     </div>
   )
 }

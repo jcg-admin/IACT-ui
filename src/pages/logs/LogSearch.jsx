@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { searchLogs, selectSearchResults, selectLogsLoading } from '../../redux/slices/logs'
-import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ReportTable from '../../components/reports/ReportTable'
+
+const COLUMNS = [
+  { key: 'timestamp', label: 'Timestamp' },
+  { key: 'source', label: 'Fuente' },
+  { key: 'message', label: 'Mensaje' },
+]
 
 export default function LogSearch() {
   const dispatch = useDispatch()
@@ -35,31 +41,13 @@ export default function LogSearch() {
         <button className="btn btn-primary" type="submit" disabled={loading}>Buscar</button>
       </form>
 
-      {loading && <LoadingSpinner message="Buscando..." />}
-
-      {!loading && searched && results.length === 0 && (
-        <div className="empty-state">Sin resultados para &quot;{query}&quot;.</div>
-      )}
-
-      {!loading && results.length > 0 && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Fuente</th>
-              <th>Mensaje</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((log, i) => (
-              <tr key={log.id ?? i}>
-                <td>{log.timestamp}</td>
-                <td>{log.source}</td>
-                <td>{log.message}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {(searched || results.length > 0) && (
+        <ReportTable
+          columns={COLUMNS}
+          data={results}
+          loading={loading}
+          emptyMessage={`Sin resultados para "${query}".`}
+        />
       )}
     </div>
   )
