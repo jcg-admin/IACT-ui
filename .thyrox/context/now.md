@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: null
-phase: null
-updated_at: 2026-05-08 05:40:00
+current_work: .thyrox/context/work/2026-05-08-01-31-21-systemic-naming-violations
+phase: Phase 1 — DISCOVER
+updated_at: 2026-05-08 05:50:00
 blockers: []
 ```
 
@@ -16,7 +16,7 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP dashboard-cleanup-naming-conventions — Phase 11 TRACK completa. Sin WP activo.
+**Estado:** WP systemic-naming-violations — Phase 1 DISCOVER completa. Pendiente SP-01 (gate: ¿incluir HAL-4 aliases en scope?).
 
 ## Métricas de test suite
 

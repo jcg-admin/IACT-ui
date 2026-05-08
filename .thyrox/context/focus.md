@@ -2,28 +2,26 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 05:40:00
+updated_at: 2026-05-08 05:50:00
 branch: claude/project-analysis-N9IkV
-wp_activo: null
+wp_activo: 2026-05-08-01-31-21-systemic-naming-violations
 ```
 
 # Focus — IACT-UI
 
-## Sin WP activo
+## WP activo — systemic-naming-violations (Phase 1 DISCOVER)
 
-**Versión actual:** 0.1.x (feature branch — sin release en main aún)
-**Branch activo:** `claude/project-analysis-N9IkV`
-**Tests:** 1799 passing, 209 suites (verificado 2026-05-08)
+**WP:** `2026-05-08-01-31-21-systemic-naming-violations`
+**Phase:** Phase 1 DISCOVER — completa
+**Próximo:** SP-01 gate → Phase 8 PLAN EXECUTION (scope HAL-4 a confirmar)
 
-### Deuda técnica pendiente — TD-NM-001..006
-
-Registrada en `technical-debt.md`. Próximo WP recomendado:
-- TD-NM-001: 56 `*Page.jsx` con sufijo prohibido
-- TD-NM-002: 16 `*Slice.js` con sufijo prohibido
-- TD-NM-003: 20 `*Service.js` con sufijo prohibido
-- TD-NM-004: 8 Webpack aliases con nombres técnicos (ALTO riesgo — 500+ imports)
-- TD-NM-005: Hooks con nombres técnicos
-- TD-NM-006: Acrónimos en identifiers
+Scope:
+- HAL-1: 57 archivos `*Page.jsx` — sufijo prohibido
+- HAL-2: 17 archivos `*Slice.js` — sufijo prohibido
+- HAL-3: 20 archivos `*Service.js` — sufijo prohibido
+- HAL-4: 14 Webpack aliases con nombres técnicos (CRÍTICO: 374 refs) — pendiente SP-01
+- HAL-5: 5 hooks con nombres técnicos (useAuth, useAPI, useWebSocket, useJobPolling, useAlertPolling)
+- HAL-6: 113 ocurrencias de acrónimos en identifiers
 
 ---
 
