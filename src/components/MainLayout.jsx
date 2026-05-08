@@ -1,9 +1,15 @@
 import { memo, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MockDataNotice from './MockDataNotice';
 import { PermissionsService } from '@api/permissions/Permissions';
 import BackendStatusPanel from './BackendStatusPanel';
+import Header from '@ui/navigation/Header/Header';
+import { logoutUser } from '@store/slices/auth';
+import { selectUser } from '@store/selectors';
 
 const MainLayout = memo(({ children, mockNotice, backendStatus, mockSummary }) => {
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const [menuEntries, setMenuEntries] = useState([]);
   const [menuError, setMenuError] = useState(null);
 
@@ -54,14 +60,15 @@ const MainLayout = memo(({ children, mockNotice, backendStatus, mockSummary }) =
 
   return (
     <div className="app-container">
-      <header className="app-header">
-        <h1>IACT - IVR Analytics</h1>
-        <nav>
-          <ul>
-            {renderMenuItems()}
-          </ul>
-        </nav>
-      </header>
+      <Header
+        onLogout={() => dispatch(logoutUser())}
+        userInfo={{ name: user?.first_name, email: user?.email }}
+      />
+      <nav className="app-nav" aria-label="Main navigation">
+        <ul>
+          {renderMenuItems()}
+        </ul>
+      </nav>
       <BackendStatusPanel health={backendStatus} mockSummary={mockSummary} />
       <MockDataNotice {...mockNotice} />
       <main className="app-main" role="main">

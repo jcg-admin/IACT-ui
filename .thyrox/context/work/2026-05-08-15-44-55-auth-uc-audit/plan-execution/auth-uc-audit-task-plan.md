@@ -65,7 +65,7 @@ pero Block IV depende de I (mismo flujo de login). En la práctica ejecutar I→
 
 ## Block IV — Logout en layout (GAP-AUTH-02-A)
 
-- [ ] [T-008] **MainLayout.jsx** — Importar `Header` desde `@ui/navigation/Header/Header`. Reemplazar el `<header>` simple actual por `<Header onLogout={() => dispatch(logoutUser())} />`. Importar `useDispatch` y `logoutUser`. Verificar que el menú de navegación existente se preserve (los links de nav que ya estaban en MainLayout pueden mantenerse dentro del Header o como siblings). Tests: verificar que `MainLayout` renderiza `Header` con la prop `onLogout`. *(GAP-AUTH-02-A)*
+- [x] [T-008] **MainLayout.jsx** — Importar `Header` desde `@ui/navigation/Header/Header`. Reemplazar el `<header>` simple actual por `<Header onLogout={() => dispatch(logoutUser())} />`. Importar `useDispatch` y `logoutUser`. Verificar que el menú de navegación existente se preserve (los links de nav que ya estaban en MainLayout pueden mantenerse dentro del Header o como siblings). Tests: verificar que `MainLayout` renderiza `Header` con la prop `onLogout`. *(GAP-AUTH-02-A)*
 
 ---
 
