@@ -182,6 +182,125 @@ Goal: Reach 90%+ coverage for all main components
    - React Testing Library handles cleanup automatically
    - But manually cleanup if using other libraries
 
+## Patrones RTK — dispatch y thunks
+
+### `.unwrap()` obligatorio para leer el payload fulfilled
+
+Cuando un componente necesita el valor que devuelve un thunk Redux Toolkit,
+`.unwrap()` es obligatorio. Sin él, `dispatch(thunk())` retorna siempre el
+action object (nunca rechaza), y el payload queda oculto.
+
+```jsx
+// CORRECTO — lee el payload, propaga el rechazo como excepción
+const result = await dispatch(loginUser(credentials)).unwrap()
+if (result?.next_step === 'change_password') {
+  navigate('/change-password')
+} else {
+  navigate('/dashboard')
+}
+
+// INCORRECTO — result es el action object, result?.next_step siempre undefined
+const result = await dispatch(loginUser(credentials))
+```
+
+**Aplica a:** cualquier componente que lea el valor retornado por un thunk
+(Login, RecoverPassword, ChangePassword, cualquier form que lea next_step o
+datos del response).
+
+### Mock de useNavigate — referencia a nivel de módulo
+
+El mock de `useNavigate` debe declararse a nivel de módulo y retornar una
+referencia estable. Si se crea un nuevo `jest.fn()` por llamada, cada
+`useNavigate()` en el componente obtiene una función distinta y las
+aserciones `expect(mockNavigate).toHaveBeenCalledWith(...)` fallan con
+"0 calls" aunque la navegación ocurra.
+
+```jsx
+// CORRECTO — referencia única compartida con el componente
+const mockNavigate = jest.fn()
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}))
+
+// En cada test: limpiar antes de la aserción
+beforeEach(() => { mockNavigate.mockClear() })
+
+// INCORRECTO — cada useNavigate() crea una fn diferente
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),  // ← nueva fn en cada llamada
+}))
+```
+
+### getState() en thunks — evitar threading de parámetros
+
+Cuando un thunk necesita el id del usuario actual, usar `getState()` dentro
+del thunk en lugar de pasar el id como parámetro desde el componente.
+
+```js
+// CORRECTO — componente sin conocer el userId
+dispatch(logoutAllSessions())  // sin parámetros
+
+// En el thunk:
+async (_, { getState }) => {
+  const userId = getState().auth?.user?.id
+  await apiService.post(`/api/users/${userId}/close-all-sessions/`)
+}
+```
+
+### Test stores — incluir todos los slices que usan los componentes conectados
+
+Cuando un componente se actualiza para usar `useSelector` de un slice nuevo,
+**todas** las suites de test que renderizan ese componente (directamente o
+como ancestro) deben incluir ese reducer en su store de test. El error que
+aparece sin el reducer es `TypeError: Cannot read properties of undefined`.
+
+```jsx
+// Después de que MainLayout agrega useSelector(selectUser):
+const createTestStore = () => configureStore({
+  reducer: {
+    appConfig: appConfigReducer,
+    home: homeReducer,
+    observability: healthReducer,
+    auth: (state = { user: null, isAuthenticated: false }) => state, // ← agregar
+  },
+})
+```
+
+**Patrón de auditoría:** antes de commitear un componente que agrega un nuevo
+`useSelector`, grep por todos los archivos de test que lo renderizan:
+```bash
+grep -r "ComponentName\|MainLayout\|ParentComponent" --include="*.test.*" .
+```
+
+### PAT-GIT-001 — git mv requiere re-add explícito después de editar
+
+Después de `git mv src/A.jsx src/B.jsx`, cualquier edición posterior a
+`src/B.jsx` aparece como "modified" unstaged — no se auto-stagea con el
+rename. Ejecutar `git add src/B.jsx` explícito antes del commit.
+
+```bash
+git mv src/components/containers/Login.jsx src/pages/auth/Login.jsx
+# editar Login.jsx con los cambios necesarios...
+git status            # → "Changes not staged: modified: src/pages/auth/Login.jsx"
+git add src/pages/auth/Login.jsx   # ← obligatorio
+git commit ...
+```
+
+### Auditoría de consumidores antes de mover archivos
+
+Antes de `git mv`, buscar todos los imports del path original — no solo en
+source sino en test files e integration tests:
+
+```bash
+grep -r "containers/Login" --include="*.js" --include="*.jsx" \
+  --include="*.ts" --include="*.tsx" .
+```
+
+Un consumidor no encontrado antes del move queda con import roto que solo
+falla en runtime o en suites no ejecutadas en el mismo bloque.
+
 ## CI/CD Integration
 
 Tests run automatically on:
