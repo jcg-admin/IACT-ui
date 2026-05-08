@@ -80,9 +80,9 @@ export const fetchPerformanceMetrics = createAsyncThunk(
 
 export const retryPipeline = createAsyncThunk(
   'logs/retryPipeline',
-  async (logId, { rejectWithValue }) => {
+  async ({ logId, motivo }, { rejectWithValue }) => {
     try {
-      return await logsService.retryPipeline(logId)
+      return await logsService.retryPipeline({ logId, motivo })
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }

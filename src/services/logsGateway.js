@@ -33,8 +33,8 @@ class LogsService {
     return apiService.get('/api/etl/availability/')
   }
 
-  async retryPipeline(logId) {
-    return apiService.post(`/api/etl/logs/${logId}/retry/`)
+  async retryPipeline({ logId, motivo }) {
+    return apiService.post(`/api/etl/logs/${logId}/retry/`, { motivo })
   }
 
   async getPipelineStatus() {

@@ -19,6 +19,7 @@ class MockInterceptor {
   constructor() {
     this.enabled = process.env.REACT_APP_USE_MOCKS === 'true';
     this.mockDelay = 800; // ms
+    this._pipelineRunning = false;
   }
 
   /**
@@ -266,6 +267,10 @@ class MockInterceptor {
 
     if (url.includes('/api/v1/etl/supervision/')) {
       return this._handlePipelineStatus();
+    }
+
+    if (url.match(/\/api\/etl\/logs\/\d+\/retry\//) && method === 'POST') {
+      return this._handleRetryPipeline(url, body);
     }
 
     if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method !== 'GET') {
@@ -1412,6 +1417,27 @@ class MockInterceptor {
         ultima_ejecucion_fallida: null,
         total_exitosas_24h: 2,
         total_fallidas_24h: 0,
+      },
+    }
+  }
+
+  _handleRetryPipeline(url, body) {
+    const match = url.match(/\/api\/etl\/logs\/(\d+)\/retry\//)
+    const logId = match ? parseInt(match[1], 10) : null
+    const motivo = body?.motivo ?? ''
+    if (motivo.length < 20) {
+      return { status: 422, data: { error: 'Motivo demasiado corto', min_length: 20 } }
+    }
+    if (this._pipelineRunning) {
+      return { status: 409, data: { error: 'Ya hay una ejecución activa' } }
+    }
+    return {
+      status: 202,
+      data: {
+        message: 'Pipeline iniciado',
+        job_id: `manual-${logId}`,
+        trimestre: body?.trimestre ?? null,
+        executed_by: 'manual',
       },
     }
   }
