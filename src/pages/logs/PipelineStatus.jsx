@@ -7,10 +7,12 @@ import {
   selectLogsError,
 } from '@store/slices/logs'
 
+// Valid states: ok | degradado | critico | stale (no runs in last 24h)
 const ESTADO_COLOR = {
   ok: '#34d399',
   degradado: '#f59e0b',
   critico: '#ef4444',
+  stale: '#f97316',
 }
 
 function EstadoBadge({ estado }) {

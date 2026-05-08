@@ -29,8 +29,9 @@ class LogsService {
     return apiService.get('/api/system/metrics/', { params })
   }
 
-  async getETLAvailability() {
-    return apiService.get('/api/etl/availability/')
+  async getETLAvailability(trimestre) {
+    const params = trimestre ? { trimestre } : {}
+    return apiService.get('/api/v1/datos/disponibilidad/', { params })
   }
 
   async retryPipeline({ logId, motivo }) {
@@ -39,6 +40,10 @@ class LogsService {
 
   async getPipelineStatus() {
     return apiService.get('/api/v1/etl/supervision/')
+  }
+
+  async getPipelineErrors(params = {}) {
+    return apiService.get('/api/v1/etl/errores/', { params })
   }
 }
 
