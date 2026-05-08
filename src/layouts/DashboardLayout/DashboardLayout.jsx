@@ -21,22 +21,23 @@ import { logoutUser } from '@store/slices/auth'
 import ContextErrorBanner from '../../components/feedback/ContextErrorBanner'
 import './DashboardLayout.scss'
 
-const PATH_CONTEXT_MAP = [
-  ['/admin',       'admin'],
-  ['/reports',     'reports'],
-  ['/access',      'access'],
-  ['/permissions', 'access'],
-  ['/alerts',      'alerts'],
-  ['/audit',       'audit'],
-  ['/logs',        'logs'],
-  ['/users',       'user'],
-]
+const SEGMENT_CONTEXT_MAP = {
+  admin:       'admin',
+  reports:     'reports',
+  access:      'access',
+  permissions: 'access',
+  alerts:      'alerts',
+  audit:       'audit',
+  logs:        'logs',
+  users:       'user',
+}
 
 function ModuleContextBanner() {
   const { pathname } = useLocation()
-  const entry = PATH_CONTEXT_MAP.find(([prefix]) => pathname.startsWith(prefix))
-  if (!entry) return null
-  return <ContextErrorBanner context={entry[1]} />
+  const segment = pathname.split('/')[1]
+  const context = SEGMENT_CONTEXT_MAP[segment]
+  if (!context) return null
+  return <ContextErrorBanner context={context} />
 }
 
 export default function DashboardLayout({
