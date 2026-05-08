@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
-import Login from '../../src/components/containers/Login';
+import Login from '../../src/pages/auth/Login';
 
 const mockStore = configureStore([]);
 

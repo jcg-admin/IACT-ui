@@ -58,8 +58,16 @@ describe('ActiveSessions', () => {
 
 describe('LoginHistory', () => {
   it('renders without crashing', () => {
+    jest.mock('@store/slices/audit', () => ({
+      fetchLoginHistory: jest.fn(() => ({ type: 'audit/fetchLoginHistory' })),
+      selectLoginHistory: () => [],
+      selectLoginHistoryLoading: () => false,
+    }))
     const LoginHistory = require('../SessionManagement/LoginHistory').default
-    const { container } = render(<LoginHistory />)
+    const store = configureStore({
+      reducer: { audit: (state = { loginHistory: [], loginHistoryLoading: false }) => state },
+    })
+    const { container } = render(<Provider store={store}><LoginHistory /></Provider>)
     expect(container.firstChild).not.toBeNull()
   })
 })

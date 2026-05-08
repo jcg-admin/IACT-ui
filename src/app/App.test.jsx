@@ -10,6 +10,15 @@ import { AppConfigService } from '@api/config/AppConfig';
 import { CallsService } from '@api/calls/CallsGateway';
 import { HealthService } from '@api/health/HealthGateway';
 
+jest.mock('@ui/navigation/Header/Header', () => ({
+  __esModule: true,
+  default: ({ onLogout }) => (
+    <header data-testid="app-header">
+      <button onClick={onLogout} data-testid="logout-btn">Logout</button>
+    </header>
+  ),
+}));
+
 jest.mock('@api/config/AppConfig', () => ({
   AppConfigService: {
     getConfig: jest.fn(),
@@ -34,6 +43,7 @@ const createTestStore = () => {
       appConfig: appConfigReducer,
       home: homeReducer,
       observability: healthReducer,
+      auth: (state = { user: null, isAuthenticated: false }) => state,
     },
   });
 };
