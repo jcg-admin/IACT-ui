@@ -44,7 +44,7 @@ export default function ComplianceReport() {
     const mockReport = {
         period: 'Q1 2026',
         regulations: [
-            { name: 'Segregación de Deberes (SoD)', status: 'COMPLIANT', violations: 0, percentage: 100 },
+            { name: 'Separación de Funciones', status: 'COMPLIANT', violations: 0, percentage: 100 },
             { name: 'Control de Acceso (RBAC)', status: 'COMPLIANT', violations: 0, percentage: 100 },
             { name: 'Auditoria Inmutable (CNST-009)', status: 'COMPLIANT', violations: 0, percentage: 100 },
             { name: 'Monitoreo de Cambios', status: 'COMPLIANT', violations: 2, percentage: 98 },

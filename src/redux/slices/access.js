@@ -227,6 +227,55 @@ export const assignFunctionsToGroup = createAsyncThunk(
     }
 );
 
+export const grantExceptionalPermission = createAsyncThunk(
+    'access/grantExceptionalPermission',
+    async ({ userId, payload }, { rejectWithValue }) => {
+        try {
+            return await accessService.grantExceptionalPermission(userId, payload);
+        } catch (error) {
+            return rejectWithValue({
+                message: error.message,
+                statusCode: error.statusCode ?? null,
+                detail: error.detail ?? null,
+            });
+        }
+    }
+);
+
+export const fetchExceptionalPermissions = createAsyncThunk(
+    'access/fetchExceptionalPermissions',
+    async (userId, { rejectWithValue }) => {
+        try {
+            return await accessService.getExceptionalPermissions(userId);
+        } catch (error) {
+            return rejectWithValue({ message: error.message, statusCode: null });
+        }
+    }
+);
+
+export const revokeExceptionalPermission = createAsyncThunk(
+    'access/revokeExceptionalPermission',
+    async ({ userId, permissionId }, { rejectWithValue }) => {
+        try {
+            await accessService.revokeExceptionalPermission(userId, permissionId);
+            return permissionId;
+        } catch (error) {
+            return rejectWithValue({ message: error.message, statusCode: null });
+        }
+    }
+);
+
+export const validateGroupAssignment = createAsyncThunk(
+    'access/validateGroupAssignment',
+    async ({ userId, groupId }, { rejectWithValue }) => {
+        try {
+            return await accessService.validateGroupAssignment(userId, groupId);
+        } catch (error) {
+            return rejectWithValue({ message: error.message, statusCode: null });
+        }
+    }
+);
+
 /**
  * Initial State
  */
@@ -240,7 +289,9 @@ const initialState = {
     auditLog: [],
     groups: [],
     groupFunctions: [],
+    exceptionalPermissions: [],
     loading: false,
+    validatingGroup: false,
     error: null,
     success: false,
     selectedUser: null,
@@ -536,6 +587,64 @@ const accessSlice = createSlice({
                 state.error = action.payload;
                 state.success = false;
             });
+
+        builder
+            .addCase(grantExceptionalPermission.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(grantExceptionalPermission.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(grantExceptionalPermission.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
+        builder
+            .addCase(fetchExceptionalPermissions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchExceptionalPermissions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.exceptionalPermissions = action.payload;
+            })
+            .addCase(fetchExceptionalPermissions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
+        builder
+            .addCase(revokeExceptionalPermission.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(revokeExceptionalPermission.fulfilled, (state, action) => {
+                state.loading = false;
+                state.exceptionalPermissions = (state.exceptionalPermissions || []).filter(
+                    (p) => p.id !== action.payload
+                );
+            })
+            .addCase(revokeExceptionalPermission.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
+        builder
+            .addCase(validateGroupAssignment.pending, (state) => {
+                state.validatingGroup = true;
+                state.error = null;
+            })
+            .addCase(validateGroupAssignment.fulfilled, (state) => {
+                state.validatingGroup = false;
+            })
+            .addCase(validateGroupAssignment.rejected, (state, action) => {
+                state.validatingGroup = false;
+                state.error = action.payload;
+            });
     },
 });
 
@@ -552,9 +661,11 @@ export const selectAuditLog = (state) => state.access.auditLog;
 export const selectGroups = (state) => state.access.groups;
 export const selectGroupFunctions = (state) => state.access.groupFunctions;
 export const selectLoading = (state) => state.access.loading;
+export const selectValidatingGroup = (state) => state.access.validatingGroup;
 export const selectError = (state) => state.access.error;
 export const selectSuccess = (state) => state.access.success;
 export const selectSelectedUser = (state) => state.access.selectedUser;
+export const selectExceptionalPermissions = (state) => state.access.exceptionalPermissions;
 
 export const { clearError, clearSuccess, setSelectedUser, resetState } = accessSlice.actions;
 

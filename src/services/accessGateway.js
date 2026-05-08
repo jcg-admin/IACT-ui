@@ -377,6 +377,68 @@ class AccessService {
         if (!response.ok) throw new Error('Failed to delete separation rule');
         return response.json();
     }
+
+    // UC_PERM_03: conceder permiso excepcional
+    async grantExceptionalPermission(userId, payload) {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/exceptional-permissions/`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            const error = new Error(err.message || 'Failed to grant exceptional permission');
+            error.statusCode = response.status;
+            error.detail = err.detail || null;
+            throw error;
+        }
+        return response.json();
+    }
+
+    // UC-015: obtener permisos excepcionales activos de un usuario
+    async getExceptionalPermissions(userId) {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/exceptional-permissions/`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch exceptional permissions');
+        return response.json();
+    }
+
+    // UC-015: revocar permiso excepcional
+    async revokeExceptionalPermission(userId, permissionId) {
+        const response = await fetch(
+            `${API_BASE_URL}/users/${userId}/exceptional-permissions/${permissionId}/`,
+            { method: 'DELETE', headers: this.getAuthHeaders() }
+        );
+        if (!response.ok) throw new Error('Failed to revoke exceptional permission');
+        return response.json();
+    }
+
+    // GAP-2: validar asignación de grupo antes del POST
+    async validateGroupAssignment(userId, groupId) {
+        const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/validate-for-user`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify({ user_id: userId }),
+        });
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || 'Failed to validate group assignment');
+        }
+        return response.json();
+    }
+
+    // GAP-5: preview de impacto cascade al cambiar composición de un grupo
+    async getGroupCascadeImpact(groupId, addFunctionIds) {
+        const ids = Array.isArray(addFunctionIds) ? addFunctionIds.join(',') : addFunctionIds;
+        const response = await fetch(
+            `${API_BASE_URL}/access/groups/${groupId}/cascade-impact?add_function_ids=${ids}`,
+            { method: 'GET', headers: this.getAuthHeaders() }
+        );
+        if (!response.ok) throw new Error('Failed to fetch cascade impact');
+        return response.json();
+    }
 }
 
 export default new AccessService();

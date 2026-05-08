@@ -104,6 +104,8 @@ const SavedViewsPage = lazy(() => import('@screens/reports/SavedViews'))
 
 // ── Permissions pages ─────────────────────────────────────────────────────────
 const RevokeGroupPage = lazy(() => import('@screens/permissions/RevokeGroup'))
+const ExceptionalPermissionPage = lazy(() => import('@screens/permissions/ExceptionalPermission'))
+const RevokeExceptionalPermissionPage = lazy(() => import('@screens/permissions/RevokeExceptionalPermission'))
 
 // ── Access pages ─────────────────────────────────────────────────────────────
 const GroupManagementPage = lazy(() => import('@screens/access/GroupManagement'))
@@ -804,13 +806,35 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* Permisos — UC-PERM-03: permisos temporales (misma página que /access/temp-permissions) */}
+          {/* Permisos — UC-ACC-08: permisos temporales con fecha de expiración */}
           <Route
             path="/permissions/temp-permissions"
             element={
               <ProtectedRoute permission={FunctionCatalog.GRANT_EXCEPTIONAL}>
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <TemporaryPermissionsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* Permisos — UC-PERM-03: conceder permiso excepcional (justificación + anti-self P-11) */}
+          <Route
+            path="/permissions/exceptional-permission"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.GRANT_EXCEPTIONAL}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ExceptionalPermissionPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          {/* Permisos — UC-015: revocar permiso excepcional */}
+          <Route
+            path="/permissions/revoke-exceptional"
+            element={
+              <ProtectedRoute permission={FunctionCatalog.REVOKE_EXCEPTIONAL}>
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <RevokeExceptionalPermissionPage />
                 </Suspense>
               </ProtectedRoute>
             }

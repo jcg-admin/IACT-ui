@@ -108,6 +108,36 @@ class MockInterceptor {
       return this._handleRevokeFunctions(body);
     }
 
+    // UC_PERM_03: conceder permiso excepcional
+    if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/$/) && method === 'POST') {
+      return this._handleGrantExceptionalPermission(url, body);
+    }
+
+    // UC-015: listar permisos excepcionales de un usuario
+    if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/$/) && method === 'GET') {
+      return this._handleListExceptionalPermissions(url);
+    }
+
+    // UC-015: revocar permiso excepcional
+    if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/\d+\/$/) && method === 'DELETE') {
+      return { status: 200, data: { revoked: true } };
+    }
+
+    // GAP-2: pre-validar asignación de grupo
+    if (url.match(/\/api\/access\/groups\/[^/]+\/validate-for-user/) && method === 'POST') {
+      return this._handleValidateGroupAssignment(body);
+    }
+
+    // GAP-5: cascade impact preview
+    if (url.match(/\/api\/access\/groups\/[^/]+\/cascade-impact/)) {
+      return this._handleGroupCascadeImpact(url);
+    }
+
+    // GAP-1: validar reglas de separación (usuario + función)
+    if (url.includes('/api/access/separation-rules/validate') && method === 'POST') {
+      return this._handleValidateSeparationRules(body);
+    }
+
     // ACCESS — UC-ACC-04: asignar grupo de acceso (AGR)
     if (url.match(/\/api\/users\/\d+\/access-groups\/$/)) {
       return this._handleAssignAccessGroup(body);
@@ -1056,6 +1086,108 @@ class MockInterceptor {
       { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 9,  active: true },
     ]
     return { status: 200, data: { results: AGRS, count: AGRS.length } }
+  }
+
+  _handleGrantExceptionalPermission(url, body) {
+    const match = url.match(/\/api\/users\/(\d+)\/exceptional-permissions\//);
+    const targetUserId = match ? parseInt(match[1], 10) : null;
+
+    if (!body || !body.justification || body.justification.trim().length === 0) {
+      return this._error(422, 'justification is required');
+    }
+    if (!body.expires_at) {
+      return this._error(422, 'expires_at is required');
+    }
+    // Anti-self P-11: detected via invoker_id in body (set by frontend)
+    if (body.invoker_id && body.invoker_id === targetUserId) {
+      return this._error(403, 'Cannot grant exceptional permission to yourself (P-11 anti-self)');
+    }
+
+    return {
+      status: 201,
+      data: {
+        id: Date.now(),
+        user_id: targetUserId,
+        permission_code: body.permission_code || null,
+        justification: body.justification,
+        expires_at: body.expires_at,
+        granted_at: new Date().toISOString(),
+        granted_by: body.invoker_id || 'current-user',
+        supervisor_notified: true,
+        audit_event: 'EXCEPTIONAL_PERMISSION_GRANTED',
+      },
+    };
+  }
+
+  _handleListExceptionalPermissions(url) {
+    const match = url.match(/\/api\/users\/(\d+)\/exceptional-permissions\//);
+    const userId = match ? parseInt(match[1], 10) : null;
+    return {
+      status: 200,
+      data: [
+        {
+          id: 1001,
+          user_id: userId,
+          permission_code: 'access:assign_function_groups',
+          justification: 'Cobertura temporal por ausencia del responsable de acceso.',
+          expires_at: '2026-06-01T23:59:00.000Z',
+          granted_at: '2026-05-01T10:00:00.000Z',
+          granted_by: 'admin.sistema',
+          supervisor_notified: true,
+        },
+        {
+          id: 1002,
+          user_id: userId,
+          permission_code: 'audit:export',
+          justification: 'Acceso temporal para auditoría de Q1.',
+          expires_at: '2026-05-20T18:00:00.000Z',
+          granted_at: '2026-05-05T09:00:00.000Z',
+          granted_by: 'admin.sistema',
+          supervisor_notified: true,
+        },
+      ],
+    };
+  }
+
+  _handleValidateGroupAssignment(body) {
+    // Simula SOFT conflict si user_id termina en '9' para facilitar pruebas
+    const userId = String(body?.user_id || '');
+    if (userId.endsWith('9')) {
+      return {
+        status: 200,
+        data: {
+          valid: false,
+          conflicts: [{
+            rule: 'SR-003',
+            severity: 'SOFT',
+            message: 'El grupo incluye funciones de acceso que pueden solapar con funciones de auditoría ya asignadas.',
+            setA: ['access:assign'],
+            setB: ['audit:view'],
+          }],
+        },
+      };
+    }
+    return { status: 200, data: { valid: true, conflicts: [] } };
+  }
+
+  _handleGroupCascadeImpact(url) {
+    const params = url.includes('add_function_ids=') ? url.split('add_function_ids=')[1] : '';
+    const functionCount = params ? params.split(',').length : 0;
+    return {
+      status: 200,
+      data: {
+        cascade_affected_user_count: functionCount > 0 ? 2 : 0,
+        conflicts: [],
+      },
+    };
+  }
+
+  _handleValidateSeparationRules(body) {
+    const functionIds = body?.function_ids || [];
+    if (functionIds.length === 0) {
+      return { status: 200, data: { valid: true, conflicts: [] } };
+    }
+    return { status: 200, data: { valid: true, conflicts: [] } };
   }
 
   _handleSeparationRules() {
