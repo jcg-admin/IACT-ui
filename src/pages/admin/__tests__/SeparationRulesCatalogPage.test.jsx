@@ -157,3 +157,28 @@ describe('SeparationRulesCatalog — validación disjunción (UC-ADM-01)', () =>
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })
+
+describe('SeparationRulesCatalog — toggle status error (UC_ADM_01 FA-04)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+  })
+
+  it('shows role=alert when toggle returns 409 already inactive', async () => {
+    mockDispatch.mockImplementation((action) => {
+      if (action.type === 'admin/toggleSeparationRuleStatus') {
+        return Promise.resolve({
+          type: 'admin/toggleSeparationRuleStatus/rejected',
+          error: { message: 'Rejected' },
+          payload: { message: 'Regla ya inactiva', statusCode: 409 },
+        })
+      }
+      return Promise.resolve({ type: action.type, unwrap: () => Promise.resolve({}) })
+    })
+    wrapper(<SeparationRulesCatalog />)
+    const btn = screen.getByLabelText('Activar Usuarios vs Auditoría')
+    fireEvent.click(btn)
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Regla ya inactiva/i)
+    })
+  })
+})

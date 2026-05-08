@@ -84,6 +84,8 @@ export default function SeparationRulesCatalog() {
     if (!result.error) {
       setFeedback({ type: 'success', msg: `Regla ${rule.isActive ? 'desactivada' : 'activada'}` })
       setTimeout(() => setFeedback(null), 3000)
+    } else {
+      setFeedback({ type: 'danger', msg: result.payload?.message ?? 'Error al cambiar estado de la regla' })
     }
   }
 

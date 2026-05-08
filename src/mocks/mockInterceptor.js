@@ -1343,7 +1343,7 @@ class MockInterceptor {
     const match = url.match(/\/api\/admin\/separation-rules\/(\d+)\//)
     const id = parseInt(match?.[1], 10)
     const rule = rules.find(r => r.id === id) || rules[0]
-    if (method === 'PUT') {
+    if (method === 'PUT' || method === 'PATCH' && body && Object.keys(body).length > 0) {
       const groupA = body?.group_a ?? []
       const groupB = body?.group_b ?? []
       const overlap = groupA.filter(f => groupB.includes(f))
@@ -1360,6 +1360,9 @@ class MockInterceptor {
       return { status: 200, data: { ...rule, ...body } }
     }
     if (method === 'PATCH') {
+      if (!rule.isActive) {
+        return { status: 409, data: { error: 'Regla ya inactiva', code: 'ALREADY_INACTIVE' } }
+      }
       return { status: 200, data: { ...rule, isActive: !rule.isActive } }
     }
     return this._error(405, 'Method not allowed')
