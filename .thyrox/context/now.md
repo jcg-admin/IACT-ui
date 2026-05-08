@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: .thyrox/context/work/2026-05-08-21-34-20-admin-uc-audit
-phase: Phase 10 — IMPLEMENT
-updated_at: 2026-05-08 21:41:00
+current_work: null
+phase: null
+updated_at: 2026-05-08 21:50:00
 blockers: []
 ```
 
@@ -16,13 +16,34 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Sin WP activo. Dos WPs cerrados en esta sesión: `menuitem-uc-audit` (Phase 11 TRACK) y `uc-alignment-full-audit` (Phase 12 STANDARDIZE verificada — artefactos completos, skills actualizados).
-**Tests:** 1916 passing / 218 suites / 0 failures (verificado 2026-05-08)
-**Próximo:** Determinar siguiente WP según backlog o nueva solicitud.
+**Estado:** Sin WP activo. WPs cerrados en esta sesión: `menuitem-uc-audit` (Phase 11 TRACK), `uc-alignment-full-audit` (Phase 12 STANDARDIZE), `admin-uc-audit` (Phase 11 TRACK — UC_ADM_01..05, 7 gaps cerrados).
+**Tests:** 1921 passing / 218 suites / 0 failures (verificado 2026-05-08)
+**Próximo:** `reports-uc-audit` (UC_RPT_08/09/11) o `pipeline-scope-audit` (UC_PIP_01..03).
 
 ## Métricas de test suite
 
-**1856 tests** passing (verificado 2026-05-08 — WP auth-uc-audit Phase 11 TRACK completa, 215 suites)
+**1921 tests** passing (verificado 2026-05-08 — WP admin-uc-audit Phase 11 TRACK completa, 218 suites)
+
+---
+
+## WP cerrado — admin-uc-audit ✓
+
+`2026-05-08-21-34-20-admin-uc-audit` — Phase 11 TRACK completa.
+
+7 gaps en 7 bloques (GAP-01..07). 6 commits. 1921 tests (+5 nuevos), 0 regressions.
+
+Entregables:
+- GAP-01: `updateSeparationRule` PUT → PATCH (adminGateway.js)
+- GAP-02: Mock SR toggle inactiva → 409 + SeparationRulesCatalog error branch
+- GAP-03: Mock SR POST nombre duplicado → 409
+- GAP-04 (CRÍTICO): Deactivate 202+warning completo — mock 202, admin.js reducer `deactivateWarnings`, FunctionCatalog `.unwrap()` + role=alert
+- GAP-05: Mock function POST codename duplicado → 409
+- GAP-06 (MEDIO): Mock AGR `is_system` field + 403 guard para non-system AGR
+- GAP-07: Mock AGR POST SoD conflict → 400 + rule detail (cruce con `_separationRulesData`)
+
+Key lessons: 202 Accepted requiere `.unwrap()` para leer payload (L-01); firma `(url, method, body)` para handlers que necesitan id (L-02); `is_system` como campo fixture, no lógica ad-hoc (L-03).
+
+UC_ADM_04/05: CERRADOS en WP menuitem-uc-audit (no reabiertos).
 
 ---
 
