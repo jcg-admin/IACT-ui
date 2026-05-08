@@ -136,8 +136,12 @@ class AdminService {
 
   // ── Catálogo de MenuItems (UC-ADM-04/05) ────────────────────────────────
 
-  async getMenuItems() {
-    return apiService.get('/api/admin/menu-items/')
+  async getMenuItems({ status, module: mod } = {}) {
+    const params = new URLSearchParams()
+    if (status) params.set('status', status)
+    if (mod) params.set('module', mod)
+    const query = params.toString()
+    return apiService.get(`/api/admin/menu-items/${query ? `?${query}` : ''}`)
   }
 
   async createMenuItem(data) {

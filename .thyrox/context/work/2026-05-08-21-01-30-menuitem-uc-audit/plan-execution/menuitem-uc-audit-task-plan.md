@@ -74,9 +74,9 @@ T-015                    (Block V independiente)
 > Habilitar `?status=&module=` en el GET sin agregar UI de filtros.
 > Commit al completar T-014.
 
-- [ ] [T-012] `adminGateway.js` — `getMenuItems({ status, module } = {})` construye `URLSearchParams` con los parámetros no-nulos y los agrega al GET `/api/admin/menu-items/`
-- [ ] [T-013] `admin.js` — `fetchMenuItems` thunk acepta argumento opcional `{ status, module }` y lo pasa a `adminService.getMenuItems(args)`
-- [ ] [T-014] `mockInterceptor.js` — en `_handleAdminMenuItems` GET, leer `?status=` y `?module=` de la URL y filtrar `items` antes de retornar
+- [x] [T-012] `adminGateway.js` — `getMenuItems({ status, module } = {})` construye `URLSearchParams` con los parámetros no-nulos y los agrega al GET `/api/admin/menu-items/`
+- [x] [T-013] `admin.js` — `fetchMenuItems` thunk acepta argumento opcional `{ status, module }` y lo pasa a `adminService.getMenuItems(args)`
+- [x] [T-014] `mockInterceptor.js` — en `_handleAdminMenuItems` GET, leer `?status=` y `?module=` de la URL y filtrar `items` antes de retornar
 
 ---
 

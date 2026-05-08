@@ -1641,8 +1641,13 @@ class MockInterceptor {
   }
 
   _handleAdminMenuItems(method, url, body) {
-    const items = this._menuItemsData()
+    let items = this._menuItemsData()
     if (method === 'GET') {
+      const params = new URL(url, 'http://localhost').searchParams
+      const statusFilter = params.get('status')
+      const moduleFilter = params.get('module')
+      if (statusFilter) items = items.filter(i => i.status === statusFilter)
+      if (moduleFilter) items = items.filter(i => i.function_codename?.startsWith(moduleFilter + ':'))
       return { status: 200, data: items }
     }
     if (method === 'POST') {

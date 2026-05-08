@@ -158,9 +158,9 @@ export const toggleSeparationRuleStatus = createAsyncThunk(
 
 export const fetchMenuItems = createAsyncThunk(
   'admin/fetchMenuItems',
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      return await adminService.getMenuItems()
+      return await adminService.getMenuItems(filters)
     } catch (error) {
       return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
