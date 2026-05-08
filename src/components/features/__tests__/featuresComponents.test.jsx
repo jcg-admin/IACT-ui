@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { ToastProvider } from '../../../context/ToastContext'
 
-jest.mock('../../../facades/UserAuth', () => ({
+jest.mock('../../../facades/UserIdentity', () => ({
   __esModule: true,
   default: {
     checkSession: jest.fn().mockResolvedValue(true),

@@ -48,7 +48,7 @@ const errorSlice = createSlice({
     },
 
     // Handle API error
-    handleAPIError: (state, action) => {
+    handleHttpError: (state, action) => {
       const error = action.payload;
 
       // Don't set unauthorized as global error (handled by auth:unauthorized event)
@@ -103,7 +103,7 @@ export const {
   setContextError,
   clearContextError,
   clearAllErrors,
-  handleAPIError,
+  handleHttpError,
   clearErrorHistory,
   setErrorHandling,
 } = errorSlice.actions;

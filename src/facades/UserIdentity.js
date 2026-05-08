@@ -1,5 +1,5 @@
 /**
- * UserAuth Facade
+ * UserIdentity Facade
  * 
  * Simplifies authentication and user profile management.
  * Orchestrates multiple services into high-level operations:
@@ -15,7 +15,7 @@
 import authService from '@services/authGateway'
 import { getNotificationService } from '@services/notificationGateway'
 
-class UserAuth {
+class UserIdentity {
   /**
    * Start a user session (login)
    * 
@@ -228,8 +228,8 @@ class UserAuth {
 }
 
 // Export singleton instance
-const userAuth = new UserAuth()
+const userAuth = new UserIdentity()
 export default userAuth
 
 // Export class for testing
-export { UserAuth }
+export { UserIdentity }

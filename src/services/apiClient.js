@@ -261,7 +261,7 @@ class APIService {
         clearTimeout(finalOptions.signal._timeoutId);
       }
 
-      // Map fetch error to appropriate APIError
+      // Map fetch error to appropriate HttpError
       return this._handleFetchError(error, url);
     }
 
@@ -314,7 +314,7 @@ class APIService {
       finalError = await interceptor(finalError);
     }
 
-    // Map fetch error to APIError
+    // Map fetch error to HttpError
     if (error.name === 'AbortError') {
       const timeoutError = new TimeoutError(this.timeout);
       logError(timeoutError, { url });

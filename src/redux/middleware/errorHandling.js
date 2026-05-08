@@ -4,7 +4,7 @@
  */
 
 import {
-  handleAPIError,
+  handleHttpError,
   setContextError,
   setErrorHandling,
 } from '@redux/slices/error';
@@ -38,7 +38,7 @@ export const errorHandlingMiddleware = (store) => (next) => (action) => {
       window.dispatchEvent(new CustomEvent('auth:unauthorized'));
     } else if (error instanceof RateLimitError) {
       // RFC 6585 §4: surface retryAfter so the UI can show a countdown
-      store.dispatch(handleAPIError({
+      store.dispatch(handleHttpError({
         ...error.toJSON(),
         retryAfter: error.retryAfter,
       }));
@@ -54,7 +54,7 @@ export const errorHandlingMiddleware = (store) => (next) => (action) => {
     if (context) {
       store.dispatch(setContextError({ context, error }));
     } else {
-      store.dispatch(handleAPIError(error));
+      store.dispatch(handleHttpError(error));
     }
 
     // Dejar de marcar manejo de error

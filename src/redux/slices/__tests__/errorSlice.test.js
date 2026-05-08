@@ -5,7 +5,7 @@ import errorReducer, {
   setContextError,
   clearContextError,
   clearAllErrors,
-  handleAPIError,
+  handleHttpError,
   setErrorHandling,
   clearErrorHistory,
   selectGlobalError,
@@ -111,12 +111,12 @@ describe('clearAllErrors', () => {
   })
 })
 
-// ── handleAPIError ────────────────────────────────────────────────────────────
+// ── handleHttpError ────────────────────────────────────────────────────────────
 
-describe('handleAPIError', () => {
+describe('handleHttpError', () => {
   it('sets global from a plain error object', () => {
     const store = buildStore()
-    store.dispatch(handleAPIError({ code: 'INTERNAL_SERVER_ERROR', message: 'Server error', statusCode: 500 }))
+    store.dispatch(handleHttpError({ code: 'INTERNAL_SERVER_ERROR', message: 'Server error', statusCode: 500 }))
     const err = selectGlobalError(store.getState())
     expect(err.statusCode).toBe(500)
     expect(err.code).toBe('INTERNAL_SERVER_ERROR')
@@ -124,20 +124,20 @@ describe('handleAPIError', () => {
 
   it('stores retryAfter in global when present', () => {
     const store = buildStore()
-    store.dispatch(handleAPIError({ code: 'RATE_LIMIT', message: 'Too many', statusCode: 429, retryAfter: 30 }))
+    store.dispatch(handleHttpError({ code: 'RATE_LIMIT', message: 'Too many', statusCode: 429, retryAfter: 30 }))
     const err = selectGlobalError(store.getState())
     expect(err.retryAfter).toBe(30)
   })
 
   it('retryAfter defaults to null when absent', () => {
     const store = buildStore()
-    store.dispatch(handleAPIError({ code: 'NOT_FOUND', message: 'nf', statusCode: 404 }))
+    store.dispatch(handleHttpError({ code: 'NOT_FOUND', message: 'nf', statusCode: 404 }))
     expect(selectGlobalError(store.getState()).retryAfter).toBeNull()
   })
 
   it('does NOT set global for UNAUTHORIZED errors', () => {
     const store = buildStore()
-    store.dispatch(handleAPIError({ code: 'UNAUTHORIZED', message: 'Unauthorized', statusCode: 401 }))
+    store.dispatch(handleHttpError({ code: 'UNAUTHORIZED', message: 'Unauthorized', statusCode: 401 }))
     expect(selectGlobalError(store.getState())).toBeNull()
   })
 })

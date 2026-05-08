@@ -28,7 +28,7 @@ jest.mock('../../../access/GroupAssignModal', () => ({
 }))
 
 // Mock façades before importing component
-jest.mock('@facades/UserAuth', () => ({
+jest.mock('@facades/UserIdentity', () => ({
   default: {
     startSession: jest.fn().mockResolvedValue({ user_id: 'test' }),
     createAccount: jest.fn().mockResolvedValue({ user_id: 'new', username: 'newuser' }),

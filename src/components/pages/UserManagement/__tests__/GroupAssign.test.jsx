@@ -6,7 +6,7 @@ import { MemoryRouter } from 'react-router-dom'
 import UserManagement from '../UserManagement'
 
 // Silence facade/service calls
-jest.mock('@facades/UserAuth', () => ({
+jest.mock('@facades/UserIdentity', () => ({
   default: {
     startSession: jest.fn().mockResolvedValue({ user_id: 'test' }),
     createAccount: jest.fn().mockResolvedValue({}),

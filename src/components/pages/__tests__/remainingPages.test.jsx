@@ -7,7 +7,7 @@ jest.mock('@services/notificationGateway', () => ({
   getNotificationService: () => ({ success: jest.fn(), error: jest.fn(), info: jest.fn() }),
 }))
 
-jest.mock('../../../facades/UserAuth', () => ({
+jest.mock('../../../facades/UserIdentity', () => ({
   __esModule: true,
   default: {
     loadUsers: jest.fn().mockResolvedValue([]),

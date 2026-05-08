@@ -6,7 +6,7 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import SessionWarning from '../SessionWarning'
 
-jest.mock('@facades/UserAuth', () => ({
+jest.mock('@facades/UserIdentity', () => ({
   default: {
     checkSession: jest.fn().mockResolvedValue(true),
     refreshSession: jest.fn().mockResolvedValue({ is_valid: true }),

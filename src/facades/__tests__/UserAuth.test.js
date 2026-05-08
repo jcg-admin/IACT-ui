@@ -1,10 +1,10 @@
 /**
- * UserAuth Facade Tests
+ * UserIdentity Facade Tests
  * 
  * Tests for authentication and user profile operations
  */
 
-import userAuth from '../UserAuth'
+import userAuth from '../UserIdentity'
 import authService from '@services/authGateway'
 import { getNotificationService } from '@services/notificationGateway'
 
@@ -12,7 +12,7 @@ import { getNotificationService } from '@services/notificationGateway'
 jest.mock('@services/authGateway')
 jest.mock('@services/notificationGateway')
 
-describe('UserAuth Facade', () => {
+describe('UserIdentity Facade', () => {
   let mockNotify
 
   beforeEach(() => {

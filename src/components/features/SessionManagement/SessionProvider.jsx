@@ -5,7 +5,7 @@
  */
 
 import React, { createContext, useState, useEffect, useCallback } from 'react'
-import userAuth from '../../../facades/UserAuth'
+import userAuth from '../../../facades/UserIdentity'
 
 export const SessionContext = createContext()
 

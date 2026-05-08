@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import userAuth from '../../../facades/UserAuth'
+import userAuth from '../../../facades/UserIdentity'
 import reportExporter from '../../../facades/ReportExporter'
 import { getNotificationService } from '@services/notificationGateway'
 import { assignGroupToUser, revokeGroupFromUser, selectGroups } from '../../../redux/slices/access'
@@ -90,7 +90,7 @@ export default function UserManagement() {
    */
   const handleCreateUser = async (userData) => {
     try {
-      // Use UserAuth facade to create account
+      // Use UserIdentity facade to create account
       const newUser = await userAuth.createAccount({
         username: userData.username,
         password: userData.password,

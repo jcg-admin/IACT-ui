@@ -1,5 +1,5 @@
 import {
-  APIError,
+  HttpError,
   TimeoutError,
   ConnectionError,
   BadRequestError,
@@ -32,9 +32,9 @@ import {
 
 // ── Base class ────────────────────────────────────────────────────────────────
 
-describe('APIError — base class', () => {
+describe('HttpError — base class', () => {
   it('extends Error and carries code + statusCode', () => {
-    const err = new APIError('msg', 'CODE', 400)
+    const err = new HttpError('msg', 'CODE', 400)
     expect(err).toBeInstanceOf(Error)
     expect(err.message).toBe('msg')
     expect(err.code).toBe('CODE')
@@ -43,9 +43,9 @@ describe('APIError — base class', () => {
   })
 
   it('toJSON returns serializable shape', () => {
-    const err = new APIError('msg', 'CODE', 400)
+    const err = new HttpError('msg', 'CODE', 400)
     const json = err.toJSON()
-    expect(json).toMatchObject({ name: 'APIError', message: 'msg', code: 'CODE', statusCode: 400 })
+    expect(json).toMatchObject({ name: 'HttpError', message: 'msg', code: 'CODE', statusCode: 400 })
     expect(json.timestamp).toBeDefined()
   })
 })
@@ -301,12 +301,12 @@ describe('getErrorMessage', () => {
     expect(msg).toContain('required')
   })
 
-  it('returns message for generic APIError', () => {
+  it('returns message for generic HttpError', () => {
     const err = new InternalServerError('Custom message')
     expect(getErrorMessage(err)).toBe('Custom message')
   })
 
-  it('returns fallback for non-APIError', () => {
+  it('returns fallback for non-HttpError', () => {
     expect(getErrorMessage(new Error('plain'))).toBe(
       'An unexpected error occurred. Please try again.'
     )
