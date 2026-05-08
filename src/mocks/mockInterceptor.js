@@ -98,6 +98,21 @@ class MockInterceptor {
       return this._handleJobCancel(url);
     }
 
+    // ACCESS — UC-ACC-01: catálogo de funciones disponibles
+    if (url.includes('/api/access/functions') && method === 'GET') {
+      return this._handleGetAllFunctions();
+    }
+
+    // ACCESS — UC-ACC-03: permisos efectivos de un usuario
+    if (url.match(/\/api\/access\/permissions\/\d+/) && method === 'GET') {
+      return this._handleGetUserPermissions(url);
+    }
+
+    // ACCESS — UC-ACC-09: auditoría de cambios de acceso
+    if (url.match(/\/api\/access\/audit\/\d+/) && method === 'GET') {
+      return this._handleGetAccessAuditLog(url);
+    }
+
     // ACCESS — UC-ACC-01: asignar funciones (bulk)
     if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'POST') {
       return this._handleAssignFunctions(body);
@@ -217,8 +232,13 @@ class MockInterceptor {
       return this._handleAdminAGR(method, body)
     }
 
+    // ADMIN — UC-ADM-04/05: catálogo + lifecycle de MenuItems
+    if (url.includes('/api/admin/menu-items/')) {
+      return this._handleAdminMenuItems(method, url, body)
+    }
+
     if (url.includes('/api/admin/separation-rules/')) {
-      return this._handleSeparationRules()
+      return this._handleAdminSeparationRules(method, url, body)
     }
 
     // PERMISOS — UC-PERM-07/08: capacidades del usuario (SP-01 — ADR-BACK-005)
@@ -1190,33 +1210,37 @@ class MockInterceptor {
     return { status: 200, data: { valid: true, conflicts: [] } };
   }
 
+  _separationRulesData() {
+    return [
+      { id: 1, code: 'SR-001', name: 'Pipeline vs Auditoría',  description: 'Quien ejecuta pipelines no puede auditarlos', group_a: ['pipeline:view_status', 'pipeline:view_data', 'pipeline:request'], group_b: ['audit:view', 'audit:search', 'audit:export', 'audit:compliance'], isActive: true, violations: 0 },
+      { id: 2, code: 'SR-002', name: 'Usuarios vs Auditoría',  description: 'Quien gestiona usuarios no puede auditarlos',  group_a: ['users:manage', 'users:create', 'users:edit'],                       group_b: ['audit:view', 'audit:search', 'audit:export'],                      isActive: true, violations: 0 },
+      { id: 3, code: 'SR-003', name: 'Acceso vs Auditoría',    description: 'Quien asigna funciones no puede auditarlas',   group_a: ['access:assign', 'access:assign_function', 'access:revoke_function'],  group_b: ['audit:view', 'audit:search', 'audit:export'],                      isActive: true, violations: 0 },
+    ]
+  }
+
   _handleSeparationRules() {
-    return {
-      status: 200,
-      data: [
-        {
-          id: 1, code: 'SR-001', name: 'Pipeline vs Auditoría',
-          description: 'Quien ejecuta pipelines no puede auditarlos',
-          group_a: ['pipeline:view_status', 'pipeline:view_data', 'pipeline:request'],
-          group_b: ['audit:view', 'audit:search', 'audit:export', 'audit:compliance'],
-          isActive: true, violations: 0,
-        },
-        {
-          id: 2, code: 'SR-002', name: 'Usuarios vs Auditoría',
-          description: 'Quien gestiona usuarios no puede auditarlos',
-          group_a: ['users:manage', 'users:create', 'users:edit'],
-          group_b: ['audit:view', 'audit:search', 'audit:export'],
-          isActive: true, violations: 0,
-        },
-        {
-          id: 3, code: 'SR-003', name: 'Acceso vs Auditoría',
-          description: 'Quien asigna funciones no puede auditarlas',
-          group_a: ['access:assign', 'access:assign_function', 'access:revoke_function'],
-          group_b: ['audit:view', 'audit:search', 'audit:export'],
-          isActive: true, violations: 0,
-        },
-      ],
+    return { status: 200, data: this._separationRulesData() }
+  }
+
+  _handleAdminSeparationRules(method, url, body) {
+    const rules = this._separationRulesData()
+    if (method === 'GET') {
+      return { status: 200, data: rules }
     }
+    if (method === 'POST') {
+      const newRule = { id: rules.length + 1, code: `SR-00${rules.length + 1}`, isActive: true, violations: 0, ...body }
+      return { status: 201, data: newRule }
+    }
+    const match = url.match(/\/api\/admin\/separation-rules\/(\d+)\//)
+    const id = parseInt(match?.[1], 10)
+    const rule = rules.find(r => r.id === id) || rules[0]
+    if (method === 'PUT') {
+      return { status: 200, data: { ...rule, ...body } }
+    }
+    if (method === 'PATCH') {
+      return { status: 200, data: { ...rule, isActive: !rule.isActive } }
+    }
+    return this._error(405, 'Method not allowed')
   }
 
   // ====== PERMISOS HANDLERS ======
@@ -1436,6 +1460,90 @@ class MockInterceptor {
         ],
         count: 3,
       },
+    }
+  }
+
+  // ====== ADMIN MENU ITEMS (UC-ADM-04/05) ======
+
+  _menuItemsData() {
+    return [
+      { id: 1, label: 'Dashboard',   icon: 'grid-alt',  route_path: '/dashboard',  display_order: 1, parent: null, status: 'ACTIVE',       function_codename: 'reports:view',  is_critical: false },
+      { id: 2, label: 'Usuarios',    icon: 'users',     route_path: '/users',       display_order: 2, parent: null, status: 'ACTIVE',       function_codename: 'users:view',    is_critical: false },
+      { id: 3, label: 'Reportes',    icon: 'chart-bar', route_path: '/reports',     display_order: 3, parent: null, status: 'ACTIVE',       function_codename: 'reports:view',  is_critical: false },
+      { id: 4, label: 'Admin',       icon: 'shield',    route_path: '/admin',       display_order: 8, parent: null, status: 'ACTIVE',       function_codename: 'adm:manage_catalog', is_critical: true },
+      { id: 5, label: 'Beta Feature',icon: 'flask',     route_path: '/beta',        display_order: 9, parent: null, status: 'DRAFT',        function_codename: 'reports:view',  is_critical: false },
+      { id: 6, label: 'Legacy View', icon: 'archive',   route_path: '/legacy',      display_order: 10,parent: null, status: 'DEPRECATED',   function_codename: 'reports:view',  is_critical: false },
+    ]
+  }
+
+  _handleAdminMenuItems(method, url, body) {
+    const items = this._menuItemsData()
+    if (method === 'GET') {
+      return { status: 200, data: items }
+    }
+    if (method === 'POST') {
+      return { status: 201, data: { id: items.length + 1, status: 'DRAFT', ...body } }
+    }
+    const match = url.match(/\/api\/admin\/menu-items\/(\d+)\//)
+    const id = parseInt(match?.[1], 10)
+    const item = items.find(i => i.id === id) || items[0]
+    if (method === 'PUT') {
+      return { status: 200, data: { ...item, ...body } }
+    }
+    if (method === 'PATCH') {
+      const transitions = { DRAFT: 'ACTIVE', ACTIVE: 'DEPRECATED', DEPRECATED: 'ARCHIVED', ARCHIVED: 'ACTIVE' }
+      const newStatus = body?.status || transitions[item.status] || 'ACTIVE'
+      return { status: 200, data: { ...item, status: newStatus } }
+    }
+    return this._error(405, 'Method not allowed')
+  }
+
+  // ====== ACCESS HANDLERS (UC-ACC-01/03/09) ======
+
+  _handleGetAllFunctions() {
+    return {
+      status: 200,
+      data: [
+        { id: 1,  codename: 'reports:view',              name: 'Ver reportes',               domain: 'reports', active: true },
+        { id: 2,  codename: 'reports:export',            name: 'Exportar reportes',          domain: 'reports', active: true },
+        { id: 3,  codename: 'reports:schedule',          name: 'Programar reportes',         domain: 'reports', active: true },
+        { id: 4,  codename: 'reports:share',             name: 'Compartir reportes',         domain: 'reports', active: true },
+        { id: 5,  codename: 'access:view',               name: 'Ver acceso',                 domain: 'access',  active: true },
+        { id: 6,  codename: 'access:assign',             name: 'Asignar funciones',          domain: 'access',  active: true },
+        { id: 7,  codename: 'access:revoke',             name: 'Revocar funciones',          domain: 'access',  active: true },
+        { id: 8,  codename: 'access:create_group',       name: 'Crear grupos de acceso',     domain: 'access',  active: true },
+        { id: 9,  codename: 'access:assign_group',       name: 'Asignar agrupador',          domain: 'access',  active: true },
+        { id: 10, codename: 'access:view_sod',           name: 'Ver reglas SoD',             domain: 'access',  active: true },
+        { id: 11, codename: 'audit:view',                name: 'Ver auditoría',              domain: 'audit',   active: true },
+        { id: 12, codename: 'audit:search',              name: 'Buscar auditoría',           domain: 'audit',   active: true },
+        { id: 13, codename: 'alerts:view',               name: 'Ver alertas',                domain: 'alerts',  active: true },
+        { id: 14, codename: 'pipeline:view_status',      name: 'Ver estado ETL',             domain: 'pipeline',active: true },
+        { id: 15, codename: 'pipeline:retry',            name: 'Reintentar pipeline',        domain: 'pipeline',active: true },
+      ],
+    }
+  }
+
+  _handleGetUserPermissions(url) {
+    const match = url.match(/\/api\/access\/permissions\/(\d+)/)
+    const userId = parseInt(match?.[1], 10)
+    const allPerms = [
+      { id: 1, codename: 'reports:view',    name: 'Ver reportes',    domain: 'reports', granted_at: '2026-01-15', expires_at: null, is_temporary: false },
+      { id: 2, codename: 'access:view',     name: 'Ver acceso',      domain: 'access',  granted_at: '2026-01-15', expires_at: null, is_temporary: false },
+      { id: 3, codename: 'audit:view',      name: 'Ver auditoría',   domain: 'audit',   granted_at: '2026-02-01', expires_at: null, is_temporary: false },
+    ]
+    return { status: 200, data: userId === 1 ? allPerms : allPerms.slice(0, 1) }
+  }
+
+  _handleGetAccessAuditLog(url) {
+    const match = url.match(/\/api\/access\/audit\/(\d+)/)
+    const userId = parseInt(match?.[1], 10)
+    return {
+      status: 200,
+      data: [
+        { id: 1, action: 'ASSIGN_FUNCTION',  codename: 'reports:view',  performed_by: 'admin', performed_at: '2026-05-01T10:00:00Z', target_user_id: userId, reason: 'Onboarding' },
+        { id: 2, action: 'REVOKE_FUNCTION',  codename: 'access:assign', performed_by: 'admin', performed_at: '2026-04-15T09:30:00Z', target_user_id: userId, reason: 'Role change' },
+        { id: 3, action: 'ASSIGN_FUNCTION',  codename: 'audit:view',    performed_by: 'admin', performed_at: '2026-03-20T14:00:00Z', target_user_id: userId, reason: 'Compliance team' },
+      ],
     }
   }
 }

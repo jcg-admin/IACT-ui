@@ -101,6 +101,36 @@ class AdminService {
   async getSeparationRules() {
     return apiService.get('/api/admin/separation-rules/')
   }
+
+  async createSeparationRule(data) {
+    return apiService.post('/api/admin/separation-rules/', data)
+  }
+
+  async updateSeparationRule(id, data) {
+    return apiService.put(`/api/admin/separation-rules/${id}/`, data)
+  }
+
+  async toggleSeparationRuleStatus(id) {
+    return apiService.patch(`/api/admin/separation-rules/${id}/`, {})
+  }
+
+  // ── Catálogo de MenuItems (UC-ADM-04/05) ────────────────────────────────
+
+  async getMenuItems() {
+    return apiService.get('/api/admin/menu-items/')
+  }
+
+  async createMenuItem(data) {
+    return apiService.post('/api/admin/menu-items/', data)
+  }
+
+  async updateMenuItem(id, data) {
+    return apiService.put(`/api/admin/menu-items/${id}/`, data)
+  }
+
+  async transitionMenuItemStatus(id, newStatus) {
+    return apiService.patch(`/api/admin/menu-items/${id}/`, { status: newStatus })
+  }
 }
 
 export const adminService = new AdminService()

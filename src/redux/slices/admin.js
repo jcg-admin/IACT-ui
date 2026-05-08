@@ -108,6 +108,98 @@ export const deactivateAGR = createAsyncThunk(
   }
 )
 
+// ── Thunks — Reglas SoD (UC-ADM-01) ─────────────────────────────────────────
+
+export const fetchAdminSeparationRules = createAsyncThunk(
+  'admin/fetchAdminSeparationRules',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await adminService.getSeparationRules()
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const createSeparationRule = createAsyncThunk(
+  'admin/createSeparationRule',
+  async (data, { rejectWithValue }) => {
+    try {
+      return await adminService.createSeparationRule(data)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const updateSeparationRule = createAsyncThunk(
+  'admin/updateSeparationRule',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await adminService.updateSeparationRule(id, data)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const toggleSeparationRuleStatus = createAsyncThunk(
+  'admin/toggleSeparationRuleStatus',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await adminService.toggleSeparationRuleStatus(id)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+// ── Thunks — MenuItems (UC-ADM-04/05) ────────────────────────────────────────
+
+export const fetchMenuItems = createAsyncThunk(
+  'admin/fetchMenuItems',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await adminService.getMenuItems()
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const createMenuItem = createAsyncThunk(
+  'admin/createMenuItem',
+  async (data, { rejectWithValue }) => {
+    try {
+      return await adminService.createMenuItem(data)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const updateMenuItem = createAsyncThunk(
+  'admin/updateMenuItem',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      return await adminService.updateMenuItem(id, data)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
+export const transitionMenuItemStatus = createAsyncThunk(
+  'admin/transitionMenuItemStatus',
+  async ({ id, newStatus }, { rejectWithValue }) => {
+    try {
+      return await adminService.transitionMenuItemStatus(id, newStatus)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const adminSlice = createSlice({
@@ -115,6 +207,8 @@ const adminSlice = createSlice({
   initialState: {
     functions: [],
     agrs: [],
+    separationRules: [],
+    menuItems: [],
     loading: false,
     error: null,
   },
@@ -213,6 +307,60 @@ const adminSlice = createSlice({
       .addCase(deactivateAGR.rejected, (state, action) => {
         state.error = action.payload
       })
+
+    // fetchAdminSeparationRules
+    builder
+      .addCase(fetchAdminSeparationRules.pending, (state) => { state.loading = true; state.error = null })
+      .addCase(fetchAdminSeparationRules.fulfilled, (state, action) => {
+        state.separationRules = action.payload?.results ?? action.payload ?? []
+        state.loading = false
+      })
+      .addCase(fetchAdminSeparationRules.rejected, (state, action) => { state.loading = false; state.error = action.payload })
+
+    builder
+      .addCase(createSeparationRule.fulfilled, (state, action) => { state.separationRules.push(action.payload) })
+      .addCase(createSeparationRule.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(updateSeparationRule.fulfilled, (state, action) => {
+        const idx = state.separationRules.findIndex((r) => r.id === action.payload.id)
+        if (idx !== -1) state.separationRules[idx] = action.payload
+      })
+      .addCase(updateSeparationRule.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(toggleSeparationRuleStatus.fulfilled, (state, action) => {
+        const idx = state.separationRules.findIndex((r) => r.id === action.payload.id)
+        if (idx !== -1) state.separationRules[idx] = action.payload
+      })
+      .addCase(toggleSeparationRuleStatus.rejected, (state, action) => { state.error = action.payload })
+
+    // fetchMenuItems
+    builder
+      .addCase(fetchMenuItems.pending, (state) => { state.loading = true; state.error = null })
+      .addCase(fetchMenuItems.fulfilled, (state, action) => {
+        state.menuItems = action.payload?.results ?? action.payload ?? []
+        state.loading = false
+      })
+      .addCase(fetchMenuItems.rejected, (state, action) => { state.loading = false; state.error = action.payload })
+
+    builder
+      .addCase(createMenuItem.fulfilled, (state, action) => { state.menuItems.push(action.payload) })
+      .addCase(createMenuItem.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(updateMenuItem.fulfilled, (state, action) => {
+        const idx = state.menuItems.findIndex((i) => i.id === action.payload.id)
+        if (idx !== -1) state.menuItems[idx] = action.payload
+      })
+      .addCase(updateMenuItem.rejected, (state, action) => { state.error = action.payload })
+
+    builder
+      .addCase(transitionMenuItemStatus.fulfilled, (state, action) => {
+        const idx = state.menuItems.findIndex((i) => i.id === action.payload.id)
+        if (idx !== -1) state.menuItems[idx] = action.payload
+      })
+      .addCase(transitionMenuItemStatus.rejected, (state, action) => { state.error = action.payload })
   },
 })
 
@@ -222,6 +370,8 @@ const selectAdminState = (state) => state.admin
 
 export const selectFunctions = createSelector(selectAdminState, (s) => s.functions)
 export const selectAGRs = createSelector(selectAdminState, (s) => s.agrs)
+export const selectAdminSeparationRules = createSelector(selectAdminState, (s) => s.separationRules)
+export const selectMenuItems = createSelector(selectAdminState, (s) => s.menuItems)
 export const selectAdminLoading = createSelector(selectAdminState, (s) => s.loading)
 export const selectAdminError = createSelector(selectAdminState, (s) => s.error)
 
