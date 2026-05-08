@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import GroupComposition from '../GroupComposition'
 
@@ -7,7 +7,8 @@ const GROUPS = [
   { id: 1, name: 'Admins', description: '', active: true },
 ]
 const FUNCTIONS = [
-  { id: 10, codename: 'sistema.audit.logs.ver', name: 'Ver logs' },
+  { id: 10, codename: 'sistema.audit.logs.ver', code: 'AUD-001', name: 'Ver logs' },
+  { id: 11, codename: 'sistema.pipeline.run', code: 'PIP-001', name: 'Ejecutar pipeline' },
 ]
 
 const mockDispatch = jest.fn()
@@ -41,8 +42,16 @@ jest.mock('../../../redux/slices/access', () => ({
 }))
 
 jest.mock('../../../services/accessGateway', () => ({
-  default: { getGroupFunctions: jest.fn().mockResolvedValue([]) },
+  __esModule: true,
+  default: {
+    getGroupFunctions: jest.fn().mockResolvedValue([]),
+    getGroupCascadeImpact: jest.fn(),
+    getFunctionGroups: jest.fn().mockResolvedValue([]),
+  },
 }))
+
+// Access the mocked gateway functions via jest.requireMock to avoid import hoisting issues
+const mockGateway = jest.requireMock('../../../services/accessGateway').default
 
 function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
@@ -51,6 +60,9 @@ function wrapper(ui) {
 describe('GroupComposition', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
+    mockDispatch.mockResolvedValue({ type: 'ok' })
+    mockGateway.getGroupCascadeImpact.mockClear()
+    mockGateway.getGroupCascadeImpact.mockResolvedValue({ cascade_affected_user_count: 0, conflicts: [] })
   })
 
   it('renders page heading', () => {
@@ -72,5 +84,74 @@ describe('GroupComposition', () => {
     wrapper(<GroupComposition />)
     const emptyMsg = screen.queryByText(/sin funciones|no hay funciones|selecciona un grupo/i)
     expect(emptyMsg || document.body).toBeTruthy()
+  })
+
+  it('calls getGroupCascadeImpact with selected group and pending functions', async () => {
+    // Test A: verify gateway is called — count=0 flow
+    wrapper(<GroupComposition />)
+
+    const groupSelect = screen.getByRole('combobox')
+    fireEvent.change(groupSelect, { target: { value: '1' } })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Agregar función/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /Agregar función/i }))
+
+    const func = await screen.findByText(/AUD-001|Ver logs/)
+    fireEvent.click(func)
+
+    fireEvent.click(screen.getByRole('button', { name: /Verificar impacto/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Sin impacto cascade/i)).toBeInTheDocument()
+    })
+
+    expect(mockGateway.getGroupCascadeImpact).toHaveBeenCalledWith('1', expect.any(Array))
+  })
+
+  it('shows cascade warning with user count when cascade_affected_user_count > 0', async () => {
+    // Test B: verify count>0 path — gateway returns count=3, "Sin impacto" must not appear
+    mockGateway.getGroupCascadeImpact.mockResolvedValue({ cascade_affected_user_count: 3, conflicts: [] })
+    wrapper(<GroupComposition />)
+
+    const groupSelect = screen.getByRole('combobox')
+    fireEvent.change(groupSelect, { target: { value: '1' } })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Agregar función/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /Agregar función/i }))
+
+    const func = await screen.findByText(/AUD-001|Ver logs/)
+    fireEvent.click(func)
+
+    fireEvent.click(screen.getByRole('button', { name: /Verificar impacto/i }))
+
+    await act(async () => {})
+
+    expect(mockGateway.getGroupCascadeImpact).toHaveBeenCalledWith('1', expect.any(Array))
+    expect(screen.queryByText(/Sin impacto cascade/i)).not.toBeInTheDocument()
+  })
+
+  it('shows no-cascade message when cascade_affected_user_count is 0', async () => {
+    wrapper(<GroupComposition />)
+
+    const groupSelect = screen.getByRole('combobox')
+    fireEvent.change(groupSelect, { target: { value: '1' } })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Agregar función/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /Agregar función/i }))
+
+    const func = await screen.findByText(/AUD-001|Ver logs/)
+    fireEvent.click(func)
+
+    fireEvent.click(screen.getByRole('button', { name: /Verificar impacto/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Sin impacto cascade/i)).toBeInTheDocument()
+    })
   })
 })

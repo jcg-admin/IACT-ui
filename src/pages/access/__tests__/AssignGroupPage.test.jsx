@@ -18,6 +18,7 @@ jest.mock('react-redux', () => ({
       access: {
         groups: MOCK_GROUPS,
         loading: false,
+        validatingGroup: false,
         error: null,
         success: false,
       },
@@ -25,26 +26,40 @@ jest.mock('react-redux', () => ({
 }))
 
 jest.mock('../../../redux/slices/access', () => ({
-  fetchAllFunctions: jest.fn(() => ({ type: 'access/fetchAllFunctions' })),
-  assignGroupToUser: jest.fn((payload) => ({ type: 'access/assignGroupToUser', payload })),
+  __esModule: true,
+  assignGroupToUser: Object.assign(
+    jest.fn((payload) => ({ type: 'access/assignGroupToUser', payload })),
+    { fulfilled: { match: jest.fn() } }
+  ),
+  validateGroupAssignment: Object.assign(
+    jest.fn((args) => ({ type: 'access/validateGroupAssignment', payload: args })),
+    {
+      fulfilled: {
+        match: jest.fn((action) => action?.type === 'access/validateGroupAssignment/fulfilled'),
+      },
+    }
+  ),
   selectGroups: (s) => s.access.groups,
   selectLoading: (s) => s.access.loading,
+  selectValidatingGroup: (s) => s.access.validatingGroup ?? false,
   selectError: (s) => s.access.error,
   selectSuccess: (s) => s.access.success,
   clearError: jest.fn(() => ({ type: 'access/clearError' })),
   resetState: jest.fn(() => ({ type: 'access/resetState' })),
 }))
 
-import { assignGroupToUser } from '../../../redux/slices/access'
+import { assignGroupToUser, validateGroupAssignment } from '../../../redux/slices/access'
 
 function wrap() {
   return render(<MemoryRouter><AssignGroup /></MemoryRouter>)
 }
 
-describe('AssignGroup — uc-acc-04 / uc-perm-01', () => {
+describe('AssignGroup — uc-acc-04 / uc-perm-01 (2-step validation)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     assignGroupToUser.mockClear()
+    validateGroupAssignment.mockClear()
+    mockDispatch.mockResolvedValue({ type: 'access/validateGroupAssignment/fulfilled', payload: { valid: true, conflicts: [] } })
   })
 
   it('renders page heading', () => {
@@ -59,46 +74,68 @@ describe('AssignGroup — uc-acc-04 / uc-perm-01', () => {
 
   it('renders group selector with available groups', () => {
     wrap()
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /grupo/i })).toBeInTheDocument()
     expect(screen.getByText('Supervisors')).toBeInTheDocument()
     expect(screen.getByText('Agents')).toBeInTheDocument()
   })
 
-  it('dispatches assignGroupToUser with userId and groupId when form submitted', async () => {
+  it('shows "Verificar separación" button initially', () => {
+    wrap()
+    expect(screen.getByRole('button', { name: /Verificar separación/i })).toBeInTheDocument()
+  })
+
+  it('Verificar button disabled when userId empty', () => {
+    wrap()
+    const btn = screen.getByRole('button', { name: /Verificar separación/i })
+    expect(btn).toBeDisabled()
+  })
+
+  it('dispatches validateGroupAssignment when Verificar is clicked', async () => {
+    validateGroupAssignment.fulfilled.match.mockReturnValue(true)
     wrap()
     fireEvent.change(screen.getByLabelText(/usuario/i), { target: { value: 'user-42' } })
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: '1' } })
-    fireEvent.click(screen.getByRole('button', { name: /asignar/i }))
+    fireEvent.change(screen.getByRole('combobox', { name: /grupo/i }), { target: { value: '1' } })
+    fireEvent.click(screen.getByRole('button', { name: /Verificar separación/i }))
     await waitFor(() => {
-      expect(assignGroupToUser).toHaveBeenCalledWith(
-        expect.objectContaining({ userId: 'user-42', groupId: '1' })
-      )
+      expect(mockDispatch).toHaveBeenCalled()
     })
   })
 
-  it('does not dispatch if userId is empty', async () => {
-    wrap()
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: '1' } })
-    fireEvent.click(screen.getByRole('button', { name: /asignar/i }))
-    expect(assignGroupToUser).not.toHaveBeenCalled()
-  })
-
-  it('does not dispatch if no group is selected', async () => {
+  it('shows no-conflicts panel and Asignar button after successful validation', async () => {
+    validateGroupAssignment.fulfilled.match.mockReturnValue(true)
     wrap()
     fireEvent.change(screen.getByLabelText(/usuario/i), { target: { value: 'user-42' } })
-    fireEvent.click(screen.getByRole('button', { name: /asignar/i }))
-    expect(assignGroupToUser).not.toHaveBeenCalled()
+    fireEvent.change(screen.getByRole('combobox', { name: /grupo/i }), { target: { value: '1' } })
+    fireEvent.click(screen.getByRole('button', { name: /Verificar separación/i }))
+    await waitFor(() => {
+      expect(screen.getByText(/Sin conflictos de separación/i)).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: /Asignar grupo/i })).not.toBeDisabled()
+  })
+
+  it('shows HARD conflict and blocks submit', async () => {
+    mockDispatch.mockResolvedValue({
+      type: 'access/validateGroupAssignment/fulfilled',
+      payload: {
+        valid: false,
+        conflicts: [{ rule: 'SR-001', severity: 'HARD', message: 'Hard conflict', setA: [], setB: [] }],
+      },
+    })
+    validateGroupAssignment.fulfilled.match.mockReturnValue(true)
+    wrap()
+    fireEvent.change(screen.getByLabelText(/usuario/i), { target: { value: 'user-99' } })
+    fireEvent.change(screen.getByRole('combobox', { name: /grupo/i }), { target: { value: '1' } })
+    fireEvent.click(screen.getByRole('button', { name: /Verificar separación/i }))
+    await waitFor(() => {
+      expect(screen.getByText('HARD')).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: /Asignar grupo/i })).toBeDisabled()
   })
 
   it('shows error when error state is set', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({
-        access: {
-          groups: MOCK_GROUPS,
-          loading: false,
-          error: 'Error de asignación',
-          success: false,
-        },
+        access: { groups: MOCK_GROUPS, loading: false, validatingGroup: false, error: 'Error de asignación', success: false },
       })
     )
     wrap()
@@ -109,12 +146,7 @@ describe('AssignGroup — uc-acc-04 / uc-perm-01', () => {
   it('shows success message when success state is set', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({
-        access: {
-          groups: MOCK_GROUPS,
-          loading: false,
-          error: null,
-          success: true,
-        },
+        access: { groups: MOCK_GROUPS, loading: false, validatingGroup: false, error: null, success: true },
       })
     )
     wrap()

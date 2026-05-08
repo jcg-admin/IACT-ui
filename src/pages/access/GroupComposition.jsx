@@ -34,6 +34,7 @@ export default function GroupComposition() {
     const [selectorSearch, setSelectorSearch] = useState('');
     const [pendingAdd, setPendingAdd] = useState([]); // ids seleccionados en el modal
     const [submitting, setSubmitting] = useState(false);
+    const [cascadeImpact, setCascadeImpact] = useState(null); // { cascade_affected_user_count, conflicts }
 
     useEffect(() => {
         dispatch(fetchAllFunctions());
@@ -93,13 +94,31 @@ export default function GroupComposition() {
         const newIds = Array.from(new Set([...assignedIds, ...pendingAdd]));
         setSubmitting(true);
         try {
+            // Preview cascade impact before committing
+            if (cascadeImpact === null) {
+                try {
+                    const impact = await accessService.getGroupCascadeImpact(selectedGroupId, pendingAdd);
+                    setCascadeImpact(impact);
+                    setSubmitting(false);
+                    return; // Stay in modal for user to confirm with impact visible
+                } catch {
+                    setCascadeImpact({ cascade_affected_user_count: 0, conflicts: [] });
+                }
+            }
             await dispatch(assignFunctionsToGroup({ groupId: selectedGroupId, functionIds: newIds }));
             dispatch(fetchGroupFunctions(selectedGroupId));
             setSelectorOpen(false);
             setPendingAdd([]);
+            setCascadeImpact(null);
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleCancelModal = () => {
+        setSelectorOpen(false);
+        setCascadeImpact(null);
+        setPendingAdd([]);
     };
 
     const availableToAdd = allFunctions.filter(f =>
@@ -345,10 +364,28 @@ export default function GroupComposition() {
                             )}
                         </div>
 
+                        {/* Cascade impact notice */}
+                        {cascadeImpact !== null && (
+                            <div style={{
+                                padding: '10px 12px',
+                                marginBottom: '12px',
+                                backgroundColor: cascadeImpact.cascade_affected_user_count > 0 ? '#78350f' : '#064e3b',
+                                border: `1px solid ${cascadeImpact.cascade_affected_user_count > 0 ? '#d97706' : '#10b981'}`,
+                                borderRadius: '4px',
+                                fontSize: '13px',
+                                color: cascadeImpact.cascade_affected_user_count > 0 ? '#fde68a' : '#6ee7b7',
+                            }}>
+                                {cascadeImpact.cascade_affected_user_count > 0
+                                    ? `⚠ Esta acción revalidará la separación en ${cascadeImpact.cascade_affected_user_count} usuario(s) que tienen este grupo asignado.`
+                                    : 'Sin impacto cascade. Puede confirmar.'
+                                }
+                            </div>
+                        )}
+
                         <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                             <button
                                 className="btn btn-secondary"
-                                onClick={() => setSelectorOpen(false)}
+                                onClick={handleCancelModal}
                                 disabled={submitting}
                             >
                                 Cancelar
@@ -359,8 +396,10 @@ export default function GroupComposition() {
                                 disabled={pendingAdd.length === 0 || submitting}
                             >
                                 {submitting
-                                    ? 'Asignando...'
-                                    : `Agregar ${pendingAdd.length > 0 ? `(${pendingAdd.length})` : ''}`}
+                                    ? 'Procesando...'
+                                    : cascadeImpact === null
+                                        ? `Verificar impacto ${pendingAdd.length > 0 ? `(${pendingAdd.length})` : ''}`
+                                        : `Confirmar agregar ${pendingAdd.length > 0 ? `(${pendingAdd.length})` : ''}`}
                             </button>
                         </div>
                     </div>

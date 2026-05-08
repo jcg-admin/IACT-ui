@@ -2,24 +2,33 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   assignGroupToUser,
+  validateGroupAssignment,
   selectGroups,
   selectLoading,
+  selectValidatingGroup,
   selectError,
   selectSuccess,
   clearError,
   resetState,
 } from '@store/slices/access'
+import SeparationRulesValidator from '@ui/access/SeparationRulesValidator'
 
 export default function AssignGroup() {
   const dispatch = useDispatch()
   const groups = useSelector(selectGroups)
   const loading = useSelector(selectLoading)
+  const validating = useSelector(selectValidatingGroup)
   const error = useSelector(selectError)
   const success = useSelector(selectSuccess)
 
   const [userId, setUserId] = useState('')
   const [groupId, setGroupId] = useState('')
   const [expiresAt, setExpiresAt] = useState('')
+
+  // Validation step state
+  const [step, setStep] = useState('form') // 'form' | 'review'
+  const [validationResult, setValidationResult] = useState(null) // { valid, conflicts }
+  const [softConfirmed, setSoftConfirmed] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -28,11 +37,40 @@ export default function AssignGroup() {
     }
   }, [dispatch])
 
-  function handleSubmit(e) {
+  function resetToForm() {
+    setStep('form')
+    setValidationResult(null)
+    setSoftConfirmed(false)
+    dispatch(clearError())
+  }
+
+  async function handleVerify(e) {
+    e.preventDefault()
+    if (!userId.trim() || !groupId) return
+    setSoftConfirmed(false)
+    const result = await dispatch(validateGroupAssignment({ userId: userId.trim(), groupId }))
+    if (validateGroupAssignment.fulfilled.match(result)) {
+      setValidationResult(result.payload)
+      setStep('review')
+    } else {
+      setStep('review')
+      setValidationResult({ valid: false, conflicts: [] })
+    }
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!userId.trim() || !groupId) return
     dispatch(assignGroupToUser({ userId: userId.trim(), groupId, expiresAt: expiresAt || null }))
   }
+
+  const conflicts = validationResult?.conflicts ?? []
+  const hasHard = conflicts.some((c) => (c.severity ?? 'HARD') === 'HARD')
+  const allSoft = conflicts.length > 0 && !hasHard
+  const canSubmit = step === 'review' && validationResult && (
+    validationResult.valid ||
+    (allSoft && softConfirmed)
+  )
 
   return (
     <div className="page-container">
@@ -45,7 +83,7 @@ export default function AssignGroup() {
 
       {error && (
         <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
-          {error}
+          {typeof error === 'object' ? error.message : error}
         </div>
       )}
 
@@ -55,8 +93,8 @@ export default function AssignGroup() {
         </div>
       )}
 
-      <div className="card" style={{ padding: '24px', maxWidth: '480px' }}>
-        <form onSubmit={handleSubmit}>
+      <div className="card" style={{ padding: '24px', maxWidth: '560px' }}>
+        <form onSubmit={step === 'form' ? handleVerify : handleSubmit}>
           <div style={{ marginBottom: '16px' }}>
             <label htmlFor="userId" style={{ display: 'block', marginBottom: '6px', color: '#d1d5db', fontSize: '14px' }}>
               ID de usuario
@@ -66,7 +104,7 @@ export default function AssignGroup() {
               type="text"
               className="input"
               value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+              onChange={(e) => { setUserId(e.target.value); resetToForm() }}
               placeholder="Ej: user-42"
               style={{ width: '100%' }}
             />
@@ -80,7 +118,7 @@ export default function AssignGroup() {
               id="groupId"
               className="input"
               value={groupId}
-              onChange={(e) => setGroupId(e.target.value)}
+              onChange={(e) => { setGroupId(e.target.value); resetToForm() }}
               style={{ width: '100%' }}
             >
               <option value="">— Seleccionar grupo —</option>
@@ -104,14 +142,66 @@ export default function AssignGroup() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-            style={{ width: '100%' }}
-          >
-            {loading ? 'Asignando…' : 'Asignar grupo'}
-          </button>
+          {/* Step 1: Verify button */}
+          {step === 'form' && (
+            <button
+              type="submit"
+              className="btn btn-secondary"
+              disabled={!userId.trim() || !groupId || validating}
+              style={{ width: '100%' }}
+            >
+              {validating ? 'Verificando separación…' : 'Verificar separación'}
+            </button>
+          )}
+
+          {/* Step 2: Validation result + assign */}
+          {step === 'review' && validationResult && (
+            <div>
+              {/* No conflicts: green panel */}
+              {conflicts.length === 0 && (
+                <div style={{
+                  padding: '12px',
+                  backgroundColor: '#064e3b',
+                  border: '1px solid #10b981',
+                  borderRadius: '4px',
+                  color: '#6ee7b7',
+                  marginBottom: '16px',
+                  fontSize: '14px',
+                }}>
+                  Sin conflictos de separación. Puede proceder.
+                </div>
+              )}
+
+              {/* Conflicts: show validator */}
+              {conflicts.length > 0 && (
+                <div style={{ marginBottom: '16px' }}>
+                  <SeparationRulesValidator
+                    conflicts={conflicts}
+                    onProceedAnyway={allSoft ? () => setSoftConfirmed(true) : undefined}
+                  />
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={resetToForm}
+                  style={{ flex: 1 }}
+                >
+                  Volver
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={!canSubmit || loading}
+                  style={{ flex: 2 }}
+                >
+                  {loading ? 'Asignando…' : 'Asignar grupo'}
+                </button>
+              </div>
+            </div>
+          )}
         </form>
       </div>
     </div>
