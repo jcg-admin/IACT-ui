@@ -52,11 +52,11 @@ T-015                    (Block V independiente)
 > Implementar FA-06: `DELETE /{id}/block-archive/`.
 > Commit al completar T-010.
 
-- [ ] [T-006] `adminGateway.js` — agregar método `unblockAutoArchive(id)` → `DELETE /api/admin/menu-items/${id}/block-archive/`
-- [ ] [T-007] `admin.js` — agregar thunk `unblockAutoArchive({ id })` que llama `adminService.unblockAutoArchive(id)` + reducers `.fulfilled` (actualiza item en menuItems) y `.rejected`; exportar thunk
-- [ ] [T-008] `MenuItemCatalog.jsx` — en tab lifecycle, para items con `status === 'DEPRECATED'` agregar botón "Desbloquear archivado" visible solo cuando `item.block_auto_archive === true`; handler `handleUnblockArchive(itemId)` despacha el thunk con `.unwrap()`, éxito muestra feedback, error en `transitionErrors[item.id]`
-- [ ] [T-009] `mockInterceptor.js` — agregar handler `DELETE` para `/block-archive/` que retorna 200 con item actualizado (`block_auto_archive=false`, `block_reason=''`, `block_set_by=null`, `block_set_at=null`)
-- [ ] [T-010] `MenuItemCatalogPage.test.jsx` — agregar suite "unblock-archive": botón visible solo cuando `block_auto_archive=true`; despacha `unblockAutoArchive({ id })`; error muestra `role="alert"` en la fila
+- [x] [T-006] `adminGateway.js` — agregar método `unblockAutoArchive(id)` → `DELETE /api/admin/menu-items/${id}/block-archive/`
+- [x] [T-007] `admin.js` — agregar thunk `unblockAutoArchive({ id })` que llama `adminService.unblockAutoArchive(id)` + reducers `.fulfilled` (actualiza item en menuItems) y `.rejected`; exportar thunk
+- [x] [T-008] `MenuItemCatalog.jsx` — en tab lifecycle, para items con `status === 'DEPRECATED'` agregar botón "Desbloquear archivado" visible solo cuando `item.block_auto_archive === true`; handler `handleUnblockArchive(itemId)` despacha el thunk con `.unwrap()`, éxito muestra feedback, error en `transitionErrors[item.id]`
+- [x] [T-009] `mockInterceptor.js` — agregar handler `DELETE` para `/block-archive/` que retorna 200 con item actualizado (`block_auto_archive=false`, `block_reason=''`, `block_set_by=null`, `block_set_at=null`)
+- [x] [T-010] `MenuItemCatalogPage.test.jsx` — agregar suite "unblock-archive": botón visible solo cuando `block_auto_archive=true`; despacha `unblockAutoArchive({ id })`; error muestra `role="alert"` en la fila
 
 ---
 

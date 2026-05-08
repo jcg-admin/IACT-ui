@@ -4,10 +4,11 @@ import { MemoryRouter } from 'react-router-dom'
 import MenuItemCatalog from '../MenuItemCatalog'
 
 const ITEMS = [
-  { id: 1, label: 'Dashboard',    icon: 'grid-alt', route_path: '/dashboard', display_order: 1,  function_codename: 'reports:view', parent: null, status: 'ACTIVE',     is_critical: false },
-  { id: 2, label: 'Beta Feature', icon: 'flask',    route_path: '/beta',       display_order: 9,  function_codename: 'reports:view', parent: null, status: 'DRAFT',      is_critical: false },
-  { id: 3, label: 'Legacy View',  icon: 'archive',  route_path: '/legacy',     display_order: 10, function_codename: 'reports:view', parent: null, status: 'DEPRECATED', is_critical: false },
-  { id: 4, label: 'Old Module',   icon: 'box',      route_path: '/old',        display_order: 20, function_codename: 'reports:view', parent: null, status: 'ARCHIVED',   is_critical: false },
+  { id: 1, label: 'Dashboard',    icon: 'grid-alt', route_path: '/dashboard', display_order: 1,  function_codename: 'reports:view', parent: null, status: 'ACTIVE',     is_critical: false, block_auto_archive: false },
+  { id: 2, label: 'Beta Feature', icon: 'flask',    route_path: '/beta',       display_order: 9,  function_codename: 'reports:view', parent: null, status: 'DRAFT',      is_critical: false, block_auto_archive: false },
+  { id: 3, label: 'Legacy View',  icon: 'archive',  route_path: '/legacy',     display_order: 10, function_codename: 'reports:view', parent: null, status: 'DEPRECATED', is_critical: false, block_auto_archive: false },
+  { id: 4, label: 'Old Module',   icon: 'box',      route_path: '/old',        display_order: 20, function_codename: 'reports:view', parent: null, status: 'ARCHIVED',   is_critical: false, block_auto_archive: false },
+  { id: 5, label: 'Blocked Item', icon: 'lock',     route_path: '/blocked',    display_order: 11, function_codename: 'reports:view', parent: null, status: 'DEPRECATED', is_critical: false, block_auto_archive: true, block_reason: 'Auditoria pendiente Q3 bloqueo' },
 ]
 
 const mockDispatch = jest.fn()
@@ -32,6 +33,7 @@ jest.mock('../../../redux/slices/admin', () => ({
   archiveMenuItem: jest.fn((id) => ({ type: 'admin/archiveMenuItem', payload: id })),
   bulkReorderMenuItems: jest.fn((items) => ({ type: 'admin/bulkReorderMenuItems', payload: items })),
   blockAutoArchive: jest.fn((args) => ({ type: 'admin/blockAutoArchive', payload: args })),
+  unblockAutoArchive: jest.fn((id) => ({ type: 'admin/unblockAutoArchive', payload: id })),
   selectMenuItems: (s) => s.admin.menuItems,
   selectAdminLoading: (s) => s.admin.loading,
 }))
@@ -262,13 +264,14 @@ describe('MenuItemCatalog — block-archive (UC-ADM-05 CA-07)', () => {
     mockAdmin.blockAutoArchive.mockClear()
   })
 
-  it('shows Bloquear archivado button only for DEPRECATED items', () => {
+  it('shows Bloquear archivado only for DEPRECATED with block_auto_archive=false', () => {
     wrapper(<MenuItemCatalog />)
     fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
     expect(screen.getByLabelText('Bloquear archivado de Legacy View')).toBeInTheDocument()
     expect(screen.queryByLabelText('Bloquear archivado de Dashboard')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Bloquear archivado de Beta Feature')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Bloquear archivado de Old Module')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Bloquear archivado de Blocked Item')).not.toBeInTheDocument()
   })
 
   it('opens modal when Bloquear archivado is clicked', () => {
@@ -338,5 +341,50 @@ describe('MenuItemCatalog — block-archive (UC-ADM-05 CA-07)', () => {
     fireEvent.click(screen.getByText('Cancelar'))
     expect(screen.queryByRole('dialog', { name: 'Bloquear archivado automático' })).not.toBeInTheDocument()
     expect(mockAdmin.blockAutoArchive).not.toHaveBeenCalled()
+  })
+})
+
+describe('MenuItemCatalog — unblock-archive (UC-ADM-05 FA-06 GAP-02)', () => {
+  beforeEach(() => {
+    mockDispatch.mockClear()
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.resolve({ id: action.payload, block_auto_archive: false }),
+    }))
+    mockAdmin.unblockAutoArchive.mockClear()
+  })
+
+  it('shows Desbloquear archivado button for DEPRECATED items with block_auto_archive=true', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    expect(screen.getByLabelText('Desbloquear archivado de Blocked Item')).toBeInTheDocument()
+  })
+
+  it('does not show Desbloquear archivado for DEPRECATED with block_auto_archive=false', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    expect(screen.queryByLabelText('Desbloquear archivado de Legacy View')).not.toBeInTheDocument()
+  })
+
+  it('dispatches unblockAutoArchive with correct id on click', async () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Desbloquear archivado de Blocked Item'))
+    await waitFor(() => {
+      expect(mockAdmin.unblockAutoArchive).toHaveBeenCalledWith(5)
+    })
+  })
+
+  it('shows error in row when unblockAutoArchive rejects', async () => {
+    mockDispatch.mockImplementation((action) => ({
+      ...action,
+      unwrap: () => Promise.reject({ message: 'Error al desbloquear el archivado' }),
+    }))
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
+    fireEvent.click(screen.getByLabelText('Desbloquear archivado de Blocked Item'))
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Error al desbloquear/i)
+    })
   })
 })

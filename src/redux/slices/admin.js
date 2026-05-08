@@ -307,6 +307,17 @@ export const blockAutoArchive = createAsyncThunk(
   }
 )
 
+export const unblockAutoArchive = createAsyncThunk(
+  'admin/unblockAutoArchive',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await adminService.unblockAutoArchive(id)
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
+    }
+  }
+)
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const adminSlice = createSlice({
@@ -543,6 +554,15 @@ const adminSlice = createSlice({
         if (idx !== -1) state.menuItems[idx] = updated
       })
       .addCase(blockAutoArchive.rejected, (state, action) => { state.error = action.payload })
+
+    // unblockAutoArchive
+    builder
+      .addCase(unblockAutoArchive.fulfilled, (state, action) => {
+        const updated = action.payload
+        const idx = state.menuItems.findIndex(i => i.id === updated.id)
+        if (idx !== -1) state.menuItems[idx] = updated
+      })
+      .addCase(unblockAutoArchive.rejected, (state, action) => { state.error = action.payload })
   },
 })
 

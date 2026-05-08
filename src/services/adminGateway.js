@@ -173,6 +173,10 @@ class AdminService {
       block_reason: blockReason,
     })
   }
+
+  async unblockAutoArchive(id) {
+    return apiService.delete(`/api/admin/menu-items/${id}/block-archive/`)
+  }
 }
 
 export const adminService = new AdminService()

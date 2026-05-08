@@ -283,6 +283,10 @@ class MockInterceptor {
     if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'POST') {
       return this._handleBlockAutoArchive(url, body)
     }
+    // ADMIN — UC-ADM-05 FA-06: desactivar block_auto_archive
+    if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'DELETE') {
+      return this._handleUnblockAutoArchive(url)
+    }
     // ADMIN — UC-ADM-05: endpoints de transición de lifecycle (ANTES del handler genérico)
     if (url.match(/\/api\/admin\/menu-items\/\d+\/publish\//) && method === 'POST') {
       return this._handleMenuItemPublish(url)
@@ -1878,6 +1882,21 @@ class MockInterceptor {
         block_reason: reason,
         block_set_by: 'demo',
         block_set_at: new Date().toISOString(),
+      },
+    }
+  }
+
+  _handleUnblockAutoArchive(url) {
+    const id = parseInt(url.match(/\/menu-items\/(\d+)\//)[1])
+    const item = this._menuItemsData().find(i => i.id === id) || { id }
+    return {
+      status: 200,
+      data: {
+        ...item,
+        block_auto_archive: false,
+        block_reason: '',
+        block_set_by: null,
+        block_set_at: null,
       },
     }
   }

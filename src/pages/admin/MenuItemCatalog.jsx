@@ -17,6 +17,7 @@ import {
   archiveMenuItem,
   bulkReorderMenuItems,
   blockAutoArchive,
+  unblockAutoArchive,
   selectMenuItems,
   selectAdminLoading,
 } from '../../redux/slices/admin'
@@ -145,6 +146,15 @@ export default function MenuItemCatalog() {
       showFeedback('Archivado bloqueado correctamente')
     } catch (err) {
       setBlockArchiveModal((m) => ({ ...m, error: err?.message || 'Error al bloquear el archivado' }))
+    }
+  }
+
+  const handleUnblockArchive = async (itemId) => {
+    try {
+      await dispatch(unblockAutoArchive(itemId)).unwrap()
+      showFeedback('Bloqueo de archivado desactivado')
+    } catch (err) {
+      setTransitionErrors((e) => ({ ...e, [itemId]: err?.message || 'Error al desbloquear el archivado' }))
     }
   }
 
@@ -330,7 +340,7 @@ export default function MenuItemCatalog() {
                           → {STATUS_LABELS[t]}
                         </button>
                       ))}
-                      {item.status === 'DEPRECATED' && (
+                      {item.status === 'DEPRECATED' && !item.block_auto_archive && (
                         <button
                           className="btn btn-sm btn-outline"
                           onClick={() =>
@@ -339,6 +349,15 @@ export default function MenuItemCatalog() {
                           aria-label={`Bloquear archivado de ${item.label}`}
                         >
                           Bloquear archivado
+                        </button>
+                      )}
+                      {item.status === 'DEPRECATED' && item.block_auto_archive && (
+                        <button
+                          className="btn btn-sm btn-outline"
+                          onClick={() => handleUnblockArchive(item.id)}
+                          aria-label={`Desbloquear archivado de ${item.label}`}
+                        >
+                          Desbloquear archivado
                         </button>
                       )}
                       {transitions.length === 0 && item.status !== 'DEPRECATED' && (
