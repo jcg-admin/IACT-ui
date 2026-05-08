@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import HistoricalReportsPage from '../HistoricalReportsPage'
+import HistoricalReports from '../HistoricalReports'
 
 const MOCK_ROW = {
   periodo: 'last_7d',
@@ -60,93 +60,93 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('HistoricalReportsPage — estructura base', () => {
+describe('HistoricalReports — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ReportTable', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
   })
 })
 
-describe('HistoricalReportsPage — selector de periodo (uc-rpt-03)', () => {
+describe('HistoricalReports — selector de periodo (uc-rpt-03)', () => {
   it('renderiza selector de periodo', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByLabelText(/periodo/i)).toBeInTheDocument()
   })
 
   it('tiene opción last_24h', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('option', { name: /24h/i })).toBeInTheDocument()
   })
 
   it('tiene opción last_7d', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('option', { name: /7.?d/i })).toBeInTheDocument()
   })
 
   it('tiene opción last_30d', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('option', { name: /30.?d/i })).toBeInTheDocument()
   })
 
   it('tiene opción year-to-date', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('option', { name: /year.to.date|año.en.curso/i })).toBeInTheDocument()
   })
 })
 
-describe('HistoricalReportsPage — filtro de segmento', () => {
+describe('HistoricalReports — filtro de segmento', () => {
   it('renderiza selector de segmento', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByLabelText(/segmento/i)).toBeInTheDocument()
   })
 
   it('tiene opción Nacional', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('option', { name: /nacional/i })).toBeInTheDocument()
   })
 })
 
-describe('HistoricalReportsPage — columnas del schema', () => {
+describe('HistoricalReports — columnas del schema', () => {
   it('pasa columna periodo al ReportTable', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByTestId('col-periodo')).toBeInTheDocument()
   })
 
   it('pasa columna total_llamadas al ReportTable', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByTestId('col-total_llamadas')).toBeInTheDocument()
   })
 })
 
-describe('HistoricalReportsPage — renderiza filas del servicio', () => {
+describe('HistoricalReports — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsService').default
     svc.getReportHistory.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })
 })
 
-describe('HistoricalReportsPage — SavedFiltersPanel (uc-rpt-10)', () => {
+describe('HistoricalReports — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders SavedFiltersPanel', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByTestId('saved-filters-panel')).toBeInTheDocument()
   })
 
   it('renders Guardar vista button', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
   })
 })
 
-describe('HistoricalReportsPage — Compartir (uc-rpt-11)', () => {
+describe('HistoricalReports — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
-    wrapper(<HistoricalReportsPage />)
+    wrapper(<HistoricalReports />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import ETLAvailabilityPage from '../ETLAvailabilityPage'
+import ETLAvailability from '../ETLAvailability'
 
 const mockDispatch = jest.fn()
 const AVAILABILITY_DATA = [
@@ -29,10 +29,10 @@ jest.mock('../../../redux/slices/logsSlice', () => ({
 import { fetchETLAvailability } from '../../../redux/slices/logsSlice'
 
 function wrap() {
-  return render(<MemoryRouter><ETLAvailabilityPage /></MemoryRouter>)
+  return render(<MemoryRouter><ETLAvailability /></MemoryRouter>)
 }
 
-describe('ETLAvailabilityPage — uc-pip-03', () => {
+describe('ETLAvailability — uc-pip-03', () => {
   beforeEach(() => { mockDispatch.mockClear(); fetchETLAvailability.mockClear() })
 
   it('renders page title', () => {

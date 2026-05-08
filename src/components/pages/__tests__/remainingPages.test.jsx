@@ -98,18 +98,18 @@ describe('UserManagement page', () => {
   })
 })
 
-describe('AlertsPage', () => {
+describe('Alerts', () => {
   it('renders without crashing', () => {
-    const AlertsPage = require('../Alerts/AlertsPage').default
-    const { container } = wrap(<AlertsPage />)
+    const Alerts = require('../Alerts/Alerts').default
+    const { container } = wrap(<Alerts />)
     expect(container.firstChild).not.toBeNull()
   })
 })
 
-describe('AccessPage', () => {
+describe('Access', () => {
   it('renders permissions table', () => {
-    const AccessPage = require('../Access/AccessPage').default
-    wrap(<AccessPage />)
+    const Access = require('../Access/Access').default
+    wrap(<Access />)
     expect(screen.getByTestId('permissions-table')).toBeInTheDocument()
   })
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import PerformanceMetricsPage from '../PerformanceMetricsPage'
+import PerformanceMetrics from '../PerformanceMetrics'
 
 const METRICS = {
   metrics: [
@@ -28,22 +28,22 @@ jest.mock('../../../redux/slices/logsSlice', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('PerformanceMetricsPage', () => {
+describe('PerformanceMetrics', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<PerformanceMetricsPage />)
+    wrapper(<PerformanceMetrics />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders metric names', () => {
-    wrapper(<PerformanceMetricsPage />)
+    wrapper(<PerformanceMetrics />)
     expect(screen.getByText('CPU Usage')).toBeInTheDocument()
     expect(screen.getByText('Memory')).toBeInTheDocument()
   })
 
   it('dispatches fetchPerformanceMetrics on mount', () => {
-    wrapper(<PerformanceMetricsPage />)
+    wrapper(<PerformanceMetrics />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 
@@ -51,7 +51,7 @@ describe('PerformanceMetricsPage', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({ logs: { loading: false, performanceMetrics: null, logs: [], searchResults: [], systemStatus: null } })
     )
-    wrapper(<PerformanceMetricsPage />)
+    wrapper(<PerformanceMetrics />)
     expect(document.body).toBeTruthy()
   })
 })

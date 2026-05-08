@@ -92,10 +92,10 @@ function wrap(ui, store = buildStore()) {
   return render(<Provider store={store}><MemoryRouter>{ui}</MemoryRouter></Provider>)
 }
 
-describe('LoginPage', () => {
+describe('Login', () => {
   let LoginPage
   beforeAll(() => {
-    LoginPage = require('../LoginPage').default
+    LoginPage = require('../Login').default
   })
 
   it('renders IACT Dashboard heading', () => {
@@ -175,10 +175,10 @@ describe('Dashboard', () => {
   })
 })
 
-describe('DashboardPage', () => {
+describe('DashboardMain', () => {
   let DashboardPage
   beforeAll(() => {
-    DashboardPage = require('../DashboardPage').default
+    DashboardPage = require('../DashboardMain').default
   })
 
   it('renders without crashing', () => {

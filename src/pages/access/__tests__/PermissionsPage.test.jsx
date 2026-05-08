@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import PermissionsPage from '../PermissionsPage';
+import Permissions from '../Permissions';
 
 const PERMISSIONS = [
     { assignment_id: 42, code: 'view_audit_logs', name: 'View Audit', description: '', category: 'AUDIT', assigned_at: '2026-01-01', expires_at: null },
@@ -31,12 +31,12 @@ import { revokeFunction } from '../../../redux/slices/accessSlice';
 function renderPage() {
     return render(
         <MemoryRouter>
-            <PermissionsPage />
+            <Permissions />
         </MemoryRouter>
     );
 }
 
-describe('PermissionsPage — revoke flow', () => {
+describe('Permissions — revoke flow', () => {
     beforeEach(() => {
         mockDispatch.mockClear();
         revokeFunction.mockClear();

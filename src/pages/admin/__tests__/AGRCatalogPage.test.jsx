@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import AGRCatalogPage from '../AGRCatalogPage'
+import AGRCatalog from '../AGRCatalog'
 
 const AGRS = [
   { id: 1, name: 'AGR Auditores', description: 'Grupo auditores del sistema', active: true },
@@ -32,27 +32,27 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('AGRCatalogPage', () => {
+describe('AGRCatalog', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<AGRCatalogPage />)
+    wrapper(<AGRCatalog />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders AGR list', () => {
-    wrapper(<AGRCatalogPage />)
+    wrapper(<AGRCatalog />)
     expect(screen.getByText('AGR Auditores')).toBeInTheDocument()
     expect(screen.getByText('AGR Supervisores')).toBeInTheDocument()
   })
 
   it('dispatches fetchAGRCatalog on mount', () => {
-    wrapper(<AGRCatalogPage />)
+    wrapper(<AGRCatalog />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 })
 
-describe('AGRCatalogPage — codename snake_case validation (G-B2)', () => {
+describe('AGRCatalog — codename snake_case validation (G-B2)', () => {
   const { createAGR } = require('../../../redux/slices/adminSlice')
 
   beforeEach(() => {
@@ -61,7 +61,7 @@ describe('AGRCatalogPage — codename snake_case validation (G-B2)', () => {
   })
 
   function openCreateForm() {
-    wrapper(<AGRCatalogPage />)
+    wrapper(<AGRCatalog />)
     fireEvent.click(screen.getByRole('button', { name: /nuevo agr/i }))
   }
 

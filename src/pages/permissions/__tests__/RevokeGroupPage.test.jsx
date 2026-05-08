@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import RevokeGroupPage from '../RevokeGroupPage'
+import RevokeGroup from '../RevokeGroup'
 
 const mockDispatch = jest.fn()
 const MOCK_GROUPS = [
@@ -43,44 +43,44 @@ beforeEach(() => {
   revokeGroupFromUser.mockClear()
 })
 
-describe('RevokeGroupPage — estructura base', () => {
+describe('RevokeGroup — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders campo userId', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     expect(screen.getByLabelText(/usuario/i)).toBeInTheDocument()
   })
 
   it('renders selector de grupo', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     expect(screen.getByLabelText(/grupo/i)).toBeInTheDocument()
   })
 
   it('renders textarea revoke_reason', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     expect(screen.getByLabelText(/motivo.*revocación|razón.*revoc/i)).toBeInTheDocument()
   })
 
   it('renders botón Revocar', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     expect(screen.getByRole('button', { name: /revocar/i })).toBeInTheDocument()
   })
 })
 
-describe('RevokeGroupPage — grupos disponibles', () => {
+describe('RevokeGroup — grupos disponibles', () => {
   it('muestra los grupos del store en el selector', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     expect(screen.getByRole('option', { name: /Supervisor/i })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: /Agente/i })).toBeInTheDocument()
   })
 })
 
-describe('RevokeGroupPage — validación revoke_reason (uc-perm-02)', () => {
+describe('RevokeGroup — validación revoke_reason (uc-perm-02)', () => {
   it('no despacha si revoke_reason está vacío', () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     fireEvent.change(screen.getByLabelText(/usuario/i), { target: { value: 'user-42' } })
     fireEvent.change(screen.getByLabelText(/grupo/i), { target: { value: '1' } })
     fireEvent.click(screen.getByRole('button', { name: /revocar/i }))
@@ -88,7 +88,7 @@ describe('RevokeGroupPage — validación revoke_reason (uc-perm-02)', () => {
   })
 
   it('despacha revokeGroupFromUser con userId, groupId y revoke_reason', async () => {
-    wrapper(<RevokeGroupPage />)
+    wrapper(<RevokeGroup />)
     fireEvent.change(screen.getByLabelText(/usuario/i), { target: { value: 'user-42' } })
     fireEvent.change(screen.getByLabelText(/grupo/i), { target: { value: '1' } })
     fireEvent.change(screen.getByLabelText(/motivo.*revocación|razón.*revoc/i), {

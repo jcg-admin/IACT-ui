@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import FunctionCatalogPage from '../FunctionCatalogPage'
+import FunctionCatalog from '../FunctionCatalog'
 
 const FUNCTIONS = [
   { id: 1, codename: 'audit:view', name: 'Ver logs', description: 'Ver logs del sistema', domain: 'audit', active: true },
@@ -32,32 +32,32 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('FunctionCatalogPage', () => {
+describe('FunctionCatalog', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<FunctionCatalogPage />)
+    wrapper(<FunctionCatalog />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders function list', () => {
-    wrapper(<FunctionCatalogPage />)
+    wrapper(<FunctionCatalog />)
     expect(screen.getByText('Ver logs')).toBeInTheDocument()
     expect(screen.getByText('Ver usuarios')).toBeInTheDocument()
   })
 
   it('renders codename values in table', () => {
-    wrapper(<FunctionCatalogPage />)
+    wrapper(<FunctionCatalog />)
     expect(screen.getByText('audit:view')).toBeInTheDocument()
   })
 
   it('dispatches fetchFunctions on mount', () => {
-    wrapper(<FunctionCatalogPage />)
+    wrapper(<FunctionCatalog />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 })
 
-describe('FunctionCatalogPage — CODENAME_REGEX (G-B1)', () => {
+describe('FunctionCatalog — CODENAME_REGEX (G-B1)', () => {
   const { createFunction } = require('../../../redux/slices/adminSlice')
 
   beforeEach(() => {
@@ -66,7 +66,7 @@ describe('FunctionCatalogPage — CODENAME_REGEX (G-B1)', () => {
   })
 
   function openCreateForm() {
-    wrapper(<FunctionCatalogPage />)
+    wrapper(<FunctionCatalog />)
     fireEvent.click(screen.getByRole('button', { name: /nueva función/i }))
   }
 

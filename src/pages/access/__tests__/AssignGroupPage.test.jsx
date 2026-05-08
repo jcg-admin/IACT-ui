@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import AssignGroupPage from '../AssignGroupPage'
+import AssignGroup from '../AssignGroup'
 
 const MOCK_GROUPS = [
   { id: 1, name: 'Supervisors' },
@@ -38,10 +38,10 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
 import { assignGroupToUser } from '../../../redux/slices/accessSlice'
 
 function wrap() {
-  return render(<MemoryRouter><AssignGroupPage /></MemoryRouter>)
+  return render(<MemoryRouter><AssignGroup /></MemoryRouter>)
 }
 
-describe('AssignGroupPage — uc-acc-04 / uc-perm-01', () => {
+describe('AssignGroup — uc-acc-04 / uc-perm-01', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     assignGroupToUser.mockClear()

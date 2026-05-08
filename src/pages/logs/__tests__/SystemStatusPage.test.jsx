@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import SystemStatusPage from '../SystemStatusPage'
+import SystemStatus from '../SystemStatus'
 
 const SYSTEM_STATUS = {
   services: [
@@ -30,23 +30,23 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('SystemStatusPage', () => {
+describe('SystemStatus', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<SystemStatusPage />)
+    wrapper(<SystemStatus />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders service list', () => {
-    wrapper(<SystemStatusPage />)
+    wrapper(<SystemStatus />)
     expect(screen.getByText('API Gateway')).toBeInTheDocument()
     expect(screen.getByText('Database')).toBeInTheDocument()
     expect(screen.getByText('Redis')).toBeInTheDocument()
   })
 
   it('dispatches fetchSystemStatus on mount', () => {
-    wrapper(<SystemStatusPage />)
+    wrapper(<SystemStatus />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 
@@ -54,7 +54,7 @@ describe('SystemStatusPage', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({ logs: { loading: false, error: null, logs: [], searchResults: [], systemStatus: null } })
     )
-    wrapper(<SystemStatusPage />)
+    wrapper(<SystemStatus />)
     expect(document.body).toBeTruthy()
   })
 })

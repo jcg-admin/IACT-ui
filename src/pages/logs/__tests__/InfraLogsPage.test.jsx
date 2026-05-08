@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import InfraLogsPage from '../InfraLogsPage'
+import InfraLogs from '../InfraLogs'
 
 const LOGS = [
   { id: 1, component: 'server', level: 'ERROR', message: 'Disk full', timestamp: '2026-05-05T10:00:00Z' },
@@ -25,28 +25,28 @@ jest.mock('../../../redux/slices/logsSlice', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('InfraLogsPage', () => {
+describe('InfraLogs', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<InfraLogsPage />)
+    wrapper(<InfraLogs />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders infra log entries', () => {
-    wrapper(<InfraLogsPage />)
+    wrapper(<InfraLogs />)
     expect(screen.getByText('Disk full')).toBeInTheDocument()
     expect(screen.getByText('High latency')).toBeInTheDocument()
   })
 
   it('renders component column values', () => {
-    wrapper(<InfraLogsPage />)
+    wrapper(<InfraLogs />)
     expect(screen.getByText('server')).toBeInTheDocument()
     expect(screen.getByText('network')).toBeInTheDocument()
   })
 
   it('dispatches fetchInfraLogs on mount', () => {
-    wrapper(<InfraLogsPage />)
+    wrapper(<InfraLogs />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 
@@ -54,7 +54,7 @@ describe('InfraLogsPage', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({ logs: { loading: false, error: null, infraLogs: [], logs: [], searchResults: [], systemStatus: null } })
     )
-    wrapper(<InfraLogsPage />)
+    wrapper(<InfraLogs />)
     expect(screen.getByText(/no hay logs de infraestructura/i)).toBeInTheDocument()
   })
 })

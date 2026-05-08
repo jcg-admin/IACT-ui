@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import MainLayout from '@components/MainLayout';
-import HomePage from '../pages/HomePage';
+import Home from '../pages/Home';
 import { useAppConfig } from '@hooks/useAppConfig';
 import { useHealthStatus } from '@hooks/useHealthStatus';
 import { useMockMetrics } from '@hooks/useMockMetrics';
@@ -40,7 +40,7 @@ function App() {
 
   return (
     <MainLayout mockNotice={mockNotice} backendStatus={backendStatus} mockSummary={mockSummary}>
-      <HomePage />
+      <Home />
     </MainLayout>
   );
 }

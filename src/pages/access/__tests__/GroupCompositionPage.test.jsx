@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import GroupCompositionPage from '../GroupCompositionPage'
+import GroupComposition from '../GroupComposition'
 
 const GROUPS = [
   { id: 1, name: 'Admins', description: '', active: true },
@@ -48,28 +48,28 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('GroupCompositionPage', () => {
+describe('GroupComposition', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
   })
 
   it('renders page heading', () => {
-    wrapper(<GroupCompositionPage />)
+    wrapper(<GroupComposition />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders group selector with available groups', () => {
-    wrapper(<GroupCompositionPage />)
+    wrapper(<GroupComposition />)
     expect(screen.getByText('Admins')).toBeInTheDocument()
   })
 
   it('dispatches fetchAllFunctions on mount', () => {
-    wrapper(<GroupCompositionPage />)
+    wrapper(<GroupComposition />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 
   it('shows no functions message when group has no functions assigned', () => {
-    wrapper(<GroupCompositionPage />)
+    wrapper(<GroupComposition />)
     const emptyMsg = screen.queryByText(/sin funciones|no hay funciones|selecciona un grupo/i)
     expect(emptyMsg || document.body).toBeTruthy()
   })

@@ -72,12 +72,12 @@ describe('SessionWarning', () => {
   })
 })
 
-describe('SettingsPage', () => {
+describe('Settings', () => {
   it('renders Configuración heading', () => {
-    const SettingsPage = require('../Settings/SettingsPage').default
+    const Settings = require('../Settings/Settings').default
     render(
       <ToastProvider>
-        <SettingsPage />
+        <Settings />
       </ToastProvider>
     )
     expect(screen.getByText('Configuración')).toBeInTheDocument()

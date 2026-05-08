@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import UniqueClientsReportPage from '../UniqueClientsReportPage'
+import UniqueClientsReport from '../UniqueClientsReport'
 
 const MOCK_ROWS = [
   { trimestre: 'Q01_25', segmento: 'Nacional_B', clientes_unicos: 3056531 },
@@ -56,83 +56,83 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('UniqueClientsReportPage — estructura base', () => {
+describe('UniqueClientsReport — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ReportTable', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
   })
 })
 
-describe('UniqueClientsReportPage — columnas del schema real', () => {
+describe('UniqueClientsReport — columnas del schema real', () => {
   it('pasa columna trimestre al ReportTable', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByTestId('col-trimestre')).toBeInTheDocument()
   })
 
   it('pasa columna segmento al ReportTable', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByTestId('col-segmento')).toBeInTheDocument()
   })
 
   it('pasa columna clientes_unicos al ReportTable', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByTestId('col-clientes_unicos')).toBeInTheDocument()
   })
 
   it('NO pasa columnas del schema obsoleto', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.queryByTestId('col-client_id')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-calls')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-first_call')).not.toBeInTheDocument()
   })
 })
 
-describe('UniqueClientsReportPage — filtro de trimestre', () => {
+describe('UniqueClientsReport — filtro de trimestre', () => {
   it('renderiza selector de trimestre', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByLabelText(/trimestre/i)).toBeInTheDocument()
   })
 
   it('el selector tiene opción Q01_25', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByRole('option', { name: 'Q01_25' })).toBeInTheDocument()
   })
 
   it('el selector tiene opción para "todos" (valor vacío)', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByRole('option', { name: /todos/i })).toBeInTheDocument()
   })
 })
 
-describe('UniqueClientsReportPage — renderiza filas del servicio', () => {
+describe('UniqueClientsReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsService').default
     svc.getUniqueClients.mockResolvedValueOnce(MOCK_ROWS)
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })
 })
 
-describe('UniqueClientsReportPage — SavedFiltersPanel (uc-rpt-10)', () => {
+describe('UniqueClientsReport — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders SavedFiltersPanel', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByTestId('saved-filters-panel')).toBeInTheDocument()
   })
 
   it('renders Guardar vista button', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
   })
 })
 
-describe('UniqueClientsReportPage — Compartir (uc-rpt-11)', () => {
+describe('UniqueClientsReport — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
-    wrapper(<UniqueClientsReportPage />)
+    wrapper(<UniqueClientsReport />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

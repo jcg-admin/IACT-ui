@@ -39,55 +39,55 @@ function wrap(ui, store = buildStore()) {
 
 // ── AuditPage ────────────────────────────────────────────────────────────────
 
-import AuditPage from '../AuditPage'
+import Audit from '../Audit'
 
-describe('AuditPage', () => {
+describe('Audit', () => {
   it('renders page title', () => {
-    wrap(<AuditPage />)
+    wrap(<Audit />)
     expect(screen.getByText('Auditoria del Sistema')).toBeInTheDocument()
   })
 
   it('dispatches fetchAuditLogs on mount', () => {
     const { fetchAuditLogs } = require('../../../redux/slices/auditSlice')
-    wrap(<AuditPage />)
+    wrap(<Audit />)
     expect(fetchAuditLogs).toHaveBeenCalled()
   })
 })
 
 // ── AuditSearchPage ───────────────────────────────────────────────────────────
 
-import AuditSearchPage from '../AuditSearchPage'
+import AuditSearch from '../AuditSearch'
 
-describe('AuditSearchPage', () => {
+describe('AuditSearch', () => {
   it('renders page title', () => {
-    wrap(<AuditSearchPage />)
+    wrap(<AuditSearch />)
     expect(screen.getByText('Búsqueda de Auditoria')).toBeInTheDocument()
   })
 
   it('renders search input', () => {
-    wrap(<AuditSearchPage />)
+    wrap(<AuditSearch />)
     expect(screen.getAllByRole('textbox').length).toBeGreaterThan(0)
   })
 })
 
 // ── ComplianceReportPage ──────────────────────────────────────────────────────
 
-import ComplianceReportPage from '../ComplianceReportPage'
+import ComplianceReport from '../ComplianceReport'
 
-describe('ComplianceReportPage', () => {
+describe('ComplianceReport', () => {
   it('renders page title', () => {
-    wrap(<ComplianceReportPage />)
+    wrap(<ComplianceReport />)
     expect(screen.getByText('Reporte de Compliance')).toBeInTheDocument()
   })
 })
 
 // ── ExportPage ────────────────────────────────────────────────────────────────
 
-import ExportPage from '../ExportPage'
+import Export from '../Export'
 
-describe('ExportPage', () => {
+describe('Export', () => {
   it('renders page title', () => {
-    wrap(<ExportPage />)
+    wrap(<Export />)
     expect(screen.getByText('Exportar Logs')).toBeInTheDocument()
   })
 })

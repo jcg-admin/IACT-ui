@@ -38,50 +38,50 @@ function wrap(ui) {
   )
 }
 
-import AlertsPage from '../AlertsPage'
-import AlertHistoryPage from '../AlertHistoryPage'
-import AcknowledgeAlertsPage from '../../../components/pages/Alerts/AlertsPage'
-import AlertConfigPage from '../AlertConfigPage'
-import TemplatesPage from '../TemplatesPage'
-import SubscriptionsPage from '../SubscriptionsPage'
+import AlertsOverview from '../Alerts'
+import AlertHistory from '../AlertHistory'
+import AlertsHub from '../../../components/pages/Alerts/Alerts'
+import AlertConfig from '../AlertConfig'
+import Templates from '../Templates'
+import Subscriptions from '../Subscriptions'
 
-describe('AlertsPage', () => {
+describe('AlertsOverview', () => {
   it('renders page title', () => {
-    wrap(<AlertsPage />)
+    wrap(<AlertsOverview />)
     expect(screen.getByText('Centro de Alertas')).toBeInTheDocument()
   })
 })
 
-describe('AlertHistoryPage', () => {
+describe('AlertHistory', () => {
   it('renders page title', () => {
-    wrap(<AlertHistoryPage />)
+    wrap(<AlertHistory />)
     expect(screen.getByText('Historial de Alertas')).toBeInTheDocument()
   })
 })
 
-describe('AlertConfigPage', () => {
+describe('AlertConfig', () => {
   it('renders page title', () => {
-    wrap(<AlertConfigPage />)
+    wrap(<AlertConfig />)
     expect(screen.getByText('Configurar Alerta')).toBeInTheDocument()
   })
 })
 
-describe('TemplatesPage', () => {
+describe('Templates', () => {
   it('renders page title', () => {
-    wrap(<TemplatesPage />)
+    wrap(<Templates />)
     expect(screen.getByText('Plantillas de Alertas')).toBeInTheDocument()
   })
 })
 
-describe('SubscriptionsPage', () => {
+describe('Subscriptions', () => {
   it('renders page title', () => {
-    wrap(<SubscriptionsPage />)
+    wrap(<Subscriptions />)
     expect(screen.getByText('Mis Suscripciones')).toBeInTheDocument()
   })
 })
 
 // uc-alr-03: Reconocer alerta con confirmación
-describe('AcknowledgeAlertsPage — uc-alr-03', () => {
+describe('AlertsHub — uc-alr-03', () => {
   const ACTIVE_ALERT = {
     id: 'alr-1',
     title: 'CPU crítica',
@@ -108,20 +108,20 @@ describe('AcknowledgeAlertsPage — uc-alr-03', () => {
   }
 
   it('renders Confirmar button for active alerts', () => {
-    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     expect(screen.getByRole('button', { name: /confirmar alerta/i })).toBeInTheDocument()
   })
 
   it('does NOT dispatch updateAlert immediately when Confirmar is clicked', () => {
     const { updateAlert } = require('../../../redux/slices/alertsSlice')
     updateAlert.mockClear()
-    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
     expect(updateAlert).not.toHaveBeenCalled()
   })
 
   it('opens ConfirmModal when Confirmar is clicked', () => {
-    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
     expect(screen.getByRole('heading', { name: /reconocer alerta/i })).toBeInTheDocument()
   })
@@ -129,7 +129,7 @@ describe('AcknowledgeAlertsPage — uc-alr-03', () => {
   it('dispatches updateAlert with acknowledged status on confirm', () => {
     const { updateAlert } = require('../../../redux/slices/alertsSlice')
     updateAlert.mockClear()
-    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
     fireEvent.click(screen.getByRole('button', { name: /^confirmar$/i }))
     expect(updateAlert).toHaveBeenCalledWith({ id: 'alr-1', status: 'acknowledged' })
@@ -138,7 +138,7 @@ describe('AcknowledgeAlertsPage — uc-alr-03', () => {
   it('closes modal without dispatching when cancel is clicked', () => {
     const { updateAlert } = require('../../../redux/slices/alertsSlice')
     updateAlert.mockClear()
-    wrapAlerts(<AcknowledgeAlertsPage />, [ACTIVE_ALERT])
+    wrapAlerts(<AlertsHub />, [ACTIVE_ALERT])
     fireEvent.click(screen.getByRole('button', { name: /confirmar alerta/i }))
     fireEvent.click(screen.getByRole('button', { name: /cancelar/i }))
     expect(updateAlert).not.toHaveBeenCalled()

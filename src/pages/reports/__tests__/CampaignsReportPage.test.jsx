@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import CampaignsReportPage from '../CampaignsReportPage'
+import CampaignsReport from '../CampaignsReport'
 
 const MOCK_ROW = {
   trimestre: 'Q01_25',
@@ -59,36 +59,36 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('CampaignsReportPage — estructura base', () => {
+describe('CampaignsReport — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ReportTable', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
   })
 })
 
-describe('CampaignsReportPage — columnas del schema real', () => {
+describe('CampaignsReport — columnas del schema real', () => {
   it('pasa columna campana al ReportTable', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByTestId('col-campana')).toBeInTheDocument()
   })
 
   it('pasa columna total_llamadas al ReportTable', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByTestId('col-total_llamadas')).toBeInTheDocument()
   })
 
   it('pasa columna promedio_llamadas al ReportTable', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByTestId('col-promedio_llamadas')).toBeInTheDocument()
   })
 
   it('NO pasa columnas del schema obsoleto', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.queryByTestId('col-campaign')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-calls_made')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-contacts')).not.toBeInTheDocument()
@@ -96,52 +96,52 @@ describe('CampaignsReportPage — columnas del schema real', () => {
   })
 })
 
-describe('CampaignsReportPage — filtros reales (trimestre / segmento)', () => {
+describe('CampaignsReport — filtros reales (trimestre / segmento)', () => {
   it('renderiza selector de trimestre', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByLabelText(/trimestre/i)).toBeInTheDocument()
   })
 
   it('renderiza selector de segmento', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByLabelText(/segmento/i)).toBeInTheDocument()
   })
 
   it('el selector trimestre tiene opción Q01_25', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByRole('option', { name: 'Q01_25' })).toBeInTheDocument()
   })
 
   it('el selector segmento tiene opción Nacional', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByRole('option', { name: /nacional/i })).toBeInTheDocument()
   })
 })
 
-describe('CampaignsReportPage — renderiza filas del servicio', () => {
+describe('CampaignsReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsService').default
     svc.getCampaignsReport.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })
 })
 
-describe('CampaignsReportPage — SavedFiltersPanel (uc-rpt-10)', () => {
+describe('CampaignsReport — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders SavedFiltersPanel', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByTestId('saved-filters-panel')).toBeInTheDocument()
   })
 
   it('renders Guardar vista button', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
   })
 })
 
-describe('CampaignsReportPage — Compartir (uc-rpt-11)', () => {
+describe('CampaignsReport — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
-    wrapper(<CampaignsReportPage />)
+    wrapper(<CampaignsReport />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

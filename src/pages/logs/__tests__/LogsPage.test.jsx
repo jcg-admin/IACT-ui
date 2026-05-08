@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import LogsPage from '../LogsPage'
+import Logs from '../Logs'
 
 const LOGS = [
   { id: 1, level: 'ERROR', message: 'Connection timeout', service: 'api', timestamp: '2026-05-05T10:00:00Z' },
@@ -30,29 +30,29 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('LogsPage', () => {
+describe('Logs', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<LogsPage />)
+    wrapper(<Logs />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders log entries', () => {
-    wrapper(<LogsPage />)
+    wrapper(<Logs />)
     expect(screen.getByText('Connection timeout')).toBeInTheDocument()
     expect(screen.getByText('Request processed')).toBeInTheDocument()
   })
 
   it('renders level badges', () => {
-    wrapper(<LogsPage />)
+    wrapper(<Logs />)
     // getAllByText because 'ERROR'/'INFO' also appear in the filter select options
     expect(screen.getAllByText('ERROR').length).toBeGreaterThan(0)
     expect(screen.getAllByText('INFO').length).toBeGreaterThan(0)
   })
 
   it('dispatches fetchLogs on mount', () => {
-    wrapper(<LogsPage />)
+    wrapper(<Logs />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 
@@ -60,7 +60,7 @@ describe('LogsPage', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({ logs: { error: null, logs: [], searchResults: [], systemStatus: null }, loading: { contexts: { logs: 1 } } })
     )
-    wrapper(<LogsPage />)
+    wrapper(<Logs />)
     expect(document.querySelector('.spinner') || screen.queryByText(/cargando/i)).toBeTruthy()
   })
 })

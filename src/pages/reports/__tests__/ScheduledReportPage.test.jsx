@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
-import ScheduledReportPage from '../ScheduledReportPage'
+import ScheduledReport from '../ScheduledReport'
 
 const mockCreateScheduledReport = jest.fn(() => ({ type: 'reports/createScheduledReport' }))
 
@@ -44,17 +44,17 @@ function openForm() {
   fireEvent.click(screen.getByRole('button', { name: /nuevo/i }))
 }
 
-describe('ScheduledReportPage', () => {
+describe('ScheduledReport', () => {
   beforeEach(() => { mockCreateScheduledReport.mockClear() })
 
   it('renderiza el título de la página', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     expect(screen.getByRole('heading', { name: /reportes programados/i })).toBeInTheDocument()
   })
 
   it('despacha fetchScheduledReports al montar', () => {
     const { fetchScheduledReports } = require('@redux/slices/reportsSlice')
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     expect(fetchScheduledReports).toHaveBeenCalled()
   })
 
@@ -65,25 +65,25 @@ describe('ScheduledReportPage', () => {
         { id: '2', name: 'Weekly Summary', frequency: 'weekly', status: 'paused' },
       ],
     })
-    wrap(<ScheduledReportPage />, store)
+    wrap(<ScheduledReport />, store)
     expect(screen.getByText('Daily KPIs')).toBeInTheDocument()
     expect(screen.getByText('Weekly Summary')).toBeInTheDocument()
   })
 
   it('muestra estado vacío cuando no hay schedules', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     expect(screen.getByText(/no hay reportes programados/i)).toBeInTheDocument()
   })
 
   it('muestra el tab Crear al hacer click en "Nuevo"', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     expect(screen.getByLabelText(/nombre del reporte/i)).toBeInTheDocument()
   })
 
   // Campos nuevos del formulario (D-004)
   it('renderiza selector report_type con opciones', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     const select = screen.getByLabelText(/tipo de reporte/i)
     expect(select).toBeInTheDocument()
@@ -92,7 +92,7 @@ describe('ScheduledReportPage', () => {
   })
 
   it('renderiza selector period_relative con opciones', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     const select = screen.getByLabelText(/período/i)
     expect(select).toBeInTheDocument()
@@ -101,7 +101,7 @@ describe('ScheduledReportPage', () => {
   })
 
   it('renderiza selector format con opciones', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     const select = screen.getByLabelText(/formato/i)
     expect(select).toBeInTheDocument()
@@ -110,7 +110,7 @@ describe('ScheduledReportPage', () => {
   })
 
   it('muestra day_of_week solo cuando frequency = weekly', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     expect(screen.queryByLabelText(/día de la semana/i)).not.toBeInTheDocument()
     fireEvent.change(screen.getByLabelText(/frecuencia/i), { target: { value: 'weekly' } })
@@ -118,7 +118,7 @@ describe('ScheduledReportPage', () => {
   })
 
   it('muestra day_of_month solo cuando frequency = monthly', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     expect(screen.queryByLabelText(/día del mes/i)).not.toBeInTheDocument()
     fireEvent.change(screen.getByLabelText(/frecuencia/i), { target: { value: 'monthly' } })
@@ -126,7 +126,7 @@ describe('ScheduledReportPage', () => {
   })
 
   it('muestra cron_expr solo cuando frequency = cron', () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     expect(screen.queryByLabelText(/expresión cron/i)).not.toBeInTheDocument()
     fireEvent.change(screen.getByLabelText(/frecuencia/i), { target: { value: 'cron' } })
@@ -134,7 +134,7 @@ describe('ScheduledReportPage', () => {
   })
 
   it('dispatch incluye report_type, period_relative, format en el payload', async () => {
-    wrap(<ScheduledReportPage />)
+    wrap(<ScheduledReport />)
     openForm()
     fireEvent.change(screen.getByLabelText(/nombre del reporte/i), { target: { value: 'Test' } })
     fireEvent.change(screen.getByLabelText(/tipo de reporte/i), { target: { value: 'agents' } })
@@ -158,7 +158,7 @@ describe('ScheduledReportPage', () => {
     const store = buildStore({
       scheduledReports: [{ id: '1', name: 'Daily KPIs', frequency: 'daily', status: 'active' }],
     })
-    wrap(<ScheduledReportPage />, store)
+    wrap(<ScheduledReport />, store)
     fireEvent.click(screen.getByRole('button', { name: /pausar/i }))
     expect(pauseSchedule).toHaveBeenCalled()
   })
@@ -168,20 +168,20 @@ describe('ScheduledReportPage', () => {
     const store = buildStore({
       scheduledReports: [{ id: '1', name: 'Daily KPIs', frequency: 'daily', status: 'active' }],
     })
-    wrap(<ScheduledReportPage />, store)
+    wrap(<ScheduledReport />, store)
     fireEvent.click(screen.getByRole('button', { name: /eliminar/i }))
     expect(deleteSchedule).toHaveBeenCalled()
   })
 
   it('muestra indicador de loading', () => {
     const store = buildStore({ loading: true })
-    wrap(<ScheduledReportPage />, store)
+    wrap(<ScheduledReport />, store)
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it('muestra mensaje de error cuando existe', () => {
     const store = buildStore({ error: 'Error de red' })
-    wrap(<ScheduledReportPage />, store)
+    wrap(<ScheduledReport />, store)
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import LogExportPage from '../LogExportPage'
+import LogExport from '../LogExport'
 
 const mockDispatch = jest.fn()
 
@@ -24,28 +24,28 @@ jest.mock('../../../redux/slices/logsSlice', () => {
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('LogExportPage', () => {
+describe('LogExport', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<LogExportPage />)
+    wrapper(<LogExport />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders date inputs', () => {
-    wrapper(<LogExportPage />)
+    wrapper(<LogExport />)
     const inputs = document.querySelectorAll('input[type="date"]')
     expect(inputs.length).toBeGreaterThan(0)
   })
 
   it('renders format selector', () => {
-    wrapper(<LogExportPage />)
+    wrapper(<LogExport />)
     const selects = document.querySelectorAll('select')
     expect(selects.length).toBeGreaterThan(0)
   })
 
   it('renders export button', () => {
-    wrapper(<LogExportPage />)
+    wrapper(<LogExport />)
     expect(screen.getAllByRole('button').length).toBeGreaterThan(0)
   })
 })

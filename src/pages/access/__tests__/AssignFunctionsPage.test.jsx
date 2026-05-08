@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import AssignFunctionsPage from '../AssignFunctionsPage';
+import AssignFunctions from '../AssignFunctions';
 
 // Mock Redux hooks — avoids store/slice interop issues in page-level tests
 const mockDispatch = jest.fn();
@@ -57,12 +57,12 @@ import { assignFunction, revokeFunction, fetchUserAssignedFunctions } from '../.
 function renderPage() {
     return render(
         <MemoryRouter>
-            <AssignFunctionsPage />
+            <AssignFunctions />
         </MemoryRouter>
     );
 }
 
-describe('AssignFunctionsPage — catalogId dispatch invariant', () => {
+describe('AssignFunctions — catalogId dispatch invariant', () => {
     beforeEach(() => {
         mockDispatch.mockClear();
         assignFunction.mockClear();
@@ -102,7 +102,7 @@ describe('AssignFunctionsPage — catalogId dispatch invariant', () => {
 });
 
 // uc-acc-02: Revocar funciones de usuario
-describe('AssignFunctionsPage — Revocar tab (uc-acc-02)', () => {
+describe('AssignFunctions — Revocar tab (uc-acc-02)', () => {
     beforeEach(() => {
         mockDispatch.mockClear();
         revokeFunction.mockClear();

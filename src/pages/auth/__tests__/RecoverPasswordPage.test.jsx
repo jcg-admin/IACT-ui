@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import RecoverPasswordPage from '../RecoverPasswordPage'
+import RecoverPassword from '../RecoverPassword'
 
 const mockDispatch = jest.fn()
 
@@ -13,12 +13,12 @@ jest.mock('react-redux', () => ({
 function renderPage() {
   return render(
     <MemoryRouter>
-      <RecoverPasswordPage />
+      <RecoverPassword />
     </MemoryRouter>
   )
 }
 
-describe('RecoverPasswordPage', () => {
+describe('RecoverPassword', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
   })

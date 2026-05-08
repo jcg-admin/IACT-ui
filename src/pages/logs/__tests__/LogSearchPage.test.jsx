@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import LogSearchPage from '../LogSearchPage'
+import LogSearch from '../LogSearch'
 
 const RESULTS = [
   { id: 1, level: 'ERROR', message: 'NullPointerException in AuthService', service: 'auth', timestamp: '2026-05-05T09:00:00Z' },
@@ -26,21 +26,21 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('LogSearchPage', () => {
+describe('LogSearch', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders search input', () => {
-    wrapper(<LogSearchPage />)
+    wrapper(<LogSearch />)
     expect(screen.getByRole('textbox') || screen.getByPlaceholderText(/buscar/i)).toBeTruthy()
   })
 
   it('renders search results', () => {
-    wrapper(<LogSearchPage />)
+    wrapper(<LogSearch />)
     expect(screen.getByText('NullPointerException in AuthService')).toBeInTheDocument()
   })
 
   it('renders page heading', () => {
-    wrapper(<LogSearchPage />)
+    wrapper(<LogSearch />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 })

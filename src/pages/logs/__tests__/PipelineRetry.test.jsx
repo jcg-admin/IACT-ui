@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import ETLLogsPage from '../ETLLogsPage'
+import ETLLogs from '../ETLLogs'
 
 const ETL_LOGS_WITH_FAILED = [
   { id: 1, process: 'import_users', status: 'success', duration: '2m', records_processed: 100, timestamp: '2026-05-05T08:00:00Z' },
@@ -35,32 +35,32 @@ jest.mock('../../../redux/slices/loadingSlice', () => ({
 
 import { retryPipeline } from '../../../redux/slices/logsSlice'
 
-describe('ETLLogsPage — PipelineRetryModal (uc-pip-04)', () => {
+describe('ETLLogs — PipelineRetryModal (uc-pip-04)', () => {
   beforeEach(() => { mockDispatch.mockClear(); retryPipeline.mockClear() })
 
   it('renders Reintentar button for failed logs', async () => {
-    render(<MemoryRouter><ETLLogsPage /></MemoryRouter>)
+    render(<MemoryRouter><ETLLogs /></MemoryRouter>)
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument()
     })
   })
 
   it('does NOT dispatch retryPipeline immediately when Reintentar is clicked', async () => {
-    render(<MemoryRouter><ETLLogsPage /></MemoryRouter>)
+    render(<MemoryRouter><ETLLogs /></MemoryRouter>)
     await waitFor(() => screen.getByRole('button', { name: /reintentar/i }))
     fireEvent.click(screen.getByRole('button', { name: /reintentar/i }))
     expect(retryPipeline).not.toHaveBeenCalled()
   })
 
   it('opens confirmation modal when Reintentar is clicked', async () => {
-    render(<MemoryRouter><ETLLogsPage /></MemoryRouter>)
+    render(<MemoryRouter><ETLLogs /></MemoryRouter>)
     await waitFor(() => screen.getByRole('button', { name: /reintentar/i }))
     fireEvent.click(screen.getByRole('button', { name: /reintentar/i }))
     expect(screen.getByRole('heading', { name: /reintentar pipeline/i })).toBeInTheDocument()
   })
 
   it('dispatches retryPipeline with process id when confirmed', async () => {
-    render(<MemoryRouter><ETLLogsPage /></MemoryRouter>)
+    render(<MemoryRouter><ETLLogs /></MemoryRouter>)
     await waitFor(() => screen.getByRole('button', { name: /reintentar/i }))
     fireEvent.click(screen.getByRole('button', { name: /reintentar/i }))
     fireEvent.click(screen.getByRole('button', { name: /^confirmar$/i }))
@@ -70,7 +70,7 @@ describe('ETLLogsPage — PipelineRetryModal (uc-pip-04)', () => {
   })
 
   it('does not dispatch retryPipeline when cancel is clicked', async () => {
-    render(<MemoryRouter><ETLLogsPage /></MemoryRouter>)
+    render(<MemoryRouter><ETLLogs /></MemoryRouter>)
     await waitFor(() => screen.getByRole('button', { name: /reintentar/i }))
     fireEvent.click(screen.getByRole('button', { name: /reintentar/i }))
     fireEvent.click(screen.getByRole('button', { name: /cancelar/i }))

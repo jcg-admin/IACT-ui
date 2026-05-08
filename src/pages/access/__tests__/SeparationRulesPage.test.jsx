@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import SeparationRulesPage from '../SeparationRulesPage'
+import SeparationRules from '../SeparationRules'
 
 const mockDispatch = jest.fn()
 
@@ -32,10 +32,10 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
 import { fetchSeparationRules, createSeparationRule, updateSeparationRule, deleteSeparationRule } from '../../../redux/slices/accessSlice'
 
 function renderPage() {
-  return render(<MemoryRouter><SeparationRulesPage /></MemoryRouter>)
+  return render(<MemoryRouter><SeparationRules /></MemoryRouter>)
 }
 
-describe('SeparationRulesPage — uc-adm-01', () => {
+describe('SeparationRules — uc-adm-01', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     fetchSeparationRules.mockClear()

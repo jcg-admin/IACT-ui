@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import IVRMenusReportPage from '../IVRMenusReportPage'
+import IVRMenusReport from '../IVRMenusReport'
 
 const MOCK_ROW = {
   trimestre: 'Q01_25',
@@ -67,103 +67,103 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('IVRMenusReportPage — estructura base', () => {
+describe('IVRMenusReport — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ReportFilters', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByText('Aplicar filtros')).toBeInTheDocument()
   })
 
   it('renders ReportTable', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
   })
 })
 
-describe('IVRMenusReportPage — columnas del schema real', () => {
+describe('IVRMenusReport — columnas del schema real', () => {
   it('pasa columna cMenu al ReportTable', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('col-cMenu')).toBeInTheDocument()
   })
 
   it('pasa columna total_llamadas al ReportTable', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('col-total_llamadas')).toBeInTheDocument()
   })
 
   it('pasa columna promedio_llamadas al ReportTable', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('col-promedio_llamadas')).toBeInTheDocument()
   })
 
   it('pasa columna min_llamadas_x_cliente al ReportTable', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('col-min_llamadas_x_cliente')).toBeInTheDocument()
   })
 
   it('pasa columna max_llamadas_x_cliente al ReportTable', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('col-max_llamadas_x_cliente')).toBeInTheDocument()
   })
 
   it('NO pasa columnas del schema obsoleto', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.queryByTestId('col-menu')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-option')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-selections')).not.toBeInTheDocument()
   })
 })
 
-describe('IVRMenusReportPage — filtros reales (trimestre / segmento)', () => {
+describe('IVRMenusReport — filtros reales (trimestre / segmento)', () => {
   it('renderiza selector de trimestre', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByLabelText(/trimestre/i)).toBeInTheDocument()
   })
 
   it('renderiza selector de segmento', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByLabelText(/segmento/i)).toBeInTheDocument()
   })
 
   it('el selector trimestre tiene opción Q01_25', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByRole('option', { name: 'Q01_25' })).toBeInTheDocument()
   })
 
   it('el selector segmento tiene opción Nacional', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByRole('option', { name: /nacional/i })).toBeInTheDocument()
   })
 })
 
-describe('IVRMenusReportPage — renderiza filas del servicio', () => {
+describe('IVRMenusReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsService').default
     svc.getIvrMenus.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW, MOCK_ROW])
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(await screen.findByText('Rows: 3')).toBeInTheDocument()
   })
 })
 
-describe('IVRMenusReportPage — SavedFiltersPanel (uc-rpt-10)', () => {
+describe('IVRMenusReport — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders SavedFiltersPanel', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByTestId('saved-filters-panel')).toBeInTheDocument()
   })
 
   it('renders Guardar vista button', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
   })
 })
 
-describe('IVRMenusReportPage — Compartir (uc-rpt-11)', () => {
+describe('IVRMenusReport — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
-    wrapper(<IVRMenusReportPage />)
+    wrapper(<IVRMenusReport />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import QueuesReportPage from '../QueuesReportPage'
+import QueuesReport from '../QueuesReport'
 
 const MOCK_ROW = {
   trimestre: 'Q01_25',
@@ -61,46 +61,46 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('QueuesReportPage — estructura base', () => {
+describe('QueuesReport — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ReportTable', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
   })
 })
 
-describe('QueuesReportPage — columnas del schema real', () => {
+describe('QueuesReport — columnas del schema real', () => {
   it('pasa columna centro_transferencia al ReportTable', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('col-centro_transferencia')).toBeInTheDocument()
   })
 
   it('pasa columna total_llamadas al ReportTable', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('col-total_llamadas')).toBeInTheDocument()
   })
 
   it('pasa columna misma_linea al ReportTable', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('col-misma_linea')).toBeInTheDocument()
   })
 
   it('pasa columna linea_diferente al ReportTable', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('col-linea_diferente')).toBeInTheDocument()
   })
 
   it('pasa columna no_digito_telefono al ReportTable', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('col-no_digito_telefono')).toBeInTheDocument()
   })
 
   it('NO pasa columnas del schema obsoleto', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.queryByTestId('col-queue')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-incoming_calls')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-avg_wait_time')).not.toBeInTheDocument()
@@ -108,52 +108,52 @@ describe('QueuesReportPage — columnas del schema real', () => {
   })
 })
 
-describe('QueuesReportPage — filtros reales (trimestre / segmento)', () => {
+describe('QueuesReport — filtros reales (trimestre / segmento)', () => {
   it('renderiza selector de trimestre', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByLabelText(/trimestre/i)).toBeInTheDocument()
   })
 
   it('renderiza selector de segmento', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByLabelText(/segmento/i)).toBeInTheDocument()
   })
 
   it('el selector trimestre tiene opción Q01_25', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByRole('option', { name: 'Q01_25' })).toBeInTheDocument()
   })
 
   it('el selector segmento tiene opción Nacional', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByRole('option', { name: /nacional/i })).toBeInTheDocument()
   })
 })
 
-describe('QueuesReportPage — renderiza filas del servicio', () => {
+describe('QueuesReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsService').default
     svc.getQueuesReport.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })
 })
 
-describe('QueuesReportPage — SavedFiltersPanel (uc-rpt-10)', () => {
+describe('QueuesReport — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders SavedFiltersPanel', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByTestId('saved-filters-panel')).toBeInTheDocument()
   })
 
   it('renders Guardar vista button', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
   })
 })
 
-describe('QueuesReportPage — Compartir (uc-rpt-11)', () => {
+describe('QueuesReport — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
-    wrapper(<QueuesReportPage />)
+    wrapper(<QueuesReport />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

@@ -29,35 +29,35 @@ function wrap(ui) {
   )
 }
 
-import AccessAuditPage from '../AccessAuditPage'
-import SeparationRulesPage from '../SeparationRulesPage'
-import SegmentsPage from '../SegmentsPage'
-import GroupersPage from '../GroupersPage'
+import AccessAudit from '../AccessAudit'
+import SeparationRules from '../SeparationRules'
+import Segments from '../Segments'
+import Groupers from '../Groupers'
 
-describe('AccessAuditPage', () => {
+describe('AccessAudit', () => {
   it('renders page title', () => {
-    wrap(<AccessAuditPage />)
+    wrap(<AccessAudit />)
     expect(screen.getByText('Auditoria de Acceso')).toBeInTheDocument()
   })
 })
 
-describe('SeparationRulesPage', () => {
+describe('SeparationRules', () => {
   it('renders page title', () => {
-    wrap(<SeparationRulesPage />)
+    wrap(<SeparationRules />)
     expect(screen.getByText('Gestión de Reglas de Separación')).toBeInTheDocument()
   })
 })
 
-describe('SegmentsPage', () => {
+describe('Segments', () => {
   it('renders page title', () => {
-    wrap(<SegmentsPage />)
+    wrap(<Segments />)
     expect(screen.getByText('Segmentos de Datos')).toBeInTheDocument()
   })
 })
 
-describe('GroupersPage', () => {
+describe('Groupers', () => {
   it('renders page title', () => {
-    wrap(<GroupersPage />)
+    wrap(<Groupers />)
     expect(screen.getByText('Agrupadores de Funciones')).toBeInTheDocument()
   })
 })

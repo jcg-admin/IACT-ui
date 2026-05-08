@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import PermissionsAuditPage from '../PermissionsAuditPage'
+import PermissionsAudit from '../PermissionsAudit'
 
 const mockDispatch = jest.fn()
 const AUDIT_LOG = [
@@ -25,10 +25,10 @@ jest.mock('../../../redux/slices/accessSlice', () => ({
 }))
 
 function renderPage() {
-  return render(<MemoryRouter><PermissionsAuditPage /></MemoryRouter>)
+  return render(<MemoryRouter><PermissionsAudit /></MemoryRouter>)
 }
 
-describe('PermissionsAuditPage — uc-perm-10', () => {
+describe('PermissionsAudit — uc-perm-10', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page title', () => {

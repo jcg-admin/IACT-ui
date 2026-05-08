@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import AgentsReportPage from '../AgentsReportPage'
+import AgentsReport from '../AgentsReport'
 
 const MOCK_ROW = {
   trimestre: 'Q01_25',
@@ -61,46 +61,46 @@ jest.mock('react-redux', () => ({
 
 function wrapper(ui) { return render(<MemoryRouter>{ui}</MemoryRouter>) }
 
-describe('AgentsReportPage — estructura base', () => {
+describe('AgentsReport — estructura base', () => {
   it('renders page heading', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ReportTable', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('report-table')).toBeInTheDocument()
   })
 })
 
-describe('AgentsReportPage — columnas del schema real', () => {
+describe('AgentsReport — columnas del schema real', () => {
   it('pasa columna cMenu al ReportTable', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('col-cMenu')).toBeInTheDocument()
   })
 
   it('pasa columna total_llamadas al ReportTable', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('col-total_llamadas')).toBeInTheDocument()
   })
 
   it('pasa columna promedio_llamadas al ReportTable', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('col-promedio_llamadas')).toBeInTheDocument()
   })
 
   it('pasa columna min_llamadas_x_cliente al ReportTable', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('col-min_llamadas_x_cliente')).toBeInTheDocument()
   })
 
   it('pasa columna max_llamadas_x_cliente al ReportTable', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('col-max_llamadas_x_cliente')).toBeInTheDocument()
   })
 
   it('NO pasa columnas del schema obsoleto', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.queryByTestId('col-agent')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-calls_answered')).not.toBeInTheDocument()
     expect(screen.queryByTestId('col-avg_time')).not.toBeInTheDocument()
@@ -108,52 +108,52 @@ describe('AgentsReportPage — columnas del schema real', () => {
   })
 })
 
-describe('AgentsReportPage — filtros reales (trimestre / segmento)', () => {
+describe('AgentsReport — filtros reales (trimestre / segmento)', () => {
   it('renderiza selector de trimestre', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByLabelText(/trimestre/i)).toBeInTheDocument()
   })
 
   it('renderiza selector de segmento', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByLabelText(/segmento/i)).toBeInTheDocument()
   })
 
   it('el selector trimestre tiene opción Q01_25', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByRole('option', { name: 'Q01_25' })).toBeInTheDocument()
   })
 
   it('el selector segmento tiene opción Nacional', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByRole('option', { name: /nacional/i })).toBeInTheDocument()
   })
 })
 
-describe('AgentsReportPage — renderiza filas del servicio', () => {
+describe('AgentsReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsService').default
     svc.getAgentsReport.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW, MOCK_ROW])
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(await screen.findByText('Rows: 3')).toBeInTheDocument()
   })
 })
 
-describe('AgentsReportPage — SavedFiltersPanel (uc-rpt-10)', () => {
+describe('AgentsReport — SavedFiltersPanel (uc-rpt-10)', () => {
   it('renders SavedFiltersPanel', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByTestId('saved-filters-panel')).toBeInTheDocument()
   })
 
   it('renders Guardar vista button', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByRole('button', { name: /guardar vista/i })).toBeInTheDocument()
   })
 })
 
-describe('AgentsReportPage — Compartir (uc-rpt-11)', () => {
+describe('AgentsReport — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
-    wrapper(<AgentsReportPage />)
+    wrapper(<AgentsReport />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
   })
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import GroupManagementPage from '../GroupManagementPage'
+import GroupManagement from '../GroupManagement'
 
 const GROUPS = [
   { id: 1, name: 'Admins', description: 'Grupo administradores', active: true },
@@ -47,18 +47,18 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('GroupManagementPage', () => {
+describe('GroupManagement', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
   })
 
   it('renders page heading', () => {
-    wrapper(<GroupManagementPage />)
+    wrapper(<GroupManagement />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders group list', () => {
-    wrapper(<GroupManagementPage />)
+    wrapper(<GroupManagement />)
     expect(screen.getByText('Admins')).toBeInTheDocument()
     expect(screen.getByText('Auditores')).toBeInTheDocument()
   })
@@ -69,12 +69,12 @@ describe('GroupManagementPage', () => {
         access: { loading: true, error: null, success: false, groups: [], functions: [], userPermissions: { functions: [] }, groupFunctions: [] },
       })
     )
-    wrapper(<GroupManagementPage />)
+    wrapper(<GroupManagement />)
     expect(screen.queryByRole('status') || document.querySelector('.spinner') || document.body).toBeTruthy()
   })
 
   it('dispatches fetchAllFunctions on mount', () => {
-    wrapper(<GroupManagementPage />)
+    wrapper(<GroupManagement />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 })

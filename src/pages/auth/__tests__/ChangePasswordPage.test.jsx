@@ -1,7 +1,7 @@
 import React from 'react'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderWithProviders } from '../../../__tests__/helpers/renderWithProviders'
-import ChangePasswordPage from '../ChangePasswordPage'
+import ChangePassword from '../ChangePassword'
 
 const mockDispatch = jest.fn()
 const mockNavigate = jest.fn()
@@ -22,7 +22,7 @@ jest.mock('../../../components/auth/PasswordStrength', () => ({
     password ? <div data-testid="password-strength">{password}</div> : null,
 }))
 
-describe('ChangePasswordPage', () => {
+describe('ChangePassword', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockNavigate.mockClear()
@@ -34,12 +34,12 @@ describe('ChangePasswordPage', () => {
   })
 
   it('renders without crash', () => {
-    renderWithProviders(<ChangePasswordPage />)
+    renderWithProviders(<ChangePassword />)
     expect(screen.getByRole('heading', { name: 'Cambiar contraseña' })).toBeInTheDocument()
   })
 
   it('shows error when passwords do not match', async () => {
-    renderWithProviders(<ChangePasswordPage />)
+    renderWithProviders(<ChangePassword />)
 
     fireEvent.change(screen.getByLabelText('Contraseña actual'), {
       target: { value: 'currentPass1' },
@@ -63,7 +63,7 @@ describe('ChangePasswordPage', () => {
   it('dispatches changePassword thunk with valid data', async () => {
     mockDispatch.mockResolvedValueOnce(undefined)
 
-    renderWithProviders(<ChangePasswordPage />)
+    renderWithProviders(<ChangePassword />)
 
     fireEvent.change(screen.getByLabelText('Contraseña actual'), {
       target: { value: 'currentPass1' },
@@ -85,7 +85,7 @@ describe('ChangePasswordPage', () => {
   it('shows success message and redirects after successful change', async () => {
     mockDispatch.mockResolvedValueOnce(undefined)
 
-    renderWithProviders(<ChangePasswordPage />)
+    renderWithProviders(<ChangePassword />)
 
     fireEvent.change(screen.getByLabelText('Contraseña actual'), {
       target: { value: 'currentPass1' },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import TemporaryPermissionsPage from '../TemporaryPermissionsPage';
+import TemporaryPermissions from '../TemporaryPermissions';
 
 const FUNCTIONS = [
     { id: 5, code: 'view_pipeline_status', name: 'View Pipeline', category: 'PIPELINE' },
@@ -29,7 +29,7 @@ import { assignFunction } from '../../../redux/slices/accessSlice';
 function renderPage() {
     return render(
         <MemoryRouter>
-            <TemporaryPermissionsPage />
+            <TemporaryPermissions />
         </MemoryRouter>
     );
 }
@@ -40,7 +40,7 @@ function getFutureDate(daysAhead = 7) {
     return d.toISOString().split('T')[0];
 }
 
-describe('TemporaryPermissionsPage — catalogId dispatch invariant', () => {
+describe('TemporaryPermissions — catalogId dispatch invariant', () => {
     beforeEach(() => {
         mockDispatch.mockClear();
         assignFunction.mockClear();

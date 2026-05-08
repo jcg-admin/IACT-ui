@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import RealTimeMetricsPage from '../RealTimeMetricsPage'
+import RealTimeMetrics from '../RealTimeMetrics'
 
 jest.mock('@hooks/domain/useRealTimeMetrics', () => ({
   useRealTimeMetrics: jest.fn(),
@@ -20,22 +20,22 @@ const MOCK_METRICS = {
   segments_applied: [],
 }
 
-describe('RealTimeMetricsPage', () => {
+describe('RealTimeMetrics', () => {
   it('renderiza el título', () => {
     useRealTimeMetrics.mockReturnValue({ metrics: null, loading: true, error: null })
-    render(<RealTimeMetricsPage />)
+    render(<RealTimeMetrics />)
     expect(screen.getByRole('heading', { name: /métricas en tiempo real/i })).toBeInTheDocument()
   })
 
   it('muestra indicador de carga', () => {
     useRealTimeMetrics.mockReturnValue({ metrics: null, loading: true, error: null })
-    render(<RealTimeMetricsPage />)
+    render(<RealTimeMetrics />)
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it('muestra las 6 métricas cuando hay datos', () => {
     useRealTimeMetrics.mockReturnValue({ metrics: MOCK_METRICS, loading: false, error: null })
-    render(<RealTimeMetricsPage />)
+    render(<RealTimeMetrics />)
     expect(screen.getByText('12')).toBeInTheDocument()  // callsQueued
     expect(screen.getByText('8')).toBeInTheDocument()   // agentsBusy
     expect(screen.getByText('4')).toBeInTheDocument()   // agentsIdle
@@ -45,20 +45,20 @@ describe('RealTimeMetricsPage', () => {
 
   it('muestra indicador de lag', () => {
     useRealTimeMetrics.mockReturnValue({ metrics: MOCK_METRICS, loading: false, error: null })
-    render(<RealTimeMetricsPage />)
+    render(<RealTimeMetrics />)
     expect(screen.getByText(/5\s*s/i)).toBeInTheDocument()
   })
 
   it('muestra error cuando existe', () => {
     useRealTimeMetrics.mockReturnValue({ metrics: null, loading: false, error: 'timeout' })
-    render(<RealTimeMetricsPage />)
+    render(<RealTimeMetrics />)
     expect(screen.getByRole('alert')).toBeInTheDocument()
     expect(screen.getByText(/timeout/i)).toBeInTheDocument()
   })
 
   it('muestra indicador de actualización automática', () => {
     useRealTimeMetrics.mockReturnValue({ metrics: MOCK_METRICS, loading: false, error: null })
-    render(<RealTimeMetricsPage />)
+    render(<RealTimeMetrics />)
     expect(screen.getAllByText(/actualiz/i).length).toBeGreaterThan(0)
   })
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import ETLLogsPage from '../ETLLogsPage'
+import ETLLogs from '../ETLLogs'
 
 const ETL_LOGS = [
   { id: 1, process: 'import_users', status: 'success', duration: '2m 10s', records_processed: 150, timestamp: '2026-05-05T08:00:00Z' },
@@ -30,28 +30,28 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('ETLLogsPage', () => {
+describe('ETLLogs', () => {
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders page heading', () => {
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('renders ETL log entries', () => {
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     expect(screen.getByText('import_users')).toBeInTheDocument()
     expect(screen.getByText('export_reports')).toBeInTheDocument()
   })
 
   it('renders status badges', () => {
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     expect(screen.getByText('success')).toBeInTheDocument()
     expect(screen.getByText('failed')).toBeInTheDocument()
   })
 
   it('dispatches fetchETLLogs on mount', () => {
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     expect(mockDispatch).toHaveBeenCalled()
   })
 
@@ -59,25 +59,25 @@ describe('ETLLogsPage', () => {
     jest.spyOn(require('react-redux'), 'useSelector').mockImplementation((selector) =>
       selector({ logs: { error: null, etlLogs: [], searchResults: [], systemStatus: null }, loading: { contexts: { logs: 1 } } })
     )
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     expect(document.querySelector('.spinner') || screen.queryByText(/cargando/i)).toBeTruthy()
   })
 })
 
 // uc-pip-02: Botón quick-filter "Solo errores"
-describe('ETLLogsPage — Solo errores quick-filter (uc-pip-02)', () => {
+describe('ETLLogs — Solo errores quick-filter (uc-pip-02)', () => {
   const { fireEvent } = require('@testing-library/react')
 
   beforeEach(() => mockDispatch.mockClear())
 
   it('renders Solo errores button', () => {
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     expect(screen.getByRole('button', { name: /solo errores/i })).toBeInTheDocument()
   })
 
   it('dispatches fetchETLLogs with status=error when Solo errores is clicked', () => {
     const { fetchETLLogs } = require('../../../redux/slices/logsSlice')
-    wrapper(<ETLLogsPage />)
+    wrapper(<ETLLogs />)
     fireEvent.click(screen.getByRole('button', { name: /solo errores/i }))
     expect(mockDispatch).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'logs/fetchETLLogs' })

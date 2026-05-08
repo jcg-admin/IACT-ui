@@ -35,28 +35,28 @@ import { usePermisos } from '../hooks/usePermisos'
 // ── Lazy imports ────────────────────────────────────────────────────────────
 
 const LoginPage = lazy(() =>
-  import('@components/containers/LoginPage').then(m => ({ default: m.default || m.LoginPage }))
+  import('@components/containers/Login').then(m => ({ default: m.default || m.Login }))
 )
 const DashboardPage = lazy(() =>
-  import('@components/containers/DashboardPage').then(m => ({ default: m.default }))
+  import('@components/containers/DashboardMain').then(m => ({ default: m.default }))
 )
 const SettingsPage = lazy(() =>
-  import('@components/features/Settings/SettingsPage').then(m => ({ default: m.default }))
+  import('@components/features/Settings/Settings').then(m => ({ default: m.default }))
 )
 const ProfilePage = lazy(() =>
-  import('@components/pages/Profile/ProfilePage').then(m => ({ default: m.default }))
+  import('@components/pages/Profile/Profile').then(m => ({ default: m.default }))
 )
 const AccessPage = lazy(() =>
-  import('@components/pages/Access/AccessPage').then(m => ({ default: m.default }))
+  import('@components/pages/Access/Access').then(m => ({ default: m.default }))
 )
 const AuditPage = lazy(() =>
-  import('@components/pages/Audit/AuditPage').then(m => ({ default: m.default }))
+  import('@components/pages/Audit/Audit').then(m => ({ default: m.default }))
 )
-const AuditSearchPage      = lazy(() => import('@pages/audit/AuditSearchPage'))
-const AuditExportPage      = lazy(() => import('@pages/audit/ExportPage'))
-const ComplianceReportPage = lazy(() => import('@pages/audit/ComplianceReportPage'))
+const AuditSearchPage      = lazy(() => import('@pages/audit/AuditSearch'))
+const AuditExportPage      = lazy(() => import('@pages/audit/Export'))
+const ComplianceReportPage = lazy(() => import('@pages/audit/ComplianceReport'))
 const AlertsPage = lazy(() =>
-  import('@components/pages/Alerts/AlertsPage').then(m => ({ default: m.default }))
+  import('@components/pages/Alerts/Alerts').then(m => ({ default: m.default }))
 )
 
 const UserManagementPage = lazy(() =>
@@ -69,61 +69,61 @@ const ActiveSessionsPage = lazy(() =>
   import('@components/features/SessionManagement').then(m => ({ default: m.ActiveSessions }))
 )
 
-const NotFoundPage = lazy(() => import('@pages/errors/NotFoundPage'))
-const AccessDeniedPage = lazy(() => import('@pages/errors/AccessDeniedPage'))
-const ServerErrorPage = lazy(() => import('@pages/errors/ServerErrorPage'))
-const ServiceUnavailablePage = lazy(() => import('@pages/errors/ServiceUnavailablePage'))
+const NotFoundPage = lazy(() => import('@pages/errors/NotFound'))
+const AccessDeniedPage = lazy(() => import('@pages/errors/AccessDenied'))
+const ServerErrorPage = lazy(() => import('@pages/errors/ServerError'))
+const ServiceUnavailablePage = lazy(() => import('@pages/errors/ServiceUnavailable'))
 
 // ── Auth pages ───────────────────────────────────────────────────────────────
-const RecoverPasswordPage = lazy(() => import('@pages/auth/RecoverPasswordPage'))
-const ChangePasswordPage = lazy(() => import('@pages/auth/ChangePasswordPage'))
+const RecoverPasswordPage = lazy(() => import('@pages/auth/RecoverPassword'))
+const ChangePasswordPage = lazy(() => import('@pages/auth/ChangePassword'))
 
 // ── Logs pages ───────────────────────────────────────────────────────────────
-const LogsPage = lazy(() => import('@pages/logs/LogsPage'))
-const ETLLogsPage = lazy(() => import('@pages/logs/ETLLogsPage'))
-const ETLAvailabilityPage = lazy(() => import('@pages/logs/ETLAvailabilityPage'))
-const LogSearchPage = lazy(() => import('@pages/logs/LogSearchPage'))
-const LogExportPage = lazy(() => import('@pages/logs/LogExportPage'))
-const InfraLogsPage = lazy(() => import('@pages/logs/InfraLogsPage'))
-const SystemStatusPage = lazy(() => import('@pages/logs/SystemStatusPage'))
-const PerformanceMetricsPage = lazy(() => import('@pages/logs/PerformanceMetricsPage'))
-const PipelineStatusPage = lazy(() => import('@pages/logs/PipelineStatusPage'))
+const LogsPage = lazy(() => import('@pages/logs/Logs'))
+const ETLLogsPage = lazy(() => import('@pages/logs/ETLLogs'))
+const ETLAvailabilityPage = lazy(() => import('@pages/logs/ETLAvailability'))
+const LogSearchPage = lazy(() => import('@pages/logs/LogSearch'))
+const LogExportPage = lazy(() => import('@pages/logs/LogExport'))
+const InfraLogsPage = lazy(() => import('@pages/logs/InfraLogs'))
+const SystemStatusPage = lazy(() => import('@pages/logs/SystemStatus'))
+const PerformanceMetricsPage = lazy(() => import('@pages/logs/PerformanceMetrics'))
+const PipelineStatusPage = lazy(() => import('@pages/logs/PipelineStatus'))
 
 // ── Reports pages ────────────────────────────────────────────────────────────
-const AgentsReportPage = lazy(() => import('@pages/reports/AgentsReportPage'))
-const QueuesReportPage = lazy(() => import('@pages/reports/QueuesReportPage'))
-const CampaignsReportPage = lazy(() => import('@pages/reports/CampaignsReportPage'))
-const TransfersReportPage = lazy(() => import('@pages/reports/TransfersReportPage'))
-const IVRMenusReportPage = lazy(() => import('@pages/reports/IVRMenusReportPage'))
-const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsReportPage'))
-const ScheduledReportPage = lazy(() => import('@pages/reports/ScheduledReportPage'))
-const RealTimeMetricsPage = lazy(() => import('@pages/reports/RealTimeMetricsPage'))
-const HistoricalReportsPage = lazy(() => import('@pages/reports/HistoricalReportsPage'))
-const ReportExportPage = lazy(() => import('@pages/reports/ReportExportPage'))
-const SavedViewsPage = lazy(() => import('@pages/reports/SavedViewsPage'))
+const AgentsReportPage = lazy(() => import('@pages/reports/AgentsReport'))
+const QueuesReportPage = lazy(() => import('@pages/reports/QueuesReport'))
+const CampaignsReportPage = lazy(() => import('@pages/reports/CampaignsReport'))
+const TransfersReportPage = lazy(() => import('@pages/reports/TransfersReport'))
+const IVRMenusReportPage = lazy(() => import('@pages/reports/IVRMenusReport'))
+const UniqueClientsReportPage = lazy(() => import('@pages/reports/UniqueClientsReport'))
+const ScheduledReportPage = lazy(() => import('@pages/reports/ScheduledReport'))
+const RealTimeMetricsPage = lazy(() => import('@pages/reports/RealTimeMetrics'))
+const HistoricalReportsPage = lazy(() => import('@pages/reports/HistoricalReports'))
+const ReportExportPage = lazy(() => import('@pages/reports/ReportExport'))
+const SavedViewsPage = lazy(() => import('@pages/reports/SavedViews'))
 
 // ── Permissions pages ─────────────────────────────────────────────────────────
-const RevokeGroupPage = lazy(() => import('@pages/permissions/RevokeGroupPage'))
+const RevokeGroupPage = lazy(() => import('@pages/permissions/RevokeGroup'))
 
 // ── Access pages ─────────────────────────────────────────────────────────────
-const GroupManagementPage = lazy(() => import('@pages/access/GroupManagementPage'))
-const GroupCompositionPage = lazy(() => import('@pages/access/GroupCompositionPage'))
-const GroupersPage = lazy(() => import('@pages/access/GroupersPage'))
-const SeparationRulesPage = lazy(() => import('@pages/access/SeparationRulesPage'))
-const SegmentsPage = lazy(() => import('@pages/access/SegmentsPage'))
-const PermissionsAuditPage = lazy(() => import('@pages/access/PermissionsAuditPage'))
-const AssignGroupPage = lazy(() => import('@pages/access/AssignGroupPage'))
-const TemporaryPermissionsPage = lazy(() => import('@pages/access/TemporaryPermissionsPage'))
+const GroupManagementPage = lazy(() => import('@pages/access/GroupManagement'))
+const GroupCompositionPage = lazy(() => import('@pages/access/GroupComposition'))
+const GroupersPage = lazy(() => import('@pages/access/Groupers'))
+const SeparationRulesPage = lazy(() => import('@pages/access/SeparationRules'))
+const SegmentsPage = lazy(() => import('@pages/access/Segments'))
+const PermissionsAuditPage = lazy(() => import('@pages/access/PermissionsAudit'))
+const AssignGroupPage = lazy(() => import('@pages/access/AssignGroup'))
+const TemporaryPermissionsPage = lazy(() => import('@pages/access/TemporaryPermissions'))
 
 // ── Alerts pages ──────────────────────────────────────────────────────────────
-const TemplatesPage      = lazy(() => import('@pages/alerts/TemplatesPage'))
-const AlertConfigPage    = lazy(() => import('@pages/alerts/AlertConfigPage'))
-const AlertHistoryPage   = lazy(() => import('@pages/alerts/AlertHistoryPage'))
-const SubscriptionsPage  = lazy(() => import('@pages/alerts/SubscriptionsPage'))
+const TemplatesPage      = lazy(() => import('@pages/alerts/Templates'))
+const AlertConfigPage    = lazy(() => import('@pages/alerts/AlertConfig'))
+const AlertHistoryPage   = lazy(() => import('@pages/alerts/AlertHistory'))
+const SubscriptionsPage  = lazy(() => import('@pages/alerts/Subscriptions'))
 
 // ── Admin pages ──────────────────────────────────────────────────────────────
-const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalogPage'))
-const AGRCatalogPage = lazy(() => import('@pages/admin/AGRCatalogPage'))
+const FunctionCatalogPage = lazy(() => import('@pages/admin/FunctionCatalog'))
+const AGRCatalogPage = lazy(() => import('@pages/admin/AGRCatalog'))
 
 // ── Nav config ───────────────────────────────────────────────────────────────
 // Groups that carry children — referenced when building ALL_NAV_LINKS children arrays
