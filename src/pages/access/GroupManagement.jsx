@@ -13,6 +13,7 @@ import {
 } from '../../redux/slices/access';
 import accessService from '../../services/accessGateway';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
+import Table from '@ui/presentational/Table';
 
 const EMPTY_FORM = { name: '', description: '', code: '' };
 const CODE_REGEX = /^[a-z][a-z0-9_]+_group$/;
@@ -186,62 +187,39 @@ export default function GroupManagement() {
                 </div>
             )}
 
-            {loading && localGroups.length === 0 ? (
-                <LoadingSpinner message="Cargando grupos..." />
-            ) : localGroups.length === 0 ? (
-                <div className="empty-state">No hay grupos registrados. Crea el primero.</div>
-            ) : (
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {localGroups.map(group => (
-                            <tr key={group.id}>
-                                <td style={{ fontFamily: 'monospace', fontSize: '12px', color: '#9ca3af' }}>{group.code || '—'}</td>
-                                <td style={{ fontWeight: 600 }}>{group.name}</td>
-                                <td style={{ color: '#9ca3af' }}>{group.description || '—'}</td>
-                                <td>{getStatusBadge(group)}</td>
-                                <td>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            className="btn btn-secondary"
-                                            style={{ fontSize: '12px', padding: '4px 10px' }}
-                                            onClick={() => openEditModal(group)}
-                                            disabled={!!group.is_predefined}
-                                            title={group.is_predefined ? 'Grupo predefinido — no modificable' : undefined}
-                                        >
-                                            Editar
-                                        </button>
-                                        {group.state !== 'RETIRED' && (
-                                            <button
-                                                className="btn btn-secondary"
-                                                style={{
-                                                    fontSize: '12px',
-                                                    padding: '4px 10px',
-                                                    color: '#f87171',
-                                                    borderColor: '#f87171',
-                                                }}
-                                                onClick={() => openRetireModal(group)}
-                                                disabled={loading || !!group.is_predefined}
-                                                title={group.is_predefined ? 'Grupo predefinido — no modificable' : undefined}
-                                            >
-                                                Retirar
-                                            </button>
-                                        )}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+            <Table
+                columns={[
+                    {
+                        key: 'code',
+                        label: 'Código',
+                        render: (v) => (
+                            <span style={{ fontFamily: 'monospace', fontSize: '12px', color: '#9ca3af' }}>
+                                {v || '—'}
+                            </span>
+                        ),
+                    },
+                    { key: 'name', label: 'Nombre', render: (v) => <strong>{v}</strong> },
+                    { key: 'description', label: 'Descripción', render: (v) => v || '—' },
+                    { key: 'state', label: 'Estado', render: (_, row) => getStatusBadge(row) },
+                ]}
+                data={localGroups}
+                loading={loading && localGroups.length === 0}
+                sortable={false}
+                actions={[
+                    {
+                        label: 'Editar',
+                        onClick: openEditModal,
+                        disabled: (row) => !!row.is_predefined,
+                    },
+                    {
+                        label: 'Retirar',
+                        onClick: openRetireModal,
+                        hidden: (row) => row.state === 'RETIRED',
+                        disabled: (row) => loading || !!row.is_predefined,
+                        variant: 'danger',
+                    },
+                ]}
+            />
 
             {/* Modal crear/editar */}
             {modalOpen && (

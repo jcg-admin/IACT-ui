@@ -255,6 +255,7 @@ export default function GroupComposition() {
                     ) : groupFunctions.length === 0 ? (
                         <div className="empty-state">Este grupo no tiene funciones asignadas.</div>
                     ) : (
+                        /* Inline table kept: action column dispatches removeFunctionFromGroup with per-row data, would require callback closure per row — acceptable inline use */
                         <table className="table">
                             <thead>
                                 <tr>

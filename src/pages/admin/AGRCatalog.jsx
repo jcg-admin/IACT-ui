@@ -21,6 +21,7 @@ import {
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 import ConfirmModal from '../../components/shared/ConfirmModal'
+import Table from '@ui/presentational/Table'
 
 // Valida formato snake_case para codenames de AGR (ej: basic_operator_group)
 const AGR_CODENAME_REGEX = /^[a-z][a-z0-9_]*$/
@@ -277,61 +278,36 @@ export default function AGRCatalog() {
           )}
 
           {/* Tabla */}
-          {loading ? (
-            <LoadingSpinner message="Cargando AGRs..." />
-          ) : filtered.length === 0 ? (
-            <div className="empty-state">
-              {search ? 'No hay AGRs que coincidan con la búsqueda.' : 'No hay AGRs registrados.'}
-            </div>
-          ) : (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Codename</th>
-                  <th>Nombre</th>
-                  <th>Descripción</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((agr) => (
-                  <tr key={agr.id}>
-                    <td><code>{agr.codename}</code></td>
-                    <td>{agr.name}</td>
-                    <td>{agr.description || '—'}</td>
-                    <td>
-                      <span className={agr.active === false ? 'badge badge-danger' : 'badge'}>
-                        {agr.active === false ? 'INACTIVE' : 'ACTIVE'}
-                      </span>
-                    </td>
-                    <td style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        className="btn btn-secondary"
-                        onClick={() => openEdit(agr)}
-                      >
-                        Editar
-                      </button>
-                      {agr.active !== false && (
-                        <button
-                          className="btn btn-secondary"
-                          onClick={() => handleDeactivate(agr)}
-                        >
-                          Desactivar
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <Table
+            columns={[
+              { key: 'codename', label: 'Codename', render: (v) => <code>{v}</code> },
+              { key: 'name', label: 'Nombre' },
+              { key: 'description', label: 'Descripción', render: (v) => v || '—' },
+              {
+                key: 'active',
+                label: 'Estado',
+                render: (v) => (
+                  <span className={v === false ? 'badge badge-danger' : 'badge'}>
+                    {v === false ? 'INACTIVE' : 'ACTIVE'}
+                  </span>
+                ),
+              },
+            ]}
+            data={filtered}
+            loading={loading}
+            sortable={false}
+            actions={[
+              { label: 'Editar', onClick: openEdit },
+              { label: 'Desactivar', onClick: handleDeactivate, hidden: (row) => row.active === false },
+            ]}
+          />
         </>
       )}
 
       {/* ── TAB COMPOSICIÓN ── */}
       {activeTab === 'composition' && (
         <>
+          {/* Inline table kept: composition tab has an inline expandable panel below each row, incompatible with Table component */}
           <table className="table" aria-label="AGRs disponibles para gestionar composición">
             <thead>
               <tr>

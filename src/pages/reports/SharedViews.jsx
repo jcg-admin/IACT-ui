@@ -11,6 +11,7 @@ import {
 } from '@store/slices/shares'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 import ConfirmModal from '../../components/shared/ConfirmModal'
+import Table from '@ui/presentational/Table'
 
 function formatDate(iso) {
   if (!iso) return '—'
@@ -23,81 +24,49 @@ function targetLabel(share) {
   return `Usuario ${share.target_id}`
 }
 
+const STATUS_COLUMN = {
+  key: 'revoked_at',
+  label: 'Estado',
+  render: (v) => v
+    ? <span className="badge badge-secondary">Revocada</span>
+    : <span className="badge badge-success">Activa</span>,
+}
+
 function SentTable({ shares, onRevoke }) {
-  if (shares.length === 0) return <div className="empty-state">No has compartido ninguna vista.</div>
   return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th>Vista</th>
-          <th>Destinatario</th>
-          <th>Permiso</th>
-          <th>Expira</th>
-          <th>Compartida</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {shares.map((s) => (
-          <tr key={s.id}>
-            <td>{s.view_id}</td>
-            <td>{targetLabel(s)}</td>
-            <td>{s.permission}</td>
-            <td>{formatDate(s.expires_at)}</td>
-            <td>{formatDate(s.created_at)}</td>
-            <td>
-              {s.revoked_at
-                ? <span className="badge badge-secondary">Revocada</span>
-                : <span className="badge badge-success">Activa</span>
-              }
-            </td>
-            <td>
-              {!s.revoked_at && (
-                <button className="btn btn-secondary" style={{ fontSize: '0.75rem' }} onClick={() => onRevoke(s)}>
-                  Revocar
-                </button>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <Table
+      emptyMessage="No has compartido ninguna vista."
+      columns={[
+        { key: 'view_id', label: 'Vista' },
+        { key: 'target_type', label: 'Destinatario', render: (_, row) => targetLabel(row) },
+        { key: 'permission', label: 'Permiso' },
+        { key: 'expires_at', label: 'Expira', render: (v) => formatDate(v) },
+        { key: 'created_at', label: 'Compartida', render: (v) => formatDate(v) },
+        STATUS_COLUMN,
+      ]}
+      data={shares}
+      sortable={false}
+      actions={[
+        { label: 'Revocar', onClick: onRevoke, hidden: (row) => !!row.revoked_at },
+      ]}
+    />
   )
 }
 
 function ReceivedTable({ shares }) {
-  if (shares.length === 0) return <div className="empty-state">No tienes vistas compartidas contigo.</div>
   return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th>Vista</th>
-          <th>Remitente</th>
-          <th>Permiso</th>
-          <th>Expira</th>
-          <th>Recibida</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        {shares.map((s) => (
-          <tr key={s.id}>
-            <td>{s.view_id}</td>
-            <td>{`Usuario ${s.owner_id}`}</td>
-            <td>{s.permission}</td>
-            <td>{formatDate(s.expires_at)}</td>
-            <td>{formatDate(s.created_at)}</td>
-            <td>
-              {s.revoked_at
-                ? <span className="badge badge-secondary">Revocada</span>
-                : <span className="badge badge-success">Activa</span>
-              }
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <Table
+      columns={[
+        { key: 'view_id', label: 'Vista' },
+        { key: 'owner_id', label: 'Remitente', render: (v) => `Usuario ${v}` },
+        { key: 'permission', label: 'Permiso' },
+        { key: 'expires_at', label: 'Expira', render: (v) => formatDate(v) },
+        { key: 'created_at', label: 'Recibida', render: (v) => formatDate(v) },
+        STATUS_COLUMN,
+      ]}
+      data={shares}
+      sortable={false}
+    />
   )
 }
 
@@ -158,6 +127,7 @@ export default function SharedViews() {
       ) : (
         <ReceivedTable shares={received} />
       )}
+
 
       <ConfirmModal
         isOpen={revokeModal.isOpen}

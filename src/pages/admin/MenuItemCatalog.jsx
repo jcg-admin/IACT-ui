@@ -233,6 +233,7 @@ export default function MenuItemCatalog() {
             </form>
           )}
 
+          {/* Inline table kept: reorder mode uses inline number inputs per cell, incompatible with Table component actions prop */}
           <table className="table" aria-label="Menú items">
             <thead>
               <tr>
@@ -311,6 +312,7 @@ export default function MenuItemCatalog() {
       {/* ── TAB LIFECYCLE ── */}
       {activeTab === 'lifecycle' && (
         <>
+          {/* Inline table kept: lifecycle transition buttons per row need per-item state (transitionErrors), incompatible with Table component actions prop */}
           <table className="table" aria-label="Lifecycle de menú items">
             <thead>
               <tr>

@@ -13,6 +13,7 @@ import {
   selectReportsError,
 } from '@store/slices/reports'
 import ConfirmModal from '../../components/shared/ConfirmModal'
+import Table from '@ui/presentational/Table'
 
 const FREQUENCIES = ['daily', 'weekly', 'monthly', 'cron']
 const FREQUENCY_LABELS = { daily: 'Diario', weekly: 'Semanal', monthly: 'Mensual', cron: 'Cron' }
@@ -177,39 +178,6 @@ function CreateForm({ onCancel }) {
   )
 }
 
-function ScheduleRow({ schedule, onDeleteRequest }) {
-  const dispatch = useDispatch()
-  const isActive = schedule.status === 'active'
-
-  return (
-    <tr>
-      <td style={{ color: '#fff', padding: '12px' }}>{schedule.name}</td>
-      <td style={{ padding: '12px', color: '#9ca3af' }}>{FREQUENCY_LABELS[schedule.frequency] ?? schedule.frequency}</td>
-      <td style={{ padding: '12px' }}>
-        <span className={`badge ${isActive ? 'badge-success' : 'badge-warning'}`}>
-          {isActive ? 'Activo' : 'Pausado'}
-        </span>
-      </td>
-      <td style={{ padding: '12px', display: 'flex', gap: '6px' }}>
-        {isActive ? (
-          <button className="btn btn-sm btn-secondary" onClick={() => dispatch(pauseSchedule(schedule.id))} aria-label="Pausar">
-            Pausar
-          </button>
-        ) : (
-          <button className="btn btn-sm btn-primary" onClick={() => dispatch(resumeSchedule(schedule.id))} aria-label="Reanudar">
-            Reanudar
-          </button>
-        )}
-        <button className="btn btn-sm btn-primary" onClick={() => dispatch(runScheduleNow(schedule.id))} aria-label="Ejecutar ahora">
-          Ejecutar
-        </button>
-        <button className="btn btn-sm btn-danger" onClick={() => onDeleteRequest(schedule)} aria-label="Eliminar">
-          Eliminar
-        </button>
-      </td>
-    </tr>
-  )
-}
 
 export default function ScheduledReport() {
   const dispatch = useDispatch()
@@ -255,11 +223,6 @@ export default function ScheduledReport() {
         <div role="status" aria-busy="true" style={{ color: '#9ca3af', padding: '24px', textAlign: 'center' }}>
           Cargando reportes programados…
         </div>
-      ) : schedules.length === 0 ? (
-        <div className="empty-state">
-          <p>No hay reportes programados.</p>
-          <p style={{ fontSize: '14px', color: '#6b7280' }}>Haz click en "Nuevo" para crear el primero.</p>
-        </div>
       ) : (
         <div className="card" style={{ overflow: 'hidden' }}>
           {actionLoading && (
@@ -267,25 +230,30 @@ export default function ScheduledReport() {
               Procesando acción…
             </div>
           )}
-          <table className="table" style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Frecuencia</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {schedules.map((s) => (
-                <ScheduleRow
-                  key={s.id}
-                  schedule={s}
-                  onDeleteRequest={(sched) => setDeleteModal({ isOpen: true, schedule: sched })}
-                />
-              ))}
-            </tbody>
-          </table>
+          <Table
+            emptyMessage="No hay reportes programados."
+            columns={[
+              { key: 'name', label: 'Nombre' },
+              { key: 'frequency', label: 'Frecuencia', render: (v) => FREQUENCY_LABELS[v] ?? v },
+              {
+                key: 'status',
+                label: 'Estado',
+                render: (v) => (
+                  <span className={`badge ${v === 'active' ? 'badge-success' : 'badge-warning'}`}>
+                    {v === 'active' ? 'Activo' : 'Pausado'}
+                  </span>
+                ),
+              },
+            ]}
+            data={schedules}
+            sortable={false}
+            actions={[
+              { label: 'Pausar', onClick: (row) => dispatch(pauseSchedule(row.id)), hidden: (row) => row.status !== 'active' },
+              { label: 'Reanudar', onClick: (row) => dispatch(resumeSchedule(row.id)), hidden: (row) => row.status === 'active' },
+              { label: 'Ejecutar', onClick: (row) => dispatch(runScheduleNow(row.id)) },
+              { label: 'Eliminar', onClick: (row) => setDeleteModal({ isOpen: true, schedule: row }), variant: 'danger' },
+            ]}
+          />
         </div>
       )}
 

@@ -16,6 +16,7 @@ import {
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 import ConfirmModal from '../../components/shared/ConfirmModal'
+import Table from '@ui/presentational/Table'
 
 // Valida el formato modulo:accion definido en RBAC v5.6.0
 const CODENAME_REGEX = /^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$/
@@ -273,57 +274,30 @@ export default function FunctionCatalog() {
       )}
 
       {/* Tabla */}
-      {loading ? (
-        <LoadingSpinner message="Cargando funciones..." />
-      ) : filtered.length === 0 ? (
-        <div className="empty-state">
-          {search ? 'No hay funciones que coincidan con la búsqueda.' : 'No hay funciones registradas.'}
-        </div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Codename</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Dominio</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((fn) => (
-              <tr key={fn.id}>
-                <td><code>{fn.codename}</code></td>
-                <td>{fn.name}</td>
-                <td>{fn.description || '—'}</td>
-                <td>{fn.domain || '—'}</td>
-                <td>
-                  <span className={fn.active === false ? 'badge badge-danger' : 'badge'}>
-                    {fn.active === false ? 'INACTIVE' : 'ACTIVE'}
-                  </span>
-                </td>
-                <td style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => openEdit(fn)}
-                  >
-                    Editar
-                  </button>
-                  {fn.active !== false && (
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => handleDeactivate(fn)}
-                    >
-                      Desactivar
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <Table
+        columns={[
+          { key: 'codename', label: 'Codename', render: (v) => <code>{v}</code> },
+          { key: 'name', label: 'Nombre' },
+          { key: 'description', label: 'Descripción', render: (v) => v || '—' },
+          { key: 'domain', label: 'Dominio', render: (v) => v || '—' },
+          {
+            key: 'active',
+            label: 'Estado',
+            render: (v) => (
+              <span className={v === false ? 'badge badge-danger' : 'badge'}>
+                {v === false ? 'INACTIVE' : 'ACTIVE'}
+              </span>
+            ),
+          },
+        ]}
+        data={filtered}
+        loading={loading}
+        sortable={false}
+        actions={[
+          { label: 'Editar', onClick: openEdit },
+          { label: 'Desactivar', onClick: handleDeactivate, hidden: (row) => row.active === false },
+        ]}
+      />
 
       <ConfirmModal
         isOpen={deactivateModal.isOpen}

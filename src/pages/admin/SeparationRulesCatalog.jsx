@@ -15,6 +15,7 @@ import {
   selectAdminLoading,
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import Table from '@ui/presentational/Table'
 
 const EMPTY_FORM = { name: '', description: '', group_a: '', group_b: '' }
 
@@ -161,52 +162,30 @@ export default function SeparationRulesCatalog() {
         </form>
       )}
 
-      <table className="table" aria-label="Reglas de separación de funciones">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rules.map((rule) => (
-            <tr key={rule.id}>
-              <td>{rule.code}</td>
-              <td>{rule.name}</td>
-              <td>{rule.description}</td>
-              <td>
-                <span className={`badge badge-${rule.isActive ? 'success' : 'secondary'}`}>
-                  {rule.isActive ? 'Activa' : 'Inactiva'}
-                </span>
-              </td>
-              <td>
-                <button
-                  className="btn btn-sm btn-secondary"
-                  onClick={() => handleOpenEdit(rule)}
-                  aria-label={`Editar ${rule.name}`}
-                >
-                  Editar
-                </button>
-                <button
-                  className="btn btn-sm btn-outline"
-                  onClick={() => handleToggleStatus(rule)}
-                  aria-label={rule.isActive ? `Desactivar ${rule.name}` : `Activar ${rule.name}`}
-                >
-                  {rule.isActive ? 'Desactivar' : 'Activar'}
-                </button>
-              </td>
-            </tr>
-          ))}
-          {rules.length === 0 && !loading && (
-            <tr>
-              <td colSpan={5}>No hay reglas configuradas</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <Table
+        columns={[
+          { key: 'code', label: 'Código' },
+          { key: 'name', label: 'Nombre' },
+          { key: 'description', label: 'Descripción' },
+          {
+            key: 'isActive',
+            label: 'Estado',
+            render: (v) => (
+              <span className={`badge badge-${v ? 'success' : 'secondary'}`}>
+                {v ? 'Activa' : 'Inactiva'}
+              </span>
+            ),
+          },
+        ]}
+        data={rules}
+        loading={loading}
+        sortable={false}
+        actions={[
+          { label: 'Editar', onClick: handleOpenEdit },
+          { label: 'Activar', onClick: handleToggleStatus, hidden: (row) => !!row.isActive },
+          { label: 'Desactivar', onClick: handleToggleStatus, hidden: (row) => !row.isActive },
+        ]}
+      />
     </div>
   )
 }

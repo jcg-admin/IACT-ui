@@ -77,14 +77,14 @@ describe('SeparationRulesCatalog', () => {
 
   it('dispatches toggleSeparationRuleStatus on Desactivar click', async () => {
     wrapper(<SeparationRulesCatalog />)
-    const btn = screen.getByLabelText('Desactivar Pipeline vs Auditoría')
+    const btn = screen.getByRole('button', { name: 'Desactivar' })
     fireEvent.click(btn)
     await waitFor(() => expect(mockDispatch).toHaveBeenCalledTimes(2))
   })
 
   it('shows Activar for inactive rule', () => {
     wrapper(<SeparationRulesCatalog />)
-    expect(screen.getByLabelText('Activar Usuarios vs Auditoría')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Activar' })).toBeInTheDocument()
   })
 })
 
@@ -175,7 +175,7 @@ describe('SeparationRulesCatalog — toggle status error (UC_ADM_01 FA-04)', () 
       return Promise.resolve({ type: action.type, unwrap: () => Promise.resolve({}) })
     })
     wrapper(<SeparationRulesCatalog />)
-    const btn = screen.getByLabelText('Activar Usuarios vs Auditoría')
+    const btn = screen.getByRole('button', { name: 'Activar' })
     fireEvent.click(btn)
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/Regla ya inactiva/i)

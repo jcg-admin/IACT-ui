@@ -9,6 +9,7 @@ import {
 } from '@store/slices/reports'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
 import ConfirmModal from '../../components/shared/ConfirmModal'
+import Table from '@ui/presentational/Table'
 
 const REPORT_TYPE_LABELS = {
   agents:         'Agentes',
@@ -54,47 +55,29 @@ export default function SavedViews() {
         <div className="error-banner">{error}</div>
       )}
 
-      {loading ? (
-        <LoadingSpinner message="Cargando vistas guardadas..." />
-      ) : views.length === 0 ? (
-        <div className="empty-state">No hay vistas guardadas.</div>
-      ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Tipo de reporte</th>
-              <th>Filtros</th>
-              <th>Creada</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {views.map((view) => (
-              <tr key={view.id}>
-                <td>{view.name}</td>
-                <td>{REPORT_TYPE_LABELS[view.report_type] ?? view.report_type}</td>
-                <td>
-                  <code style={{ fontSize: '12px' }}>
-                    {Object.entries(view.filters ?? {})
-                      .map(([k, v]) => `${k}: ${v}`)
-                      .join(', ') || '—'}
-                  </code>
-                </td>
-                <td>{formatDate(view.created_at)}</td>
-                <td>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => handleDelete(view)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <Table
+        columns={[
+          { key: 'name', label: 'Nombre' },
+          { key: 'report_type', label: 'Tipo de reporte', render: (v) => REPORT_TYPE_LABELS[v] ?? v },
+          {
+            key: 'filters',
+            label: 'Filtros',
+            render: (v) => (
+              <code style={{ fontSize: '12px' }}>
+                {Object.entries(v ?? {}).map(([k, val]) => `${k}: ${val}`).join(', ') || '—'}
+              </code>
+            ),
+          },
+          { key: 'created_at', label: 'Creada', render: (v) => formatDate(v) },
+        ]}
+        data={views}
+        loading={loading}
+        sortable={false}
+        emptyMessage="No hay vistas guardadas."
+        actions={[
+          { label: 'Eliminar', onClick: (row) => handleDelete(row), variant: 'secondary' },
+        ]}
+      />
 
       <ConfirmModal
         isOpen={deleteModal.isOpen}

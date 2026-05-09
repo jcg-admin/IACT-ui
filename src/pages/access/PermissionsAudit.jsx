@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAccessAudit, selectLoading, selectError } from '../../redux/slices/access'
+import Table from '@ui/presentational/Table'
 
 const PERMISSION_ACTIONS = [
     'EXCEPTIONAL_PERMISSION_GRANTED',
@@ -23,6 +24,17 @@ export default function PermissionsAudit() {
         PERMISSION_ACTIONS.includes(entry.action)
     )
 
+    const COLUMNS = [
+        { key: 'action', label: 'Acción' },
+        { key: 'user', label: 'Usuario' },
+        { key: 'target', label: 'Objetivo', render: (v) => v ?? '—' },
+        {
+            key: 'timestamp',
+            label: 'Fecha',
+            render: (v) => new Date(v).toLocaleString('es'),
+        },
+    ]
+
     return (
         <div style={{ padding: '24px' }}>
             <h1 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '28px' }}>
@@ -38,41 +50,12 @@ export default function PermissionsAudit() {
                 </div>
             )}
 
-            {loading ? (
-                <div aria-busy="true">Cargando auditoría…</div>
-            ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                        <tr>
-                            {['Acción', 'Usuario', 'Objetivo', 'Fecha'].map((h) => (
-                                <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: '#9ca3af', fontSize: '12px', borderBottom: '1px solid #374151' }}>
-                                    {h}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {permissionsLog.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} style={{ padding: '16px', color: '#9ca3af', textAlign: 'center' }}>
-                                    Sin entradas de auditoría de permisos
-                                </td>
-                            </tr>
-                        ) : (
-                            permissionsLog.map((entry) => (
-                                <tr key={entry.id} style={{ borderBottom: '1px solid #1f2937' }}>
-                                    <td style={{ padding: '8px 12px', color: '#e5e7eb', fontSize: '13px' }}>{entry.action}</td>
-                                    <td style={{ padding: '8px 12px', color: '#e5e7eb', fontSize: '13px' }}>{entry.user}</td>
-                                    <td style={{ padding: '8px 12px', color: '#e5e7eb', fontSize: '13px' }}>{entry.target ?? '—'}</td>
-                                    <td style={{ padding: '8px 12px', color: '#9ca3af', fontSize: '12px' }}>
-                                        {new Date(entry.timestamp).toLocaleString('es')}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            )}
+            <Table
+                columns={COLUMNS}
+                data={permissionsLog}
+                loading={loading}
+                sortable={false}
+            />
         </div>
     )
 }

@@ -73,6 +73,7 @@ export default function UserList({ users, loading, onEdit, onDeactivate, onBlock
 
   return (
     <div className="user-list">
+      {/* Inline table kept: uses users-table class with custom SCSS sorting indicators, multi-action row (block/unblock/deactivate) with complex disabled logic — acceptable inline use */}
       <table className="users-table">
         <thead>
           <tr>
