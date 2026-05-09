@@ -59,7 +59,7 @@ if (url.match(/\/api\/job\/[^/]+\/download\//))  return this._handleJobDownload(
 if (url.match(/\/api\/job\/[^/]+\/cancel\//))    return this._handleJobCancel(url)
 ```
 
-- [ ] T-001 — Corregir routing mock `/api/job/{id}/*`
+- [x] T-001 — Corregir routing mock `/api/job/{id}/*`
 
 ---
 
@@ -121,7 +121,7 @@ _handleJobStatus(url) {
 }
 ```
 
-- [ ] T-002 — Actualizar `_handleJobStatus` con contador + `done`/`file_url`
+- [x] T-002 — Actualizar `_handleJobStatus` con contador + `done`/`file_url`
 
 ---
 
@@ -156,7 +156,7 @@ if (url.includes('/api/reports/export/')) {
 
 Verificar que `this._error()` ya acepta un tercer parámetro `code` — si no, extenderlo.
 
-- [ ] T-003 — Agregar error codes al mock POST `/api/reports/export/`
+- [x] T-003 — Agregar error codes al mock POST `/api/reports/export/`
 
 ---
 
@@ -178,7 +178,7 @@ async cancelExportJob(jobId) {
 
 Actualizar el header de endpoints del archivo.
 
-- [ ] T-004 — Agregar `getExportJobStatus` + `cancelExportJob` a reportsGateway
+- [x] T-004 — Agregar `getExportJobStatus` + `cancelExportJob` a reportsGateway
 
 ---
 
@@ -223,7 +223,7 @@ useEffect(() => {
 
 Agregar `useRef` al import de React.
 
-- [ ] T-005 — Implementar polling 3s en ReportExport.jsx
+- [x] T-005 — Implementar polling 3s en ReportExport.jsx
 
 ---
 
@@ -263,7 +263,7 @@ Reemplazar el bloque `{jobId && (...)}` por:
 )}
 ```
 
-- [ ] T-006 — Mostrar progreso/descarga/fallo en UI
+- [x] T-006 — Mostrar progreso/descarga/fallo en UI
 
 ---
 
@@ -306,7 +306,7 @@ const code = err.code ?? err.data?.code
 setError(ERROR_MESSAGES[code] ?? err.message)
 ```
 
-- [ ] T-007 — Botón cancelar + errores específicos con mensajes descriptivos
+- [x] T-007 — Botón cancelar + errores específicos con mensajes descriptivos
 
 ---
 
@@ -326,7 +326,7 @@ Tests requeridos:
 Ejecutar suite completa: `npx jest --no-coverage` → 1989+ tests.
 Commit B: "Implement UC_RPT_04 full async export flow"
 
-- [ ] T-008 — Tests ReportExport + suite verde + commit
+- [x] T-008 — Tests ReportExport + suite verde + commit
 
 ---
 
