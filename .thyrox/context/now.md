@@ -3,10 +3,10 @@ type: Estado de Sesión
 version: 1.0
 project: IACT-UI
 cold_boot: false
-last_session: 2026-05-08
+last_session: 2026-05-09
 current_work: null
 phase: null
-updated_at: 2026-05-09 03:45:00
+updated_at: 2026-05-09 03:00:00
 blockers: []
 ```
 
@@ -16,13 +16,38 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Sin WP activo. WP `access-uc-audit` cerrado (Phase 11 TRACK completa).
-**Tests:** 1954 passing / 220 suites / 0 failures (verificado 2026-05-09)
+**Estado:** Sin WP activo. WP `permissions-uc-audit` cerrado (Phase 11 TRACK completa).
+**Tests:** 1960 passing / 220 suites / 0 failures (verificado 2026-05-09)
 **Próximo:** Pendiente definición por ejecutor.
 
 ## Métricas de test suite
 
-**1954 tests** passing (verificado 2026-05-09 — WP access-uc-audit Phase 11 TRACK completa, 220 suites)
+**1960 tests** passing (verificado 2026-05-09 — WP permissions-uc-audit Phase 11 TRACK completa, 220 suites)
+
+---
+
+## WP cerrado — permissions-uc-audit ✓
+
+`2026-05-09-01-09-07-permissions-uc-audit` — Phase 11 TRACK completa.
+
+11 gaps en 5 bloques (GAP-PERM-01..11, excl. GAP-PERM-02). 2 commits. 1960 tests (+6 nuevos), 0 regressions.
+
+Entregables:
+- GAP-PERM-03: `ExceptionalPermission.jsx` — justification min ≥10 → ≥20 chars
+- GAP-PERM-05: `GroupManagement.jsx` — `code` field (create-only, regex `^[a-z][a-z0-9_]+_group$`), read-only in edit; predefined guards (Editar/Retirar disabled)
+- GAP-PERM-06: retire flow — DELETE + `retire_reason` ≥20; `retireGroup` thunk + gateway replacing `deactivateGroup`
+- GAP-PERM-07/08: mock CRUD for `/api/access/groups/` — CODE_DUPLICATE (409), CODE_IMMUTABLE (400), PREDEFINED_NOT_MUTABLE (400), RETIRE_REASON guards
+- GAP-PERM-01: `RevokeGroup.jsx` — `revoke_reason` min ≥1 → ≥10; char counter added
+- GAP-PERM-04: `RevokeExceptionalPermission.jsx` — `revoke_reason` textarea (≥10), confirm disabled until valid; thunk + gateway accept revoke_reason in DELETE body
+- GAP-PERM-09: `GroupComposition.jsx` — `change_reason` input (≥10) in both remove-panel and add-modal; thunk + gateway pass change_reason
+- GAP-PERM-10/11: `PermissionsAudit.jsx` — PERMISSION_ACTIONS updated to spec names (EXCEPTIONAL_PERMISSION_GRANTED, EXCEPTIONAL_PERMISSION_REVOKED, AGR_ASSIGNED, AGR_REVOKED)
+
+Key lessons: same UC in multiple components requires audit of ALL implementations (L-01); window.confirm is untestable — use state-driven modals (L-02); jest.spyOn requires afterEach restoreAllMocks (L-03); class field state creates shared mutable state in mocks (L-04); mockRejectedValue vs mockResolvedValue for gateway fallback (L-05).
+
+Artefactos:
+- `track/permissions-uc-audit-changelog.md`
+- `track/permissions-uc-audit-lessons.md` (5 lecciones)
+- `plan-execution/permissions-uc-audit-task-plan.md` (15/15 [x])
 
 ---
 
