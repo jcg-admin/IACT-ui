@@ -5,11 +5,15 @@
  * Todos los cambios de estado se hacen vía baja lógica (INACTIVE), no DELETE.
  *
  * Endpoints:
- * GET    /api/users/         - Listar usuarios con filtros opcionales
- * GET    /api/users/{id}/    - Obtener usuario por ID
- * POST   /api/users/         - Crear nuevo usuario
- * PUT    /api/users/{id}/    - Actualizar datos de usuario
- * PATCH  /api/users/{id}/    - Baja lógica (status → INACTIVE)
+ * GET    /api/users/              - Listar usuarios con filtros opcionales
+ * GET    /api/users/{id}/         - Obtener usuario por ID
+ * POST   /api/users/              - Crear nuevo usuario
+ * PUT    /api/users/{id}/         - Actualizar datos de usuario
+ * PATCH  /api/users/{id}/         - Baja lógica (status → INACTIVE)
+ * POST   /api/users/{id}/block/   - Bloquear usuario (UC_USR_05)
+ * POST   /api/users/{id}/unblock/ - Desbloquear usuario (UC_USR_06)
+ * GET    /api/users/me/           - Perfil propio (UC_USR_07)
+ * PATCH  /api/users/me/profile/   - Actualizar perfil propio (UC_USR_07)
  */
 
 import apiService from './apiClient'
@@ -70,6 +74,26 @@ class UserService {
    */
   async getActiveUsers() {
     return this.getUsers({ state: 'ACTIVE' })
+  }
+
+  // UC_USR_05: bloquear usuario — backend invalida sesiones activas
+  async blockUser(id) {
+    return apiService.post(`/api/users/${id}/block/`)
+  }
+
+  // UC_USR_06: desbloquear usuario
+  async unblockUser(id) {
+    return apiService.post(`/api/users/${id}/unblock/`)
+  }
+
+  // UC_USR_07: obtener perfil propio
+  async getMyProfile() {
+    return apiService.get('/api/users/me/')
+  }
+
+  // UC_USR_07: actualizar campos editables del perfil propio
+  async updateMyProfile(data) {
+    return apiService.patch('/api/users/me/profile/', data)
   }
 }
 

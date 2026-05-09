@@ -6,6 +6,11 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import UserList from '../UserList'
 
+jest.mock('../../../../facades/UserIdentity', () => ({
+  __esModule: true,
+  default: { can: jest.fn().mockReturnValue(true) },
+}))
+
 const buildUser = (overrides = {}) => ({
   id: '1',
   username: 'john_doe',
@@ -28,6 +33,8 @@ const defaultProps = {
   loading: false,
   onEdit: jest.fn(),
   onDeactivate: jest.fn(),
+  onBlock: jest.fn(),
+  onUnblock: jest.fn(),
 }
 
 describe('UserList — renderizado básico', () => {

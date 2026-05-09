@@ -11,6 +11,7 @@ import userAuth from '../../../facades/UserIdentity'
 import reportExporter from '../../../facades/ReportExporter'
 import { getNotificationService } from '@api/notificationGateway'
 import { assignGroupToUser, revokeGroupFromUser, selectGroups } from '../../../redux/slices/access'
+import userGateway from '../../../services/userGateway'
 import GroupAssignModal from '../../../components/access/GroupAssignModal'
 import UserList from './UserList'
 import UserForm from './UserForm'
@@ -149,6 +150,28 @@ export default function UserManagement() {
       setSelectedUser(null)
     } catch (error) {
       notify.error(`Failed to update user: ${error.message}`)
+    }
+  }
+
+  // UC_USR_05: bloquear usuario
+  const handleBlockUser = async (userId) => {
+    try {
+      await userGateway.blockUser(userId)
+      setUsers(users.map(u => u.id === userId ? { ...u, state: 'BLOCKED' } : u))
+      notify.success('Usuario bloqueado correctamente')
+    } catch (error) {
+      notify.error(`Error al bloquear usuario: ${error.message}`)
+    }
+  }
+
+  // UC_USR_06: desbloquear usuario
+  const handleUnblockUser = async (userId) => {
+    try {
+      await userGateway.unblockUser(userId)
+      setUsers(users.map(u => u.id === userId ? { ...u, state: 'ACTIVE' } : u))
+      notify.success('Usuario desbloqueado correctamente')
+    } catch (error) {
+      notify.error(`Error al desbloquear usuario: ${error.message}`)
     }
   }
 
@@ -301,6 +324,8 @@ export default function UserManagement() {
             loading={loading}
             onEdit={handleEditUser}
             onDeactivate={handleDeactivateUser}
+            onBlock={handleBlockUser}
+            onUnblock={handleUnblockUser}
           />
 
           {/* Group assign/revoke buttons per user */}

@@ -1,9 +1,11 @@
 /**
  * UserList Component
  * Muestra usuarios en tabla con ordenamiento, paginación y baja lógica (UC-USR-04).
+ * UC_USR_05/06: botones Bloquear/Desbloquear con modal de confirmación.
  */
 
 import React, { useState } from 'react'
+import userAuth from '../../../facades/UserIdentity'
 import './UserList.scss'
 
 const STATE_BADGE = {
@@ -13,10 +15,11 @@ const STATE_BADGE = {
   ELIMINATED: 'badge-danger',
 }
 
-export default function UserList({ users, loading, onEdit, onDeactivate }) {
+export default function UserList({ users, loading, onEdit, onDeactivate, onBlock, onUnblock }) {
   const [sortField, setSortField] = useState('username')
   const [sortOrder, setSortOrder] = useState('asc')
   const [currentPage, setCurrentPage] = useState(1)
+  const [confirmModal, setConfirmModal] = useState({ open: false, type: null, user: null })
   const itemsPerPage = 10
 
   const handleSort = (field) => {
@@ -46,6 +49,13 @@ export default function UserList({ users, loading, onEdit, onDeactivate }) {
   const SortIndicator = ({ field }) => {
     if (sortField !== field) return null
     return <span className="sort-indicator">{sortOrder === 'asc' ? '▲' : '▼'}</span>
+  }
+
+  const handleConfirm = () => {
+    const { type, user } = confirmModal
+    if (type === 'block') onBlock(user.id)
+    else if (type === 'unblock') onUnblock(user.id)
+    setConfirmModal({ open: false, type: null, user: null })
   }
 
   if (loading) {
@@ -111,6 +121,24 @@ export default function UserList({ users, loading, onEdit, onDeactivate }) {
                 >
                   Editar
                 </button>
+                {user.state === 'ACTIVE' && userAuth.can('users:block') && (
+                  <button
+                    onClick={() => setConfirmModal({ open: true, type: 'block', user })}
+                    className="btn-action btn-block"
+                    title="Bloquear usuario"
+                  >
+                    Bloquear
+                  </button>
+                )}
+                {user.state === 'BLOCKED' && userAuth.can('users:unblock') && (
+                  <button
+                    onClick={() => setConfirmModal({ open: true, type: 'unblock', user })}
+                    className="btn-action btn-unblock"
+                    title="Desbloquear usuario"
+                  >
+                    Desbloquear
+                  </button>
+                )}
                 {user.state !== 'ELIMINATED' && (
                   <button
                     onClick={() => onDeactivate(user.id)}
@@ -145,6 +173,50 @@ export default function UserList({ users, loading, onEdit, onDeactivate }) {
           >
             Siguiente
           </button>
+        </div>
+      )}
+
+      {confirmModal.open && (
+        <div className="confirm-modal-overlay" role="dialog" aria-modal="true">
+          <div className="confirm-modal">
+            {confirmModal.type === 'block' ? (
+              <>
+                <p>
+                  ¿Bloquear a <strong>{confirmModal.user?.username}</strong>?{' '}
+                  El usuario no podrá iniciar sesión mientras esté bloqueado.
+                </p>
+                <div className="confirm-modal-actions">
+                  <button
+                    onClick={() => setConfirmModal({ open: false, type: null, user: null })}
+                    className="btn btn-secondary"
+                  >
+                    Cancelar
+                  </button>
+                  <button onClick={handleConfirm} className="btn btn-danger">
+                    Bloquear
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>
+                  ¿Desbloquear a <strong>{confirmModal.user?.username}</strong>?{' '}
+                  El usuario recuperará el acceso al sistema.
+                </p>
+                <div className="confirm-modal-actions">
+                  <button
+                    onClick={() => setConfirmModal({ open: false, type: null, user: null })}
+                    className="btn btn-secondary"
+                  >
+                    Cancelar
+                  </button>
+                  <button onClick={handleConfirm} className="btn btn-primary">
+                    Desbloquear
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

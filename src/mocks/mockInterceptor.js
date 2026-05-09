@@ -99,6 +99,18 @@ class MockInterceptor {
     if (url.includes('/api/audit/logs') && method === 'GET') {
       return this._handleGetAuditLogs(url);
     }
+    if (url.includes('/api/users/me/profile/') && method === 'PATCH') {
+      return this._handleUpdateMyProfile(body);
+    }
+    if (url.includes('/api/users/me/')) {
+      return this._handleGetMyProfile();
+    }
+    if (url.match(/\/api\/users\/\d+\/block\//) && method === 'POST') {
+      return this._handleBlockUser(url);
+    }
+    if (url.match(/\/api\/users\/\d+\/unblock\//) && method === 'POST') {
+      return this._handleUnblockUser(url);
+    }
     if (url.includes('/api/users')) {
       return this._handleUsers(method, body);
     }
@@ -599,6 +611,68 @@ class MockInterceptor {
     }
 
     return users;
+  }
+
+  // UC_USR_05: bloquear usuario
+  _handleBlockUser(url) {
+    const match = url.match(/\/api\/users\/(\d+)\/block\//)
+    const id = match ? Number(match[1]) : null
+    const users = this._generateMockUsers(25)
+    const user = users.find(u => u.id === id)
+    if (!user) return this._error(404, 'User not found')
+    if (user.state === 'BLOCKED') return this._error(409, 'ALREADY_BLOCKED', 'ALREADY_BLOCKED')
+    if (user.state === 'ELIMINATED') return this._error(403, 'CANNOT_BLOCK_ELIMINATED', 'CANNOT_BLOCK_ELIMINATED')
+    return { status: 200, data: { id, state: 'BLOCKED' } }
+  }
+
+  // UC_USR_06: desbloquear usuario
+  _handleUnblockUser(url) {
+    const match = url.match(/\/api\/users\/(\d+)\/unblock\//)
+    const id = match ? Number(match[1]) : null
+    const users = this._generateMockUsers(25)
+    const user = users.find(u => u.id === id)
+    if (!user) return this._error(404, 'User not found')
+    if (user.state !== 'BLOCKED') return this._error(409, 'NOT_BLOCKED', 'NOT_BLOCKED')
+    return { status: 200, data: { id, state: 'ACTIVE' } }
+  }
+
+  // UC_USR_07: perfil propio (GET)
+  _handleGetMyProfile() {
+    return {
+      status: 200,
+      data: {
+        id: 1,
+        username: 'admin',
+        first_name: 'Admin',
+        last_name: 'User',
+        email: 'admin@example.com',
+        notification_preferences: {
+          email_notifications: true,
+          push_notifications: false,
+        },
+      },
+    }
+  }
+
+  // UC_USR_07: actualizar perfil propio (PATCH)
+  _handleUpdateMyProfile(body) {
+    if (body?.email && !body.email.includes('@')) {
+      return this._error(400, 'Invalid email address', 'INVALID_EMAIL')
+    }
+    return {
+      status: 200,
+      data: {
+        id: 1,
+        username: 'admin',
+        first_name: body?.first_name ?? 'Admin',
+        last_name: body?.last_name ?? 'User',
+        email: body?.email ?? 'admin@example.com',
+        notification_preferences: body?.notification_preferences ?? {
+          email_notifications: true,
+          push_notifications: false,
+        },
+      },
+    }
   }
 
   /**

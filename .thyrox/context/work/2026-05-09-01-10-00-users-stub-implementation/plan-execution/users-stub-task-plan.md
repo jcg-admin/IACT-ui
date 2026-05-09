@@ -31,12 +31,12 @@ Orden: T-001 (scope gate) → T-002..T-005 (Block/Unblock) → T-006..T-008 (Pro
 
 ## Block I — UC_USR_05+06: Block/Unblock gateway + mock
 
-- [ ] [T-002] Agregar a `src/services/userGateway.js`:
+- [x] [T-002] Agregar a `src/services/userGateway.js`:
   `blockUser(id)` — `POST /api/users/${id}/block/`.
   `unblockUser(id)` — `POST /api/users/${id}/unblock/`.
   Mantener patrón `apiService.post(path)` existente, sin body.
 
-- [ ] [T-003] Agregar en `src/mocks/mockInterceptor.js` ANTES del catch-all
+- [x] [T-003] Agregar en `src/mocks/mockInterceptor.js` ANTES del catch-all
   `/api/users` (línea 102) las rutas:
   `POST /api/users/{id}/block/` → handler `_handleBlockUser(url)`:
     - si user ya `BLOCKED` → 409 `{ error: 'ALREADY_BLOCKED' }`
@@ -50,14 +50,14 @@ Orden: T-001 (scope gate) → T-002..T-005 (Block/Unblock) → T-006..T-008 (Pro
 
 ## Block II — UC_USR_05+06: UserManagement + UserList UI
 
-- [ ] [T-004] Agregar en `src/pages/users/UserManagement/UserManagement.jsx`:
+- [x] [T-004] Agregar en `src/pages/users/UserManagement/UserManagement.jsx`:
   - handler `handleBlockUser(userId)`: llama `userGateway.blockUser(userId)`,
     actualiza estado local `setUsers(users.map(...state:'BLOCKED'))`, `notify.success`.
   - handler `handleUnblockUser(userId)`: llama `userGateway.unblockUser(userId)`,
     actualiza estado local `setUsers(users.map(...state:'ACTIVE'))`, `notify.success`.
   - Pasar `onBlock={handleBlockUser}` y `onUnblock={handleUnblockUser}` a `<UserList>`.
 
-- [ ] [T-005] Agregar en `src/pages/users/UserManagement/UserList.jsx`:
+- [x] [T-005] Agregar en `src/pages/users/UserManagement/UserList.jsx`:
   - Props: `onBlock`, `onUnblock` (además de los existentes `onEdit`, `onDeactivate`).
   - State local: `confirmModal: { open: false, type: null, user: null }`.
   - Botón `Bloquear`: visible cuando `user.state === 'ACTIVE'`, llama
