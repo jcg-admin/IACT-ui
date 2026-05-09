@@ -161,7 +161,7 @@ export default function SeparationRulesCatalog() {
         </form>
       )}
 
-      <table className="data-table" aria-label="Reglas de separación de funciones">
+      <table className="table" aria-label="Reglas de separación de funciones">
         <thead>
           <tr>
             <th>Código</th>

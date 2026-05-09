@@ -64,22 +64,22 @@ describe('ConfirmModal', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('applies btn--danger class for variant danger', () => {
+  it('applies btn-danger class for variant danger', () => {
     render(<ConfirmModal {...defaultProps} variant="danger" confirmLabel="Eliminar" />)
     const confirmBtn = screen.getByRole('button', { name: /eliminar/i })
-    expect(confirmBtn).toHaveClass('btn--danger')
+    expect(confirmBtn).toHaveClass('btn-danger')
   })
 
-  it('applies btn--warning class for variant warning', () => {
+  it('applies btn-warning class for variant warning', () => {
     render(<ConfirmModal {...defaultProps} variant="warning" />)
     const confirmBtn = screen.getByRole('button', { name: /confirmar/i })
-    expect(confirmBtn).toHaveClass('btn--warning')
+    expect(confirmBtn).toHaveClass('btn-warning')
   })
 
-  it('applies btn--primary class for default variant', () => {
+  it('applies btn-primary class for default variant', () => {
     render(<ConfirmModal {...defaultProps} />)
     const confirmBtn = screen.getByRole('button', { name: /confirmar/i })
-    expect(confirmBtn).toHaveClass('btn--primary')
+    expect(confirmBtn).toHaveClass('btn-primary')
   })
 
   it('renders message as node when passed as JSX', () => {

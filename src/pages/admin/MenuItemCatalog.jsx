@@ -232,7 +232,7 @@ export default function MenuItemCatalog() {
             </form>
           )}
 
-          <table className="data-table" aria-label="Menú items">
+          <table className="table" aria-label="Menú items">
             <thead>
               <tr>
                 <th>Etiqueta</th>
@@ -310,7 +310,7 @@ export default function MenuItemCatalog() {
       {/* ── TAB LIFECYCLE ── */}
       {activeTab === 'lifecycle' && (
         <>
-          <table className="data-table" aria-label="Lifecycle de menú items">
+          <table className="table" aria-label="Lifecycle de menú items">
             <thead>
               <tr>
                 <th>Etiqueta</th>

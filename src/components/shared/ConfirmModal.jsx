@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import Modal from './Modal'
 
 const VARIANT_CLASS = {
-  danger: 'btn--danger',
-  warning: 'btn--warning',
-  default: 'btn--primary',
+  danger: 'btn-danger',
+  warning: 'btn-warning',
+  default: 'btn-primary',
 }
 
 function ConfirmModal({
@@ -23,7 +23,7 @@ function ConfirmModal({
 
   const footer = (
     <>
-      <button className="btn btn--secondary" onClick={onClose}>
+      <button className="btn btn-secondary" onClick={onClose}>
         {cancelLabel}
       </button>
       <button className={confirmClass} onClick={onConfirm}>

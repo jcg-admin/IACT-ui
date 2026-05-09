@@ -28,9 +28,9 @@ export default function GroupAssignModal({
 
   const footer = (
     <>
-      <button className="btn btn--secondary" onClick={handleClose}>Cancelar</button>
+      <button className="btn btn-secondary" onClick={handleClose}>Cancelar</button>
       <button
-        className="btn btn--primary"
+        className="btn btn-primary"
         onClick={handleConfirm}
         disabled={selectedGroupId === null}
       >
