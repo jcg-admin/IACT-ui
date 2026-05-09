@@ -337,6 +337,10 @@ class MockInterceptor {
       return this._handleValidateCondition(body)
     }
 
+    if (url.includes('/api/alerts/subscriptions/me/')) {
+      return this._handleGetMySubscriptions()
+    }
+
     if (url.includes('/api/alerts/subscriptions/') && (method === 'POST' || method === 'DELETE')) {
       return this._handleAlertSubscription(url, method, body)
     }
@@ -1536,9 +1540,27 @@ class MockInterceptor {
         data: { id: `sub-${Date.now()}`, ...body },
       }
     }
-    const match = url.match(/\/api\/alerts\/subscriptions\/([^/]+)\//)
-    const subId = match ? match[1] : null
     return { status: 204, data: null }
+  }
+
+  _handleGetMySubscriptions() {
+    return {
+      status: 200,
+      data: [
+        {
+          id: 'sub-1',
+          subscription_type: 'severity_filter',
+          severity_filter: 'critical',
+          subscribed_at: '2026-04-20',
+        },
+        {
+          id: 'sub-2',
+          subscription_type: 'rule_id',
+          rule_id: 'rule-sl-queues',
+          subscribed_at: '2026-04-15',
+        },
+      ],
+    }
   }
 
   _handleAcknowledgeAlert(url, body) {

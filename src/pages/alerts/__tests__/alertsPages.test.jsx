@@ -76,7 +76,7 @@ describe('Templates', () => {
 describe('Subscriptions', () => {
   it('renders page title', () => {
     wrap(<Subscriptions />)
-    expect(screen.getByText('Mis Suscripciones')).toBeInTheDocument()
+    expect(screen.getByText('Mis suscripciones')).toBeInTheDocument()
   })
 })
 

@@ -1,338 +1,188 @@
 /**
- * SubscriptionsPage.jsx
- * IACT v4.0 - Alerts Module
- * UC_ALR_04: Gestionar suscripciones a alertas
+ * Subscriptions.jsx
+ * IACT v4.0 — Alerts Module
+ * UC_ALR_05: Gestionar suscripciones a alertas
  */
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMySubscriptions, unsubscribeFromAlert, selectSubscriptions, selectLoading } from '../../redux/slices/alerts';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  fetchMySubscriptions,
+  subscribeToAlert,
+  unsubscribeFromAlert,
+  selectSubscriptions,
+  selectLoading,
+} from '../../redux/slices/alerts'
+
+const SUB_TYPES = [
+  { value: 'rule_id', label: 'Regla específica' },
+  { value: 'severity_filter', label: 'Por severidad' },
+  { value: 'scope_filter', label: 'Por scope' },
+]
+
+const SEVERITY_OPTIONS = ['info', 'warning', 'critical']
+const SCOPE_OPTIONS = ['segment', 'queue', 'campaign']
+
+const SEVERITY_LABEL = { info: 'Info', warning: 'Warning', critical: 'Critical' }
+const SCOPE_LABEL = { segment: 'Segmento', queue: 'Cola', campaign: 'Campaña' }
+
+function subDescription(sub) {
+  if (sub.subscription_type === 'rule_id') return `Regla: ${sub.rule_id}`
+  if (sub.subscription_type === 'severity_filter') return `Severidad ≥ ${SEVERITY_LABEL[sub.severity_filter] ?? sub.severity_filter}`
+  if (sub.subscription_type === 'scope_filter') return `Scope: ${SCOPE_LABEL[sub.scope_filter] ?? sub.scope_filter}`
+  return '—'
+}
 
 export default function Subscriptions() {
-    const [subscriptions, setSubscriptions] = useState([]);
-    const [preferences, setPreferences] = useState({
-        quietHoursStart: '22:00',
-        quietHoursEnd: '08:00',
-        silenceDuringMeetings: false,
-        digests: 'REALTIME',
-    });
+  const dispatch = useDispatch()
+  const reduxSubs = useSelector(selectSubscriptions)
+  const loading = useSelector(selectLoading)
 
-    const dispatch = useDispatch();
-    const loading = useSelector(selectLoading);
+  const [subType, setSubType] = useState('severity_filter')
+  const [ruleId, setRuleId] = useState('')
+  const [severityFilter, setSeverityFilter] = useState('critical')
+  const [scopeFilter, setScopeFilter] = useState('queue')
+  const [addError, setAddError] = useState(null)
 
-    useEffect(() => {
-        dispatch(fetchMySubscriptions());
-        // Cargar suscripciones de ejemplo
-        setSubscriptions([
-            {
-                id: 1,
-                alert_id: 1,
-                alert_name: 'CPU Alta',
-                alert_code: 'ALR-SYS-001',
-                category: 'SISTEMA',
-                channels: ['EMAIL', 'IN_APP'],
-                frequency: 'REALTIME',
-                subscribed_at: '2026-04-20',
-            },
-            {
-                id: 2,
-                alert_id: 3,
-                alert_name: 'Intentos de Login Fallidos',
-                alert_code: 'ALR-SEC-001',
-                category: 'SEGURIDAD',
-                channels: ['EMAIL', 'SMS'],
-                frequency: 'HOURLY',
-                subscribed_at: '2026-04-15',
-            },
-            {
-                id: 3,
-                alert_id: 5,
-                alert_name: 'Error en Pipeline',
-                alert_code: 'ALR-BIZ-004',
-                category: 'NEGOCIO',
-                channels: ['IN_APP'],
-                frequency: 'REALTIME',
-                subscribed_at: '2026-04-10',
-            },
-        ]);
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchMySubscriptions())
+  }, [dispatch])
 
-    const handleUnsubscribe = async (subscriptionId, alertId) => {
-        await dispatch(unsubscribeFromAlert(alertId));
-        setSubscriptions(subscriptions.filter(s => s.id !== subscriptionId));
-    };
+  async function handleSubscribe() {
+    setAddError(null)
+    const payload = { subscription_type: subType }
+    if (subType === 'rule_id') {
+      if (!ruleId.trim()) { setAddError('Ingresa el ID de regla'); return }
+      payload.rule_id = ruleId.trim()
+    } else if (subType === 'severity_filter') {
+      payload.severity_filter = severityFilter
+    } else {
+      payload.scope_filter = scopeFilter
+    }
+    try {
+      await dispatch(subscribeToAlert(payload)).unwrap()
+      dispatch(fetchMySubscriptions())
+      setRuleId('')
+    } catch (e) {
+      setAddError(e?.message ?? 'Error al suscribirse')
+    }
+  }
 
-    const getCategoryColor = (category) => {
-        const colors = {
-            SISTEMA: '#8b5cf6',
-            NEGOCIO: '#0ea5e9',
-            SEGURIDAD: '#dc2626',
-            OPERACIONAL: '#f59e0b',
-        };
-        return colors[category] || '#6b7280';
-    };
+  async function handleUnsubscribe(subId) {
+    await dispatch(unsubscribeFromAlert(subId))
+    dispatch(fetchMySubscriptions())
+  }
 
-    const getChannelLabel = (channels) => {
-        return channels.map(ch => {
-            const labels = {
-                EMAIL: 'Email',
-                SMS: 'SMS',
-                IN_APP: 'In-App',
-                PUSH: 'Push',
-            };
-            return labels[ch] || ch;
-        }).join(', ');
-    };
+  const subs = reduxSubs?.length > 0 ? reduxSubs : []
 
-    return (
-        <div style={{ padding: '24px' }}>
-            {/* Header */}
-            <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '28px' }}>
-                    Mis Suscripciones
-                </h1>
-                <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>
-                    UC_ALR_04 - Gestiona tus suscripciones a alertas
-                </p>
-            </div>
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Mis suscripciones</h1>
+        <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>
+          UC_ALR_05 — Gestiona tus suscripciones a alertas
+        </p>
+      </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                {/* Panel izquierdo - Mis suscripciones */}
-                <div>
-                    <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>
-                        Alertas Suscritas ({subscriptions.length})
-                    </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Panel izquierdo — suscripciones activas */}
+        <div>
+          <h2 style={{ color: '#fff', marginBottom: '16px' }}>
+            Suscripciones activas ({subs.length})
+          </h2>
 
-                    <div style={{ display: 'grid', gap: '12px' }}>
-                        {subscriptions.length > 0 ? (
-                            subscriptions.map((sub) => (
-                                <div
-                                    key={sub.id}
-                                    style={{
-                                        padding: '16px',
-                                        backgroundColor: '#111827',
-                                        border: '1px solid #374151',
-                                        borderRadius: '8px',
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                                        <div>
-                                            <div style={{ color: '#fff', fontWeight: 600, marginBottom: '4px' }}>
-                                                {sub.alert_name}
-                                            </div>
-                                            <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                                                {sub.alert_code}
-                                            </div>
-                                        </div>
-                                        <span
-                                            style={{
-                                                backgroundColor: getCategoryColor(sub.category),
-                                                color: '#fff',
-                                                padding: '4px 8px',
-                                                borderRadius: '4px',
-                                                fontSize: '11px',
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            {sub.category}
-                                        </span>
-                                    </div>
-
-                                    <div style={{
-                                        padding: '8px',
-                                        backgroundColor: '#1f2937',
-                                        borderRadius: '4px',
-                                        marginBottom: '12px',
-                                        fontSize: '12px',
-                                        color: '#9ca3af',
-                                    }}>
-                                        <div style={{ marginBottom: '4px' }}>
-                                            <strong style={{ color: '#fff' }}>Canales:</strong> {getChannelLabel(sub.channels)}
-                                        </div>
-                                        <div>
-                                            <strong style={{ color: '#fff' }}>Frecuencia:</strong> {sub.frequency}
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        onClick={() => handleUnsubscribe(sub.id, sub.alert_id)}
-                                        disabled={loading}
-                                        style={{
-                                            width: '100%',
-                                            padding: '8px',
-                                            backgroundColor: '#dc2626',
-                                            border: 'none',
-                                            borderRadius: '4px',
-                                            color: '#fff',
-                                            cursor: loading ? 'not-allowed' : 'pointer',
-                                            fontSize: '12px',
-                                            opacity: loading ? 0.6 : 1,
-                                        }}
-                                    >
-                                        Desuscribirse
-                                    </button>
-                                </div>
-                            ))
-                        ) : (
-                            <div style={{
-                                padding: '24px',
-                                backgroundColor: '#111827',
-                                borderRadius: '8px',
-                                border: '1px solid #374151',
-                                color: '#9ca3af',
-                                textAlign: 'center',
-                            }}>
-                                No estás suscrito a ninguna alerta
-                            </div>
-                        )}
-                    </div>
+          {subs.length === 0 ? (
+            <p style={{ color: '#9ca3af' }}>No tienes suscripciones activas.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {subs.map(sub => (
+                <div
+                  key={sub.id}
+                  style={{
+                    padding: '14px',
+                    backgroundColor: '#111827',
+                    border: '1px solid #374151',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <div style={{ color: '#fff', fontWeight: 600, marginBottom: '4px' }}>
+                    {SUB_TYPES.find(t => t.value === sub.subscription_type)?.label ?? sub.subscription_type}
+                  </div>
+                  <div style={{ color: '#9ca3af', fontSize: '13px', marginBottom: '12px' }}>
+                    {subDescription(sub)}
+                  </div>
+                  <button
+                    className="btn btn-danger"
+                    style={{ width: '100%' }}
+                    onClick={() => handleUnsubscribe(sub.id)}
+                    disabled={loading}
+                  >
+                    Desuscribirse
+                  </button>
                 </div>
-
-                {/* Panel derecho - Preferencias */}
-                <div>
-                    <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Preferencias Generales</h2>
-
-                    <div style={{
-                        padding: '16px',
-                        backgroundColor: '#111827',
-                        borderRadius: '8px',
-                        border: '1px solid #374151',
-                    }}>
-                        {/* Horas de silencio */}
-                        <div style={{ marginBottom: '16px' }}>
-                            <h3 style={{ margin: '0 0 12px 0', color: '#fff', fontSize: '14px' }}>
-                                Horas de Silencio
-                            </h3>
-                            <p style={{ margin: '0 0 8px 0', color: '#9ca3af', fontSize: '12px' }}>
-                                No recibirás notificaciones durante estas horas
-                            </p>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                                        Desde
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={preferences.quietHoursStart}
-                                        onChange={(e) => setPreferences({ ...preferences, quietHoursStart: e.target.value })}
-                                        style={{
-                                            width: '100%',
-                                            padding: '8px 12px',
-                                            border: '1px solid #374151',
-                                            borderRadius: '4px',
-                                            backgroundColor: '#1f2937',
-                                            color: '#fff',
-                                            fontSize: '12px',
-                                        }}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                                        Hasta
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={preferences.quietHoursEnd}
-                                        onChange={(e) => setPreferences({ ...preferences, quietHoursEnd: e.target.value })}
-                                        style={{
-                                            width: '100%',
-                                            padding: '8px 12px',
-                                            border: '1px solid #374151',
-                                            borderRadius: '4px',
-                                            backgroundColor: '#1f2937',
-                                            color: '#fff',
-                                            fontSize: '12px',
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Opciones adicionales */}
-                        <div style={{ marginBottom: '16px' }}>
-                            <label style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '8px',
-                                backgroundColor: '#1f2937',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '12px',
-                                color: '#fff',
-                            }}>
-                                <input
-                                    type="checkbox"
-                                    checked={preferences.silenceDuringMeetings}
-                                    onChange={(e) => setPreferences({ ...preferences, silenceDuringMeetings: e.target.checked })}
-                                    style={{ cursor: 'pointer' }}
-                                />
-                                Silenciar durante reuniones
-                            </label>
-                        </div>
-
-                        {/* Modo digesto */}
-                        <div style={{ marginBottom: '16px' }}>
-                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                                Modo Digest
-                            </label>
-                            <select
-                                value={preferences.digests}
-                                onChange={(e) => setPreferences({ ...preferences, digests: e.target.value })}
-                                style={{
-                                    width: '100%',
-                                    padding: '8px 12px',
-                                    border: '1px solid #374151',
-                                    borderRadius: '4px',
-                                    backgroundColor: '#1f2937',
-                                    color: '#fff',
-                                    fontSize: '12px',
-                                }}
-                            >
-                                <option value="REALTIME">Tiempo Real</option>
-                                <option value="HOURLY">Cada Hora</option>
-                                <option value="DAILY">Diariamente</option>
-                                <option value="WEEKLY">Semanalmente</option>
-                            </select>
-                            <small style={{ color: '#6b7280', display: 'block', marginTop: '4px' }}>
-                                Recibe un resumen en lugar de notificaciones individuales
-                            </small>
-                        </div>
-
-                        {/* Botón guardar */}
-                        <button
-                            style={{
-                                width: '100%',
-                                padding: '10px',
-                                backgroundColor: '#0ea5e9',
-                                border: 'none',
-                                borderRadius: '4px',
-                                color: '#fff',
-                                cursor: 'pointer',
-                                fontSize: '12px',
-                                fontWeight: 600,
-                            }}
-                        >
-                            Guardar Preferencias
-                        </button>
-                    </div>
-
-                    {/* Información adicional */}
-                    <div style={{
-                        marginTop: '16px',
-                        padding: '12px',
-                        backgroundColor: '#064e3b',
-                        border: '1px solid #10b981',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        color: '#86efac',
-                    }}>
-                        <strong>Tip:</strong> Las alertas críticas de seguridad siempre se entregarán en tiempo real, independientemente de tus preferencias
-                    </div>
-                </div>
+              ))}
             </div>
+          )}
         </div>
-    );
+
+        {/* Panel derecho — nueva suscripción */}
+        <div>
+          <h2 style={{ color: '#fff', marginBottom: '16px' }}>Nueva suscripción</h2>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
+              <label>Tipo de suscripción</label>
+              <select value={subType} onChange={e => setSubType(e.target.value)}>
+                {SUB_TYPES.map(t => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {subType === 'rule_id' && (
+              <div>
+                <label>ID de regla</label>
+                <input
+                  type="text"
+                  value={ruleId}
+                  onChange={e => setRuleId(e.target.value)}
+                  placeholder="Ej: rule-sl-queues"
+                />
+              </div>
+            )}
+
+            {subType === 'severity_filter' && (
+              <div>
+                <label>Severidad mínima</label>
+                <select value={severityFilter} onChange={e => setSeverityFilter(e.target.value)}>
+                  {SEVERITY_OPTIONS.map(s => (
+                    <option key={s} value={s}>{SEVERITY_LABEL[s]}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {subType === 'scope_filter' && (
+              <div>
+                <label>Scope</label>
+                <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
+                  {SCOPE_OPTIONS.map(s => (
+                    <option key={s} value={s}>{SCOPE_LABEL[s]}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {addError && (
+              <div role="alert" style={{ color: '#fca5a5', fontSize: '13px' }}>{addError}</div>
+            )}
+
+            <button className="btn btn-primary" onClick={handleSubscribe} disabled={loading}>
+              Suscribirse
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
