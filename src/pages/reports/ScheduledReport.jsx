@@ -239,7 +239,7 @@ export default function ScheduledReport() {
                 key: 'status',
                 label: 'Estado',
                 render: (v) => (
-                  <span className={`badge ${v === 'active' ? 'badge-success' : 'badge-warning'}`}>
+                  <span className={`status-badge ${v === 'active' ? 'status-active' : 'status-inactive'}`}>
                     {v === 'active' ? 'Activo' : 'Pausado'}
                   </span>
                 ),

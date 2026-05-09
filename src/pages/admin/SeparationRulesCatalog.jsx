@@ -171,7 +171,7 @@ export default function SeparationRulesCatalog() {
             key: 'isActive',
             label: 'Estado',
             render: (v) => (
-              <span className={`badge badge-${v ? 'success' : 'secondary'}`}>
+              <span className={`status-badge ${v ? 'status-active' : 'status-inactive'}`}>
                 {v ? 'Activa' : 'Inactiva'}
               </span>
             ),

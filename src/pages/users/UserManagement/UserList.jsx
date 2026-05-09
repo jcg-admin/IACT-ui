@@ -9,11 +9,11 @@ import userAuth from '../../../facades/UserIdentity'
 import ConfirmModal from '../../../components/shared/ConfirmModal'
 import './UserList.scss'
 
-const STATE_BADGE = {
-  ACTIVE: 'badge-primary',
-  INACTIVE: 'badge-secondary',
-  BLOCKED: 'badge-warning',
-  ELIMINATED: 'badge-danger',
+const STATE_CLASS = {
+  ACTIVE: 'status-active',
+  INACTIVE: 'status-inactive',
+  BLOCKED: 'status-blocked',
+  ELIMINATED: 'status-eliminated',
 }
 
 export default function UserList({ users, loading, onEdit, onDeactivate, onBlock, onUnblock }) {
@@ -108,7 +108,7 @@ export default function UserList({ users, loading, onEdit, onDeactivate, onBlock
                   : <span className="text-muted">—</span>}
               </td>
               <td className="state">
-                <span className={`badge ${STATE_BADGE[user.state] || 'badge-secondary'}`}>
+                <span className={`status-badge ${STATE_CLASS[user.state] || 'status-inactive'}`}>
                   {user.state}
                 </span>
               </td>

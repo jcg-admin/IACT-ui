@@ -56,32 +56,32 @@ describe('UserList — renderizado básico', () => {
 })
 
 describe('UserList — badges de estado (UC-USR-01)', () => {
-  it('badge ACTIVE tiene clase badge-primary', () => {
+  it('badge ACTIVE tiene clase status-active', () => {
     const { container } = render(
       <UserList {...defaultProps} users={[buildUser({ state: 'ACTIVE' })]} />
     )
-    expect(container.querySelector('.badge-primary')).toBeInTheDocument()
+    expect(container.querySelector('.status-badge.status-active')).toBeInTheDocument()
   })
 
-  it('badge INACTIVE tiene clase badge-secondary', () => {
+  it('badge INACTIVE tiene clase status-inactive', () => {
     const { container } = render(
       <UserList {...defaultProps} users={[buildUser({ state: 'INACTIVE' })]} />
     )
-    expect(container.querySelector('.badge-secondary')).toBeInTheDocument()
+    expect(container.querySelector('.status-badge.status-inactive')).toBeInTheDocument()
   })
 
-  it('badge BLOCKED tiene clase badge-warning', () => {
+  it('badge BLOCKED tiene clase status-blocked', () => {
     const { container } = render(
       <UserList {...defaultProps} users={[buildUser({ state: 'BLOCKED' })]} />
     )
-    expect(container.querySelector('.badge-warning')).toBeInTheDocument()
+    expect(container.querySelector('.status-badge.status-blocked')).toBeInTheDocument()
   })
 
-  it('badge ELIMINATED tiene clase badge-danger', () => {
+  it('badge ELIMINATED tiene clase status-eliminated', () => {
     const { container } = render(
       <UserList {...defaultProps} users={[buildUser({ state: 'ELIMINATED' })]} />
     )
-    expect(container.querySelector('.badge-danger')).toBeInTheDocument()
+    expect(container.querySelector('.status-badge.status-eliminated')).toBeInTheDocument()
   })
 })
 
