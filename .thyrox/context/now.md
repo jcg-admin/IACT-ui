@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-09
-current_work: .thyrox/context/work/2026-05-09-02-02-57-transversal-components-audit
+current_work: .thyrox/context/work/2026-05-09-03-22-39-adm04-function-selector-fix
 phase: null
-updated_at: 2026-05-09 02:05:19
+updated_at: 2026-05-09 03:24:05
 blockers: []
 ```
 
