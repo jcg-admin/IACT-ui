@@ -10,6 +10,7 @@ import {
   selectSharesError,
 } from '@store/slices/shares'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ConfirmModal from '../../components/shared/ConfirmModal'
 
 function formatDate(iso) {
   if (!iso) return '—'
@@ -107,6 +108,7 @@ export default function SharedViews() {
   const loading = useSelector(selectSharesLoading)
   const error = useSelector(selectSharesError)
   const [activeTab, setActiveTab] = useState('sent')
+  const [revokeModal, setRevokeModal] = useState({ isOpen: false, share: null })
 
   useEffect(() => {
     dispatch(fetchSharesSent())
@@ -114,8 +116,12 @@ export default function SharedViews() {
   }, [dispatch])
 
   function handleRevoke(share) {
-    if (!window.confirm(`¿Revocar el acceso a la vista compartida con ${targetLabel(share)}?`)) return
-    dispatch(revokeShare(share.id))
+    setRevokeModal({ isOpen: true, share })
+  }
+
+  function handleConfirmRevoke() {
+    dispatch(revokeShare(revokeModal.share.id))
+    setRevokeModal({ isOpen: false, share: null })
   }
 
   return (
@@ -152,6 +158,16 @@ export default function SharedViews() {
       ) : (
         <ReceivedTable shares={received} />
       )}
+
+      <ConfirmModal
+        isOpen={revokeModal.isOpen}
+        onClose={() => setRevokeModal({ isOpen: false, share: null })}
+        onConfirm={handleConfirmRevoke}
+        title="Revocar acceso"
+        message={`¿Revocar el acceso a la vista compartida con ${revokeModal.share ? targetLabel(revokeModal.share) : ''}?`}
+        confirmLabel="Revocar"
+        variant="danger"
+      />
     </div>
   )
 }

@@ -12,6 +12,7 @@ import {
   selectScheduleActionLoading,
   selectReportsError,
 } from '@store/slices/reports'
+import ConfirmModal from '../../components/shared/ConfirmModal'
 
 const FREQUENCIES = ['daily', 'weekly', 'monthly', 'cron']
 const FREQUENCY_LABELS = { daily: 'Diario', weekly: 'Semanal', monthly: 'Mensual', cron: 'Cron' }
@@ -176,7 +177,7 @@ function CreateForm({ onCancel }) {
   )
 }
 
-function ScheduleRow({ schedule }) {
+function ScheduleRow({ schedule, onDeleteRequest }) {
   const dispatch = useDispatch()
   const isActive = schedule.status === 'active'
 
@@ -202,7 +203,7 @@ function ScheduleRow({ schedule }) {
         <button className="btn btn-sm btn-primary" onClick={() => dispatch(runScheduleNow(schedule.id))} aria-label="Ejecutar ahora">
           Ejecutar
         </button>
-        <button className="btn btn-sm btn-danger" onClick={() => dispatch(deleteSchedule(schedule.id))} aria-label="Eliminar">
+        <button className="btn btn-sm btn-danger" onClick={() => onDeleteRequest(schedule)} aria-label="Eliminar">
           Eliminar
         </button>
       </td>
@@ -217,10 +218,16 @@ export default function ScheduledReport() {
   const actionLoading = useSelector(selectScheduleActionLoading)
   const error = useSelector(selectReportsError)
   const [showCreate, setShowCreate] = useState(false)
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, schedule: null })
 
   useEffect(() => {
     dispatch(fetchScheduledReports())
   }, [dispatch])
+
+  function handleConfirmDelete() {
+    dispatch(deleteSchedule(deleteModal.schedule.id))
+    setDeleteModal({ isOpen: false, schedule: null })
+  }
 
   return (
     <div className="page-container">
@@ -271,12 +278,26 @@ export default function ScheduledReport() {
             </thead>
             <tbody>
               {schedules.map((s) => (
-                <ScheduleRow key={s.id} schedule={s} />
+                <ScheduleRow
+                  key={s.id}
+                  schedule={s}
+                  onDeleteRequest={(sched) => setDeleteModal({ isOpen: true, schedule: sched })}
+                />
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, schedule: null })}
+        onConfirm={handleConfirmDelete}
+        title="Eliminar reporte programado"
+        message={`¿Eliminar el reporte "${deleteModal.schedule?.name}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        variant="danger"
+      />
     </div>
   )
 }

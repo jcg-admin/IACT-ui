@@ -15,6 +15,7 @@ import {
   selectAdminLoading,
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ConfirmModal from '../../components/shared/ConfirmModal'
 
 // Valida el formato modulo:accion definido en RBAC v5.6.0
 const CODENAME_REGEX = /^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$/
@@ -35,6 +36,7 @@ export default function FunctionCatalog() {
   const [formError, setFormError] = useState('')
   const [deactivateWarning, setDeactivateWarning] = useState(null)
   const [deactivateError, setDeactivateError] = useState(null)
+  const [deactivateModal, setDeactivateModal] = useState({ isOpen: false, fn: null })
 
   useEffect(() => {
     dispatch(fetchFunctions())
@@ -120,8 +122,13 @@ export default function FunctionCatalog() {
 
   // ── Desactivar ───────────────────────────────────────────────────────────
 
-  const handleDeactivate = async (fn) => {
-    if (!window.confirm(`¿Desactivar la función "${fn.codename}"? Esta acción puede afectar permisos activos.`)) return
+  const handleDeactivate = (fn) => {
+    setDeactivateModal({ isOpen: true, fn })
+  }
+
+  const handleConfirmDeactivate = async () => {
+    const fn = deactivateModal.fn
+    setDeactivateModal({ isOpen: false, fn: null })
     setDeactivateWarning(null)
     setDeactivateError(null)
     try {
@@ -317,6 +324,16 @@ export default function FunctionCatalog() {
           </tbody>
         </table>
       )}
+
+      <ConfirmModal
+        isOpen={deactivateModal.isOpen}
+        onClose={() => setDeactivateModal({ isOpen: false, fn: null })}
+        onConfirm={handleConfirmDeactivate}
+        title="Desactivar función"
+        message={`¿Desactivar la función "${deactivateModal.fn?.codename}"? Esta acción puede afectar permisos activos.`}
+        confirmLabel="Desactivar"
+        variant="warning"
+      />
     </div>
   )
 }

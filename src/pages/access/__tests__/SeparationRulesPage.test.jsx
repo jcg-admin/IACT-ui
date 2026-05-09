@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import SeparationRules from '../SeparationRules'
 
@@ -81,6 +81,8 @@ describe('SeparationRules — uc-adm-01', () => {
     renderPage()
     const deleteBtn = screen.getAllByRole('button', { name: /eliminar/i })[0]
     fireEvent.click(deleteBtn)
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /eliminar/i }))
     await waitFor(() => {
       expect(deleteSeparationRule).toHaveBeenCalledWith(SEPARATION_RULES[0].id)
     })

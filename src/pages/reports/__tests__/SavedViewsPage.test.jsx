@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
@@ -74,18 +74,18 @@ describe('SavedViews', () => {
   })
 
   it('dispatches deleteSavedView when delete is confirmed', () => {
-    window.confirm = jest.fn(() => true)
     wrap(<SavedViews />, buildStore({ savedViews: SAVED_VIEWS }))
     fireEvent.click(screen.getAllByRole('button', { name: /eliminar/i })[0])
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /eliminar/i }))
     expect(deleteSavedView).toHaveBeenCalledWith(1)
-    window.confirm.mockRestore()
   })
 
   it('does not dispatch deleteSavedView when delete is cancelled', () => {
-    window.confirm = jest.fn(() => false)
     wrap(<SavedViews />, buildStore({ savedViews: SAVED_VIEWS }))
     fireEvent.click(screen.getAllByRole('button', { name: /eliminar/i })[0])
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /cancelar/i }))
     expect(deleteSavedView).not.toHaveBeenCalled()
-    window.confirm.mockRestore()
   })
 })

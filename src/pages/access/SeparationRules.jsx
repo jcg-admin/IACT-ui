@@ -10,6 +10,7 @@ import {
     fetchSeparationRules, updateSeparationRule, deleteSeparationRule,
     selectSeparationRules, selectLoading, selectError,
 } from '../../redux/slices/access';
+import ConfirmModal from '../../components/shared/ConfirmModal';
 
 export default function SeparationRules() {
     const dispatch = useDispatch();
@@ -18,6 +19,7 @@ export default function SeparationRules() {
     const error = useSelector(selectError);
     const [selectedRule, setSelectedRule] = useState(null);
     const [showViolations, setShowViolations] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, name: '' });
 
     useEffect(() => {
         dispatch(fetchSeparationRules());
@@ -27,8 +29,13 @@ export default function SeparationRules() {
         dispatch(updateSeparationRule({ id: rule.id, isActive: !rule.isActive }));
     };
 
-    const handleDeleteRule = (id) => {
-        dispatch(deleteSeparationRule(id));
+    const handleDeleteRule = (rule) => {
+        setDeleteModal({ isOpen: true, id: rule.id, name: `${rule.code}: ${rule.name}` });
+    };
+
+    const handleConfirmDelete = () => {
+        dispatch(deleteSeparationRule(deleteModal.id));
+        setDeleteModal({ isOpen: false, id: null, name: '' });
     };
 
     const getTotalViolations = () => separationRules.reduce((sum, rule) => sum + (rule.violations || 0), 0);
@@ -139,7 +146,7 @@ export default function SeparationRules() {
                                         </button>
                                         <button
                                             aria-label="Eliminar"
-                                            onClick={(e) => { e.stopPropagation(); handleDeleteRule(rule.id); }}
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteRule(rule); }}
                                             disabled={loading}
                                             style={{ padding: '4px 10px', fontSize: '12px', border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#dc2626', color: '#fff' }}
                                         >
@@ -367,6 +374,16 @@ export default function SeparationRules() {
             }}>
                 <strong>Nota:</strong> Las reglas de separación de funciones son críticas para la seguridad del sistema. Cada regla previene conflictos de intereses asignando roles incompatibles a diferentes usuarios.
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, id: null, name: '' })}
+                onConfirm={handleConfirmDelete}
+                title="Eliminar regla de separación"
+                message={`¿Eliminar la regla "${deleteModal.name}"? Esta acción no se puede deshacer.`}
+                confirmLabel="Eliminar"
+                variant="danger"
+            />
         </div>
     );
 }

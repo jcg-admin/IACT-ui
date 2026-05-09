@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
@@ -84,18 +84,18 @@ describe('SharedViews (uc-rpt-11)', () => {
   })
 
   it('dispatches revokeShare when Revocar is confirmed', () => {
-    window.confirm = jest.fn(() => true)
     wrap(<SharedViews />, buildStore({ sent: SENT_SHARES }))
     fireEvent.click(screen.getByRole('button', { name: /revocar/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /revocar/i }))
     expect(revokeShare).toHaveBeenCalledWith(1)
-    window.confirm.mockRestore()
   })
 
   it('does not dispatch revokeShare when Revocar is cancelled', () => {
-    window.confirm = jest.fn(() => false)
     wrap(<SharedViews />, buildStore({ sent: SENT_SHARES }))
     fireEvent.click(screen.getByRole('button', { name: /revocar/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /cancelar/i }))
     expect(revokeShare).not.toHaveBeenCalled()
-    window.confirm.mockRestore()
   })
 })

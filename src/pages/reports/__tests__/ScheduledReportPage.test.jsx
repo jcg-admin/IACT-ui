@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import ScheduledReport from '../ScheduledReport'
@@ -170,6 +170,8 @@ describe('ScheduledReport', () => {
     })
     wrap(<ScheduledReport />, store)
     fireEvent.click(screen.getByRole('button', { name: /eliminar/i }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /eliminar/i }))
     expect(deleteSchedule).toHaveBeenCalled()
   })
 

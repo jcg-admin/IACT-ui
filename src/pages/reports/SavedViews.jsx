@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchSavedViews,
@@ -8,6 +8,7 @@ import {
   selectReportsError,
 } from '@store/slices/reports'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ConfirmModal from '../../components/shared/ConfirmModal'
 
 const REPORT_TYPE_LABELS = {
   agents:         'Agentes',
@@ -30,14 +31,17 @@ export default function SavedViews() {
   const views   = useSelector(selectSavedViews)
   const loading = useSelector(selectReportsLoading)
   const error   = useSelector(selectReportsError)
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, view: null })
 
   useEffect(() => {
     dispatch(fetchSavedViews())
   }, [dispatch])
 
-  const handleDelete = (view) => {
-    if (!window.confirm(`¿Eliminar la vista "${view.name}"?`)) return
-    dispatch(deleteSavedView(view.id))
+  const handleDelete = (view) => setDeleteModal({ isOpen: true, view })
+
+  const handleConfirmDelete = () => {
+    dispatch(deleteSavedView(deleteModal.view.id))
+    setDeleteModal({ isOpen: false, view: null })
   }
 
   return (
@@ -91,6 +95,16 @@ export default function SavedViews() {
           </tbody>
         </table>
       )}
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, view: null })}
+        onConfirm={handleConfirmDelete}
+        title="Eliminar vista"
+        message={`¿Eliminar la vista "${deleteModal.view?.name}"?`}
+        confirmLabel="Eliminar"
+        variant="danger"
+      />
     </div>
   )
 }

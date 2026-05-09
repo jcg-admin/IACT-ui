@@ -20,6 +20,7 @@ import {
   selectAGRComposition,
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import ConfirmModal from '../../components/shared/ConfirmModal'
 
 // Valida formato snake_case para codenames de AGR (ej: basic_operator_group)
 const AGR_CODENAME_REGEX = /^[a-z][a-z0-9_]*$/
@@ -42,6 +43,7 @@ export default function AGRCatalog() {
   const [selectedAgrId, setSelectedAgrId] = useState(null)
   const [addCodename, setAddCodename] = useState('')
   const [compositionError, setCompositionError] = useState(null)
+  const [deactivateModal, setDeactivateModal] = useState({ isOpen: false, agr: null })
 
   const selectedAgr = agrs.find(a => a.id === selectedAgrId)
   const composition = useSelector(selectAGRComposition(selectedAgrId))
@@ -123,8 +125,12 @@ export default function AGRCatalog() {
   }
 
   const handleDeactivate = (agr) => {
-    if (!window.confirm(`¿Desactivar el AGR "${agr.codename}"? Los usuarios con este agrupador perderán las funciones asociadas.`)) return
-    dispatch(deactivateAGR(agr.id))
+    setDeactivateModal({ isOpen: true, agr })
+  }
+
+  const handleConfirmDeactivate = () => {
+    dispatch(deactivateAGR(deactivateModal.agr.id))
+    setDeactivateModal({ isOpen: false, agr: null })
   }
 
   // ── Composición handlers ─────────────────────────────────────────────────
@@ -423,6 +429,16 @@ export default function AGRCatalog() {
           )}
         </>
       )}
+
+      <ConfirmModal
+        isOpen={deactivateModal.isOpen}
+        onClose={() => setDeactivateModal({ isOpen: false, agr: null })}
+        onConfirm={handleConfirmDeactivate}
+        title="Desactivar AGR"
+        message={`¿Desactivar el AGR "${deactivateModal.agr?.codename}"? Los usuarios con este agrupador perderán las funciones asociadas.`}
+        confirmLabel="Desactivar"
+        variant="warning"
+      />
     </div>
   )
 }

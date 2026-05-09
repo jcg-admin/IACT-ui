@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import FunctionCatalog from '../FunctionCatalog'
 
@@ -115,7 +115,6 @@ describe('FunctionCatalog — deactivate 202 warning (UC_ADM_02 FA-04)', () => {
   })
 
   it('shows warning alert when deactivate returns 202 with warnings', async () => {
-    jest.spyOn(window, 'confirm').mockReturnValue(true)
     mockDispatch.mockImplementation((action) => ({
       ...action,
       unwrap: () => Promise.resolve({
@@ -126,14 +125,14 @@ describe('FunctionCatalog — deactivate 202 warning (UC_ADM_02 FA-04)', () => {
     wrapper(<FunctionCatalog />)
     const btn = screen.getAllByRole('button', { name: /desactivar/i })[0]
     fireEvent.click(btn)
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /desactivar/i }))
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/asignaciones activas/i)
     })
-    window.confirm.mockRestore()
   })
 
   it('shows error alert when deactivate throws', async () => {
-    jest.spyOn(window, 'confirm').mockReturnValue(true)
     mockDispatch.mockImplementation((action) => ({
       ...action,
       unwrap: () => Promise.reject({ message: 'Error de red' }),
@@ -141,14 +140,14 @@ describe('FunctionCatalog — deactivate 202 warning (UC_ADM_02 FA-04)', () => {
     wrapper(<FunctionCatalog />)
     const btn = screen.getAllByRole('button', { name: /desactivar/i })[0]
     fireEvent.click(btn)
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /desactivar/i }))
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/Error de red/i)
     })
-    window.confirm.mockRestore()
   })
 
   it('shows no alert when deactivate returns 200 without warnings', async () => {
-    jest.spyOn(window, 'confirm').mockReturnValue(true)
     mockDispatch.mockImplementation((action) => ({
       ...action,
       unwrap: () => Promise.resolve({ id: 1, active: false }),
@@ -156,9 +155,10 @@ describe('FunctionCatalog — deactivate 202 warning (UC_ADM_02 FA-04)', () => {
     wrapper(<FunctionCatalog />)
     const btn = screen.getAllByRole('button', { name: /desactivar/i })[0]
     fireEvent.click(btn)
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: /desactivar/i }))
     await waitFor(() => {
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     })
-    window.confirm.mockRestore()
   })
 })

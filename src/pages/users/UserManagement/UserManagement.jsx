@@ -13,6 +13,7 @@ import { getNotificationService } from '@api/notificationGateway'
 import { assignGroupToUser, revokeGroupFromUser, selectGroups } from '../../../redux/slices/access'
 import userGateway from '../../../services/userGateway'
 import GroupAssignModal from '../../../components/access/GroupAssignModal'
+import ConfirmModal from '../../../components/shared/ConfirmModal'
 import UserList from './UserList'
 import UserForm from './UserForm'
 import './UserManagement.scss'
@@ -28,6 +29,7 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [groupModal, setGroupModal] = useState({ isOpen: false, mode: 'assign', userId: null })
+  const [deactivateModal, setDeactivateModal] = useState({ isOpen: false, userId: null })
 
   const notify = getNotificationService()
 
@@ -178,11 +180,13 @@ export default function UserManagement() {
   /**
    * Handle deactivate user (baja lógica — UC-USR-04)
    */
-  const handleDeactivateUser = async (userId) => {
-    if (!window.confirm('¿Confirmar dar de baja al usuario?')) {
-      return
-    }
+  const handleDeactivateUser = (userId) => {
+    setDeactivateModal({ isOpen: true, userId })
+  }
 
+  const handleConfirmDeactivate = async () => {
+    const { userId } = deactivateModal
+    setDeactivateModal({ isOpen: false, userId: null })
     try {
       setUsers(users.map(u => u.id === userId ? { ...u, state: 'ELIMINATED' } : u))
       notify.success('Usuario dado de baja correctamente')
@@ -373,6 +377,16 @@ export default function UserManagement() {
         groups={groups || []}
         onConfirm={handleGroupConfirm}
         onClose={() => setGroupModal({ isOpen: false, mode: 'assign', userId: null })}
+      />
+
+      <ConfirmModal
+        isOpen={deactivateModal.isOpen}
+        onClose={() => setDeactivateModal({ isOpen: false, userId: null })}
+        onConfirm={handleConfirmDeactivate}
+        title="Dar de baja al usuario"
+        message="¿Confirmar dar de baja al usuario? Esta acción no se puede deshacer."
+        confirmLabel="Dar de baja"
+        variant="danger"
       />
     </div>
   )
