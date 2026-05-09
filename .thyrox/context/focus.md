@@ -2,7 +2,7 @@
 type: Focus Actual
 version: 1.0
 project: IACT-UI
-updated_at: 2026-05-08 20:27:28
+updated_at: 2026-05-09 03:51:19
 branch: claude/project-analysis-N9IkV
 wp_activo: null
 ```
@@ -12,8 +12,8 @@ wp_activo: null
 ## Estado actual — Sin WP activo
 
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** WP `admin-uc-audit` cerrado (Phase 11 TRACK completa). **1894 tests green.**
-**Próximo:** Phase 12 STANDARDIZE para propagar lecciones. Luego definir siguiente WP.
+**Estado:** WP `scss-compliance-audit` cerrado (Phase 11 TRACK completa). **1989 tests green.**
+**Próximo:** Abrir WP `report-export-complete` — gaps en UC_RPT_04 export job polling/download/cancel.
 
 ---
 
