@@ -23,6 +23,12 @@ status: Aprobado
   descarga (notificación local). No implementar backend→mailbox si no existe endpoint mock.
 - **DECISION-05**: T-007 excluido — spec no define export por página individual.
   Scope final: `ReportExport.jsx` + mock + tests.
+- **DECISION-06**: Los dos sistemas de exportación son complementarios, no duplicados.
+  Sistema A (cliente/síncrono): `ExportButtons → useExport → exportGateway` (ExcelJS/jsPDF)
+  — usado por `UserManagement.jsx` para datos pequeños ya cargados en memoria.
+  Sistema B (servidor/asíncrono): `ReportExport → reportsGateway → POST /api/reports/export/`
+  — para datasets grandes con worker backend. Sistema C (audit): `Export.jsx → auditService`.
+  No se depreca ninguno. No hay resolución de duplicación pendiente.
 
 ## DAG de dependencias
 

@@ -11,6 +11,8 @@
  * POST /api/reports/scheduled/          - Programar nuevo reporte
  * GET  /api/reports/scheduled/          - Listar reportes programados
  * POST /api/reports/export/             - Solicitar exportación de reporte (async → job_id)
+ * GET  /api/job/{id}/status/            - Estado del job de exportación (sin caché)
+ * POST /api/job/{id}/cancel/            - Cancelar job de exportación pendiente
  */
 
 import apiService from './apiClient'
@@ -132,6 +134,14 @@ class ReportsService {
 
   async getReportHistory() {
     return apiService.get('/api/reports/history/')
+  }
+
+  async getExportJobStatus(jobId) {
+    return apiService.get(`/api/job/${jobId}/status/`)
+  }
+
+  async cancelExportJob(jobId) {
+    return apiService.post(`/api/job/${jobId}/cancel/`, {})
   }
 
   /**

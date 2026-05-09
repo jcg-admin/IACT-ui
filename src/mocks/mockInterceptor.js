@@ -25,6 +25,7 @@ class MockInterceptor {
     this._knownAlertIds = new Set(['alert-1', 'alert-2', 'alert-3']);
     this._blockedMenuItems = new Map();
     this._inactiveFunctionsByItemId = new Set();
+    this._jobPollCounters = new Map();
 
     // UC_RPT_09: saved filters store (mutable, initialized from fixture)
     this.resetSavedFilters()
@@ -139,13 +140,13 @@ class MockInterceptor {
     if (url.includes('/api/job/start/')) {
       return this._handleJobStart(body);
     }
-    if (url.includes('/api/job/status/')) {
+    if (url.match(/\/api\/job\/[^/]+\/status\//)) {
       return this._handleJobStatus(url);
     }
-    if (url.includes('/api/job/download/')) {
+    if (url.match(/\/api\/job\/[^/]+\/download\//)) {
       return this._handleJobDownload(url);
     }
-    if (url.includes('/api/job/cancel/')) {
+    if (url.match(/\/api\/job\/[^/]+\/cancel\//)) {
       return this._handleJobCancel(url);
     }
 
@@ -238,6 +239,19 @@ class MockInterceptor {
 
     // REPORTS — UC-RPT-04: exportar reporte (async job)
     if (url.includes('/api/reports/export/')) {
+      const errorCode = options?.params?.test_error || body?.test_error
+      if (errorCode === 'ROW_LIMIT_EXCEEDED') {
+        return this._error(400, 'El reporte supera el límite de filas exportables', 'ROW_LIMIT_EXCEEDED')
+      }
+      if (errorCode === 'EXPORT_LIMIT_EXCEEDED') {
+        return this._error(429, 'Ya tiene exports activos en cola. Espere a que finalicen.', 'EXPORT_LIMIT_EXCEEDED')
+      }
+      if (errorCode === 'PERMISSION_REVOKED') {
+        return this._error(403, 'Permiso reports:export revocado', 'PERMISSION_REVOKED')
+      }
+      if (errorCode === 'TOO_LARGE') {
+        return this._error(413, 'El dataset supera el límite de tamaño de archivo', 'TOO_LARGE')
+      }
       return {
         status: 202,
         data: { job_id: `report-export-${Date.now()}` },
@@ -925,17 +939,50 @@ class MockInterceptor {
   }
 
   _handleJobStatus(url) {
-    const _jobId = url.split('/').slice(-2)[0];
+    const jobId = url.split('/').filter(Boolean).slice(-2)[0]
+    const testState = url.includes('?test_state=done') ? 'done'
+      : url.includes('?test_state=failed') ? 'failed' : null
+
+    if (testState) {
+      return {
+        status: 200,
+        data: {
+          job_id: jobId,
+          status: testState,
+          progress: testState === 'done' ? 100 : 0,
+          file_url: testState === 'done'
+            ? `https://storage.example.com/exports/${jobId}.csv?ttl=86400` : null,
+          error: testState === 'failed' ? 'Export failed' : null,
+        }
+      }
+    }
+
+    const count = (this._jobPollCounters.get(jobId) || 0) + 1
+    this._jobPollCounters.set(jobId, count)
+
+    if (count >= 3) {
+      return {
+        status: 200,
+        data: {
+          job_id: jobId,
+          status: 'done',
+          progress: 100,
+          file_url: `https://storage.example.com/exports/${jobId}.csv?ttl=86400`,
+          error: null,
+        }
+      }
+    }
 
     return {
       status: 200,
       data: {
-        jobId: _jobId,
-        status: 'processing',
-        progress: Math.floor(Math.random() * 100),
-        eta: Math.floor(Math.random() * 60)
+        job_id: jobId,
+        status: count === 1 ? 'queued' : 'running',
+        progress: count * 30,
+        file_url: null,
+        error: null,
       }
-    };
+    }
   }
 
   _handleJobDownload(url) {
