@@ -244,6 +244,11 @@ class MockInterceptor {
       }
     }
 
+    // UC-PERM-02 FA-06: preview impacto de revocación (no persiste)
+    if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/preview-revoke\//) && method === 'GET') {
+      return this._handlePreviewRevoke(url);
+    }
+
     // ACCESS — UC-PERM-02: revocar grupo de usuario
     if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/$/) && method === 'DELETE') {
       if (!body?.revoke_reason || body.revoke_reason.trim() === '') {
@@ -644,6 +649,32 @@ class MockInterceptor {
     }
 
     return users;
+  }
+
+  // UC_PERM_02 FA-06: preview impacto de revocación (no persiste, no genera AuditEvent)
+  _handlePreviewRevoke(url) {
+    const match = url.match(/\/api\/users\/([^/]+)\/access-groups\/(\d+)\/preview-revoke\//)
+    const groupId = match ? Number(match[2]) : null
+    // AGR predefinido (id=10 = admins_group) → warnings con funciones críticas
+    if (groupId === 10) {
+      return {
+        status: 200,
+        data: {
+          functions_to_revoke: ['create_users', 'delete_users', 'block_users'],
+          functions_remaining: 0,
+          warnings: { critical_revoked: ['create_users', 'delete_users'], no_functions: true },
+        },
+      }
+    }
+    // Otros grupos → sin warnings críticos
+    return {
+      status: 200,
+      data: {
+        functions_to_revoke: ['view_reports'],
+        functions_remaining: 5,
+        warnings: { critical_revoked: [], no_functions: false },
+      },
+    }
   }
 
   // UC_USR_05: bloquear usuario

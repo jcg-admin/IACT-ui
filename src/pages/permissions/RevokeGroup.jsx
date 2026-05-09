@@ -9,6 +9,7 @@ import {
   clearError,
   resetState,
 } from '../../redux/slices/access'
+import apiClient from '../../services/apiClient'
 
 export default function RevokeGroup() {
   const dispatch = useDispatch()
@@ -21,6 +22,13 @@ export default function RevokeGroup() {
   const [groupId, setGroupId] = useState('')
   const [revokeReason, setRevokeReason] = useState('')
 
+  // UC_PERM_02 PASO 4: preview modal state
+  const [previewData, setPreviewData] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [confirmLiteral, setConfirmLiteral] = useState('')
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState(null)
+
   useEffect(() => {
     return () => {
       dispatch(clearError())
@@ -28,18 +36,51 @@ export default function RevokeGroup() {
     }
   }, [dispatch])
 
-  function isValid() {
+  function isFormValid() {
     return userId.trim() !== '' && groupId !== '' && revokeReason.trim().length >= 10
   }
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (!isValid()) return
+  async function handleVerifyImpact() {
+    setPreviewLoading(true)
+    setPreviewError(null)
+    try {
+      const data = await apiClient.get(
+        `/api/users/${userId.trim()}/access-groups/${groupId}/preview-revoke/`
+      )
+      setPreviewData(data)
+      setShowModal(true)
+    } catch (err) {
+      setPreviewError(err.message ?? 'Error al obtener el impacto de revocación.')
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  function hasCriticalWarnings() {
+    return previewData?.warnings?.critical_revoked?.length > 0
+  }
+
+  function isConfirmEnabled() {
+    if (!previewData) return false
+    if (hasCriticalWarnings()) return confirmLiteral === 'REVOCAR'
+    return true
+  }
+
+  function handleConfirm() {
     dispatch(revokeGroupFromUser({
       userId: userId.trim(),
       groupId,
       revoke_reason: revokeReason.trim(),
     }))
+    setShowModal(false)
+    setPreviewData(null)
+    setConfirmLiteral('')
+  }
+
+  function handleCloseModal() {
+    setShowModal(false)
+    setPreviewData(null)
+    setConfirmLiteral('')
   }
 
   return (
@@ -63,7 +104,10 @@ export default function RevokeGroup() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: '480px', display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
+      <form
+        onSubmit={(e) => { e.preventDefault(); handleVerifyImpact() }}
+        style={{ maxWidth: '480px', display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}
+      >
         <div>
           <label htmlFor="revoke-group-userid" style={{ display: 'block', marginBottom: 4 }}>
             Usuario (ID)
@@ -116,14 +160,109 @@ export default function RevokeGroup() {
           )}
         </div>
 
+        {previewError && (
+          <div role="alert" style={{ color: '#f87171', fontSize: '13px' }}>{previewError}</div>
+        )}
+
         <button
           type="submit"
           className="btn btn-danger"
-          disabled={!isValid() || loading}
+          disabled={!isFormValid() || previewLoading || loading}
+          aria-label="Verificar impacto"
         >
-          {loading ? 'Revocando...' : 'Revocar'}
+          {previewLoading ? 'Verificando...' : 'Verificar impacto'}
         </button>
       </form>
+
+      {/* UC_PERM_02 PASO 4 — Modal de composición y warnings */}
+      {showModal && previewData && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Impacto de revocación"
+          style={{
+            position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+          }}
+        >
+          <div style={{
+            backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px',
+            padding: '24px', maxWidth: '480px', width: '90%',
+          }}>
+            <h2 style={{ color: '#fff', margin: '0 0 16px 0', fontSize: '18px' }}>
+              Impacto de revocación
+            </h2>
+
+            <div style={{ marginBottom: '12px' }}>
+              <p style={{ color: '#9ca3af', margin: '0 0 8px 0', fontSize: '13px' }}>
+                Funciones que se revocarán:
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {previewData.functions_to_revoke.map((fn) => (
+                  <span
+                    key={fn}
+                    style={{ backgroundColor: '#7f1d1d', color: '#fca5a5', padding: '2px 8px', borderRadius: '4px', fontSize: '12px' }}
+                  >
+                    {fn}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <p style={{ color: '#9ca3af', fontSize: '13px', margin: '0 0 12px 0' }}>
+              Funciones restantes tras revocación: <strong style={{ color: '#fff' }}>{previewData.functions_remaining}</strong>
+            </p>
+
+            {previewData.warnings.no_functions && (
+              <div role="alert" style={{
+                backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px',
+                padding: '10px', color: '#fca5a5', fontSize: '13px', marginBottom: '12px',
+              }}>
+                ⚠ El usuario perderá TODAS sus funciones efectivas.
+              </div>
+            )}
+
+            {hasCriticalWarnings() && (
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{
+                  backgroundColor: '#78350f', border: '1px solid #d97706', borderRadius: '4px',
+                  padding: '10px', color: '#fcd34d', fontSize: '13px', marginBottom: '8px',
+                }}>
+                  Funciones críticas afectadas: {previewData.warnings.critical_revoked.join(', ')}
+                </div>
+                <label htmlFor="confirm-literal" style={{ display: 'block', color: '#9ca3af', fontSize: '13px', marginBottom: '4px' }}>
+                  Escribe <strong style={{ color: '#fff' }}>REVOCAR</strong> para confirmar
+                </label>
+                <input
+                  id="confirm-literal"
+                  type="text"
+                  value={confirmLiteral}
+                  onChange={(e) => setConfirmLiteral(e.target.value)}
+                  placeholder="REVOCAR"
+                  aria-label="Confirmación literal"
+                  style={{ width: '100%' }}
+                />
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
+              <button
+                onClick={handleCloseModal}
+                className="btn btn-secondary"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="btn btn-danger"
+                disabled={!isConfirmEnabled() || loading}
+              >
+                {loading ? 'Revocando...' : 'Confirmar revocación'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
