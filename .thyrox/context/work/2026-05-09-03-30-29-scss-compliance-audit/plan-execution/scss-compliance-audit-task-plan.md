@@ -61,7 +61,7 @@ Por la versión dark theme coherente con los bloques existentes (`#7f1d1d`, `#dc
 
 Verificar: clase `role="alert"` no afectada por cambio de SCSS.
 
-- [ ] T-001 — Actualizar .error-banner SCSS a dark theme
+- [x] T-001 — Actualizar .error-banner SCSS a dark theme
 
 ---
 
@@ -93,7 +93,7 @@ Reemplazar en CADA archivo:
 
 Nota: preservar `role="alert"` en todos los casos — solo eliminar el `style={}`.
 
-- [ ] T-002 — Migrar pages/access/ (9 archivos)
+- [x] T-002 — Migrar pages/access/ (9 archivos)
 
 ---
 
@@ -110,7 +110,7 @@ Nota: preservar `role="alert"` en todos los casos — solo eliminar el `style={}
 - `AlertHistory.jsx`
 - `Alerts.jsx`
 
-- [ ] T-003 — Migrar pages/audit/ + pages/alerts/ (7 archivos)
+- [x] T-003 — Migrar pages/audit/ + pages/alerts/ (7 archivos)
 
 ---
 
@@ -130,7 +130,7 @@ Nota: preservar `role="alert"` en todos los casos — solo eliminar el `style={}
 - `RealTimeMetrics.jsx`
 - `ScheduledReport.jsx`
 
-- [ ] T-004 — Migrar pages/logs/ + pages/permissions/ + pages/reports/ (8 archivos)
+- [x] T-004 — Migrar pages/logs/ + pages/permissions/ + pages/reports/ (8 archivos)
 
 ---
 
@@ -156,7 +156,7 @@ Ejecutar suite completa: `npx jest --no-coverage` → 1989+ tests deben pasar.
 
 Commit: "Migrate all hardcoded error blocks to .error-banner"
 
-- [ ] T-005 — Migrar components/ (8 archivos) + verificar 0 instancias + commit B-I
+- [x] T-005 — Migrar components/ (8 archivos) + verificar 0 instancias + commit B-I
 
 ---
 
@@ -195,7 +195,7 @@ Verificar: `_pages-shared.scss` tiene `.status-badge.status-active`, `.status-in
 
 Ejecutar: `npx jest src/pages/users/UserManagement/__tests__/ --no-coverage`
 
-- [ ] T-006 — UserList.jsx STATE_BADGE → status-badge
+- [x] T-006 — UserList.jsx STATE_BADGE → status-badge
 
 ---
 
@@ -229,7 +229,7 @@ Ejecutar: `npx jest src/pages/users/UserManagement/__tests__/ --no-coverage`
 
 Ejecutar suite + commit B-II: "Migrate entity state badges to status-badge pattern"
 
-- [ ] T-007 — ScheduledReport + SeparationRulesCatalog → status-badge + commit B-II
+- [x] T-007 — ScheduledReport + SeparationRulesCatalog → status-badge + commit B-II
 
 ---
 
@@ -244,7 +244,7 @@ el SCSS ya aplica `display: flex; gap: $spacing-sm`.
 Eliminar el atributo `style={}` del wrapper `<div className="search-bar" style={...}>`.
 Preservar cualquier `style` en hijos si existe.
 
-- [ ] T-008 — Eliminar style redundante en FunctionCatalog + AGRCatalog search wrappers
+- [x] T-008 — Eliminar style redundante en FunctionCatalog + AGRCatalog search wrappers
 
 ---
 
@@ -284,7 +284,7 @@ al inline, correcto. `.search-input` tiene `flex: 1` — igual al inline `style=
 Ejecutar suite completa: `npx jest --no-coverage` → 1989+ tests.
 Commit B-III: "Standardize search-bar wrappers per scss-page-patterns guide"
 
-- [ ] T-009 — LogSearch.jsx → search-bar + commit B-III
+- [x] T-009 — LogSearch.jsx → search-bar + commit B-III
 
 ---
 
