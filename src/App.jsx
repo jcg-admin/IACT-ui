@@ -11,6 +11,7 @@ import { AppProviders } from './AppProviders'
 import ToastContainer from '@ui/shared/Toast/ToastContainer'
 import ApiErrorAlert from '@ui/feedback/ApiErrorAlert'
 import ServerErrorBanner from '@ui/feedback/ServerErrorBanner'
+import RootErrorBoundary from '@ui/shared/ErrorBoundaries'
 import '@styles/main.scss'
 
 /**
@@ -43,9 +44,11 @@ export default function App() {
   return (
     <AppProviders>
       <ServerErrorBanner />
-      <Suspense fallback={<LoadingFallback />}>
-        <AppRouter />
-      </Suspense>
+      <RootErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <AppRouter />
+        </Suspense>
+      </RootErrorBoundary>
       <ToastContainer />
       <ApiErrorAlert />
     </AppProviders>
