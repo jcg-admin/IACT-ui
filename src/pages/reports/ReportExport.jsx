@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import reportsService from '../../services/reportsGateway'
 
 const REPORT_TYPES = [
@@ -18,25 +18,72 @@ const FORMATS = [
   { value: 'pdf',  label: 'PDF' },
 ]
 
+const ERROR_MESSAGES = {
+  ROW_LIMIT_EXCEEDED: 'El reporte supera el límite de filas exportables. Aplique filtros de fecha para reducir el rango.',
+  EXPORT_LIMIT_EXCEEDED: 'Ya tiene exports activos en cola. Espere a que finalicen antes de solicitar uno nuevo.',
+  PERMISSION_REVOKED: 'Su permiso de exportación fue revocado. Contacte al administrador.',
+  TOO_LARGE: 'El dataset supera el límite de tamaño. Use filtros adicionales o solicite un formato más compacto.',
+}
+
 export default function ReportExport() {
   const [type, setType] = useState('agents')
   const [format, setFormat] = useState('csv')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [jobId, setJobId] = useState(null)
+  const [jobStatus, setJobStatus] = useState(null)
+  const [fileUrl, setFileUrl] = useState(null)
+  const pollingRef = useRef(null)
+
+  useEffect(() => {
+    return () => { if (pollingRef.current) clearInterval(pollingRef.current) }
+  }, [])
+
+  useEffect(() => {
+    if (!jobId || jobStatus === 'done' || jobStatus === 'failed') return
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await reportsService.getExportJobStatus(jobId)
+        setJobStatus(res.status)
+        if (res.status === 'done') {
+          setFileUrl(res.file_url)
+          clearInterval(pollingRef.current)
+        } else if (res.status === 'failed') {
+          setError(res.error ?? 'La exportación falló')
+          clearInterval(pollingRef.current)
+        }
+      } catch (err) {
+        setError(err.message)
+        clearInterval(pollingRef.current)
+      }
+    }, 3000)
+    return () => clearInterval(pollingRef.current)
+  }, [jobId])
 
   async function handleExport() {
     setLoading(true)
     setError(null)
     setJobId(null)
+    setJobStatus(null)
+    setFileUrl(null)
     try {
       const res = await reportsService.exportReport(type, format, {})
       setJobId(res?.job_id ?? null)
+      setJobStatus('queued')
     } catch (err) {
-      setError(err.message)
+      const code = err.code ?? err.data?.code
+      setError(ERROR_MESSAGES[code] ?? err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleCancel() {
+    if (pollingRef.current) clearInterval(pollingRef.current)
+    await reportsService.cancelExportJob(jobId)
+    setJobId(null)
+    setJobStatus(null)
+    setFileUrl(null)
   }
 
   return (
@@ -95,18 +142,37 @@ export default function ReportExport() {
         )}
 
         {jobId && (
-          <div style={{
-            padding: '12px 16px',
-            backgroundColor: '#064e3b',
-            border: '1px solid #065f46',
-            borderRadius: '6px',
-            color: '#a7f3d0',
-            fontSize: '14px',
-          }}>
-            <strong>Exportación encolada.</strong> Job ID: <code>{jobId}</code>
-            <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#6ee7b7' }}>
-              El archivo estará disponible para descarga en los próximos minutos.
-            </p>
+          <div style={{ padding: '12px 16px', backgroundColor: '#1e3a5f', border: '1px solid #2563eb',
+            borderRadius: '6px', fontSize: '14px', color: '#bfdbfe' }}>
+
+            {jobStatus === 'done' ? (
+              <>
+                <strong style={{ color: '#a7f3d0' }}>✓ Exportación lista.</strong>
+                {' '}Job ID: <code>{jobId}</code>
+                <div style={{ marginTop: '12px' }}>
+                  <a href={fileUrl} download className="btn btn-primary" style={{ fontSize: '13px' }}>
+                    Descargar archivo
+                  </a>
+                </div>
+              </>
+            ) : jobStatus === 'failed' ? (
+              <span style={{ color: '#fca5a5' }}>✗ La exportación falló. Intente nuevamente.</span>
+            ) : (
+              <>
+                <strong>Exportación en progreso…</strong>
+                {' '}Job ID: <code>{jobId}</code>
+                <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#93c5fd' }}>
+                  {jobStatus === 'queued' ? 'En cola…' : 'Procesando…'}
+                </p>
+                <button
+                  className="btn btn-secondary"
+                  style={{ marginTop: '8px', fontSize: '12px' }}
+                  onClick={handleCancel}
+                >
+                  Cancelar exportación
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
