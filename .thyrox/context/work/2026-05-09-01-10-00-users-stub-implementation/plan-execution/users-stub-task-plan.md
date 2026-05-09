@@ -73,11 +73,11 @@ Orden: T-001 (scope gate) → T-002..T-005 (Block/Unblock) → T-006..T-008 (Pro
 
 ## Block III — UC_USR_07: Profile gateway + mock
 
-- [ ] [T-006] Agregar a `src/services/userGateway.js`:
+- [x] [T-006] Agregar a `src/services/userGateway.js`:
   `getMyProfile()` — `GET /api/users/me/`.
   `updateMyProfile(data)` — `PATCH /api/users/me/profile/`.
 
-- [ ] [T-007] Agregar en `src/mocks/mockInterceptor.js` ANTES del catch-all
+- [x] [T-007] Agregar en `src/mocks/mockInterceptor.js` ANTES del catch-all
   `/api/users` las rutas:
   `GET /api/users/me/` → 200 con fixture de perfil propio:
     `{ id: 1, username: 'admin', first_name: 'Admin', last_name: 'User', email: 'admin@example.com', notification_preferences: { email_notifications: true, push_notifications: false } }`
@@ -88,7 +88,7 @@ Orden: T-001 (scope gate) → T-002..T-005 (Block/Unblock) → T-006..T-008 (Pro
 
 ## Block IV — UC_USR_07: Profile.jsx
 
-- [ ] [T-008] Reescribir `src/pages/Profile.jsx`:
+- [x] [T-008] Reescribir `src/pages/Profile.jsx`:
   - `useEffect` al mount: llama `userGateway.getMyProfile()`, guarda en state.
   - Form con campos: `first_name` (Nombre), `last_name` (Apellido), `email`
     (Correo de contacto), `email_notifications` (checkbox), `push_notifications`
