@@ -1,327 +1,100 @@
 /**
- * Frontend Alerts Service
- * IACT v4.0 - Alerts Module
- * API client para endpoints de alertas y notificaciones
+ * Alerts Gateway
+ * IACT v4.0 — Alerts Module
+ * UC_ALR_01: Gestionar reglas de alerta
+ * UC_ALR_02: Ver y filtrar alertas activas
+ * UC_ALR_03: Reconocer alerta
+ * UC_ALR_04: Ver historial de alertas disparadas
+ * UC_ALR_05: Gestionar suscripciones
  */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+import apiService from './apiClient'
 
-class AlertsGateway {
-    /**
-     * UC_ALR_01: Obtener todas las alertas
-     */
-    async getAlerts() {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+const AlertsGateway = {
+  /** UC_ALR_02: Obtener alertas activas */
+  getAlerts() {
+    return apiService.get('/api/alerts/')
+  },
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch alerts');
-        }
+  /** UC_ALR_01: Crear nueva regla de alerta */
+  createAlert(config) {
+    return apiService.post('/api/alerts/rules/', config)
+  },
 
-        return response.json();
-    }
+  /** UC_ALR_01: Actualizar regla de alerta existente */
+  updateAlert(alertId, config) {
+    return apiService.put(`/api/alerts/rules/${alertId}/`, config)
+  },
 
-    /**
-     * UC_ALR_02: Crear nueva alerta
-     */
-    async createAlert(config) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(config),
-        });
+  /** UC_ALR_01: Eliminar regla de alerta */
+  deleteAlert(alertId) {
+    return apiService.delete(`/api/alerts/rules/${alertId}/`)
+  },
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to create alert');
-        }
+  /** UC_ALR_01: Cambiar estado de regla (active/paused) */
+  toggleAlertStatus(alertId, status) {
+    return apiService.patch(`/api/alerts/rules/${alertId}/`, { status })
+  },
 
-        return response.json();
-    }
+  /** UC_ALR_04: Obtener historial de alertas disparadas */
+  getAlertHistory(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    return apiService.get(`/api/alerts/history/${params ? `?${params}` : ''}`)
+  },
 
-    /**
-     * Actualizar alerta existente
-     */
-    async updateAlert(alertId, config) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/${alertId}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(config),
-        });
+  /** Templates */
+  getTemplates() {
+    return apiService.get('/api/alerts/templates/')
+  },
 
-        if (!response.ok) {
-            throw new Error('Failed to update alert');
-        }
+  getTemplateById(templateId) {
+    return apiService.get(`/api/alerts/templates/${templateId}/`)
+  },
 
-        return response.json();
-    }
+  /** UC_ALR_05: Suscribirse — body: { subscription_type, rule_id?, severity_filter?, scope_filter? } */
+  subscribeToAlert(subscriptionData) {
+    return apiService.post('/api/alerts/subscriptions/', subscriptionData)
+  },
 
-    /**
-     * Eliminar alerta
-     */
-    async deleteAlert(alertId) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/${alertId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  /** UC_ALR_05: Desuscribirse */
+  unsubscribeFromAlert(subscriptionId) {
+    return apiService.delete(`/api/alerts/subscriptions/${subscriptionId}/`)
+  },
 
-        if (!response.ok) {
-            throw new Error('Failed to delete alert');
-        }
+  /** UC_ALR_05: Obtener mis suscripciones */
+  getMySubscriptions() {
+    return apiService.get('/api/alerts/subscriptions/me/')
+  },
 
-        return response.json();
-    }
+  /** UC_ALR_05: Actualizar preferencias de suscripción */
+  updateSubscriptionPreferences(preferences) {
+    return apiService.put('/api/alerts/subscriptions/preferences/', preferences)
+  },
 
-    /**
-     * UC_ALR_03: Obtener historial de alertas disparadas
-     */
-    async getAlertHistory(filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const queryParams = new URLSearchParams(filters);
-        const response = await fetch(`${API_BASE_URL}/alerts/history?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  /** UC_ALR_04: Exportar historial */
+  exportAlertHistory(format = 'csv', filters = {}) {
+    return apiService.post('/api/alerts/history/export/', { format, filters })
+  },
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch alert history');
-        }
+  /** UC_ALR_01: Validar condición (dry-run) */
+  validateCondition(condition) {
+    return apiService.post('/api/alerts/validate-condition/', condition)
+  },
 
-        return response.json();
-    }
+  /** Obtener métricas disponibles para reglas */
+  getAvailableMetrics() {
+    return apiService.get('/api/alerts/metrics/')
+  },
 
-    /**
-     * UC_ALR_05: Obtener plantillas de alertas
-     */
-    async getTemplates() {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/templates`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  /** UC_ALR_03: Reconocer alerta individual */
+  acknowledgeAlert(alertId, note = null) {
+    return apiService.post(`/api/alerts/${alertId}/ack/`, { note })
+  },
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch templates');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener plantilla por ID
-     */
-    async getTemplateById(templateId) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/templates/${templateId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch template');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * UC_ALR_04: Suscribirse a una alerta
-     */
-    async subscribeToAlert(alertId, channels, frequency) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/subscriptions`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                alert_id: alertId,
-                channels,
-                frequency,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to subscribe to alert');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Desuscribirse de una alerta
-     */
-    async unsubscribeFromAlert(alertId) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/subscriptions/${alertId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to unsubscribe from alert');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener mis suscripciones
-     */
-    async getMySubscriptions() {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/subscriptions/me`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch subscriptions');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Actualizar preferencias de suscripción
-     */
-    async updateSubscriptionPreferences(preferences) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/subscriptions/preferences`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(preferences),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to update preferences');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Exportar historial de alertas
-     */
-    async exportAlertHistory(format = 'csv', filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/history/export`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                format,
-                filters,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to export history');
-        }
-
-        return response.blob();
-    }
-
-    /**
-     * Validar condición de alerta
-     */
-    async validateCondition(condition) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/validate-condition`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(condition),
-        });
-
-        if (!response.ok) {
-            throw new Error('Invalid condition');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener métricas disponibles para alertas
-     */
-    async getAvailableMetrics() {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/metrics`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch metrics');
-        }
-
-        return response.json();
-    }
-
-    async acknowledgeAlert(alertId, note = null) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/alerts/${alertId}/ack/`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ note }),
-        });
-
-        if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            const error = new Error(err.error || 'Failed to acknowledge alert');
-            error.response = { status: response.status };
-            throw error;
-        }
-
-        return response.json();
-    }
+  /** UC_ALR_03: Reconocimiento masivo (hasta 50 alertas) */
+  bulkAcknowledgeAlerts(alertIds) {
+    return apiService.post('/api/alerts/bulk-ack/', { alert_ids: alertIds })
+  },
 }
 
-export default new AlertsGateway();
+export default AlertsGateway
