@@ -21,6 +21,8 @@ class MockInterceptor {
     this.mockDelay = 800; // ms
     this._pipelineRunning = false;
     this._acknowledgedAlerts = new Set();
+    this._resolvedAlerts = new Set(['alert-3']); // alert-3 starts resolved in fixtures
+    this._knownAlertIds = new Set(['alert-1', 'alert-2', 'alert-3']);
     this._blockedMenuItems = new Map();
     this._inactiveFunctionsByItemId = new Set();
 
@@ -1598,9 +1600,27 @@ class MockInterceptor {
   _handleAcknowledgeAlert(url, body) {
     const match = url.match(/\/api\/alerts\/([^/]+)\/ack\//)
     const alertId = match ? match[1] : null
+
+    // EX-03: unknown alert
+    if (!this._knownAlertIds.has(alertId)) {
+      return this._error(404, `Alerta ${alertId} no encontrada`)
+    }
+
+    // EX-06: note > 500 chars
+    if (body?.note && body.note.length > 500) {
+      return this._error(400, 'La nota no puede superar 500 caracteres', 'NOTE_TOO_LONG')
+    }
+
+    // FA-02: already resolved → 409
+    if (this._resolvedAlerts.has(alertId)) {
+      return { status: 409, data: { error: 'La alerta ya fue resuelta', code: 'ALREADY_RESOLVED' } }
+    }
+
+    // already acknowledged → 409
     if (this._acknowledgedAlerts.has(alertId)) {
       return { status: 409, data: { error: 'Ya reconocida', code: 'ALREADY_ACKNOWLEDGED' } }
     }
+
     this._acknowledgedAlerts.add(alertId)
     return {
       status: 200,
@@ -1612,6 +1632,21 @@ class MockInterceptor {
         note: body?.note ?? null,
       },
     }
+  }
+
+  _handleBulkAcknowledgeAlerts(body) {
+    const alertIds = body?.alert_ids ?? []
+    const acknowledged = []
+    const skipped = []
+    for (const alertId of alertIds) {
+      if (!this._knownAlertIds.has(alertId) || this._acknowledgedAlerts.has(alertId) || this._resolvedAlerts.has(alertId)) {
+        skipped.push(alertId)
+      } else {
+        this._acknowledgedAlerts.add(alertId)
+        acknowledged.push(alertId)
+      }
+    }
+    return { status: 200, data: { acknowledged, skipped } }
   }
 
   _handlePermisosMenu(url) {
