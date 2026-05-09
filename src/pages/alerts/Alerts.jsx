@@ -119,7 +119,7 @@ export default function Alerts() {
       </div>
 
       {error && (
-        <div role="alert" style={{ marginBottom: '16px', padding: '10px 14px', backgroundColor: '#7f1d1d', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+        <div role="alert" className="error-banner">
           {typeof error === 'string' ? error : error?.message ?? 'Error desconocido'}
         </div>
       )}
@@ -201,7 +201,7 @@ export default function Alerts() {
           </div>
         </div>
         {ackModal.error && (
-          <div role="alert" style={{ marginBottom: '16px', padding: '10px 12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+          <div role="alert" className="error-banner">
             {ackModal.error}
           </div>
         )}

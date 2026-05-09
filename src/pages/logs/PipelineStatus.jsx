@@ -71,7 +71,7 @@ export default function PipelineStatus() {
       </div>
 
       {error && (
-        <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+        <div role="alert" className="error-banner">
           {error}
         </div>
       )}
@@ -105,7 +105,7 @@ export default function PipelineStatus() {
 
           {/* Alerta de fallos */}
           {status.total_fallidas_24h > 0 && (
-            <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+            <div role="alert" className="error-banner">
               {status.total_fallidas_24h} ejecución(es) fallida(s) en las últimas 24 h.{' '}
               <a href="/logs/etl" style={{ color: '#fca5a5', textDecoration: 'underline' }}>
                 Ver detalles

@@ -210,10 +210,7 @@ export default function TemporaryPermissions() {
                 </div>
             )}
             {error && (
-                <div style={{
-                    marginBottom: '16px', padding: '12px', backgroundColor: '#7f1d1d',
-                    border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', fontSize: '14px',
-                }}>
+                <div role="alert" className="error-banner">
                     Error: {error}
                 </div>
             )}
@@ -333,10 +330,7 @@ export default function TemporaryPermissions() {
                         </div>
 
                         {formError && (
-                            <div style={{
-                                marginBottom: '12px', padding: '10px 12px', backgroundColor: '#7f1d1d',
-                                border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', fontSize: '13px',
-                            }}>
+                            <div role="alert" className="error-banner">
                                 {formError}
                             </div>
                         )}

@@ -358,15 +358,7 @@ export default function AccessAudit() {
             </div>
 
             {error && (
-                <div style={{
-                    marginTop: '16px',
-                    padding: '12px',
-                    backgroundColor: '#7f1d1d',
-                    border: '1px solid #dc2626',
-                    borderRadius: '4px',
-                    color: '#fca5a5',
-                    fontSize: '14px',
-                }}>
+                <div role="alert" className="error-banner">
                     Error: {error}
                 </div>
             )}

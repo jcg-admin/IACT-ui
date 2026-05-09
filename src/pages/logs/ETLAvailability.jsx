@@ -61,13 +61,13 @@ export default function ETLAvailability() {
       </div>
 
       {error && (
-        <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+        <div role="alert" className="error-banner">
           {typeof error === 'string' ? error : error.message ?? 'Error al cargar disponibilidad'}
         </div>
       )}
 
       {hasVencido && (
-        <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+        <div role="alert" className="error-banner">
           Uno o más datasets han vencido — los datos IVR pueden estar desactualizados
         </div>
       )}

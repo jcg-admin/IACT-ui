@@ -64,7 +64,7 @@ function ShareForm({ viewId, viewName, onClose }) {
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {sharesError && createStatus === 'error' && (
-        <div role="alert" style={{ padding: '10px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+        <div role="alert" className="error-banner">
           {sharesError?.message ?? 'Error al compartir la vista'}
         </div>
       )}

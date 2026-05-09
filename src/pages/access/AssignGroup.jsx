@@ -82,7 +82,7 @@ export default function AssignGroup() {
       </div>
 
       {error && (
-        <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+        <div role="alert" className="error-banner">
           {typeof error === 'object' ? error.message : error}
         </div>
       )}

@@ -264,7 +264,7 @@ export default function AlertConfig() {
           </div>
 
           {error && (
-            <div role="alert" style={{ padding: '10px 14px', backgroundColor: '#7f1d1d', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+            <div role="alert" className="error-banner">
               {error}
             </div>
           )}

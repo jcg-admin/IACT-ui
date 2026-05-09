@@ -71,7 +71,7 @@ function UserManagement() {
     if (error) {
         return (
             <div className="p-lg">
-                <div style={{ color: '#fca5a5', padding: '12px', backgroundColor: '#7f1d1d', borderRadius: '4px' }}>
+                <div role="alert" className="error-banner">
                     {error}
                 </div>
             </div>

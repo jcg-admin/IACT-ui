@@ -80,13 +80,13 @@ export default function AlertHistory() {
       </div>
 
       {rangeError && (
-        <div role="alert" style={{ marginBottom: '16px', padding: '10px 14px', backgroundColor: '#7f1d1d', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+        <div role="alert" className="error-banner">
           {rangeError}
         </div>
       )}
 
       {error && (
-        <div role="alert" style={{ marginBottom: '16px', padding: '10px 14px', backgroundColor: '#7f1d1d', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+        <div role="alert" className="error-banner">
           {typeof error === 'string' ? error : error?.message}
         </div>
       )}

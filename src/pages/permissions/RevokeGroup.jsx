@@ -100,7 +100,7 @@ export default function RevokeGroup() {
       )}
 
       {error && (
-        <div role="alert" style={{ padding: '12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', marginBottom: '16px' }}>
+        <div role="alert" className="error-banner">
           {error}
         </div>
       )}
@@ -219,10 +219,7 @@ export default function RevokeGroup() {
             </p>
 
             {previewData.warnings.no_functions && (
-              <div role="alert" style={{
-                backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px',
-                padding: '10px', color: '#fca5a5', fontSize: '13px', marginBottom: '12px',
-              }}>
+              <div role="alert" className="error-banner">
                 ⚠ El usuario perderá TODAS sus funciones efectivas.
               </div>
             )}
