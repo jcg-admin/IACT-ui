@@ -86,10 +86,7 @@ describe('GroupComposition', () => {
     expect(emptyMsg || document.body).toBeTruthy()
   })
 
-  it('calls getGroupCascadeImpact with selected group and pending functions', async () => {
-    // Test A: verify gateway is called — count=0 flow
-    wrapper(<GroupComposition />)
-
+  async function openModalAndSelectFunction(changeReasonText = 'Ajuste de rol por restructuración del equipo') {
     const groupSelect = screen.getByRole('combobox')
     fireEvent.change(groupSelect, { target: { value: '1' } })
 
@@ -101,6 +98,14 @@ describe('GroupComposition', () => {
     const func = await screen.findByText(/AUD-001|Ver logs/)
     fireEvent.click(func)
 
+    // Fill change_reason in modal (required to enable confirm/verify button)
+    const reasonInput = screen.getByPlaceholderText(/Ej: Rol de operador/i)
+    fireEvent.change(reasonInput, { target: { value: changeReasonText } })
+  }
+
+  it('calls getGroupCascadeImpact with selected group and pending functions', async () => {
+    wrapper(<GroupComposition />)
+    await openModalAndSelectFunction()
     fireEvent.click(screen.getByRole('button', { name: /Verificar impacto/i }))
 
     await waitFor(() => {
@@ -111,21 +116,9 @@ describe('GroupComposition', () => {
   })
 
   it('shows cascade warning with user count when cascade_affected_user_count > 0', async () => {
-    // Test B: verify count>0 path — gateway returns count=3, "Sin impacto" must not appear
     mockGateway.getGroupCascadeImpact.mockResolvedValue({ cascade_affected_user_count: 3, conflicts: [] })
     wrapper(<GroupComposition />)
-
-    const groupSelect = screen.getByRole('combobox')
-    fireEvent.change(groupSelect, { target: { value: '1' } })
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Agregar función/i })).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByRole('button', { name: /Agregar función/i }))
-
-    const func = await screen.findByText(/AUD-001|Ver logs/)
-    fireEvent.click(func)
-
+    await openModalAndSelectFunction()
     fireEvent.click(screen.getByRole('button', { name: /Verificar impacto/i }))
 
     await act(async () => {})
@@ -136,18 +129,7 @@ describe('GroupComposition', () => {
 
   it('shows no-cascade message when cascade_affected_user_count is 0', async () => {
     wrapper(<GroupComposition />)
-
-    const groupSelect = screen.getByRole('combobox')
-    fireEvent.change(groupSelect, { target: { value: '1' } })
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Agregar función/i })).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByRole('button', { name: /Agregar función/i }))
-
-    const func = await screen.findByText(/AUD-001|Ver logs/)
-    fireEvent.click(func)
-
+    await openModalAndSelectFunction()
     fireEvent.click(screen.getByRole('button', { name: /Verificar impacto/i }))
 
     await waitFor(() => {

@@ -18,6 +18,7 @@ export default function RevokeExceptionalPermission() {
   const [userId, setUserId] = useState('')
   const [searched, setSearched] = useState(false)
   const [confirmId, setConfirmId] = useState(null)
+  const [revokeReason, setRevokeReason] = useState('')
 
   function handleSearch(e) {
     e.preventDefault()
@@ -26,11 +27,14 @@ export default function RevokeExceptionalPermission() {
     dispatch(fetchExceptionalPermissions(userId.trim()))
     setSearched(true)
     setConfirmId(null)
+    setRevokeReason('')
   }
 
   function handleRevoke(permId) {
-    dispatch(revokeExceptionalPermission({ userId: userId.trim(), permissionId: permId }))
+    if (revokeReason.trim().length < 10) return
+    dispatch(revokeExceptionalPermission({ userId: userId.trim(), permissionId: permId, revoke_reason: revokeReason.trim() }))
     setConfirmId(null)
+    setRevokeReason('')
   }
 
   return (
@@ -125,22 +129,47 @@ export default function RevokeExceptionalPermission() {
 
               <div>
                 {confirmId === perm.id ? (
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      className="btn btn-secondary"
-                      style={{ fontSize: '12px', padding: '4px 10px', color: '#f87171', borderColor: '#f87171' }}
-                      onClick={() => handleRevoke(perm.id)}
-                      disabled={loading}
-                    >
-                      Confirmar
-                    </button>
-                    <button
-                      className="btn btn-secondary"
-                      style={{ fontSize: '12px', padding: '4px 10px' }}
-                      onClick={() => setConfirmId(null)}
-                    >
-                      Cancelar
-                    </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '220px' }}>
+                    <textarea
+                      value={revokeReason}
+                      onChange={(e) => setRevokeReason(e.target.value)}
+                      placeholder="Motivo de revocación (mínimo 10 caracteres)..."
+                      rows={2}
+                      aria-label="Motivo de revocación"
+                      style={{
+                        width: '100%',
+                        padding: '6px 8px',
+                        border: '1px solid #374151',
+                        borderRadius: '4px',
+                        backgroundColor: '#1f2937',
+                        color: '#fff',
+                        fontSize: '13px',
+                        resize: 'vertical',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                    {revokeReason.length > 0 && revokeReason.trim().length < 10 && (
+                      <div style={{ color: '#f87171', fontSize: '12px' }}>
+                        Mínimo 10 caracteres ({revokeReason.trim().length}/10)
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        className="btn btn-secondary"
+                        style={{ fontSize: '12px', padding: '4px 10px', color: '#f87171', borderColor: '#f87171' }}
+                        onClick={() => handleRevoke(perm.id)}
+                        disabled={loading || revokeReason.trim().length < 10}
+                      >
+                        Confirmar
+                      </button>
+                      <button
+                        className="btn btn-secondary"
+                        style={{ fontSize: '12px', padding: '4px 10px' }}
+                        onClick={() => { setConfirmId(null); setRevokeReason('') }}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button

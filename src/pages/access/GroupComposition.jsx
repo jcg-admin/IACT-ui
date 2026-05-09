@@ -35,6 +35,7 @@ export default function GroupComposition() {
     const [pendingAdd, setPendingAdd] = useState([]); // ids seleccionados en el modal
     const [submitting, setSubmitting] = useState(false);
     const [cascadeImpact, setCascadeImpact] = useState(null); // { cascade_affected_user_count, conflicts }
+    const [changeReason, setChangeReason] = useState('');
 
     useEffect(() => {
         dispatch(fetchAllFunctions());
@@ -71,11 +72,11 @@ export default function GroupComposition() {
 
     // Quitar una función ya asignada: re-asignar sin ella
     const handleRemoveFunction = async (funcId) => {
-        if (!selectedGroupId) return;
+        if (!selectedGroupId || changeReason.trim().length < 10) return;
         const newIds = assignedIds.filter(id => id !== funcId);
         setSubmitting(true);
         try {
-            await dispatch(assignFunctionsToGroup({ groupId: selectedGroupId, functionIds: newIds }));
+            await dispatch(assignFunctionsToGroup({ groupId: selectedGroupId, functionIds: newIds, change_reason: changeReason.trim() }));
             dispatch(fetchGroupFunctions(selectedGroupId));
         } finally {
             setSubmitting(false);
@@ -90,7 +91,7 @@ export default function GroupComposition() {
     };
 
     const handleConfirmAdd = async () => {
-        if (!selectedGroupId || pendingAdd.length === 0) return;
+        if (!selectedGroupId || pendingAdd.length === 0 || changeReason.trim().length < 10) return;
         const newIds = Array.from(new Set([...assignedIds, ...pendingAdd]));
         setSubmitting(true);
         try {
@@ -105,11 +106,12 @@ export default function GroupComposition() {
                     setCascadeImpact({ cascade_affected_user_count: 0, conflicts: [] });
                 }
             }
-            await dispatch(assignFunctionsToGroup({ groupId: selectedGroupId, functionIds: newIds }));
+            await dispatch(assignFunctionsToGroup({ groupId: selectedGroupId, functionIds: newIds, change_reason: changeReason.trim() }));
             dispatch(fetchGroupFunctions(selectedGroupId));
             setSelectorOpen(false);
             setPendingAdd([]);
             setCascadeImpact(null);
+            setChangeReason('');
         } finally {
             setSubmitting(false);
         }
@@ -216,6 +218,35 @@ export default function GroupComposition() {
                         >
                             + Agregar función
                         </button>
+                    </div>
+
+                    {/* Motivo del cambio (requerido para agregar/quitar funciones) */}
+                    <div style={{ padding: '12px 16px', borderBottom: '1px solid #374151' }}>
+                        <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#9ca3af' }}>
+                            Motivo del cambio * (mínimo 10 caracteres — requerido para agregar o quitar funciones)
+                        </label>
+                        <input
+                            type="text"
+                            value={changeReason}
+                            onChange={(e) => setChangeReason(e.target.value)}
+                            placeholder="Ej: Ajuste de rol por restructuración de equipo..."
+                            aria-label="Motivo del cambio de composición"
+                            style={{
+                                width: '100%',
+                                padding: '8px 12px',
+                                border: '1px solid #374151',
+                                borderRadius: '4px',
+                                backgroundColor: '#1f2937',
+                                color: '#fff',
+                                fontSize: '13px',
+                                boxSizing: 'border-box',
+                            }}
+                        />
+                        {changeReason.length > 0 && changeReason.trim().length < 10 && (
+                            <div style={{ color: '#f87171', fontSize: '12px', marginTop: '4px' }}>
+                                Mínimo 10 caracteres ({changeReason.trim().length}/10)
+                            </div>
+                        )}
                     </div>
 
                     {/* Lista de funciones asignadas */}
@@ -382,6 +413,34 @@ export default function GroupComposition() {
                             </div>
                         )}
 
+                        <div style={{ marginBottom: '16px' }}>
+                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#9ca3af' }}>
+                                Motivo del cambio * (mínimo 10 caracteres)
+                            </label>
+                            <input
+                                type="text"
+                                value={changeReason}
+                                onChange={(e) => setChangeReason(e.target.value)}
+                                placeholder="Ej: Rol de operador requiere acceso a reportes..."
+                                aria-label="Motivo del cambio"
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #374151',
+                                    borderRadius: '4px',
+                                    backgroundColor: '#1f2937',
+                                    color: '#fff',
+                                    fontSize: '13px',
+                                    boxSizing: 'border-box',
+                                }}
+                            />
+                            {changeReason.length > 0 && changeReason.trim().length < 10 && (
+                                <div style={{ color: '#f87171', fontSize: '12px', marginTop: '4px' }}>
+                                    Mínimo 10 caracteres ({changeReason.trim().length}/10)
+                                </div>
+                            )}
+                        </div>
+
                         <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                             <button
                                 className="btn btn-secondary"
@@ -393,7 +452,7 @@ export default function GroupComposition() {
                             <button
                                 className="btn btn-primary"
                                 onClick={handleConfirmAdd}
-                                disabled={pendingAdd.length === 0 || submitting}
+                                disabled={pendingAdd.length === 0 || submitting || changeReason.trim().length < 10}
                             >
                                 {submitting
                                     ? 'Procesando...'

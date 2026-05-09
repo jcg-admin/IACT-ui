@@ -29,7 +29,7 @@ export default function RevokeGroup() {
   }, [dispatch])
 
   function isValid() {
-    return userId.trim() !== '' && groupId !== '' && revokeReason.trim().length >= 1
+    return userId.trim() !== '' && groupId !== '' && revokeReason.trim().length >= 10
   }
 
   function handleSubmit(e) {
@@ -109,6 +109,11 @@ export default function RevokeGroup() {
             rows={3}
             style={{ width: '100%' }}
           />
+          {revokeReason.length > 0 && revokeReason.trim().length < 10 && (
+            <div style={{ color: '#f87171', fontSize: '12px', marginTop: '4px' }}>
+              El motivo debe tener al menos 10 caracteres ({revokeReason.trim().length}/10).
+            </div>
+          )}
         </div>
 
         <button

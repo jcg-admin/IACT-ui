@@ -5,9 +5,10 @@ import PermissionsAudit from '../PermissionsAudit'
 
 const mockDispatch = jest.fn()
 const AUDIT_LOG = [
-  { id: 1, action: 'ASSIGN_PERMISSION', user: 'user1', target: 'AUD-001', timestamp: '2026-01-01T10:00:00Z' },
-  { id: 2, action: 'REVOKE_PERMISSION', user: 'user2', target: 'PIP-002', timestamp: '2026-01-02T11:00:00Z' },
-  { id: 3, action: 'LOGIN', user: 'user3', target: null, timestamp: '2026-01-03T12:00:00Z' },
+  { id: 1, action: 'EXCEPTIONAL_PERMISSION_GRANTED', user: 'user1', target: 'AUD-001', timestamp: '2026-01-01T10:00:00Z' },
+  { id: 2, action: 'EXCEPTIONAL_PERMISSION_REVOKED', user: 'user2', target: 'PIP-002', timestamp: '2026-01-02T11:00:00Z' },
+  { id: 3, action: 'AGR_ASSIGNED',                  user: 'user3', target: 'auditores_group', timestamp: '2026-01-03T12:00:00Z' },
+  { id: 4, action: 'LOGIN',                          user: 'user4', target: null, timestamp: '2026-01-04T13:00:00Z' },
 ]
 
 jest.mock('react-redux', () => ({
@@ -36,14 +37,19 @@ describe('PermissionsAudit — uc-perm-10', () => {
     expect(screen.getByRole('heading', { name: /auditoría de permisos/i, level: 1 })).toBeInTheDocument()
   })
 
-  it('shows ASSIGN_PERMISSION entries', () => {
+  it('shows EXCEPTIONAL_PERMISSION_GRANTED entries', () => {
     renderPage()
-    expect(screen.getByText(/ASSIGN_PERMISSION/i)).toBeInTheDocument()
+    expect(screen.getByText(/EXCEPTIONAL_PERMISSION_GRANTED/i)).toBeInTheDocument()
   })
 
-  it('shows REVOKE_PERMISSION entries', () => {
+  it('shows EXCEPTIONAL_PERMISSION_REVOKED entries', () => {
     renderPage()
-    expect(screen.getByText(/REVOKE_PERMISSION/i)).toBeInTheDocument()
+    expect(screen.getByText(/EXCEPTIONAL_PERMISSION_REVOKED/i)).toBeInTheDocument()
+  })
+
+  it('shows AGR_ASSIGNED entries', () => {
+    renderPage()
+    expect(screen.getByText(/AGR_ASSIGNED/i)).toBeInTheDocument()
   })
 
   it('does NOT show non-permission actions like LOGIN', () => {

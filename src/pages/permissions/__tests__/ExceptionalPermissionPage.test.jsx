@@ -90,11 +90,11 @@ describe('ExceptionalPermission (UC_PERM_03)', () => {
     expect(btn).toBeDisabled()
   })
 
-  it('shows justification length error when < 10 chars', () => {
+  it('shows justification length error when < 20 chars', () => {
     renderPage()
     const textarea = screen.getByLabelText(/Justificación/i)
-    fireEvent.change(textarea, { target: { value: 'corto' } })
-    expect(screen.getByText(/al menos 10 caracteres/i)).toBeInTheDocument()
+    fireEvent.change(textarea, { target: { value: 'corto texto' } })
+    expect(screen.getByText(/al menos 20 caracteres/i)).toBeInTheDocument()
   })
 
   it('dispatches grantExceptionalPermission on valid submit', async () => {

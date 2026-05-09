@@ -109,14 +109,26 @@ describe('RevokeExceptionalPermission (UC-015)', () => {
     expect(screen.getByRole('button', { name: /Cancelar/i })).toBeInTheDocument()
   })
 
-  it('dispatches revokeExceptionalPermission on confirm', async () => {
+  it('dispatches revokeExceptionalPermission on confirm with revoke_reason', async () => {
     mockPermissions = MOCK_PERMISSIONS
     renderPage()
     const revokeButtons = screen.getAllByRole('button', { name: /Revocar/i })
     fireEvent.click(revokeButtons[0])
+    const textarea = screen.getByLabelText(/Motivo de revocación/i)
+    fireEvent.change(textarea, { target: { value: 'Acceso ya no necesario por cambio de rol' } })
     fireEvent.click(screen.getByRole('button', { name: /Confirmar/i }))
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalled()
     })
+  })
+
+  it('confirm button disabled when revoke_reason < 10 chars', () => {
+    mockPermissions = MOCK_PERMISSIONS
+    renderPage()
+    const revokeButtons = screen.getAllByRole('button', { name: /Revocar/i })
+    fireEvent.click(revokeButtons[0])
+    const textarea = screen.getByLabelText(/Motivo de revocación/i)
+    fireEvent.change(textarea, { target: { value: 'corto' } })
+    expect(screen.getByRole('button', { name: /Confirmar/i })).toBeDisabled()
   })
 })
