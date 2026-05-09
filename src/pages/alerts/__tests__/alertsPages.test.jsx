@@ -48,7 +48,7 @@ import Subscriptions from '../Subscriptions'
 describe('AlertsOverview', () => {
   it('renders page title', () => {
     wrap(<AlertsOverview />)
-    expect(screen.getByText('Centro de Alertas')).toBeInTheDocument()
+    expect(screen.getByText('Centro de alertas')).toBeInTheDocument()
   })
 })
 

@@ -325,7 +325,13 @@ const alertsSlice = createSlice({
             .addCase(acknowledgeAlert.fulfilled, (state, action) => {
                 const idx = state.alerts.findIndex(a => String(a.id) === String(action.payload.id));
                 if (idx !== -1) {
-                    state.alerts[idx] = { ...state.alerts[idx], state: 'acknowledged' };
+                    state.alerts[idx] = {
+                        ...state.alerts[idx],
+                        state: 'acknowledged',
+                        ack_by: action.payload.acknowledged_by,
+                        ack_at: action.payload.acknowledged_at,
+                        ack_note: action.payload.note,
+                    };
                 }
             })
             .addCase(acknowledgeAlert.rejected, (state, action) => {
@@ -346,11 +352,11 @@ export const selectLoading = (state) => state.alerts.loading;
 export const selectError = (state) => state.alerts.error;
 export const selectSuccess = (state) => state.alerts.success;
 
-export const selectActiveAlerts = (state) => state.alerts.alerts.filter(a => a.is_active);
+export const selectActiveAlerts = (state) => state.alerts.alerts.filter(a => a.state === 'firing');
 export const selectAlertsByCategory = (state, category) =>
     state.alerts.alerts.filter(a => a.category === category);
 export const selectUserSubscribedAlerts = (state) =>
-    state.alerts.subscriptions.map(s => s.alert_id);
+    state.alerts.subscriptions.map(s => s.rule_id);
 
 export const { clearError, clearSuccess, resetState } = alertsSlice.actions;
 
