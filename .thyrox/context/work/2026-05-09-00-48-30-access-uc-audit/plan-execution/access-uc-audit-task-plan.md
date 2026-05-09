@@ -15,7 +15,7 @@ Orden aprobado: GAP-ACC-01+02 → GAP-ACC-03+04 → GAP-ACC-05
 
 ## Block I — GAP-ACC-01+02: UC_ACC_02 revoke_reason + LastHolderSpec mock
 
-- [ ] [T-001] Agregar campo `revoke_reason` en tab "Revocar" de
+- [x] [T-001] Agregar campo `revoke_reason` en tab "Revocar" de
   `src/pages/access/AssignFunctions.jsx`:
   - Añadir `const [revokeReason, setRevokeReason] = useState('')` al state
   - Agregar `<textarea>` o `<input>` con label "Motivo de revocación"
@@ -24,7 +24,7 @@ Orden aprobado: GAP-ACC-01+02 → GAP-ACC-03+04 → GAP-ACC-05
   - Validación UI: botón Revocar deshabilitado si `revokeReason.trim().length < 10`
   - Limpiar `revokeReason` en `setSelectedUser('')`
 
-- [ ] [T-002] Agregar guard `LastHolderSpec` en `src/mocks/mockInterceptor.js`
+- [x] [T-002] Agregar guard `LastHolderSpec` en `src/mocks/mockInterceptor.js`
   handler de revocar funciones:
   - En `_handleRevokeFunctions` (o donde se maneja `DELETE /api/users/{id}/functions/`):
     definir un conjunto `CRITICAL_FUNCTIONS_LAST_HOLDER = { 'USR-001': 1 }` donde
@@ -37,7 +37,7 @@ Orden aprobado: GAP-ACC-01+02 → GAP-ACC-03+04 → GAP-ACC-05
 
 ## Block II — GAP-ACC-03+04: UC_ACC_08 TemporaryPermissions rewrite
 
-- [ ] [T-003] Reescribir `src/pages/access/TemporaryPermissions.jsx`:
+- [x] [T-003] Reescribir `src/pages/access/TemporaryPermissions.jsx`:
   - Cambiar import: usar `grantExceptionalPermission` thunk del slice de access
     (o crear acción que llame `POST /api/users/{id}/exceptional-permissions/`)
   - Añadir campo `justification` (textarea, `minLength=20`, `required`) al formulario
@@ -50,7 +50,7 @@ Orden aprobado: GAP-ACC-01+02 → GAP-ACC-03+04 → GAP-ACC-05
   - Tab "Ver activos": lista de permisos temporales del usuario seleccionado
     vía `GET /api/users/{id}/exceptional-permissions/`
 
-- [ ] [T-004] Verificar que el mock `_handleExceptionalPermissions` (POST)
+- [x] [T-004] Verificar que el mock `_handleExceptionalPermissions` (POST)
   en `src/mocks/mockInterceptor.js` ya valida:
   - `justification.trim().length === 0` → 422 (ya existe en línea 1354)
   - `justification.length < 20` → 422 `JUSTIFICATION_TOO_SHORT` (agregar si falta)
@@ -61,7 +61,7 @@ Orden aprobado: GAP-ACC-01+02 → GAP-ACC-03+04 → GAP-ACC-05
 
 ## Block III — GAP-ACC-05: UC_ACC_09 load sin usuario requerido
 
-- [ ] [T-005] Modificar `src/pages/access/AccessAudit.jsx`:
+- [x] [T-005] Modificar `src/pages/access/AccessAudit.jsx`:
   - Cambiar `useEffect` de audit: despachar `fetchAccessAudit(null)` (o sin arg)
     al montar, no solo cuando `selectedUser` cambia
   - Actualizar handler de `selectedUser`: si hay usuario → `fetchAccessAudit(userId)`,

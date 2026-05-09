@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-08
-current_work: .thyrox/context/work/2026-05-09-00-48-30-access-uc-audit
-phase: Phase 10 — IMPLEMENT
-updated_at: 2026-05-09 00:51:46
+current_work: null
+phase: null
+updated_at: 2026-05-09 03:45:00
 blockers: []
 ```
 
@@ -16,13 +16,34 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Sin WP activo. WP `users-stub-implementation` cerrado (Phase 11 TRACK completa).
-**Tests:** 1953 passing / 220 suites / 0 failures (verificado 2026-05-09)
+**Estado:** Sin WP activo. WP `access-uc-audit` cerrado (Phase 11 TRACK completa).
+**Tests:** 1954 passing / 220 suites / 0 failures (verificado 2026-05-09)
 **Próximo:** Pendiente definición por ejecutor.
 
 ## Métricas de test suite
 
-**1927 tests** passing (verificado 2026-05-08 — WP pipeline-scope-audit Phase 11 TRACK completa, 218 suites)
+**1954 tests** passing (verificado 2026-05-09 — WP access-uc-audit Phase 11 TRACK completa, 220 suites)
+
+---
+
+## WP cerrado — access-uc-audit ✓
+
+`2026-05-09-00-48-30-access-uc-audit` — Phase 11 TRACK completa.
+
+5 gaps en 3 bloques (GAP-ACC-01..05). 3 commits. 1954 tests (+1 nuevo), 0 regressions.
+
+Entregables:
+- GAP-ACC-01: `revoke_reason` field + char counter in AssignFunctions.jsx revocar tab
+- GAP-ACC-02: Mock LastHolderSpec (409 LAST_HOLDER_CONFLICT) + REASON_TOO_SHORT (400)
+- GAP-ACC-03/04: TemporaryPermissions.jsx rewritten → ExceptionalPermission entity,
+  `justification` field ≥20, anti-self P-11, tab 'view' via fetchExceptionalPermissions
+- GAP-ACC-04 mock: `JUSTIFICATION_TOO_SHORT` (422) + `EXPIRES_AT_IN_PAST` (400)
+- GAP-ACC-05: AccessAudit loads on mount with null userId; accessGateway.getAccessAudit
+  optional param; mock all-scope route + 5-event multi-user fixture
+
+Key lessons: entity-level audit must verify thunk origin not just endpoint presence (L-01);
+required UI fields must be traced to spec constraints (L-02); useSelector mocks must include
+all selectors (L-03); optional filter = load-on-mount (L-04); Write needs Read tool (L-05).
 
 ---
 
