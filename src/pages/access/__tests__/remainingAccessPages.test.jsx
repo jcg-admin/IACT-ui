@@ -48,10 +48,29 @@ describe('SeparationRules', () => {
   })
 })
 
-describe('Segments', () => {
+describe('Segments (UC_ACC_06/07)', () => {
   it('renders page title', () => {
     wrap(<Segments />)
     expect(screen.getByText('Segmentos de Datos')).toBeInTheDocument()
+  })
+
+  it('renders root segment with code and name combined', () => {
+    wrap(<Segments />)
+    expect(screen.getByText(/SEG-NORTH.*Región Norte/i)).toBeInTheDocument()
+  })
+
+  it('renders child segments when parent is expanded by default', () => {
+    wrap(<Segments />)
+    // Parent 1 (SEG-NORTH) is expanded by default → children visible
+    expect(screen.getByText(/SEG-NORTH-SALES/i)).toBeInTheDocument()
+    expect(screen.getByText(/SEG-NORTH-OPS/i)).toBeInTheDocument()
+  })
+
+  it('shows multiple root segments', () => {
+    wrap(<Segments />)
+    expect(screen.getByText(/SEG-NORTH.*Región Norte/i)).toBeInTheDocument()
+    expect(screen.getByText(/SEG-SOUTH.*Región Sur/i)).toBeInTheDocument()
+    expect(screen.getByText(/SEG-EAST.*Región Este/i)).toBeInTheDocument()
   })
 })
 
