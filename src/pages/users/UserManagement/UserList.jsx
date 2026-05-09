@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react'
 import userAuth from '../../../facades/UserIdentity'
+import ConfirmModal from '../../../components/shared/ConfirmModal'
 import './UserList.scss'
 
 const STATE_BADGE = {
@@ -176,49 +177,19 @@ export default function UserList({ users, loading, onEdit, onDeactivate, onBlock
         </div>
       )}
 
-      {confirmModal.open && (
-        <div className="confirm-modal-overlay" role="dialog" aria-modal="true">
-          <div className="confirm-modal">
-            {confirmModal.type === 'block' ? (
-              <>
-                <p>
-                  ¿Bloquear a <strong>{confirmModal.user?.username}</strong>?{' '}
-                  El usuario no podrá iniciar sesión mientras esté bloqueado.
-                </p>
-                <div className="confirm-modal-actions">
-                  <button
-                    onClick={() => setConfirmModal({ open: false, type: null, user: null })}
-                    className="btn btn-secondary"
-                  >
-                    Cancelar
-                  </button>
-                  <button onClick={handleConfirm} className="btn btn-danger">
-                    Bloquear
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p>
-                  ¿Desbloquear a <strong>{confirmModal.user?.username}</strong>?{' '}
-                  El usuario recuperará el acceso al sistema.
-                </p>
-                <div className="confirm-modal-actions">
-                  <button
-                    onClick={() => setConfirmModal({ open: false, type: null, user: null })}
-                    className="btn btn-secondary"
-                  >
-                    Cancelar
-                  </button>
-                  <button onClick={handleConfirm} className="btn btn-primary">
-                    Desbloquear
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={confirmModal.open}
+        onClose={() => setConfirmModal({ open: false, type: null, user: null })}
+        onConfirm={handleConfirm}
+        title={confirmModal.type === 'block' ? `Bloquear a ${confirmModal.user?.username}` : `Desbloquear a ${confirmModal.user?.username}`}
+        message={
+          confirmModal.type === 'block'
+            ? 'El usuario no podrá iniciar sesión mientras esté bloqueado.'
+            : 'El usuario recuperará el acceso al sistema.'
+        }
+        confirmLabel={confirmModal.type === 'block' ? 'Bloquear' : 'Desbloquear'}
+        variant={confirmModal.type === 'block' ? 'danger' : 'default'}
+      />
     </div>
   )
 }

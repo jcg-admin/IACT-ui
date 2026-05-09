@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchETLLogs, retryPipeline, selectETLLogs } from '@store/slices/logs'
 import { selectIsLoading } from '@store/slices/loading'
 import ReportTable from '@ui/reports/ReportTable'
+import Modal from '@ui/shared/Modal'
 
 const STATUS_BADGE = { success: 'badge-success', failed: 'badge-danger', running: 'badge-warning' }
 const MOTIVO_MIN = 20
@@ -118,41 +119,43 @@ export default function ETLLogs() {
         emptyMessage="No hay logs ETL para los filtros seleccionados."
       />
 
-      {retryModal.isOpen && (
-        <div role="dialog" aria-modal="true" aria-labelledby="retry-modal-title" className="modal-overlay">
-          <div className="modal-content">
-            <h2 id="retry-modal-title">Reintentar pipeline</h2>
-            <p>Ingresa el motivo del reintento manual.</p>
-            <textarea
-              aria-label="Motivo del reintento"
-              placeholder={`Razón del reintento (mínimo ${MOTIVO_MIN} caracteres)`}
-              value={retryModal.motivo}
-              onChange={e => setRetryModal(m => ({ ...m, motivo: e.target.value, error: null }))}
-              maxLength={MOTIVO_MAX}
-              rows={3}
-              style={{ width: '100%', marginBottom: '4px' }}
-            />
-            <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>
-              {retryModal.motivo.length}/{MOTIVO_MAX} caracteres
-            </div>
-            {retryModal.error && (
-              <div role="alert" style={{ color: '#ef4444', marginBottom: '8px', fontSize: '13px' }}>
-                {retryModal.error}
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-              <button className="btn btn-secondary" onClick={closeRetryModal}>Cancelar</button>
-              <button
-                className="btn btn-danger"
-                onClick={handleConfirmRetry}
-                disabled={retryModal.motivo.length < MOTIVO_MIN}
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
+      <Modal
+        isOpen={retryModal.isOpen}
+        onClose={closeRetryModal}
+        title="Reintentar pipeline"
+        size="sm"
+        footer={
+          <>
+            <button className="btn btn-secondary" onClick={closeRetryModal}>Cancelar</button>
+            <button
+              className="btn btn-danger"
+              onClick={handleConfirmRetry}
+              disabled={retryModal.motivo.length < MOTIVO_MIN}
+            >
+              Confirmar
+            </button>
+          </>
+        }
+      >
+        <p style={{ marginTop: 0 }}>Ingresa el motivo del reintento manual.</p>
+        <textarea
+          aria-label="Motivo del reintento"
+          placeholder={`Razón del reintento (mínimo ${MOTIVO_MIN} caracteres)`}
+          value={retryModal.motivo}
+          onChange={e => setRetryModal(m => ({ ...m, motivo: e.target.value, error: null }))}
+          maxLength={MOTIVO_MAX}
+          rows={3}
+          style={{ width: '100%', marginBottom: '4px' }}
+        />
+        <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px' }}>
+          {retryModal.motivo.length}/{MOTIVO_MAX} caracteres
         </div>
-      )}
+        {retryModal.error && (
+          <div role="alert" style={{ color: '#ef4444', marginBottom: '8px', fontSize: '13px' }}>
+            {retryModal.error}
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

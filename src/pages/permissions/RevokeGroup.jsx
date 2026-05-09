@@ -10,6 +10,7 @@ import {
   resetState,
 } from '../../redux/slices/access'
 import apiClient from '../../services/apiClient'
+import Modal from '../../components/shared/Modal'
 
 export default function RevokeGroup() {
   const dispatch = useDispatch()
@@ -175,24 +176,28 @@ export default function RevokeGroup() {
       </form>
 
       {/* UC_PERM_02 PASO 4 — Modal de composición y warnings */}
-      {showModal && previewData && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Impacto de revocación"
-          style={{
-            position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-          }}
-        >
-          <div style={{
-            backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px',
-            padding: '24px', maxWidth: '480px', width: '90%',
-          }}>
-            <h2 style={{ color: '#fff', margin: '0 0 16px 0', fontSize: '18px' }}>
-              Impacto de revocación
-            </h2>
-
+      <Modal
+        isOpen={showModal && !!previewData}
+        onClose={handleCloseModal}
+        title="Impacto de revocación"
+        size="md"
+        footer={
+          <>
+            <button onClick={handleCloseModal} className="btn btn-secondary">
+              Cancelar
+            </button>
+            <button
+              onClick={handleConfirm}
+              className="btn btn-danger"
+              disabled={!isConfirmEnabled() || loading}
+            >
+              {loading ? 'Revocando...' : 'Confirmar revocación'}
+            </button>
+          </>
+        }
+      >
+        {previewData && (
+          <>
             <div style={{ marginBottom: '12px' }}>
               <p style={{ color: '#9ca3af', margin: '0 0 8px 0', fontSize: '13px' }}>
                 Funciones que se revocarán:
@@ -244,25 +249,9 @@ export default function RevokeGroup() {
                 />
               </div>
             )}
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <button
-                onClick={handleCloseModal}
-                className="btn btn-secondary"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleConfirm}
-                className="btn btn-danger"
-                disabled={!isConfirmEnabled() || loading}
-              >
-                {loading ? 'Revocando...' : 'Confirmar revocación'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </div>
   )
 }

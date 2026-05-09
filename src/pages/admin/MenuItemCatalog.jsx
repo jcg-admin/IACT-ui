@@ -22,6 +22,7 @@ import {
   selectAdminLoading,
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
+import Modal from '../../components/shared/Modal'
 
 const STATUS_TRANSITIONS = {
   DRAFT:       ['ACTIVE'],
@@ -378,31 +379,19 @@ export default function MenuItemCatalog() {
             </tbody>
           </table>
 
-          {blockArchiveModal.isOpen && (
-            <div
-              role="dialog"
-              aria-label="Bloquear archivado automático"
-              style={{ marginTop: '20px', padding: '16px', border: '1px solid #374151', borderRadius: '8px', background: '#111827' }}
-            >
-              <h3 style={{ color: '#fff', marginTop: 0 }}>Bloquear archivado automático</h3>
-              <textarea
-                aria-label="Razón para bloquear el archivado"
-                maxLength={500}
-                value={blockArchiveModal.reason}
-                onChange={(e) => setBlockArchiveModal((m) => ({ ...m, reason: e.target.value }))}
-                placeholder="Describe el motivo del bloqueo (mínimo 20 caracteres)..."
-                rows={3}
-                style={{ width: '100%', padding: '8px', background: '#1f2937', color: '#fff', border: '1px solid #374151', borderRadius: '4px' }}
-              />
-              <small style={{ color: '#9ca3af' }}>
-                {blockArchiveModal.reason.length}/500 · mínimo {BLOCK_REASON_MIN}
-              </small>
-              {blockArchiveModal.error && (
-                <div className="error-banner" role="alert">
-                  {blockArchiveModal.error}
-                </div>
-              )}
-              <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+          <Modal
+            isOpen={blockArchiveModal.isOpen}
+            onClose={() => setBlockArchiveModal({ isOpen: false, itemId: null, reason: '', error: null })}
+            title="Bloquear archivado automático"
+            size="sm"
+            footer={
+              <>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setBlockArchiveModal({ isOpen: false, itemId: null, reason: '', error: null })}
+                >
+                  Cancelar
+                </button>
                 <button
                   className="btn btn-primary"
                   disabled={blockArchiveModal.reason.length < BLOCK_REASON_MIN}
@@ -410,17 +399,27 @@ export default function MenuItemCatalog() {
                 >
                   Confirmar bloqueo
                 </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() =>
-                    setBlockArchiveModal({ isOpen: false, itemId: null, reason: '', error: null })
-                  }
-                >
-                  Cancelar
-                </button>
+              </>
+            }
+          >
+            <textarea
+              aria-label="Razón para bloquear el archivado"
+              maxLength={500}
+              value={blockArchiveModal.reason}
+              onChange={(e) => setBlockArchiveModal((m) => ({ ...m, reason: e.target.value }))}
+              placeholder="Describe el motivo del bloqueo (mínimo 20 caracteres)..."
+              rows={3}
+              style={{ width: '100%', padding: '8px', background: '#1f2937', color: '#fff', border: '1px solid #374151', borderRadius: '4px' }}
+            />
+            <small style={{ color: '#9ca3af' }}>
+              {blockArchiveModal.reason.length}/500 · mínimo {BLOCK_REASON_MIN}
+            </small>
+            {blockArchiveModal.error && (
+              <div className="error-banner" role="alert">
+                {blockArchiveModal.error}
               </div>
-            </div>
-          )}
+            )}
+          </Modal>
         </>
       )}
     </div>

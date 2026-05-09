@@ -8,6 +8,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAlerts, acknowledgeAlert, selectAlerts, selectLoading, selectError } from '../../redux/slices/alerts'
+import Modal from '../../components/shared/Modal'
 
 const NOTE_MAX = 500
 
@@ -169,48 +170,42 @@ export default function Alerts() {
       </div>
 
       {/* Modal reconocer alerta (UC_ALR_03) */}
-      {ackModal.isOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="ack-modal-title"
-          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
-        >
-          <div style={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px', padding: '24px', width: '480px', maxWidth: '90vw' }}>
-            <h2 id="ack-modal-title" style={{ margin: '0 0 16px 0', color: '#fff', fontSize: '18px' }}>Reconocer alerta</h2>
-
-            <div style={{ marginBottom: '16px' }}>
-              <label htmlFor="ack-note" style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#9ca3af' }}>
-                Nota de reconocimiento (opcional)
-              </label>
-              <textarea
-                id="ack-note"
-                aria-label="Nota de reconocimiento"
-                value={ackModal.note}
-                onChange={e => setAckModal(m => ({ ...m, note: e.target.value, error: null }))}
-                maxLength={NOTE_MAX}
-                rows={3}
-                placeholder="Añade una nota opcional…"
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #4b5563', borderRadius: '4px', backgroundColor: '#111827', color: '#fff', fontSize: '13px', resize: 'vertical', boxSizing: 'border-box' }}
-              />
-              <div style={{ textAlign: 'right', fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                {ackModal.note.length}/{NOTE_MAX}
-              </div>
-            </div>
-
-            {ackModal.error && (
-              <div role="alert" style={{ marginBottom: '16px', padding: '10px 12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
-                {ackModal.error}
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button className="btn btn-secondary" onClick={closeAckModal}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleConfirmAck}>Confirmar</button>
-            </div>
+      <Modal
+        isOpen={ackModal.isOpen}
+        onClose={closeAckModal}
+        title="Reconocer alerta"
+        size="sm"
+        footer={
+          <>
+            <button className="btn btn-secondary" onClick={closeAckModal}>Cancelar</button>
+            <button className="btn btn-primary" onClick={handleConfirmAck}>Confirmar</button>
+          </>
+        }
+      >
+        <div style={{ marginBottom: '16px' }}>
+          <label htmlFor="ack-note" style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#9ca3af' }}>
+            Nota de reconocimiento (opcional)
+          </label>
+          <textarea
+            id="ack-note"
+            aria-label="Nota de reconocimiento"
+            value={ackModal.note}
+            onChange={e => setAckModal(m => ({ ...m, note: e.target.value, error: null }))}
+            maxLength={NOTE_MAX}
+            rows={3}
+            placeholder="Añade una nota opcional…"
+            style={{ width: '100%', padding: '8px 12px', border: '1px solid #4b5563', borderRadius: '4px', backgroundColor: '#111827', color: '#fff', fontSize: '13px', resize: 'vertical', boxSizing: 'border-box' }}
+          />
+          <div style={{ textAlign: 'right', fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+            {ackModal.note.length}/{NOTE_MAX}
           </div>
         </div>
-      )}
+        {ackModal.error && (
+          <div role="alert" style={{ marginBottom: '16px', padding: '10px 12px', backgroundColor: '#7f1d1d', border: '1px solid #dc2626', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+            {ackModal.error}
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }
