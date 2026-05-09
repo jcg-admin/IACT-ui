@@ -4,9 +4,9 @@ version: 1.0
 project: IACT-UI
 cold_boot: false
 last_session: 2026-05-09
-current_work: null
+current_work: .thyrox/context/work/2026-05-09-01-51-11-final-uc-gaps-closure
 phase: null
-updated_at: 2026-05-09 03:00:00
+updated_at: 2026-05-09 02:00:17
 blockers: []
 ```
 
@@ -16,13 +16,35 @@ blockers: []
 
 **Proyecto:** IACT-UI — Dashboard React para analytics de llamadas (IVR)
 **Branch:** `claude/project-analysis-N9IkV`
-**Estado:** Sin WP activo. WP `permissions-uc-audit` cerrado (Phase 11 TRACK completa).
-**Tests:** 1960 passing / 220 suites / 0 failures (verificado 2026-05-09)
-**Próximo:** Pendiente definición por ejecutor.
+**Estado:** WP `final-uc-gaps-closure` cerrado (Phase 11 TRACK completa). 0 deuda técnica.
+**Tests:** 1987 passing / 222 suites / 0 failures (verificado 2026-05-09)
+**Próximo:** Pendiente definición por ejecutor — corpus UI completo, todos los UCs in-scope cubiertos.
 
 ## Métricas de test suite
 
-**1960 tests** passing (verificado 2026-05-09 — WP permissions-uc-audit Phase 11 TRACK completa, 220 suites)
+**1987 tests** passing (verificado 2026-05-09 — WP final-uc-gaps-closure Phase 11 TRACK completa, 222 suites)
+
+---
+
+## WP cerrado — final-uc-gaps-closure ✓
+
+`2026-05-09-01-51-11-final-uc-gaps-closure` — Phase 11 TRACK completa.
+
+6 tareas en 4 bloques (T-001..T-006). 2 commits. 1987 tests (+27 nuevos desde 1960), 0 regressions.
+
+Entregables:
+- T-001: `BlockUnblock.test.jsx` — 9 tests UC_USR_05/06 block/unblock (UserList modal flow)
+- T-002: `ProfilePage.test.jsx` — 8 tests UC_USR_07 (form, read-only username, no password, submit, success/error, checkboxes)
+- T-003: Segments tests expandidos 1→4 (UC_ACC_06/07 — combined text, children, multiple roots)
+- T-004: mockInterceptor GET `/preview-revoke/` — safe + critical fixtures
+- T-005: `RevokeGroup.jsx` full rewrite — GET preview-revoke → modal → "REVOCAR" literal gate → dispatch
+- T-006: `RevokeGroupPage.test.jsx` — 6 nuevos modal tests (endpoint call, badge list, disabled confirm, REVOCAR unlock, Cancelar, dispatch)
+
+Key lesson: tests must accompany every implementation — verifying WPs by code presence only misses test coverage entirely.
+
+Artefactos:
+- `track/final-uc-gaps-closure-changelog.md`
+- `plan-execution/final-uc-gaps-closure-task-plan.md` (6/6 [x])
 
 ---
 
