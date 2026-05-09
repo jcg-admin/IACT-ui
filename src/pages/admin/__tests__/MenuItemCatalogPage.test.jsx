@@ -3,6 +3,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import MenuItemCatalog from '../MenuItemCatalog'
 
+const FUNCTIONS = [
+  { id: 1, codename: 'reports:view', name: 'Ver reportes', domain: 'reports', active: true },
+  { id: 2, codename: 'pipeline:view_status', name: 'Ver estado del pipeline', domain: 'pipeline', active: true },
+  { id: 3, codename: 'users:manage', name: 'Gestionar usuarios', domain: 'users', active: false },
+]
+
 const ITEMS = [
   { id: 1, label: 'Dashboard',    icon: 'grid-alt', route_path: '/dashboard', display_order: 1,  function_codename: 'reports:view', parent: null, status: 'ACTIVE',     is_critical: false, block_auto_archive: false },
   { id: 2, label: 'Beta Feature', icon: 'flask',    route_path: '/beta',       display_order: 9,  function_codename: 'reports:view', parent: null, status: 'DRAFT',      is_critical: false, block_auto_archive: false },
@@ -18,13 +24,14 @@ jest.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
   useSelector: (selector) =>
     selector({
-      admin: { loading: false, error: null, menuItems: ITEMS, functions: [], agrs: [], separationRules: [] },
+      admin: { loading: false, error: null, menuItems: ITEMS, functions: FUNCTIONS, agrs: [], separationRules: [] },
     }),
 }))
 
 jest.mock('../../../redux/slices/admin', () => ({
   __esModule: true,
   fetchMenuItems: () => ({ type: 'admin/fetchMenuItems' }),
+  fetchFunctions: () => ({ type: 'admin/fetchFunctions' }),
   createMenuItem: jest.fn((data) => ({ type: 'admin/createMenuItem', payload: data })),
   updateMenuItem: jest.fn((args) => ({ type: 'admin/updateMenuItem', payload: args })),
   publishMenuItem: jest.fn((id) => ({ type: 'admin/publishMenuItem', payload: id })),
@@ -35,6 +42,7 @@ jest.mock('../../../redux/slices/admin', () => ({
   blockAutoArchive: jest.fn((args) => ({ type: 'admin/blockAutoArchive', payload: args })),
   unblockAutoArchive: jest.fn((id) => ({ type: 'admin/unblockAutoArchive', payload: id })),
   selectMenuItems: (s) => s.admin.menuItems,
+  selectFunctions: (s) => s.admin.functions,
   selectAdminLoading: (s) => s.admin.loading,
 }))
 
@@ -99,12 +107,29 @@ describe('MenuItemCatalog', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Lifecycle' }))
     const btn = screen.getByLabelText('Transicionar Beta Feature a Activo')
     fireEvent.click(btn)
-    await waitFor(() => expect(mockDispatch).toHaveBeenCalledTimes(2))
+    // mount dispatches fetchMenuItems + fetchFunctions (2), click dispatches publishMenuItem (1)
+    await waitFor(() => expect(mockDispatch).toHaveBeenCalledTimes(3))
   })
 
   it('shows guard-free edit button for catalog items', () => {
     wrapper(<MenuItemCatalog />)
     expect(screen.getByLabelText('Editar Dashboard')).toBeInTheDocument()
+  })
+
+  it('shows function selector with options from catalog (UC_ADM_04 PASO 3)', () => {
+    wrapper(<MenuItemCatalog />)
+    fireEvent.click(screen.getByText('Nuevo item'))
+    const select = screen.getByRole('combobox', { name: /función rbac/i })
+    expect(select).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /reports:view/i })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /pipeline:view_status/i })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: /users:manage/i })).not.toBeInTheDocument()
+  })
+
+  it('dispatches fetchFunctions on mount', () => {
+    wrapper(<MenuItemCatalog />)
+    const calls = mockDispatch.mock.calls.map((c) => c[0]?.type)
+    expect(calls).toContain('admin/fetchFunctions')
   })
 })
 

@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   fetchMenuItems,
+  fetchFunctions,
   createMenuItem,
   updateMenuItem,
   publishMenuItem,
@@ -19,6 +20,7 @@ import {
   blockAutoArchive,
   unblockAutoArchive,
   selectMenuItems,
+  selectFunctions,
   selectAdminLoading,
 } from '../../redux/slices/admin'
 import LoadingSpinner from '../../components/shared/LoadingSpinner'
@@ -40,6 +42,7 @@ const BLOCK_REASON_MIN = 20
 export default function MenuItemCatalog() {
   const dispatch = useDispatch()
   const items = useSelector(selectMenuItems)
+  const functions = useSelector(selectFunctions)
   const loading = useSelector(selectAdminLoading)
 
   const [activeTab, setActiveTab] = useState('catalog')
@@ -61,6 +64,7 @@ export default function MenuItemCatalog() {
 
   useEffect(() => {
     dispatch(fetchMenuItems())
+    dispatch(fetchFunctions())
   }, [dispatch])
 
   const showFeedback = (msg, type = 'success') => {
@@ -210,7 +214,6 @@ export default function MenuItemCatalog() {
                 { key: 'icon', label: 'Ícono', placeholder: 'grid-alt' },
                 { key: 'route_path', label: 'Ruta', placeholder: '/dashboard' },
                 { key: 'display_order', label: 'Orden', placeholder: '1' },
-                { key: 'function_codename', label: 'Función RBAC', placeholder: 'reports:view' },
               ].map(({ key, label, placeholder }) => (
                 <label key={key}>
                   {label}
@@ -222,6 +225,21 @@ export default function MenuItemCatalog() {
                   />
                 </label>
               ))}
+              <label>
+                Función RBAC
+                <select
+                  value={form.function_codename}
+                  onChange={(e) => setForm((f) => ({ ...f, function_codename: e.target.value }))}
+                  required
+                >
+                  <option value="">Seleccionar función...</option>
+                  {functions.filter((fn) => fn.active !== false).map((fn) => (
+                    <option key={fn.id} value={fn.codename}>
+                      {fn.codename} — {fn.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <div className="form-actions">
                 <button type="submit" className="btn btn-primary">
                   {editingItem ? 'Guardar' : 'Crear'}
