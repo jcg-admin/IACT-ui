@@ -268,19 +268,19 @@ class AccessService {
     }
 
     /**
-     * Desactivar grupo de acceso (AGR).
-     * PATCH /api/access/groups/{id}/ con { active: false }
+     * Retirar grupo de acceso (soft-delete a state=RETIRED).
+     * DELETE /api/access/groups/{id}/ con { retire_reason }
      */
-    async deactivateGroup(id) {
+    async retireGroup(id, retireReason) {
         const response = await fetch(`${API_BASE_URL}/access/groups/${id}/`, {
-            method: 'PATCH',
+            method: 'DELETE',
             headers: this.getAuthHeaders(),
-            body: JSON.stringify({ active: false }),
+            body: JSON.stringify({ retire_reason: retireReason }),
         });
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Failed to deactivate group');
+            throw new Error(error.message || 'Failed to retire group');
         }
 
         return response.json();
@@ -290,11 +290,11 @@ class AccessService {
      * Asignar funciones a un grupo (AGR).
      * POST /api/access/groups/{groupId}/functions/
      */
-    async assignFunctionsToGroup(groupId, functionIds) {
+    async assignFunctionsToGroup(groupId, functionIds, change_reason) {
         const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/functions/`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
-            body: JSON.stringify({ function_ids: functionIds }),
+            body: JSON.stringify({ function_ids: functionIds, change_reason }),
         });
 
         if (!response.ok) {
@@ -407,10 +407,14 @@ class AccessService {
     }
 
     // UC-015: revocar permiso excepcional
-    async revokeExceptionalPermission(userId, permissionId) {
+    async revokeExceptionalPermission(userId, permissionId, revoke_reason) {
         const response = await fetch(
             `${API_BASE_URL}/users/${userId}/exceptional-permissions/${permissionId}/`,
-            { method: 'DELETE', headers: this.getAuthHeaders() }
+            {
+                method: 'DELETE',
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify({ revoke_reason }),
+            }
         );
         if (!response.ok) throw new Error('Failed to revoke exceptional permission');
         return response.json();

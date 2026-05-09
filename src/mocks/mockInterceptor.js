@@ -190,6 +190,12 @@ class MockInterceptor {
 
     // UC-015: revocar permiso excepcional
     if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/\d+\/$/) && method === 'DELETE') {
+      if (!body?.revoke_reason || body.revoke_reason.trim() === '') {
+        return { status: 400, data: { error: 'revoke_reason requerido', code: 'REVOKE_REASON_REQUIRED' } }
+      }
+      if (body.revoke_reason.trim().length < 10) {
+        return { status: 400, data: { error: 'revoke_reason muy corto (mínimo 10 chars)', code: 'REASON_TOO_SHORT' } }
+      }
       return { status: 200, data: { revoked: true } };
     }
 
@@ -201,6 +207,23 @@ class MockInterceptor {
     // GAP-5: cascade impact preview
     if (url.match(/\/api\/access\/groups\/[^/]+\/cascade-impact/)) {
       return this._handleGroupCascadeImpact(url);
+    }
+
+    // UC_PERM_05: CRUD grupos de acceso (non-system) — order matters: specific before generic
+    if (url.match(/\/api\/access\/groups\/\d+\/functions\//) && method === 'POST') {
+      return this._handleAssignFunctionsToGroup(url, body);
+    }
+    if (url.match(/\/api\/access\/groups\/\d+\/functions\//) && method === 'GET') {
+      return this._handleGetGroupFunctions(url);
+    }
+    if (url.match(/\/api\/access\/groups\/\d+\//) && method === 'DELETE') {
+      return this._handleRetireGroup(url, body);
+    }
+    if (url.match(/\/api\/access\/groups\/\d+\//) && method === 'PATCH') {
+      return this._handleUpdateGroup(url, body);
+    }
+    if (url === '/api/access/groups/' || url.match(/\/api\/access\/groups\/$/)) {
+      return this._handleAccessGroupsCRUD(method, body);
     }
 
     // GAP-1: validar reglas de separación (usuario + función)
@@ -223,6 +246,12 @@ class MockInterceptor {
 
     // ACCESS — UC-PERM-02: revocar grupo de usuario
     if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/$/) && method === 'DELETE') {
+      if (!body?.revoke_reason || body.revoke_reason.trim() === '') {
+        return { status: 400, data: { error: 'revoke_reason requerido', code: 'REVOKE_REASON_REQUIRED' } }
+      }
+      if (body.revoke_reason.trim().length < 10) {
+        return { status: 400, data: { error: 'revoke_reason muy corto (mínimo 10 chars)', code: 'REASON_TOO_SHORT' } }
+      }
       return { status: 200, data: { revoked: true } }
     }
 
@@ -2553,15 +2582,15 @@ class MockInterceptor {
     const match = url.match(/\/api\/access\/audit\/(\d+)/)
     const userId = match ? parseInt(match[1], 10) : null
     if (userId === null) {
-      // All-scope: events from multiple users (GAP-ACC-05 fix)
+      // All-scope: events from multiple users (GAP-ACC-05 + GAP-PERM-11 fix)
       return {
         status: 200,
         data: [
-          { id: 1, action: 'ASSIGN_FUNCTION',      codename: 'reports:view',    performed_by: 'admin', performed_at: '2026-05-01T10:00:00Z', target_user_id: 1, reason: 'Onboarding user1' },
-          { id: 2, action: 'REVOKE_FUNCTION',      codename: 'access:assign',   performed_by: 'admin', performed_at: '2026-04-15T09:30:00Z', target_user_id: 2, reason: 'Role change user2' },
-          { id: 3, action: 'ASSIGN_FUNCTION',      codename: 'audit:view',      performed_by: 'admin', performed_at: '2026-03-20T14:00:00Z', target_user_id: 3, reason: 'Compliance team' },
-          { id: 4, action: 'ASSIGN_GROUPER',       codename: 'auditor_group',   performed_by: 'admin', performed_at: '2026-05-05T08:00:00Z', target_user_id: 2, reason: 'AGR bulk assignment' },
-          { id: 5, action: 'GRANT_TEMPORARY',      codename: 'PIP-005',         performed_by: 'admin', performed_at: '2026-05-07T11:00:00Z', target_user_id: 1, reason: 'Incident coverage' },
+          { id: 1, action: 'ASSIGN_FUNCTION',                  codename: 'reports:view',    performed_by: 'admin', performed_at: '2026-05-01T10:00:00Z', target_user_id: 1, reason: 'Onboarding user1' },
+          { id: 2, action: 'REVOKE_FUNCTION',                  codename: 'access:assign',   performed_by: 'admin', performed_at: '2026-04-15T09:30:00Z', target_user_id: 2, reason: 'Role change user2' },
+          { id: 3, action: 'AGR_ASSIGNED',                     codename: 'auditores_group', performed_by: 'admin', performed_at: '2026-05-05T08:00:00Z', target_user_id: 2, reason: 'AGR bulk assignment' },
+          { id: 4, action: 'EXCEPTIONAL_PERMISSION_GRANTED',   codename: 'PIP-005',         performed_by: 'admin', performed_at: '2026-05-07T11:00:00Z', target_user_id: 1, reason: 'Incident coverage' },
+          { id: 5, action: 'EXCEPTIONAL_PERMISSION_REVOKED',   codename: 'PIP-005',         performed_by: 'admin', performed_at: '2026-05-08T09:00:00Z', target_user_id: 1, reason: 'Coverage ended' },
         ],
       }
     }
@@ -2573,6 +2602,85 @@ class MockInterceptor {
         { id: 3, action: 'ASSIGN_FUNCTION',  codename: 'audit:view',    performed_by: 'admin', performed_at: '2026-03-20T14:00:00Z', target_user_id: userId, reason: 'Compliance team' },
       ],
     }
+  }
+
+  // ====== UC_PERM_05: Access Groups (non-system) CRUD ======
+
+  _ACCESS_GROUPS = [
+    { id: 10, code: 'admins_group',     name: 'Administradores', description: 'Grupo de administradores del sistema', is_predefined: true,  state: 'ACTIVE' },
+    { id: 11, code: 'auditores_group',  name: 'Auditores',       description: 'Grupo de auditores internos',          is_predefined: false, state: 'ACTIVE' },
+    { id: 12, code: 'operadores_group', name: 'Operadores',       description: 'Grupo de operadores de plataforma',   is_predefined: false, state: 'ACTIVE' },
+  ]
+
+  _handleAccessGroupsCRUD(method, body) {
+    if (method === 'GET') {
+      const active = this._ACCESS_GROUPS.filter(g => g.state !== 'RETIRED');
+      return { status: 200, data: { results: active, count: active.length } };
+    }
+    if (method === 'POST') {
+      const { code, name, description } = body || {};
+      if (this._ACCESS_GROUPS.some(g => g.code === code)) {
+        return { status: 409, data: { error: 'Código ya existe', code: 'CODE_DUPLICATE' } };
+      }
+      const newGroup = {
+        id: 100 + this._ACCESS_GROUPS.length,
+        code,
+        name,
+        description: description || '',
+        is_predefined: false,
+        state: 'ACTIVE',
+      };
+      this._ACCESS_GROUPS.push(newGroup);
+      return { status: 201, data: newGroup };
+    }
+    return { status: 405, data: { error: 'Method not allowed' } };
+  }
+
+  _handleUpdateGroup(url, body) {
+    const id = parseInt(url.match(/\/api\/access\/groups\/(\d+)\//)[1]);
+    const group = this._ACCESS_GROUPS.find(g => g.id === id);
+    if (!group) return { status: 404, data: { error: 'Group not found' } };
+    if (group.is_predefined) {
+      return { status: 400, data: { error: 'Grupo predefinido no puede ser modificado', code: 'PREDEFINED_NOT_MUTABLE' } };
+    }
+    if (body && 'code' in body) {
+      return { status: 400, data: { error: 'El código del grupo es inmutable', code: 'CODE_IMMUTABLE' } };
+    }
+    if (body?.name) group.name = body.name;
+    if (body?.description !== undefined) group.description = body.description;
+    return { status: 200, data: { ...group } };
+  }
+
+  _handleRetireGroup(url, body) {
+    const id = parseInt(url.match(/\/api\/access\/groups\/(\d+)\//)[1]);
+    const group = this._ACCESS_GROUPS.find(g => g.id === id);
+    if (!group) return { status: 404, data: { error: 'Group not found' } };
+    if (group.is_predefined) {
+      return { status: 400, data: { error: 'Grupo predefinido no puede ser retirado', code: 'PREDEFINED_NOT_MUTABLE' } };
+    }
+    if (!body?.retire_reason || body.retire_reason.trim() === '') {
+      return { status: 400, data: { error: 'retire_reason requerido', code: 'RETIRE_REASON_REQUIRED' } };
+    }
+    if (body.retire_reason.trim().length < 20) {
+      return { status: 400, data: { error: 'retire_reason debe tener al menos 20 caracteres', code: 'RETIRE_REASON_TOO_SHORT' } };
+    }
+    group.state = 'RETIRED';
+    return { status: 200, data: { state: 'RETIRED', retired_at: new Date().toISOString() } };
+  }
+
+  _handleAssignFunctionsToGroup(url, body) {
+    const { function_ids, change_reason } = body || {};
+    if (!change_reason || change_reason.trim() === '') {
+      return { status: 400, data: { error: 'change_reason requerido', code: 'CHANGE_REASON_REQUIRED' } };
+    }
+    if (change_reason.trim().length < 10) {
+      return { status: 400, data: { error: 'change_reason muy corto (mínimo 10 chars)', code: 'CHANGE_REASON_TOO_SHORT' } };
+    }
+    return { status: 200, data: { assigned: function_ids?.length ?? 0 } };
+  }
+
+  _handleGetGroupFunctions(url) {
+    return { status: 200, data: { results: [], count: 0 } };
   }
 }
 

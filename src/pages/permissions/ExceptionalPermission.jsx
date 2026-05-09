@@ -48,7 +48,7 @@ export default function ExceptionalPermission() {
   const currentUserId = String(currentUser?.id ?? currentUser?.user_id ?? '')
   const isAntiSelf = targetUserId.trim() !== '' && targetUserId.trim() === currentUserId
 
-  const justificationValid = justification.trim().length >= 10
+  const justificationValid = justification.trim().length >= 20
   const expiresAtValid = expiresAt >= today && expiresAt <= maxDate
   const canSubmit = targetUserId.trim() && permissionCode && justificationValid && expiresAtValid && !isAntiSelf && !loading
 
@@ -219,7 +219,7 @@ export default function ExceptionalPermission() {
             />
             {justification.length > 0 && !justificationValid && (
               <div style={{ color: '#f87171', fontSize: '12px', marginTop: '4px' }}>
-                La justificación debe tener al menos 10 caracteres ({justification.length}/10).
+                La justificación debe tener al menos 20 caracteres ({justification.length}/20).
               </div>
             )}
           </div>

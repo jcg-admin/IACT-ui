@@ -191,11 +191,11 @@ export const updateGroup = createAsyncThunk(
     }
 );
 
-export const deactivateGroup = createAsyncThunk(
-    'access/deactivateGroup',
-    async (id, { rejectWithValue }) => {
+export const retireGroup = createAsyncThunk(
+    'access/retireGroup',
+    async ({ id, retireReason }, { rejectWithValue }) => {
         try {
-            const response = await accessService.deactivateGroup(id);
+            const response = await accessService.retireGroup(id, retireReason);
             return response;
         } catch (error) {
             return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
@@ -217,9 +217,9 @@ export const fetchGroupFunctions = createAsyncThunk(
 
 export const assignFunctionsToGroup = createAsyncThunk(
     'access/assignFunctionsToGroup',
-    async ({ groupId, functionIds }, { rejectWithValue }) => {
+    async ({ groupId, functionIds, change_reason }, { rejectWithValue }) => {
         try {
-            const response = await accessService.assignFunctionsToGroup(groupId, functionIds);
+            const response = await accessService.assignFunctionsToGroup(groupId, functionIds, change_reason);
             return response;
         } catch (error) {
             return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
@@ -255,9 +255,9 @@ export const fetchExceptionalPermissions = createAsyncThunk(
 
 export const revokeExceptionalPermission = createAsyncThunk(
     'access/revokeExceptionalPermission',
-    async ({ userId, permissionId }, { rejectWithValue }) => {
+    async ({ userId, permissionId, revoke_reason }, { rejectWithValue }) => {
         try {
-            await accessService.revokeExceptionalPermission(userId, permissionId);
+            await accessService.revokeExceptionalPermission(userId, permissionId, revoke_reason);
             return permissionId;
         } catch (error) {
             return rejectWithValue({ message: error.message, statusCode: null });
@@ -532,12 +532,12 @@ const accessSlice = createSlice({
          * Deactivate Group
          */
         builder
-            .addCase(deactivateGroup.pending, (state) => {
+            .addCase(retireGroup.pending, (state) => {
                 state.loading = true;
                 state.error = null;
                 state.success = false;
             })
-            .addCase(deactivateGroup.fulfilled, (state, action) => {
+            .addCase(retireGroup.fulfilled, (state, action) => {
                 state.loading = false;
                 state.success = true;
                 const idx = state.groups.findIndex(g => g.id === action.payload.id);
@@ -545,7 +545,7 @@ const accessSlice = createSlice({
                     state.groups[idx] = action.payload;
                 }
             })
-            .addCase(deactivateGroup.rejected, (state, action) => {
+            .addCase(retireGroup.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
                 state.success = false;
