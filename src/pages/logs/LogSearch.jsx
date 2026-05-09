@@ -30,13 +30,13 @@ export default function LogSearch() {
         <h1>Búsqueda de logs</h1>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+      <form onSubmit={handleSubmit} className="search-bar">
         <input
           type="text"
+          className="search-input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar en logs..."
-          style={{ flex: 1 }}
         />
         <button className="btn btn-primary" type="submit" disabled={loading}>Buscar</button>
       </form>

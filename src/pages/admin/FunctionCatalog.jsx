@@ -165,7 +165,7 @@ export default function FunctionCatalog() {
       )}
 
       {/* Barra de búsqueda y filtros */}
-      <div className="search-bar" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="search-bar">
         <input
           className="search-input"
           type="text"
