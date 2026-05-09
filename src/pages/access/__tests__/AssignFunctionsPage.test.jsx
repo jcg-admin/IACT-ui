@@ -135,7 +135,9 @@ describe('AssignFunctions — Revocar tab (uc-acc-02)', () => {
     it('dispatches revokeFunction with userId and catalogId when Revocar is clicked', async () => {
         switchToRevokeTab();
         fireEvent.change(screen.getByRole('combobox'), { target: { value: '1' } });
-        fireEvent.click(screen.getAllByRole('button', { name: /revocar/i })[0]);
+        // revoke_reason ≥10 chars required before the button enables
+        fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Motivo valido de revocacion' } });
+        fireEvent.click(screen.getAllByRole('button', { name: /revocar view pipeline/i })[0]);
         await waitFor(() => {
             expect(revokeFunction).toHaveBeenCalledWith(
                 expect.objectContaining({ userId: 1, catalogId: expect.any(Number) })
