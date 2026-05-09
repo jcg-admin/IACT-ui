@@ -337,6 +337,10 @@ class MockInterceptor {
       return this._handleValidateCondition(body)
     }
 
+    if (url.includes('/api/alerts/history/')) {
+      return this._handleAlertHistory()
+    }
+
     if (url.includes('/api/alerts/subscriptions/me/')) {
       return this._handleGetMySubscriptions()
     }
@@ -1504,6 +1508,34 @@ class MockInterceptor {
           },
         ],
       },
+    }
+  }
+
+  _handleAlertHistory() {
+    return {
+      status: 200,
+      data: [
+        {
+          id: 'hist-1',
+          name: 'SL colas < 80%',
+          rule_id: 'rule-sl-queues',
+          severity: 'critical',
+          state: 'resolved',
+          fired_at: new Date(Date.now() - 3600000).toISOString(),
+          time_to_ack: 5,
+          time_to_resolve: 42,
+        },
+        {
+          id: 'hist-2',
+          name: 'Fallos de login excesivos',
+          rule_id: 'rule-logins',
+          severity: 'warning',
+          state: 'acknowledged',
+          fired_at: new Date(Date.now() - 7200000).toISOString(),
+          time_to_ack: 12,
+          time_to_resolve: null,
+        },
+      ],
     }
   }
 

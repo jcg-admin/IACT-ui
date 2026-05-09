@@ -55,7 +55,7 @@ describe('AlertsOverview', () => {
 describe('AlertHistory', () => {
   it('renders page title', () => {
     wrap(<AlertHistory />)
-    expect(screen.getByText('Historial de Alertas')).toBeInTheDocument()
+    expect(screen.getByText('Historial de alertas')).toBeInTheDocument()
   })
 })
 
