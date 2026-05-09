@@ -62,7 +62,7 @@ describe('AlertHistory', () => {
 describe('AlertConfig', () => {
   it('renders page title', () => {
     wrap(<AlertConfig />)
-    expect(screen.getByText('Configurar Alerta')).toBeInTheDocument()
+    expect(screen.getByText('Configurar regla de alerta')).toBeInTheDocument()
   })
 })
 

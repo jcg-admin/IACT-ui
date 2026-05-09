@@ -321,8 +321,24 @@ class MockInterceptor {
     }
 
     // ALERT ENDPOINTS
+    if (url.includes('/api/alerts/bulk-ack/') && method === 'POST') {
+      return this._handleBulkAcknowledgeAlerts(body)
+    }
+
     if (url.match(/\/api\/alerts\/([^/]+)\/ack\//) && method === 'POST') {
       return this._handleAcknowledgeAlert(url, body);
+    }
+
+    if (url.includes('/api/alerts/rules/') && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+      return this._handleAlertRule(url, method, body)
+    }
+
+    if (url.includes('/api/alerts/validate-condition/') && method === 'POST') {
+      return this._handleValidateCondition(body)
+    }
+
+    if (url.includes('/api/alerts/subscriptions/') && (method === 'POST' || method === 'DELETE')) {
+      return this._handleAlertSubscription(url, method, body)
     }
 
     if (url.includes('/api/alerts')) {
@@ -1445,25 +1461,84 @@ class MockInterceptor {
         alerts: [
           {
             id: 'alert-1',
-            title: 'New User Login',
-            message: 'User logged in from new device',
-            severity: 'info',
-            timestamp: new Date().toISOString(),
-            isRead: false,
+            rule_id: 'rule-sl-queues',
+            name: 'SL colas < 80%',
+            metric: 'SL',
+            scope: 'queue',
+            severity: 'critical',
+            threshold: 80,
+            window: 10,
+            cooldown_minutes: 15,
+            fired_at: new Date().toISOString(),
             state: this._acknowledgedAlerts.has('alert-1') ? 'acknowledged' : 'firing',
           },
           {
             id: 'alert-2',
-            title: 'Security Alert',
-            message: 'Multiple failed login attempts detected',
+            rule_id: 'rule-logins',
+            name: 'Fallos de login excesivos',
+            metric: 'login_failures',
+            scope: 'segment',
             severity: 'warning',
-            timestamp: new Date(Date.now() - 60000).toISOString(),
-            isRead: false,
+            threshold: 5,
+            window: 5,
+            cooldown_minutes: 30,
+            fired_at: new Date(Date.now() - 60000).toISOString(),
             state: this._acknowledgedAlerts.has('alert-2') ? 'acknowledged' : 'firing',
+          },
+          {
+            id: 'alert-3',
+            rule_id: 'rule-abandon',
+            name: 'Tasa de abandono > 20%',
+            metric: 'abandon_rate',
+            scope: 'campaign',
+            severity: 'info',
+            threshold: 20,
+            window: 15,
+            cooldown_minutes: 60,
+            fired_at: new Date(Date.now() - 300000).toISOString(),
+            state: 'resolved',
           },
         ],
       },
-    };
+    }
+  }
+
+  _handleAlertRule(url, method, body) {
+    if (method === 'POST') {
+      return {
+        status: 201,
+        data: { ...body, id: `rule-${Date.now()}`, status: body.status ?? 'active' },
+      }
+    }
+    const match = url.match(/\/api\/alerts\/rules\/([^/]+)\//)
+    const ruleId = match ? match[1] : null
+    if (method === 'PATCH') {
+      return { status: 200, data: { id: ruleId, ...body } }
+    }
+    return { status: 200, data: { ...body, id: ruleId } }
+  }
+
+  _handleValidateCondition(body) {
+    const { metric, threshold } = body ?? {}
+    if (!metric || threshold === undefined || threshold === '') {
+      return this._error(400, 'metric y threshold son requeridos')
+    }
+    return {
+      status: 200,
+      data: { valid: true, metric, threshold, sample_value: Number(threshold) * 0.9 },
+    }
+  }
+
+  _handleAlertSubscription(url, method, body) {
+    if (method === 'POST') {
+      return {
+        status: 201,
+        data: { id: `sub-${Date.now()}`, ...body },
+      }
+    }
+    const match = url.match(/\/api\/alerts\/subscriptions\/([^/]+)\//)
+    const subId = match ? match[1] : null
+    return { status: 204, data: null }
   }
 
   _handleAcknowledgeAlert(url, body) {

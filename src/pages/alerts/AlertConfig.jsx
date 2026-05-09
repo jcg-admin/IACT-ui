@@ -1,487 +1,293 @@
 /**
- * AlertConfigPage.jsx
- * IACT v4.0 - Alerts Module
- * UC_ALR_02: Configurar alertas - crear y editar condiciones
+ * AlertConfig.jsx
+ * IACT v4.0 — Alerts Module
+ * UC_ALR_01: Gestionar reglas de alerta (crear, editar, pausar)
  */
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createAlert, fetchTemplates, selectLoading, selectError, selectSuccess } from '../../redux/slices/alerts';
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { createAlert, selectLoading, selectError, selectSuccess } from '../../redux/slices/alerts'
+import alertsGateway from '../../services/alertsGateway'
 
-const OPERATORS = ['>', '<', '=', '>=', '<=', '!=', 'CONTAINS', 'NOT_CONTAINS'];
-const FREQUENCIES = ['REALTIME', 'HOURLY', 'DAILY', 'WEEKLY'];
-const CHANNELS = ['EMAIL', 'SMS', 'IN_APP', 'PUSH'];
+const METRICS = [
+  { value: 'SL', label: 'Nivel de servicio (SL)' },
+  { value: 'abandon_rate', label: 'Tasa de abandono' },
+  { value: 'queue_depth', label: 'Profundidad de cola' },
+  { value: 'TMO', label: 'Tiempo medio de operación (TMO)' },
+  { value: 'login_failures', label: 'Fallos de login' },
+]
+
+const SCOPES = [
+  { value: 'segment', label: 'Segmento' },
+  { value: 'queue', label: 'Cola' },
+  { value: 'campaign', label: 'Campaña' },
+]
+
+const SEVERITIES = [
+  { value: 'info', label: 'Info' },
+  { value: 'warning', label: 'Warning' },
+  { value: 'critical', label: 'Critical' },
+]
+
+const ACTIONS = [
+  { value: 'mailbox_notify_user', label: 'Notificar usuario (buzón)' },
+  { value: 'mailbox_notify_agr', label: 'Notificar agrupador (buzón)' },
+  { value: 'create_incident_ticket', label: 'Crear ticket de incidente' },
+]
+
+const EMPTY_FORM = {
+  name: '',
+  description: '',
+  metric: 'SL',
+  scope: 'segment',
+  severity: 'warning',
+  threshold: '',
+  actions: [],
+  cooldown_minutes: 15,
+  window: 5,
+  status: 'active',
+}
 
 export default function AlertConfig() {
-    const [config, setConfig] = useState({
-        name: '',
-        description: '',
-        category: 'SISTEMA',
-        metric: '',
-        operator: '>',
-        threshold: '',
-        channels: ['IN_APP'],
-        frequency: 'REALTIME',
-        isActive: true,
-    });
+  const dispatch = useDispatch()
+  const loading = useSelector(selectLoading)
+  const error = useSelector(selectError)
+  const success = useSelector(selectSuccess)
 
-    const [conditions, setConditions] = useState([]);
-    const [templates, setTemplates] = useState([]);
-    const [showTemplate, setShowTemplate] = useState(false);
+  const [config, setConfig] = useState({ ...EMPTY_FORM })
+  const [dryRunResult, setDryRunResult] = useState(null)
+  const [dryRunLoading, setDryRunLoading] = useState(false)
 
-    const dispatch = useDispatch();
-    const loading = useSelector(selectLoading);
-    const error = useSelector(selectError);
-    const success = useSelector(selectSuccess);
+  function toggle(field, value) {
+    const current = config[field]
+    setConfig({
+      ...config,
+      [field]: current.includes(value)
+        ? current.filter(v => v !== value)
+        : [...current, value],
+    })
+  }
 
-    useEffect(() => {
-        loadTemplates();
-    }, []);
+  async function handleCreate() {
+    await dispatch(createAlert(config))
+    if (success) {
+      setConfig({ ...EMPTY_FORM })
+      setDryRunResult(null)
+    }
+  }
 
-    const loadTemplates = async () => {
-        // Datos de ejemplo
-        setTemplates([
-            {
-                id: 1,
-                code: 'TPL-CPU-HIGH',
-                name: 'CPU Alta',
-                category: 'SISTEMA',
-                description: 'Alerta cuando CPU supera 80%',
-            },
-            {
-                id: 2,
-                code: 'TPL-MEMORY-LOW',
-                name: 'Memoria Baja',
-                category: 'SISTEMA',
-                description: 'Alerta cuando memoria disponible es menor a 20%',
-            },
-            {
-                id: 3,
-                code: 'TPL-FAILED-LOGINS',
-                name: 'Intentos Fallidos',
-                category: 'SEGURIDAD',
-                description: 'Alerta por múltiples intentos de login fallidos',
-            },
-        ]);
-    };
+  async function handleDryRun() {
+    setDryRunLoading(true)
+    setDryRunResult(null)
+    try {
+      const result = await alertsGateway.validateCondition({
+        metric: config.metric,
+        scope: config.scope,
+        threshold: config.threshold,
+        window: config.window,
+      })
+      setDryRunResult({ ok: true, data: result })
+    } catch (e) {
+      setDryRunResult({ ok: false, message: e.message || 'Condición inválida' })
+    } finally {
+      setDryRunLoading(false)
+    }
+  }
 
-    const handleAddCondition = () => {
-        if (!config.metric || !config.threshold) {
-            alert('Completa métrica y umbral');
-            return;
-        }
+  const canCreate = config.name && config.threshold && config.actions.length > 0
 
-        const newCondition = {
-            id: Date.now(),
-            metric: config.metric,
-            operator: config.operator,
-            threshold: config.threshold,
-        };
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Configurar regla de alerta</h1>
+        <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>
+          UC_ALR_01 — Crear y configurar reglas de alerta
+        </p>
+      </div>
 
-        setConditions([...conditions, newCondition]);
-        setConfig({ ...config, metric: '', threshold: '' });
-    };
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Panel izquierdo — datos básicos + condición */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label>Nombre de la regla</label>
+            <input
+              type="text"
+              value={config.name}
+              onChange={e => setConfig({ ...config, name: e.target.value })}
+              placeholder="Ej: SL crítico cola ventas"
+            />
+          </div>
 
-    const handleRemoveCondition = (id) => {
-        setConditions(conditions.filter(c => c.id !== id));
-    };
+          <div>
+            <label>Descripción</label>
+            <textarea
+              value={config.description}
+              onChange={e => setConfig({ ...config, description: e.target.value })}
+              placeholder="Describe cuándo disparar esta alerta…"
+              style={{ minHeight: '60px', resize: 'vertical' }}
+            />
+          </div>
 
-    const handleCreateAlert = async () => {
-        if (!config.name || conditions.length === 0) {
-            alert('Completa nombre y al menos una condición');
-            return;
-        }
-
-        const alertConfig = {
-            ...config,
-            conditions,
-        };
-
-        await dispatch(createAlert(alertConfig));
-
-        if (success) {
-            // Reset form
-            setConfig({
-                name: '',
-                description: '',
-                category: 'SISTEMA',
-                metric: '',
-                operator: '>',
-                threshold: '',
-                channels: ['IN_APP'],
-                frequency: 'REALTIME',
-                isActive: true,
-            });
-            setConditions([]);
-            alert('Alerta creada exitosamente');
-        }
-    };
-
-    const getCategoryColor = (category) => {
-        const colors = {
-            SISTEMA: '#8b5cf6',
-            NEGOCIO: '#0ea5e9',
-            SEGURIDAD: '#dc2626',
-            OPERACIONAL: '#f59e0b',
-        };
-        return colors[category] || '#6b7280';
-    };
-
-    return (
-        <div style={{ padding: '24px' }}>
-            {/* Header */}
-            <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '28px' }}>
-                    Configurar Alerta
-                </h1>
-                <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>
-                    UC_ALR_02 - Crear y configurar nuevas alertas
-                </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label>Métrica</label>
+              <select
+                value={config.metric}
+                onChange={e => setConfig({ ...config, metric: e.target.value })}
+              >
+                {METRICS.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                {/* Panel izquierdo - Configuración básica */}
-                <div style={{
-                    padding: '16px',
-                    backgroundColor: '#111827',
-                    borderRadius: '8px',
-                    border: '1px solid #374151',
-                }}>
-                    <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Información Básica</h2>
-
-                    <div style={{ marginBottom: '12px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                            Nombre
-                        </label>
-                        <input
-                            type="text"
-                            value={config.name}
-                            onChange={(e) => setConfig({ ...config, name: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '1px solid #374151',
-                                borderRadius: '4px',
-                                backgroundColor: '#1f2937',
-                                color: '#fff',
-                                fontSize: '12px',
-                            }}
-                            placeholder="Ej: CPU Alta"
-                        />
-                    </div>
-
-                    <div style={{ marginBottom: '12px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                            Descripción
-                        </label>
-                        <textarea
-                            value={config.description}
-                            onChange={(e) => setConfig({ ...config, description: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '1px solid #374151',
-                                borderRadius: '4px',
-                                backgroundColor: '#1f2937',
-                                color: '#fff',
-                                fontSize: '12px',
-                                minHeight: '60px',
-                                resize: 'vertical',
-                            }}
-                            placeholder="Describe la alerta..."
-                        />
-                    </div>
-
-                    <div style={{ marginBottom: '12px' }}>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                            Categoría
-                        </label>
-                        <select
-                            value={config.category}
-                            onChange={(e) => setConfig({ ...config, category: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '1px solid #374151',
-                                borderRadius: '4px',
-                                backgroundColor: '#1f2937',
-                                color: '#fff',
-                                fontSize: '12px',
-                            }}
-                        >
-                            <option value="SISTEMA">Sistema</option>
-                            <option value="NEGOCIO">Negocio</option>
-                            <option value="SEGURIDAD">Seguridad</option>
-                            <option value="OPERACIONAL">Operacional</option>
-                        </select>
-                    </div>
-
-                    {/* Canales */}
-                    <div style={{ marginBottom: '12px' }}>
-                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', color: '#9ca3af' }}>
-                            Canales de Notificación
-                        </label>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                            {CHANNELS.map(channel => (
-                                <label key={channel} style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '8px',
-                                    backgroundColor: '#1f2937',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '12px',
-                                    color: '#fff',
-                                }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={config.channels.includes(channel)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setConfig({ ...config, channels: [...config.channels, channel] });
-                                            } else {
-                                                setConfig({ ...config, channels: config.channels.filter(c => c !== channel) });
-                                            }
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    />
-                                    {channel}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Frecuencia */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                            Frecuencia
-                        </label>
-                        <select
-                            value={config.frequency}
-                            onChange={(e) => setConfig({ ...config, frequency: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '1px solid #374151',
-                                borderRadius: '4px',
-                                backgroundColor: '#1f2937',
-                                color: '#fff',
-                                fontSize: '12px',
-                            }}
-                        >
-                            {FREQUENCIES.map(freq => (
-                                <option key={freq} value={freq}>{freq}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Panel derecho - Condiciones */}
-                <div>
-                    {/* Constructor de condiciones */}
-                    <div style={{
-                        padding: '16px',
-                        backgroundColor: '#111827',
-                        borderRadius: '8px',
-                        border: '1px solid #374151',
-                        marginBottom: '16px',
-                    }}>
-                        <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Condiciones</h2>
-
-                        <div style={{ marginBottom: '12px' }}>
-                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                                Métrica
-                            </label>
-                            <input
-                                type="text"
-                                value={config.metric}
-                                onChange={(e) => setConfig({ ...config, metric: e.target.value })}
-                                style={{
-                                    width: '100%',
-                                    padding: '8px 12px',
-                                    border: '1px solid #374151',
-                                    borderRadius: '4px',
-                                    backgroundColor: '#1f2937',
-                                    color: '#fff',
-                                    fontSize: '12px',
-                                }}
-                                placeholder="Ej: CPU, MEMORY, ERROR_RATE"
-                            />
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                                    Operador
-                                </label>
-                                <select
-                                    value={config.operator}
-                                    onChange={(e) => setConfig({ ...config, operator: e.target.value })}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        border: '1px solid #374151',
-                                        borderRadius: '4px',
-                                        backgroundColor: '#1f2937',
-                                        color: '#fff',
-                                        fontSize: '12px',
-                                    }}
-                                >
-                                    {OPERATORS.map(op => (
-                                        <option key={op} value={op}>{op}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#9ca3af' }}>
-                                    Umbral
-                                </label>
-                                <input
-                                    type="text"
-                                    value={config.threshold}
-                                    onChange={(e) => setConfig({ ...config, threshold: e.target.value })}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 12px',
-                                        border: '1px solid #374151',
-                                        borderRadius: '4px',
-                                        backgroundColor: '#1f2937',
-                                        color: '#fff',
-                                        fontSize: '12px',
-                                    }}
-                                    placeholder="Ej: 80, 20%"
-                                />
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleAddCondition}
-                            style={{
-                                width: '100%',
-                                padding: '8px',
-                                backgroundColor: '#0ea5e9',
-                                border: 'none',
-                                borderRadius: '4px',
-                                color: '#fff',
-                                cursor: 'pointer',
-                                fontSize: '12px',
-                            }}
-                        >
-                            Agregar Condición
-                        </button>
-                    </div>
-
-                    {/* Lista de condiciones */}
-                    {conditions.length > 0 && (
-                        <div style={{
-                            padding: '16px',
-                            backgroundColor: '#111827',
-                            borderRadius: '8px',
-                            border: '1px solid #374151',
-                        }}>
-                            <h3 style={{ margin: '0 0 12px 0', color: '#fff' }}>
-                                Condiciones ({conditions.length})
-                            </h3>
-                            {conditions.map((cond, idx) => (
-                                <div
-                                    key={cond.id}
-                                    style={{
-                                        padding: '8px',
-                                        backgroundColor: '#1f2937',
-                                        borderRadius: '4px',
-                                        marginBottom: '8px',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <span style={{ color: '#fff', fontSize: '12px' }}>
-                                        {cond.metric} {cond.operator} {cond.threshold}
-                                    </span>
-                                    <button
-                                        onClick={() => handleRemoveCondition(cond.id)}
-                                        style={{
-                                            padding: '4px 8px',
-                                            backgroundColor: '#dc2626',
-                                            border: 'none',
-                                            borderRadius: '3px',
-                                            color: '#fff',
-                                            cursor: 'pointer',
-                                            fontSize: '11px',
-                                        }}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+            <div>
+              <label>Scope</label>
+              <select
+                value={config.scope}
+                onChange={e => setConfig({ ...config, scope: e.target.value })}
+              >
+                {SCOPES.map(s => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
             </div>
+          </div>
 
-            {/* Botones de acción */}
-            <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <button
-                    onClick={() => {
-                        setConfig({
-                            name: '',
-                            description: '',
-                            category: 'SISTEMA',
-                            metric: '',
-                            operator: '>',
-                            threshold: '',
-                            channels: ['IN_APP'],
-                            frequency: 'REALTIME',
-                            isActive: true,
-                        });
-                        setConditions([]);
-                    }}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#374151',
-                        border: 'none',
-                        borderRadius: '4px',
-                        color: '#fff',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                    }}
-                >
-                    Limpiar
-                </button>
-
-                <button
-                    onClick={handleCreateAlert}
-                    disabled={!config.name || conditions.length === 0 || loading}
-                    style={{
-                        padding: '10px 24px',
-                        backgroundColor: !config.name || conditions.length === 0 ? '#6b7280' : '#10b981',
-                        border: 'none',
-                        borderRadius: '4px',
-                        color: '#fff',
-                        cursor: !config.name || conditions.length === 0 ? 'not-allowed' : 'pointer',
-                        fontSize: '14px',
-                        fontWeight: 600,
-                    }}
-                >
-                    {loading ? 'Creando...' : 'Crear Alerta'}
-                </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+            <div>
+              <label>Umbral</label>
+              <input
+                type="number"
+                value={config.threshold}
+                onChange={e => setConfig({ ...config, threshold: e.target.value })}
+                placeholder="Ej: 80"
+              />
             </div>
+            <div>
+              <label>Ventana (min)</label>
+              <input
+                type="number"
+                value={config.window}
+                onChange={e => setConfig({ ...config, window: Number(e.target.value) })}
+                min={1}
+              />
+            </div>
+            <div>
+              <label>Cooldown (min)</label>
+              <input
+                type="number"
+                value={config.cooldown_minutes}
+                onChange={e => setConfig({ ...config, cooldown_minutes: Number(e.target.value) })}
+                min={1}
+              />
+            </div>
+          </div>
 
-            {error && (
-                <div style={{
-                    marginTop: '16px',
-                    padding: '12px',
-                    backgroundColor: '#7f1d1d',
-                    border: '1px solid #dc2626',
-                    borderRadius: '4px',
-                    color: '#fca5a5',
-                    fontSize: '14px',
-                }}>
-                    Error: {error}
-                </div>
+          {/* FA-03: dry-run test */}
+          <div>
+            <button
+              className="btn btn-secondary"
+              onClick={handleDryRun}
+              disabled={!config.metric || !config.threshold || dryRunLoading}
+              type="button"
+            >
+              {dryRunLoading ? 'Probando…' : 'Probar condición (dry-run)'}
+            </button>
+            {dryRunResult && (
+              <div
+                role="status"
+                style={{
+                  marginTop: '8px',
+                  padding: '8px 12px',
+                  borderRadius: '4px',
+                  fontSize: '13px',
+                  backgroundColor: dryRunResult.ok ? '#064e3b' : '#7f1d1d',
+                  color: dryRunResult.ok ? '#6ee7b7' : '#fca5a5',
+                }}
+              >
+                {dryRunResult.ok
+                  ? `Condición válida — ${JSON.stringify(dryRunResult.data)}`
+                  : `Error: ${dryRunResult.message}`}
+              </div>
             )}
+          </div>
         </div>
-    );
+
+        {/* Panel derecho — severity, acciones, estado */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label>Severidad</label>
+            <select
+              value={config.severity}
+              onChange={e => setConfig({ ...config, severity: e.target.value })}
+            >
+              {SEVERITIES.map(s => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Acciones al disparar</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {ACTIONS.map(action => (
+                <label key={action.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={config.actions.includes(action.value)}
+                    onChange={() => toggle('actions', action.value)}
+                  />
+                  {action.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* FA-02: status toggle (active/paused) */}
+          <div>
+            <label>Estado inicial</label>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+              {['active', 'paused'].map(s => (
+                <label key={s} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="status"
+                    value={s}
+                    checked={config.status === s}
+                    onChange={() => setConfig({ ...config, status: s })}
+                  />
+                  {s === 'active' ? 'Activa' : 'Pausada'}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {error && (
+            <div role="alert" style={{ padding: '10px 14px', backgroundColor: '#7f1d1d', borderRadius: '4px', color: '#fca5a5', fontSize: '13px' }}>
+              {error}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: 'auto' }}>
+            <button
+              className="btn btn-secondary"
+              onClick={() => { setConfig({ ...EMPTY_FORM }); setDryRunResult(null) }}
+              type="button"
+            >
+              Limpiar
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleCreate}
+              disabled={!canCreate || loading}
+              type="button"
+            >
+              {loading ? 'Creando…' : 'Crear regla'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
