@@ -159,7 +159,11 @@ class MockInterceptor {
       return this._handleGetUserPermissions(url);
     }
 
-    // ACCESS — UC-ACC-09: auditoría de cambios de acceso
+    // ACCESS — UC-ACC-09: auditoría sin filtro de usuario (all-scope)
+    if (url === '/api/access/audit/' && method === 'GET') {
+      return this._handleGetAccessAuditLog(url);
+    }
+    // ACCESS — UC-ACC-09: auditoría filtrada por usuario
     if (url.match(/\/api\/access\/audit\/\d+/) && method === 'GET') {
       return this._handleGetAccessAuditLog(url);
     }
@@ -911,11 +915,23 @@ class MockInterceptor {
     if (!body || !body.function_ids || !Array.isArray(body.function_ids)) {
       return this._error(400, 'function_ids array required');
     }
+    // UC_ACC_02: revoke_reason ≥10 required
+    const reason = body.revoke_reason ?? ''
+    if (reason.trim().length < 10) {
+      return this._error(400, 'revoke_reason must be at least 10 characters', 'REASON_TOO_SHORT')
+    }
+    // UC_ACC_02: LastHolderSpec — 'USR-001' has only user 1 as holder
+    const LAST_HOLDER_MAP = { 'USR-001': 1 }
+    for (const fnId of body.function_ids) {
+      if (LAST_HOLDER_MAP[fnId] !== undefined && LAST_HOLDER_MAP[fnId] === body.user_id) {
+        return this._error(409, `Cannot revoke: user is the last holder of critical function ${fnId}`, 'LAST_HOLDER_CONFLICT')
+      }
+    }
     return {
       status: 200,
       data: {
         revoked: body.function_ids.length,
-        revoke_reason: body.revoke_reason || null,
+        revoke_reason: reason,
         timestamp: new Date().toISOString(),
       },
     };
@@ -1354,8 +1370,14 @@ class MockInterceptor {
     if (!body || !body.justification || body.justification.trim().length === 0) {
       return this._error(422, 'justification is required');
     }
+    if (body.justification.trim().length < 20) {
+      return this._error(422, 'justification must be at least 20 characters', 'JUSTIFICATION_TOO_SHORT');
+    }
     if (!body.expires_at) {
       return this._error(422, 'expires_at is required');
+    }
+    if (new Date(body.expires_at) <= new Date()) {
+      return this._error(400, 'expires_at must be in the future', 'EXPIRES_AT_IN_PAST');
     }
     // Anti-self P-11: detected via invoker_id in body (set by frontend)
     if (body.invoker_id && body.invoker_id === targetUserId) {
@@ -2529,7 +2551,20 @@ class MockInterceptor {
 
   _handleGetAccessAuditLog(url) {
     const match = url.match(/\/api\/access\/audit\/(\d+)/)
-    const userId = parseInt(match?.[1], 10)
+    const userId = match ? parseInt(match[1], 10) : null
+    if (userId === null) {
+      // All-scope: events from multiple users (GAP-ACC-05 fix)
+      return {
+        status: 200,
+        data: [
+          { id: 1, action: 'ASSIGN_FUNCTION',      codename: 'reports:view',    performed_by: 'admin', performed_at: '2026-05-01T10:00:00Z', target_user_id: 1, reason: 'Onboarding user1' },
+          { id: 2, action: 'REVOKE_FUNCTION',      codename: 'access:assign',   performed_by: 'admin', performed_at: '2026-04-15T09:30:00Z', target_user_id: 2, reason: 'Role change user2' },
+          { id: 3, action: 'ASSIGN_FUNCTION',      codename: 'audit:view',      performed_by: 'admin', performed_at: '2026-03-20T14:00:00Z', target_user_id: 3, reason: 'Compliance team' },
+          { id: 4, action: 'ASSIGN_GROUPER',       codename: 'auditor_group',   performed_by: 'admin', performed_at: '2026-05-05T08:00:00Z', target_user_id: 2, reason: 'AGR bulk assignment' },
+          { id: 5, action: 'GRANT_TEMPORARY',      codename: 'PIP-005',         performed_by: 'admin', performed_at: '2026-05-07T11:00:00Z', target_user_id: 1, reason: 'Incident coverage' },
+        ],
+      }
+    }
     return {
       status: 200,
       data: [

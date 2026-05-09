@@ -22,6 +22,7 @@ export default function AssignFunctions() {
     const [expiryDate, setExpiryDate] = useState('');
     const [users, setUsers] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
+    const [revokeReason, setRevokeReason] = useState('');
 
     const dispatch = useDispatch();
     const loading = useSelector(selectLoading);
@@ -73,6 +74,7 @@ export default function AssignFunctions() {
 
     const handleUserChange = (userId) => {
         setSelectedUser(userId);
+        setRevokeReason('');
         if (userId && activeTab === 'revocar') {
             dispatch(fetchUserAssignedFunctions(parseInt(userId)));
         }
@@ -108,7 +110,7 @@ export default function AssignFunctions() {
 
     const handleRevoke = async (catalogId) => {
         if (!selectedUser) return;
-        await dispatch(revokeFunction({ userId: parseInt(selectedUser), catalogId }));
+        await dispatch(revokeFunction({ userId: parseInt(selectedUser), catalogId, revokeReason }));
     };
 
     return (
@@ -213,6 +215,31 @@ export default function AssignFunctions() {
             {activeTab === 'revocar' && (
                 <div style={{ padding: '16px', backgroundColor: '#111827', borderRadius: '8px', border: '1px solid #374151' }}>
                     <h2 style={{ margin: '0 0 16px 0', color: '#fff' }}>Funciones Asignadas</h2>
+
+                    {/* UC_ACC_02: motivo de revocación obligatorio (≥10 chars) */}
+                    <div style={{ marginBottom: '16px' }}>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', color: '#9ca3af' }}>
+                            Motivo de revocación <span style={{ color: '#dc2626' }}>*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={revokeReason}
+                            onChange={(e) => setRevokeReason(e.target.value)}
+                            placeholder="Describe el motivo (mínimo 10 caracteres)"
+                            minLength={10}
+                            style={{
+                                width: '100%', padding: '8px 12px', border: '1px solid #374151',
+                                borderRadius: '4px', backgroundColor: '#1f2937', color: '#fff',
+                                fontSize: '14px', boxSizing: 'border-box',
+                            }}
+                        />
+                        {revokeReason.length > 0 && revokeReason.length < 10 && (
+                            <small style={{ color: '#f59e0b' }}>
+                                Faltan {10 - revokeReason.length} caracteres mínimos.
+                            </small>
+                        )}
+                    </div>
+
                     {!selectedUser ? (
                         <p style={{ color: '#9ca3af' }}>Selecciona un usuario para ver sus funciones asignadas.</p>
                     ) : userAssignedFunctions.length === 0 ? (
@@ -225,8 +252,14 @@ export default function AssignFunctions() {
                                     <button
                                         aria-label={`Revocar ${fn.name}`}
                                         onClick={() => handleRevoke(fn.id)}
-                                        disabled={loading}
-                                        style={{ padding: '4px 12px', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', color: '#fff', cursor: 'pointer', fontSize: '13px' }}
+                                        disabled={loading || revokeReason.trim().length < 10}
+                                        title={revokeReason.trim().length < 10 ? 'Ingresa un motivo de al menos 10 caracteres' : undefined}
+                                        style={{
+                                            padding: '4px 12px', border: 'none', borderRadius: '4px',
+                                            color: '#fff', fontSize: '13px',
+                                            backgroundColor: revokeReason.trim().length < 10 ? '#6b7280' : '#dc2626',
+                                            cursor: revokeReason.trim().length < 10 || loading ? 'not-allowed' : 'pointer',
+                                        }}
                                     >
                                         Revocar
                                     </button>
