@@ -114,8 +114,9 @@ class AccessService {
     /**
      * UC-ACC-09: Obtener auditoría de cambios de acceso
      */
-    async getAccessAudit(userId) {
-        const response = await fetch(`${API_BASE_URL}/access/audit/${userId}`, {
+    async getAccessAudit(userId = null) {
+        const path = userId != null ? `/access/audit/${userId}` : '/access/audit/';
+        const response = await fetch(`${API_BASE_URL}${path}`, {
             method: 'GET',
             headers: this.getAuthHeaders(),
         });

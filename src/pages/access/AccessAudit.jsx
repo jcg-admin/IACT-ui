@@ -22,11 +22,15 @@ export default function AccessAudit() {
 
     useEffect(() => {
         loadUsers();
-    }, []);
+        // Load all-scope audit on mount (GAP-ACC-05: userId is optional filter)
+        dispatch(fetchAccessAudit(null));
+    }, [dispatch]);
 
     useEffect(() => {
         if (selectedUser) {
             dispatch(fetchAccessAudit(parseInt(selectedUser)));
+        } else {
+            dispatch(fetchAccessAudit(null));
         }
     }, [selectedUser, dispatch]);
 
