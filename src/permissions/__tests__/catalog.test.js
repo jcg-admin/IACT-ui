@@ -90,8 +90,8 @@ describe('FunctionCatalog', () => {
             expect(FunctionCatalog.REVOKE_FUNCTIONS).toBe('access:revoke');
             expect(FunctionCatalog.ASSIGN_FUNCTION_GROUPS).toBe('access:assign_group');
             expect(FunctionCatalog.ASSIGN_TO_GROUP).toBe('access:assign_to_group');
-            expect(FunctionCatalog.UPDATE_SEPARATION_RULE).toBe('access:update_sod');
-            expect(FunctionCatalog.DISABLE_SEPARATION_RULE).toBe('access:disable_sod');
+            expect(FunctionCatalog.UPDATE_SEPARATION_RULE).toBe('access:update_separation_rule');
+            expect(FunctionCatalog.DISABLE_SEPARATION_RULE).toBe('access:disable_separation_rule');
             expect(FunctionCatalog.REVOKE_EXCEPTIONAL).toBe('access:revoke_exceptional');
         });
 

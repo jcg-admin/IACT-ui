@@ -146,7 +146,7 @@ describe('ALL_NAV_LINKS — Admin item visibility by capacidades (G-M3)', () => 
         const adminCapacidades = [
             'auth:view_own_sessions', 'auth:view_all_sessions',
             'logs:view_app', 'logs:export',
-            'adm:manage_catalog', 'adm:create_sod', 'access:assign_to_group',
+            'adm:manage_catalog', 'adm:create_separation_rule', 'access:assign_to_group',
         ];
         const hasPermission = jest.fn((perm) => adminCapacidades.includes(perm));
         usePermisos.mockReturnValue({ hasPermission, loading: false });
@@ -305,7 +305,7 @@ const FC = {
     VIEW_OWN_SESSIONS:  'auth:view_own_sessions',
     VIEW_DASHBOARD:     'reports:dashboard',
     VIEW_ACCESS:        'access:view',
-    MANAGE_SEPARATION_RULES: 'access:view_sod',
+    MANAGE_SEPARATION_RULES: 'access:view_separation_rules',
     VIEW_AUDIT:         'audit:view',
     VIEW_ALERTS:        'alerts:view',
     VIEW_USERS:         'users:view',

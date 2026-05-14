@@ -100,7 +100,7 @@ describe('FunctionCatalog — CODENAME_REGEX (G-B1)', () => {
 
   it('accepts codename with underscores in action part', () => {
     openCreateForm()
-    fillAndSubmit('adm:create_sod')
+    fillAndSubmit('adm:create_separation_rule')
     expect(screen.queryByText(/formato.*modulo:accion/i)).not.toBeInTheDocument()
     expect(mockDispatch).toHaveBeenCalledTimes(2)
   })

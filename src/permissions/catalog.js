@@ -31,7 +31,7 @@ export const FunctionCatalog = {
     VIEW_ACCESS:        'access:view',
     MANAGE_ACCESS:      'access:assign',
     MANAGE_GROUPS:      'access:create_group',
-    MANAGE_SEPARATION_RULES: 'access:view_sod',
+    MANAGE_SEPARATION_RULES: 'access:view_separation_rules',
 
     // MOD_Audit — compliance and audit trail (UC-061..063)
     VIEW_AUDIT:         'audit:view',
@@ -58,7 +58,7 @@ export const FunctionCatalog = {
 
     // MOD_Admin — RBAC configuration plane (UC_ADM_*)
     MANAGE_CATALOG:          'adm:manage_catalog',
-    CREATE_SEPARATION_RULE:  'adm:create_sod',
+    CREATE_SEPARATION_RULE:  'adm:create_separation_rule',
 
     // MOD_Auth — session management (UC-005, UC-AUTH-05)
     VIEW_OWN_SESSIONS:  'auth:view_own_sessions',
@@ -93,8 +93,8 @@ export const FunctionCatalog = {
     REVOKE_FUNCTIONS:         'access:revoke',
     ASSIGN_FUNCTION_GROUPS:   'access:assign_group',
     ASSIGN_TO_GROUP:          'access:assign_to_group',
-    UPDATE_SEPARATION_RULE:   'access:update_sod',
-    DISABLE_SEPARATION_RULE:  'access:disable_sod',
+    UPDATE_SEPARATION_RULE:   'access:update_separation_rule',
+    DISABLE_SEPARATION_RULE:  'access:disable_separation_rule',
     REVOKE_EXCEPTIONAL:       'access:revoke_exceptional',
 
     // MOD_Auth — extended (AUTH-002/003)

@@ -1378,8 +1378,8 @@ class MockInterceptor {
       { id: 25, codename: 'access:revoke',         name: 'Revocar funciones',               domain: 'access',   active: true },
       { id: 26, codename: 'access:assign_group',   name: 'Asignar grupo de funciones',      domain: 'access',   active: true },
       { id: 27, codename: 'access:assign_to_group',name: 'Agregar usuario a grupo',         domain: 'access',   active: true },
-      { id: 28, codename: 'access:update_sod',     name: 'Actualizar regla de separación',  domain: 'access',   active: true },
-      { id: 29, codename: 'access:disable_sod',    name: 'Desactivar regla de separación',  domain: 'access',   active: true },
+      { id: 28, codename: 'access:update_separation_rule',  name: 'Actualizar regla de separación',  domain: 'access',   active: true },
+      { id: 29, codename: 'access:disable_separation_rule', name: 'Desactivar regla de separación',  domain: 'access',   active: true },
       { id: 30, codename: 'access:revoke_exceptional', name: 'Revocar permiso excepcional', domain: 'access',   active: true },
       // MOD_Audit (4)
       { id: 31, codename: 'audit:view',            name: 'Ver log de auditoría',            domain: 'audit',    active: true },
@@ -1423,7 +1423,7 @@ class MockInterceptor {
       { id: 64, codename: 'adm:manage_menu_catalog',name:'Gestionar catálogo de menú',      domain: 'admin',    active: true },
       { id: 65, codename: 'adm:manage_menu_lifecycle',name:'Gestionar ciclo de vida menú',  domain: 'admin',    active: true },
       { id: 66, codename: 'adm:manage_is_critical',name: 'Gestionar criticidad de menú',   domain: 'admin',    active: true },
-      { id: 67, codename: 'adm:create_sod',        name: 'Crear regla de separación',       domain: 'admin',    active: true },
+      { id: 67, codename: 'adm:create_separation_rule',     name: 'Crear regla de separación',       domain: 'admin',    active: true },
     ]
     return { status: 200, data: { results: FUNCTIONS, count: FUNCTIONS.length } }
   }
@@ -2460,7 +2460,7 @@ class MockInterceptor {
         { id: 7,  codename: 'access:revoke',             name: 'Revocar funciones',          domain: 'access',  active: true },
         { id: 8,  codename: 'access:create_group',       name: 'Crear grupos de acceso',     domain: 'access',  active: true },
         { id: 9,  codename: 'access:assign_group',       name: 'Asignar agrupador',          domain: 'access',  active: true },
-        { id: 10, codename: 'access:view_sod',           name: 'Ver reglas SoD',             domain: 'access',  active: true },
+        { id: 10, codename: 'access:view_separation_rules',     name: 'Ver reglas SoD',             domain: 'access',  active: true },
         { id: 11, codename: 'audit:view',                name: 'Ver auditoría',              domain: 'audit',   active: true },
         { id: 12, codename: 'audit:search',              name: 'Buscar auditoría',           domain: 'audit',   active: true },
         { id: 13, codename: 'alerts:view',               name: 'Ver alertas',                domain: 'alerts',  active: true },
