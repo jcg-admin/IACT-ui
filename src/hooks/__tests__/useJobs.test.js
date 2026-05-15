@@ -19,10 +19,17 @@ import {
   useCancelJob,
   useDownloadJob,
 } from '@hooks/domain/useJobs'
-import jobService from '@api/jobGateway'
+import reportsService from '@api/reportsGateway'
 
-// Mock jobService
-jest.mock('@api/jobGateway')
+// Mock reportsService
+jest.mock('@api/reportsGateway', () => ({
+  __esModule: true,
+  default: {
+    exportReport:       jest.fn().mockResolvedValue({ job_id: 'job-1', status: 'queued' }),
+    getExportJobDetail: jest.fn().mockResolvedValue({ job_id: 'job-1', status: 'DONE', progress: 100, file_url: '/dl/f.csv' }),
+    cancelExport:       jest.fn().mockResolvedValue({}),
+  },
+}))
 
 /**
  * Test wrapper with QueryClientProvider
@@ -64,7 +71,7 @@ describe('useJobs Hooks', () => {
         error: null,
       }
 
-      jobService.status.mockResolvedValue(mockJob)
+      reportsService.getExportJobDetail.mockResolvedValue(mockJob)
 
       const { result } = renderHook(() => useJobStatus('job-123'), {
         wrapper: createTestWrapper(),
@@ -80,7 +87,7 @@ describe('useJobs Hooks', () => {
 
       // Verify data
       expect(result.current.data).toEqual(mockJob)
-      expect(jobService.status).toHaveBeenCalledWith('job-123')
+      expect(reportsService.getExportJobDetail).toHaveBeenCalledWith('job-123')
     })
 
     it('should not fetch when jobId is empty', () => {
@@ -91,12 +98,12 @@ describe('useJobs Hooks', () => {
       // Should be idle because enabled is false
       expect(result.current.isLoading).toBe(false)
       expect(result.current.data).toBeUndefined()
-      expect(jobService.status).not.toHaveBeenCalled()
+      expect(reportsService.getExportJobDetail).not.toHaveBeenCalled()
     })
 
     it('should handle error when fetching job status fails', async () => {
       const mockError = new Error('Job not found')
-      jobService.status.mockRejectedValue(mockError)
+      reportsService.getExportJobDetail.mockRejectedValue(mockError)
 
       const { result } = renderHook(() => useJobStatus('job-999'), {
         wrapper: createTestWrapper(),
@@ -130,7 +137,7 @@ describe('useJobs Hooks', () => {
         eta: 60,
       }
 
-      jobService.start.mockResolvedValue(mockStartedJob)
+      reportsService.exportReport.mockResolvedValue(mockStartedJob)
 
       const { result } = renderHook(() => useStartJob(), {
         wrapper: createTestWrapper(),
@@ -154,14 +161,12 @@ describe('useJobs Hooks', () => {
 
       // Verify data
       expect(result.current.data).toEqual(mockStartedJob)
-      expect(jobService.start).toHaveBeenCalledWith('export_csv', {
-        format: 'csv',
-      })
+      expect(reportsService.exportReport).toHaveBeenCalledWith('export_csv', expect.any(String), expect.objectContaining({}))
     })
 
     it('should handle error when starting job fails', async () => {
       const mockError = new Error('Invalid job type')
-      jobService.start.mockRejectedValue(mockError)
+      reportsService.exportReport.mockRejectedValue(mockError)
 
       const { result } = renderHook(() => useStartJob(), {
         wrapper: createTestWrapper(),
@@ -190,7 +195,7 @@ describe('useJobs Hooks', () => {
         eta: 60,
       }
 
-      jobService.start.mockResolvedValue(mockStartedJob)
+      reportsService.exportReport.mockResolvedValue(mockStartedJob)
       const onSuccessMock = jest.fn()
 
       const { result } = renderHook(() => useStartJob(), {
@@ -221,7 +226,7 @@ describe('useJobs Hooks', () => {
   describe('useCancelJob', () => {
     it('should cancel a job with mutate', async () => {
       const mockCancelResponse = { status: 'cancelled' }
-      jobService.cancel.mockResolvedValue(mockCancelResponse)
+      reportsService.cancelExport.mockResolvedValue(mockCancelResponse)
 
       const { result } = renderHook(() => useCancelJob(), {
         wrapper: createTestWrapper(),
@@ -238,12 +243,12 @@ describe('useJobs Hooks', () => {
       })
 
       expect(result.current.data).toEqual(mockCancelResponse)
-      expect(jobService.cancel).toHaveBeenCalledWith('job-123')
+      expect(reportsService.cancelExport).toHaveBeenCalledWith('job-123')
     })
 
     it('should handle error when canceling job fails', async () => {
       const mockError = new Error('Job not found')
-      jobService.cancel.mockRejectedValue(mockError)
+      reportsService.cancelExport.mockRejectedValue(mockError)
 
       const { result } = renderHook(() => useCancelJob(), {
         wrapper: createTestWrapper(),
@@ -262,9 +267,10 @@ describe('useJobs Hooks', () => {
   })
 
   describe('useDownloadJob', () => {
-    it('should download job result', async () => {
-      const mockBlob = new Blob(['csv,data'], { type: 'text/csv' })
-      jobService.download.mockResolvedValue(mockBlob)
+    it('should download job result (via file_url en job detail)', async () => {
+      // En v2: no hay endpoint de download separado — el file_url está en el job detail
+      const mockJobDetail = { job_id: 'job-123', status: 'DONE', file_url: 'https://cdn.iact.mx/exports/job-123.csv' }
+      reportsService.getExportJobDetail.mockResolvedValue(mockJobDetail)
 
       const { result } = renderHook(() => useDownloadJob(), {
         wrapper: createTestWrapper(),
@@ -280,13 +286,13 @@ describe('useJobs Hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data).toBe(mockBlob)
-      expect(jobService.download).toHaveBeenCalledWith('job-123')
+      expect(result.current.data).toBe(mockJobDetail.file_url)
+      expect(reportsService.getExportJobDetail).toHaveBeenCalledWith('job-123')
     })
 
     it('should handle error when download fails', async () => {
       const mockError = new Error('Download failed')
-      jobService.download.mockRejectedValue(mockError)
+      reportsService.getExportJobDetail.mockRejectedValue(mockError)
 
       const { result } = renderHook(() => useDownloadJob(), {
         wrapper: createTestWrapper(),
@@ -314,7 +320,7 @@ describe('useJobs Hooks', () => {
         eta: 60,
       }
 
-      jobService.start.mockResolvedValue(mockStartedJob)
+      reportsService.exportReport.mockResolvedValue(mockStartedJob)
 
       const { result } = renderHook(() => useStartJob(), {
         wrapper: createTestWrapper(),
@@ -337,7 +343,7 @@ describe('useJobs Hooks', () => {
 
     it('should invalidate specific job status after cancel', async () => {
       const mockCancelResponse = { status: 'cancelled' }
-      jobService.cancel.mockResolvedValue(mockCancelResponse)
+      reportsService.cancelExport.mockResolvedValue(mockCancelResponse)
 
       const { result } = renderHook(() => useCancelJob(), {
         wrapper: createTestWrapper(),

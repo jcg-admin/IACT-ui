@@ -12,7 +12,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import jobService from '@api/jobGateway'
+import reportsService from '@api/reportsGateway'
 
 /**
  * useJobStatus - Fetch status of a single job
@@ -29,7 +29,7 @@ import jobService from '@api/jobGateway'
 export function useJobStatus(jobId) {
   return useQuery({
     queryKey: ['jobs', 'status', jobId],
-    queryFn: () => jobService.status(jobId),
+    queryFn: () => reportsService.getExportJobDetail(jobId),
     // Only fetch if jobId is provided
     enabled: !!jobId,
     // Keep data fresh for 10 seconds
@@ -66,8 +66,8 @@ export function useStartJob() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ jobType, filters = {} }) =>
-      jobService.start(jobType, filters),
+    mutationFn: ({ jobType, format = 'csv', filters = {} }) =>
+      reportsService.exportReport(jobType, format, filters),
     onSuccess: (data) => {
       // After starting a job, invalidate any job lists
       // This will refetch job lists to show the new job
@@ -100,7 +100,7 @@ export function useCancelJob() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (jobId) => jobService.cancel(jobId),
+    mutationFn: (jobId) => reportsService.cancelExport(jobId),
     onSuccess: (data, jobId) => {
       // Invalidate the specific job's status
       // This will refetch the job status to reflect cancellation
@@ -134,7 +134,7 @@ export function useCancelJob() {
  */
 export function useDownloadJob() {
   return useMutation({
-    mutationFn: (jobId) => jobService.download(jobId),
+    mutationFn: (jobId) => reportsService.getExportJobDetail(jobId).then(j => j.file_url),
     // No cache invalidation needed for downloads
   })
 }

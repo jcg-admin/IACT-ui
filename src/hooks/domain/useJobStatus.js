@@ -15,7 +15,7 @@ import {
   setJobError,
   removeJob
 } from '@store/slices/session'
-import jobService from '@api/jobGateway'
+import reportsService from '@api/reportsGateway'
 
 export function useJobStatus(_jobId, _interval = 5000) {
   // Refs
@@ -42,7 +42,7 @@ export function useJobStatus(_jobId, _interval = 5000) {
       if (!_jobId_ref.current) return
 
       // Obtener status del backend
-      const _response = await jobService.status(_jobId_ref.current)
+      const _response = await reportsService.getExportJobDetail(_jobId_ref.current)
 
       if (!_isMounted.current) return
 
@@ -56,13 +56,13 @@ export function useJobStatus(_jobId, _interval = 5000) {
       )
 
       // Si completó, detener polling
-      if (_response.status === 'completed') {
+      if (_response.status === 'completed' || _response.status === 'DONE') {
         _stopPolling()
         _dispatch(completeJob({ jobId: _jobId_ref.current }))
       }
 
       // Si error, detener polling y guardar error
-      if (_response.status === 'error') {
+      if (_response.status === 'error' || _response.status === 'FAILED') {
         _stopPolling()
         _dispatch(
           setJobError({
@@ -132,19 +132,24 @@ export function useJobStatus(_jobId, _interval = 5000) {
       }
 
       // Descargar archivo
-      const _blob = await jobService.download(_jobId_ref.current)
+      // Descarga directa desde file_url del job detail
+      const _detail = await reportsService.getExportJobDetail(_jobId_ref.current)
+      const _blob = _detail.file_url
 
       if (!_isMounted.current) return
 
       // Disparar descarga en browser
       const _url = window.URL.createObjectURL(_blob)
       const _link = document.createElement('a')
-      _link.href = _url
+      // Si file_url es string, usarla directamente; sino crear ObjectURL
+      const _isString = typeof _blob === 'string'
+      const _resolvedUrl = _isString ? _blob : URL.createObjectURL(_blob)
+      _link.href = _resolvedUrl
       _link.download = `export_${_jobId_ref.current}_${Date.now()}.csv`
       document.body.appendChild(_link)
       _link.click()
       document.body.removeChild(_link)
-      window.URL.revokeObjectURL(_url)
+      if (!_isString) URL.revokeObjectURL(_resolvedUrl)
 
       return { success: true }
     } catch (_err) {
@@ -165,7 +170,7 @@ export function useJobStatus(_jobId, _interval = 5000) {
       }
 
       // Cancelar en backend
-      await jobService.cancel(_jobId_ref.current)
+      await reportsService.cancelExport(_jobId_ref.current)
 
       if (!_isMounted.current) return
 

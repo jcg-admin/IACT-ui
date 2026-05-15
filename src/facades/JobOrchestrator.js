@@ -13,7 +13,7 @@
  * Uses: jobService, notification system
  */
 
-import jobService from '@api/jobGateway'
+import reportsService from '@api/reportsGateway'
 import { getNotificationService } from '@api/notificationGateway'
 
 // Constants
@@ -43,15 +43,15 @@ class JobOrchestrator {
       const notify = getNotificationService()
 
       // Step 1: Start job
-      const job = await jobService.start(jobType, filters)
-      notify.success(`Job ${job.jobId} started`)
+      const job = await reportsService.exportReport(jobType, 'csv', filters)
+      notify.success(`Job ${job.job_id ?? job.jobId} started`)
 
       // Step 2: Monitor until completion or timeout
       const startTime = Date.now()
       let currentJob = job
       let lastProgress = 0
 
-      while (currentJob.status !== 'completed' && currentJob.status !== 'failed') {
+      while (currentJob.status !== 'DONE' && currentJob.status !== 'completed' && currentJob.status !== 'FAILED' && currentJob.status !== 'failed') {
         // Check timeout
         if (Date.now() - startTime > maxPollTime) {
           throw new Error(`Job polling timeout after ${maxPollTime / 1000}s`)
@@ -61,7 +61,7 @@ class JobOrchestrator {
         await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL))
 
         // Get status
-        currentJob = await jobService.status(job.jobId)
+        currentJob = await reportsService.getExportJobDetail(job.jobId ?? job.job_id)
 
         // Notify progress change
         if (currentJob.progress !== lastProgress && onProgress) {
@@ -71,11 +71,11 @@ class JobOrchestrator {
       }
 
       // Step 3: Return result
-      if (currentJob.status === 'failed') {
+      if (currentJob.status === 'failed' || currentJob.status === 'FAILED') {
         throw new Error(`Job failed: ${currentJob.error || 'Unknown error'}`)
       }
 
-      notify.success(`Job ${job.jobId} completed`)
+      notify.success(`Job ${job.job_id ?? job.jobId} completed`)
       return currentJob
     } catch (error) {
       const notify = getNotificationService()
@@ -106,7 +106,8 @@ class JobOrchestrator {
       const completedJob = await this.startAndMonitor(jobType, filters, options)
 
       // Step 2: Download result
-      const downloadInfo = await jobService.download(completedJob.jobId)
+      // El file_url está en el detail del job (no hay endpoint de download separado)
+      const downloadInfo = { file_url: completedJob.file_url, filename: `export_${completedJob.job_id ?? completedJob.jobId}.csv`, size: 0 }
 
       return {
         jobId: completedJob.jobId,
@@ -151,7 +152,7 @@ class JobOrchestrator {
       const notify = getNotificationService()
 
       // Step 1: Cancel job
-      await jobService.cancel(jobId)
+      await reportsService.cancelExport(jobId)
 
       // Step 2: Clean up data
       // Could dispatch Redux actions here if needed
@@ -197,7 +198,7 @@ class JobOrchestrator {
         notify.info(`Retry attempt ${attempt} of ${maxRetries}`)
 
         // Start new job
-        const newJob = await jobService.start(jobType, filters)
+        const newJob = await reportsService.exportReport(jobType, 'csv', filters)
 
         // Monitor execution
         const result = await this.startAndMonitor(jobType, filters)
@@ -239,7 +240,7 @@ class JobOrchestrator {
    */
   async getJobSummary(jobId) {
     try {
-      const job = await jobService.status(jobId)
+      const job = await reportsService.getExportJobDetail(jobId)
 
       // Format for display
       let displayText = `${job.status.toUpperCase()}`
