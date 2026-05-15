@@ -1,159 +1,158 @@
 /**
- * Users Slice
+ * user.slice — IACT v2
+ * Sincronizado con userGateway v2 (T2.2 + T3.4).
  *
- * Gestión de estado para usuarios del sistema.
- * Incluye thunks RTK para operaciones CRUD y baja lógica.
+ * CORREGIDOS:
+ *   createUser   → userService.createUser() → POST /api/users/create/ (no /api/users/)
+ *   deactivateUser → userService.deactivateUser() → POST /api/users/{id}/deactivate/
+ *
+ * AÑADIDOS (7):
+ *   fetchUserDetail, patchUser, activateUser,
+ *   deleteUser, resetPassword, blockUser, unblockUser
  */
-
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
 import userService from '../../services/userGateway'
 
-// ── Thunks ──────────────────────────────────────────────────────────────────
+const rw = (fn) => async (arg, { rejectWithValue }) => {
+  try { return await fn(arg) }
+  catch (e) { return rejectWithValue({ message: e.message, statusCode: e.response?.status ?? null }) }
+}
 
-/** Obtiene la lista de usuarios aplicando filtros opcionales. */
-export const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
-  async (filters = {}, { rejectWithValue }) => {
-    try {
-      return await userService.getUsers(filters)
-    } catch (error) {
-      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
-    }
-  }
-)
+// ── Thunks ───────────────────────────────────────────────────────────────────
 
-/** Crea un nuevo usuario en el sistema. */
-export const createUser = createAsyncThunk(
-  'users/createUser',
-  async (data, { rejectWithValue }) => {
-    try {
-      return await userService.createUser(data)
-    } catch (error) {
-      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
-    }
-  }
-)
+export const fetchUsers = createAsyncThunk('users/fetchUsers',
+  rw((filters = {}) => userService.getUsers(filters)))
 
-/** Actualiza los datos de un usuario existente. */
-export const updateUser = createAsyncThunk(
-  'users/updateUser',
-  async ({ id, data }, { rejectWithValue }) => {
-    try {
-      return await userService.updateUser(id, data)
-    } catch (error) {
-      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
-    }
-  }
-)
+export const fetchUserDetail = createAsyncThunk('users/fetchUserDetail',
+  rw((id) => userService.getUserDetail(id)))
+
+/** POST /api/users/create/ — UC_USR_01 */
+export const createUser = createAsyncThunk('users/createUser',
+  rw((data) => userService.createUser(data)))
+
+/** PUT /api/users/{id}/ — reemplazo completo */
+export const updateUser = createAsyncThunk('users/updateUser',
+  rw(({ id, data }) => userService.updateUser(id, data)))
+
+/** PATCH /api/users/{id}/ — actualización parcial (UC_USR_03) */
+export const patchUser = createAsyncThunk('users/patchUser',
+  rw(({ id, data }) => userService.patchUser(id, data)))
+
+/** POST /api/users/{id}/activate/ */
+export const activateUser = createAsyncThunk('users/activateUser',
+  rw((id) => userService.activateUser(id)))
 
 /**
- * Baja lógica: cambia el status del usuario a INACTIVE.
- * No elimina el registro — UC-USR-04.
+ * POST /api/users/{id}/deactivate/ — baja lógica UC_USR_04.
+ * Corregido: era DELETE /api/users/{id}/ en v4.0
  */
-export const deactivateUser = createAsyncThunk(
-  'users/deactivateUser',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await userService.deactivateUser(id)
-    } catch (error) {
-      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
-    }
-  }
-)
+export const deactivateUser = createAsyncThunk('users/deactivateUser',
+  rw((id) => userService.deactivateUser(id)))
+
+/** DELETE /api/users/{id}/ — baja lógica BR-009 explícita */
+export const deleteUser = createAsyncThunk('users/deleteUser',
+  rw((id) => userService.deleteUser(id)))
+
+/** POST /api/users/{id}/reset-password/ — UC_AUTH_03 */
+export const resetPassword = createAsyncThunk('users/resetPassword',
+  rw((id) => userService.resetUserPassword(id)))
+
+/** POST /api/users/{id}/block/ — UC_USR_05 */
+export const blockUser = createAsyncThunk('users/blockUser',
+  rw((id) => userService.blockUser(id)))
+
+/** POST /api/users/{id}/unblock/ — UC_USR_06 */
+export const unblockUser = createAsyncThunk('users/unblockUser',
+  rw((id) => userService.unblockUser(id)))
 
 // ── Slice ────────────────────────────────────────────────────────────────────
 
 const usersSlice = createSlice({
   name: 'user',
   initialState: {
-    users: [],
-    loading: false,
-    error: null,
-    total: 0,
+    users:       [],
+    userDetail:  null,
+    loading:     false,
+    actionLoading: false,
+    error:       null,
+    total:       0,
     isAuthenticated: false,
-    user: null,
+    user:        null,
   },
   reducers: {
-    setUser: (state, action) => {
-      state.isAuthenticated = true
-      state.user = action.payload
-      const idx = state.users.findIndex(u => u.id === action.payload.id)
-      if (idx >= 0) state.users[idx] = action.payload
-    },
-    logout: (state) => {
-      state.isAuthenticated = false
-      state.user = null
-      state.users = []
-      state.total = 0
-    },
-    setLoading: (state, action) => {
-      state.loading = action.payload
-    },
-    setError: (state, action) => {
-      state.error = action.payload
-    },
+    setUser:    (s,a) => { s.isAuthenticated = true; s.user = a.payload },
+    logout:     (s)   => { s.isAuthenticated = false; s.user = null; s.users = []; s.total = 0 },
+    setLoading: (s,a) => { s.loading = a.payload },
+    setError:   (s,a) => { s.error = a.payload },
+    clearError: (s)   => { s.error = null },
   },
   extraReducers: (builder) => {
-    // fetchUsers
+    const lp = (s) => { s.loading = true;  s.error = null }
+    const lf = (s) => { s.loading = false }
+    const lr = (s,a) => { s.loading = false; s.error = a.payload }
+    const ap = (s) => { s.actionLoading = true;  s.error = null }
+    const af = (s) => { s.actionLoading = false }
+    const ar = (s,a) => { s.actionLoading = false; s.error = a.payload }
+
     builder
-      .addCase(fetchUsers.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        // La API retorna respuesta paginada {count, results} (UC-USR-02)
-        const payload = action.payload
-        state.users = payload.results ?? payload
-        state.total = payload.count ?? (payload.results ?? payload).length
-        state.loading = false
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
+      .addCase(fetchUsers.pending,   lp)
+      .addCase(fetchUsers.fulfilled, (s,a) => { lf(s); const p = a.payload; s.users = p?.results ?? p ?? []; s.total = p?.count ?? s.users.length })
+      .addCase(fetchUsers.rejected,  lr)
+
+      .addCase(fetchUserDetail.pending,   lp)
+      .addCase(fetchUserDetail.fulfilled, (s,a) => { lf(s); s.userDetail = a.payload })
+      .addCase(fetchUserDetail.rejected,  lr)
+
+      .addCase(createUser.pending,   lp)
+      .addCase(createUser.fulfilled, (s,a) => { lf(s); s.users.push(a.payload); s.total += 1 })
+      .addCase(createUser.rejected,  lr)
+
+      .addCase(updateUser.fulfilled, (s,a) => {
+        const idx = s.users.findIndex(u => u.id === a.payload?.id)
+        if (idx >= 0) s.users[idx] = a.payload
+        if (s.userDetail?.id === a.payload?.id) s.userDetail = a.payload
       })
 
-    // createUser
-    builder
-      .addCase(createUser.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(createUser.fulfilled, (state, action) => {
-        state.users.push(action.payload)
-        state.total += 1
-        state.loading = false
-      })
-      .addCase(createUser.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
+      .addCase(patchUser.fulfilled, (s,a) => {
+        const idx = s.users.findIndex(u => u.id === a.payload?.id)
+        if (idx >= 0) s.users[idx] = { ...s.users[idx], ...a.payload }
+        if (s.userDetail?.id === a.payload?.id) s.userDetail = { ...s.userDetail, ...a.payload }
       })
 
-    // updateUser
-    builder
-      .addCase(updateUser.fulfilled, (state, action) => {
-        const idx = state.users.findIndex(u => u.id === action.payload.id)
-        if (idx >= 0) state.users[idx] = action.payload
-      })
+      .addCase(activateUser.pending,   ap)
+      .addCase(activateUser.fulfilled, (s,a) => { af(s); const idx = s.users.findIndex(u => u.id === a.payload?.id); if (idx >= 0) s.users[idx] = { ...s.users[idx], ...a.payload } })
+      .addCase(activateUser.rejected,  ar)
 
-    // deactivateUser — baja lógica UC-USR-04: backend retorna { target_user_id, state: 'ELIMINATED' }
-    builder
-      .addCase(deactivateUser.fulfilled, (state, action) => {
-        const targetId = action.payload.target_user_id ?? action.payload.id
-        const idx = state.users.findIndex(u => u.id === targetId)
-        if (idx >= 0) state.users[idx] = { ...state.users[idx], ...action.payload, id: targetId }
-      })
+      .addCase(deactivateUser.pending,   ap)
+      .addCase(deactivateUser.fulfilled, (s,a) => { af(s); const id = a.payload?.target_user_id ?? a.payload?.id; const idx = s.users.findIndex(u => u.id === id); if (idx >= 0) s.users[idx] = { ...s.users[idx], ...a.payload } })
+      .addCase(deactivateUser.rejected,  ar)
+
+      .addCase(deleteUser.pending,   ap)
+      .addCase(deleteUser.fulfilled, (s,a) => { af(s); const id = a.payload?.id ?? a.meta?.arg; s.users = s.users.filter(u => u.id !== id) })
+      .addCase(deleteUser.rejected,  ar)
+
+      .addCase(resetPassword.pending,   ap)
+      .addCase(resetPassword.fulfilled, af)
+      .addCase(resetPassword.rejected,  ar)
+
+      .addCase(blockUser.pending,   ap)
+      .addCase(blockUser.fulfilled, (s,a) => { af(s); const idx = s.users.findIndex(u => u.id === a.payload?.id); if (idx >= 0) s.users[idx] = { ...s.users[idx], ...a.payload } })
+      .addCase(blockUser.rejected,  ar)
+
+      .addCase(unblockUser.pending,   ap)
+      .addCase(unblockUser.fulfilled, (s,a) => { af(s); const idx = s.users.findIndex(u => u.id === a.payload?.id); if (idx >= 0) s.users[idx] = { ...s.users[idx], ...a.payload } })
+      .addCase(unblockUser.rejected,  ar)
   },
 })
 
-export const { setUser, logout, setLoading, setError } = usersSlice.actions
+export const { setUser, logout, setLoading, setError, clearError } = usersSlice.actions
 
-// ── Selectores ───────────────────────────────────────────────────────────────
-
-const selectUsersState = (state) => state.user
-
-export const selectUsers = createSelector(selectUsersState, (s) => s.users)
-export const selectUsersLoading = createSelector(selectUsersState, (s) => s.loading)
-export const selectUsersError = createSelector(selectUsersState, (s) => s.error)
-export const selectUsersTotal = createSelector(selectUsersState, (s) => s.total)
+const sel = (s) => s.user
+export const selectUsers         = createSelector(sel, (s) => s.users)
+export const selectUserDetail    = createSelector(sel, (s) => s.userDetail)
+export const selectUsersLoading  = createSelector(sel, (s) => s.loading)
+export const selectActionLoading = createSelector(sel, (s) => s.actionLoading)
+export const selectUsersError    = createSelector(sel, (s) => s.error)
+export const selectUsersTotal    = createSelector(sel, (s) => s.total)
 
 export default usersSlice.reducer
