@@ -9,15 +9,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAllFunctions,
     fetchGroupFunctions,
+    fetchGroupers,
     assignFunctionsToGroup,
     selectGroups,
+    selectGroupers,
     selectGroupFunctions,
     selectFunctions,
     selectLoading,
     selectError,
     clearError,
 } from '../../redux/slices/access';
-import accessService from '../../services/accessGateway';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 export default function GroupComposition() {
@@ -27,6 +28,7 @@ export default function GroupComposition() {
     const allFunctions = useSelector(selectFunctions);
     const loading = useSelector(selectLoading);
     const error = useSelector(selectError);
+    const groupersFromStore = useSelector(selectGroupers);
 
     const [localGroups, setLocalGroups] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState('');
@@ -34,12 +36,11 @@ export default function GroupComposition() {
     const [selectorSearch, setSelectorSearch] = useState('');
     const [pendingAdd, setPendingAdd] = useState([]); // ids seleccionados en el modal
     const [submitting, setSubmitting] = useState(false);
-    const [cascadeImpact, setCascadeImpact] = useState(null); // { cascade_affected_user_count, conflicts }
     const [changeReason, setChangeReason] = useState('');
 
     useEffect(() => {
         dispatch(fetchAllFunctions());
-        loadGroups();
+        dispatch(fetchGroupers());
     }, [dispatch]);
 
     useEffect(() => {
@@ -48,18 +49,8 @@ export default function GroupComposition() {
         }
     }, [selectedGroupId, dispatch]);
 
-    const loadGroups = async () => {
-        try {
-            const data = await accessService.getFunctionGroups();
-            const list = Array.isArray(data) ? data : [];
-            setLocalGroups(list);
-            // Merge with redux groups as backup
-        } catch {
-            // use redux groups
-        }
-    };
-
-    const displayGroups = localGroups.length > 0 ? localGroups : groups;
+    const displayGroups = localGroups.length > 0 ? localGroups :
+        groupersFromStore.length > 0 ? groupersFromStore : groups;
 
     const assignedIds = groupFunctions.map(f => f.id ?? f.function_id ?? f);
 
@@ -95,22 +86,10 @@ export default function GroupComposition() {
         const newIds = Array.from(new Set([...assignedIds, ...pendingAdd]));
         setSubmitting(true);
         try {
-            // Preview cascade impact before committing
-            if (cascadeImpact === null) {
-                try {
-                    const impact = await accessService.getGroupCascadeImpact(selectedGroupId, pendingAdd);
-                    setCascadeImpact(impact);
-                    setSubmitting(false);
-                    return; // Stay in modal for user to confirm with impact visible
-                } catch {
-                    setCascadeImpact({ cascade_affected_user_count: 0, conflicts: [] });
-                }
-            }
             await dispatch(assignFunctionsToGroup({ groupId: selectedGroupId, functionIds: newIds, change_reason: changeReason.trim() }));
             dispatch(fetchGroupFunctions(selectedGroupId));
             setSelectorOpen(false);
             setPendingAdd([]);
-            setCascadeImpact(null);
             setChangeReason('');
         } finally {
             setSubmitting(false);
@@ -119,7 +98,6 @@ export default function GroupComposition() {
 
     const handleCancelModal = () => {
         setSelectorOpen(false);
-        setCascadeImpact(null);
         setPendingAdd([]);
     };
 
@@ -396,23 +374,6 @@ export default function GroupComposition() {
                             )}
                         </div>
 
-                        {/* Cascade impact notice */}
-                        {cascadeImpact !== null && (
-                            <div style={{
-                                padding: '10px 12px',
-                                marginBottom: '12px',
-                                backgroundColor: cascadeImpact.cascade_affected_user_count > 0 ? '#78350f' : '#064e3b',
-                                border: `1px solid ${cascadeImpact.cascade_affected_user_count > 0 ? '#d97706' : '#10b981'}`,
-                                borderRadius: '4px',
-                                fontSize: '13px',
-                                color: cascadeImpact.cascade_affected_user_count > 0 ? '#fde68a' : '#6ee7b7',
-                            }}>
-                                {cascadeImpact.cascade_affected_user_count > 0
-                                    ? `⚠ Esta acción revalidará la separación en ${cascadeImpact.cascade_affected_user_count} usuario(s) que tienen este grupo asignado.`
-                                    : 'Sin impacto cascade. Puede confirmar.'
-                                }
-                            </div>
-                        )}
 
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#9ca3af' }}>
@@ -455,11 +416,7 @@ export default function GroupComposition() {
                                 onClick={handleConfirmAdd}
                                 disabled={pendingAdd.length === 0 || submitting || changeReason.trim().length < 10}
                             >
-                                {submitting
-                                    ? 'Procesando...'
-                                    : cascadeImpact === null
-                                        ? `Verificar impacto ${pendingAdd.length > 0 ? `(${pendingAdd.length})` : ''}`
-                                        : `Confirmar agregar ${pendingAdd.length > 0 ? `(${pendingAdd.length})` : ''}`}
+                                {submitting ? 'Procesando...' : `Confirmar agregar ${pendingAdd.length > 0 ? `(${pendingAdd.length})` : ''}`}
                             </button>
                         </div>
                     </div>

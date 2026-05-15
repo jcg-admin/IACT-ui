@@ -29,6 +29,7 @@ jest.mock('react-redux', () => ({
 
 jest.mock('../../../redux/slices/access', () => ({
   fetchAllFunctions: () => ({ type: 'access/fetchAllFunctions' }),
+  fetchGroupers:    () => ({ type: 'access/fetchGroupers' }),
   createGroup: jest.fn((data) => ({ type: 'access/createGroup', payload: data })),
   updateGroup: jest.fn((args) => ({ type: 'access/updateGroup', payload: args })),
   retireGroup: jest.fn((args) => ({ type: 'access/retireGroup', payload: args })),

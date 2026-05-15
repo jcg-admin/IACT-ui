@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAllFunctions,
+    fetchGroupers,
     createGroup,
     updateGroup,
     retireGroup,
@@ -11,7 +12,6 @@ import {
     clearError,
     clearSuccess,
 } from '../../redux/slices/access';
-import accessService from '../../services/accessGateway';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import Table from '@ui/presentational/Table';
 
@@ -39,7 +39,7 @@ export default function GroupManagement() {
 
     useEffect(() => {
         dispatch(fetchAllFunctions());
-        loadGroups();
+        dispatch(fetchGroupers());
     }, [dispatch]);
 
     useEffect(() => {
@@ -48,14 +48,6 @@ export default function GroupManagement() {
         }
     }, [groups]);
 
-    const loadGroups = async () => {
-        try {
-            const data = await accessService.getFunctionGroups();
-            setLocalGroups(Array.isArray(data) ? data : []);
-        } catch {
-            // fallback to redux state
-        }
-    };
 
     const openCreateModal = () => {
         setEditingGroup(null);

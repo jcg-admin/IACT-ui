@@ -1,11 +1,18 @@
+/**
+ * AssignGroup.jsx — IACT v2
+ *
+ * UC-ACC-04 / UC-PERM-01 — Asignación de grupo de acceso a usuario.
+ *
+ * CORRECCIÓN T4.1: validateGroupAssignment eliminado en T1.5 y T3.2.
+ * El endpoint /api/access/groups/{id}/validate-for-user no existe en IACT-api.
+ * El flujo ahora es: completar formulario → confirmar → asignar directamente.
+ */
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   assignGroupToUser,
-  validateGroupAssignment,
   selectGroups,
   selectLoading,
-  selectValidatingGroup,
   selectError,
   selectSuccess,
   clearError,
@@ -15,20 +22,15 @@ import SeparationRulesValidator from '@ui/access/SeparationRulesValidator'
 
 export default function AssignGroup() {
   const dispatch = useDispatch()
-  const groups = useSelector(selectGroups)
-  const loading = useSelector(selectLoading)
-  const validating = useSelector(selectValidatingGroup)
-  const error = useSelector(selectError)
-  const success = useSelector(selectSuccess)
+  const groups   = useSelector(selectGroups)
+  const loading  = useSelector(selectLoading)
+  const error    = useSelector(selectError)
+  const success  = useSelector(selectSuccess)
 
-  const [userId, setUserId] = useState('')
-  const [groupId, setGroupId] = useState('')
+  const [userId,    setUserId]    = useState('')
+  const [groupId,   setGroupId]   = useState('')
   const [expiresAt, setExpiresAt] = useState('')
-
-  // Validation step state
-  const [step, setStep] = useState('form') // 'form' | 'review'
-  const [validationResult, setValidationResult] = useState(null) // { valid, conflicts }
-  const [softConfirmed, setSoftConfirmed] = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -37,40 +39,22 @@ export default function AssignGroup() {
     }
   }, [dispatch])
 
-  function resetToForm() {
-    setStep('form')
-    setValidationResult(null)
-    setSoftConfirmed(false)
+  function resetForm() {
+    setConfirmed(false)
     dispatch(clearError())
-  }
-
-  async function handleVerify(e) {
-    e.preventDefault()
-    if (!userId.trim() || !groupId) return
-    setSoftConfirmed(false)
-    const result = await dispatch(validateGroupAssignment({ userId: userId.trim(), groupId }))
-    if (validateGroupAssignment.fulfilled.match(result)) {
-      setValidationResult(result.payload)
-      setStep('review')
-    } else {
-      setStep('review')
-      setValidationResult({ valid: false, conflicts: [] })
-    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (!userId.trim() || !groupId) return
-    dispatch(assignGroupToUser({ userId: userId.trim(), groupId, expiresAt: expiresAt || null }))
+    await dispatch(assignGroupToUser({
+      userId:    userId.trim(),
+      groupId,
+      expiresAt: expiresAt || null,
+    }))
   }
 
-  const conflicts = validationResult?.conflicts ?? []
-  const hasHard = conflicts.some((c) => (c.severity ?? 'HARD') === 'HARD')
-  const allSoft = conflicts.length > 0 && !hasHard
-  const canSubmit = step === 'review' && validationResult && (
-    validationResult.valid ||
-    (allSoft && softConfirmed)
-  )
+  const canSubmit = userId.trim() && groupId && confirmed
 
   return (
     <div className="page-container">
@@ -88,13 +72,17 @@ export default function AssignGroup() {
       )}
 
       {success && (
-        <div role="status" style={{ padding: '12px', backgroundColor: '#064e3b', border: '1px solid #34d399', borderRadius: '4px', color: '#6ee7b7', marginBottom: '16px' }}>
+        <div role="status" style={{
+          padding: '12px', backgroundColor: '#064e3b',
+          border: '1px solid #34d399', borderRadius: '4px',
+          color: '#6ee7b7', marginBottom: '16px',
+        }}>
           Grupo asignado correctamente.
         </div>
       )}
 
       <div className="card" style={{ padding: '24px', maxWidth: '560px' }}>
-        <form onSubmit={step === 'form' ? handleVerify : handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '16px' }}>
             <label htmlFor="userId" style={{ display: 'block', marginBottom: '6px', color: '#d1d5db', fontSize: '14px' }}>
               ID de usuario
@@ -104,7 +92,7 @@ export default function AssignGroup() {
               type="text"
               className="input"
               value={userId}
-              onChange={(e) => { setUserId(e.target.value); resetToForm() }}
+              onChange={(e) => { setUserId(e.target.value); resetForm() }}
               placeholder="Ej: user-42"
               style={{ width: '100%' }}
             />
@@ -118,7 +106,7 @@ export default function AssignGroup() {
               id="groupId"
               className="input"
               value={groupId}
-              onChange={(e) => { setGroupId(e.target.value); resetToForm() }}
+              onChange={(e) => { setGroupId(e.target.value); resetForm() }}
               style={{ width: '100%' }}
             >
               <option value="">— Seleccionar grupo —</option>
@@ -128,7 +116,7 @@ export default function AssignGroup() {
             </select>
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: '16px' }}>
             <label htmlFor="expiresAt" style={{ display: 'block', marginBottom: '6px', color: '#d1d5db', fontSize: '14px' }}>
               Vence el <span style={{ color: '#6b7280', fontWeight: 400 }}>(opcional)</span>
             </label>
@@ -142,66 +130,35 @@ export default function AssignGroup() {
             />
           </div>
 
-          {/* Step 1: Verify button */}
-          {step === 'form' && (
-            <button
-              type="submit"
-              className="btn btn-secondary"
-              disabled={!userId.trim() || !groupId || validating}
-              style={{ width: '100%' }}
-            >
-              {validating ? 'Verificando separación…' : 'Verificar separación'}
-            </button>
-          )}
-
-          {/* Step 2: Validation result + assign */}
-          {step === 'review' && validationResult && (
-            <div>
-              {/* No conflicts: green panel */}
-              {conflicts.length === 0 && (
-                <div style={{
-                  padding: '12px',
-                  backgroundColor: '#064e3b',
-                  border: '1px solid #10b981',
-                  borderRadius: '4px',
-                  color: '#6ee7b7',
-                  marginBottom: '16px',
-                  fontSize: '14px',
-                }}>
-                  Sin conflictos de separación. Puede proceder.
-                </div>
-              )}
-
-              {/* Conflicts: show validator */}
-              {conflicts.length > 0 && (
-                <div style={{ marginBottom: '16px' }}>
-                  <SeparationRulesValidator
-                    conflicts={conflicts}
-                    onProceedAnyway={allSoft ? () => setSoftConfirmed(true) : undefined}
-                  />
-                </div>
-              )}
-
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={resetToForm}
-                  style={{ flex: 1 }}
-                >
-                  Volver
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={!canSubmit || loading}
-                  style={{ flex: 2 }}
-                >
-                  {loading ? 'Asignando…' : 'Asignar grupo'}
-                </button>
-              </div>
+          {/* Confirmación explícita reemplaza la pre-validación del endpoint eliminado */}
+          {userId.trim() && groupId && (
+            <div style={{
+              padding: '12px', marginBottom: '16px',
+              backgroundColor: '#0f172a', border: '1px solid #374151',
+              borderRadius: '4px',
+            }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', color: '#d1d5db', fontSize: '14px' }}>
+                <input
+                  type="checkbox"
+                  checked={confirmed}
+                  onChange={(e) => setConfirmed(e.target.checked)}
+                  aria-label="Confirmar asignación de grupo"
+                />
+                Confirmo que la asignación del grupo <strong style={{ color: '#fff', margin: '0 4px' }}>
+                  {groups.find(g => String(g.id) === String(groupId))?.name ?? groupId}
+                </strong> al usuario <strong style={{ color: '#fff', margin: '0 4px' }}>{userId.trim()}</strong> es correcta.
+              </label>
             </div>
           )}
+
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={!canSubmit || loading}
+            style={{ width: '100%' }}
+          >
+            {loading ? 'Asignando…' : 'Asignar grupo'}
+          </button>
         </form>
       </div>
     </div>
