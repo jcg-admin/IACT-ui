@@ -5,24 +5,23 @@ import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
 
 jest.mock('../../../redux/slices/audit', () => ({
-  fetchAuditLogs: jest.fn(() => ({ type: 'audit/fetchAuditLogs' })),
-  searchAuditLogs: jest.fn(() => ({ type: 'audit/searchAuditLogs' })),
+  fetchAuditLogs:     jest.fn(() => ({ type: 'audit/fetchAuditLogs' })),
+  searchAuditLogs:    jest.fn(() => ({ type: 'audit/searchAuditLogs' })),
   fetchComplianceReport: jest.fn(() => ({ type: 'audit/fetchComplianceReport' })),
-  setFilters: jest.fn(() => ({ type: 'audit/setFilters' })),
-  selectLogs: (s) => s.audit.logs,
-  selectSearchResults: (s) => s.audit.searchResults,
+  exportAuditLogs:    jest.fn(() => ({ type: 'audit/exportAuditLogs' })),
+  setFilters:         jest.fn(() => ({ type: 'audit/setFilters' })),
+  selectLogs:         (s) => s.audit.logs,
+  selectSearchResults:(s) => s.audit.searchResults,
   selectComplianceReport: (s) => s.audit.complianceReport,
-  selectLoading: (s) => s.audit.loading,
-  selectError: (s) => s.audit.error,
+  selectExportJobId:  (s) => s.audit.exportJobId ?? null,
+  selectLoading:      (s) => s.audit.loading,
+  selectError:        (s) => s.audit.error,
 }))
 
-jest.mock('../../../services/auditGateway', () => ({
-  __esModule: true,
-  default: { exportLogs: jest.fn().mockResolvedValue({ url: '/download/audit.csv' }) },
-}))
 
 const auditReducer = (state = {
-  logs: [], searchResults: [], complianceReport: null, loading: false, error: null,
+  logs: [], searchResults: [], complianceReport: null,
+  exportJobId: null, loading: false, error: null,
 }) => state
 
 function buildStore(extra = {}) {
@@ -85,9 +84,30 @@ describe('ComplianceReport', () => {
 
 import Export from '../Export'
 
-describe('Export', () => {
-  it('renders page title', () => {
+describe('Export — modelo async (T4.3)', () => {
+  it('renderiza el título de la página', () => {
     wrap(<Export />)
     expect(screen.getByText('Exportar Logs')).toBeInTheDocument()
+  })
+
+  it('NO importa auditService directamente', () => {
+    const src = require('fs').readFileSync('src/pages/audit/Export.jsx', 'utf8')
+    expect(src).not.toContain("from '../../services/auditGateway'")
+  })
+
+  it('usa exportAuditLogs thunk del slice', () => {
+    const src = require('fs').readFileSync('src/pages/audit/Export.jsx', 'utf8')
+    expect(src).toContain('exportAuditLogs')
+    expect(src).toContain('selectExportJobId')
+  })
+
+  it('muestra job_id cuando la exportación está en curso', () => {
+    const store = configureStore({
+      reducer: {
+        audit: (s = { logs: [], searchResults: [], complianceReport: null, exportJobId: 'job-abc-123', loading: false, error: null }) => s,
+      },
+    })
+    wrap(<Export />, store)
+    expect(screen.getByText('job-abc-123')).toBeInTheDocument()
   })
 })
