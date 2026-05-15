@@ -41,13 +41,10 @@ describe('alertsSlice — fetchAlerts', () => {
 })
 
 describe('alertsSlice — fetchTemplates', () => {
-  it('sets templates on fulfilled', async () => {
-    const templates = [{ id: 1, name: 'Default Template' }]
-    alertsService.getTemplates.mockResolvedValueOnce(templates)
-    const store = buildStore()
-    await store.dispatch(fetchTemplates())
-    expect(selectTemplates(store.getState())).toEqual(templates)
-  })
+  it('fetchTemplates ya no existe — endpoint eliminado de la API', () => {
+      const alertsModule = require('../alerts')
+      expect(alertsModule.fetchTemplates).toBeUndefined()
+    })
 })
 
 describe('alertsSlice — clearError', () => {
