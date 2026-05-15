@@ -1,191 +1,59 @@
 /**
- * transactionService Tests
- * 
- * Requerimientos:
- * - Usar apiService (no fetch directo)
- * - Enviar session_id header
- * - Enviar CSRF token
- * - Manejar errores correctamente
- * - Funcionar con mockInterceptor
+ * transactionService.test.js — post-T5.2
+ *
+ * transactionGateway.js fue eliminado en T5.2.
+ * El sistema /api/transaction/... no existe en IACT-api.
+ * Los steppers que lo usaban migraron a useLocalTransaction (estado UI local).
  */
-
-import transactionService from '@api/transactionGateway'
-import apiService from '@api/apiClient'
-
-// Mock apiService
-jest.mock('@api/apiClient')
-
-describe('transactionService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
+describe('T5.2 — transactionGateway eliminado', () => {
+  test('transactionGateway.js no existe en src/services/', () => {
+    const fs = require('fs')
+    expect(fs.existsSync('src/services/transactionGateway.js')).toBe(false)
   })
 
-  describe('start(_txType, _data)', () => {
-    it('debería hacer POST a /api/transaction/start/', async () => {
-      const _mockData = {
-        transaction_id: 'tx-123',
-        type: 'assign_function',
-        total_steps: 3,
-        conflicts: []
-      }
-
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await transactionService.start('assign_function', { userId: 1 })
-
-      expect(apiService.post).toHaveBeenCalledWith(
-        '/api/transaction/start/',
-        {
-          type: 'assign_function',
-          data: { userId: 1 }
-        }
-      )
-      expect(_result).toEqual(_mockData)
-    })
-
-    it('debería retornar txId, type, totalSteps, conflicts', async () => {
-      const _mockResponse = {
-        transaction_id: 'tx-456',
-        type: 'create_user',
-        total_steps: 4,
-        conflicts: [{ id: 'c1', field: 'email', message: 'Duplicate' }]
-      }
-
-      apiService.post.mockResolvedValue(_mockResponse)
-
-      const _result = await transactionService.start('create_user', {})
-
-      expect(_result.transaction_id).toBe('tx-456')
-      expect(_result.type).toBe('create_user')
-      expect(_result.total_steps).toBe(4)
-      expect(_result.conflicts).toEqual([{ id: 'c1', field: 'email', message: 'Duplicate' }])
-    })
-
-    it('debería lanzar error si falla', async () => {
-      const _error = new Error('Network error')
-      apiService.post.mockRejectedValue(_error)
-
-      await expect(
-        transactionService.start('assign_function', {})
-      ).rejects.toThrow('Network error')
-    })
+  test('useTransaction.js no existe en src/hooks/domain/', () => {
+    const fs = require('fs')
+    expect(fs.existsSync('src/hooks/domain/useTransaction.js')).toBe(false)
   })
 
-  describe('step(_txId, _step, _stepData)', () => {
-    it('debería hacer POST a /api/transaction/{txId}/step/', async () => {
-      const _mockData = {
-        step: 1,
-        conflicts: [],
-        errors: null
-      }
-
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await transactionService.step('tx-123', 0, { field1: 'value1' })
-
-      expect(apiService.post).toHaveBeenCalledWith(
-        '/api/transaction/tx-123/step/',
-        {
-          step: 0,
-          data: { field1: 'value1' }
-        }
-      )
-      expect(_result).toEqual(_mockData)
-    })
-
-    it('debería retornar step, conflicts, errors', async () => {
-      const _mockResponse = {
-        step: 2,
-        conflicts: [{ id: 'c2', field: 'role', message: 'Separation rule conflict' }],
-        errors: null
-      }
-
-      apiService.post.mockResolvedValue(_mockResponse)
-
-      const _result = await transactionService.step('tx-123', 1, {})
-
-      expect(_result.step).toBe(2)
-      expect(_result.conflicts).toHaveLength(1)
-      expect(_result.errors).toBeNull()
-    })
+  test('ningún archivo de producción importa transactionGateway', () => {
+    const { execSync } = require('child_process')
+    const result = execSync(
+      "grep -r 'transactionGateway' src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
+      { encoding: 'utf8' }
+    ).trim()
+    const lines = result.split('\n').filter(Boolean)
+      .filter(f => !f.includes('__tests__') && !f.includes('.test.'))
+    expect(lines).toEqual([])
   })
 
-  describe('confirm(_txId, _finalData)', () => {
-    it('debería hacer POST a /api/transaction/{txId}/confirm/', async () => {
-      const _mockData = {
-        status: 'success',
-        result: { id: 'user-1' }
-      }
-
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await transactionService.confirm('tx-123', { email: 'test@example.com' })
-
-      expect(apiService.post).toHaveBeenCalledWith(
-        '/api/transaction/tx-123/confirm/',
-        {
-          data: { email: 'test@example.com' }
-        }
-      )
-      expect(_result.status).toBe('success')
-      expect(_result.result).toEqual({ id: 'user-1' })
-    })
+  test('ningún archivo de producción importa useTransaction', () => {
+    const { execSync } = require('child_process')
+    const result = execSync(
+      "grep -r \"from '@hooks/domain/useTransaction'\" src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
+      { encoding: 'utf8' }
+    ).trim()
+    const lines = result.split('\n').filter(Boolean)
+      .filter(f => !f.includes('__tests__') && !f.includes('.test.'))
+    expect(lines).toEqual([])
   })
 
-  describe('cancel(_txId)', () => {
-    it('debería hacer POST a /api/transaction/{txId}/cancel/', async () => {
-      const _mockData = { status: 'cancelled' }
-
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await transactionService.cancel('tx-123')
-
-      expect(apiService.post).toHaveBeenCalledWith(
-        '/api/transaction/tx-123/cancel/',
-        {}
-      )
-      expect(_result.status).toBe('cancelled')
-    })
+  test('useLocalTransaction.js existe como sustituto de UI state puro', () => {
+    const fs = require('fs')
+    expect(fs.existsSync('src/hooks/domain/useLocalTransaction.js')).toBe(true)
   })
 
-  describe('resolveConflict(_txId, _conflictId, _resolution)', () => {
-    it('debería hacer POST a /api/transaction/{txId}/conflict/{conflictId}/resolve/', async () => {
-      const _mockData = {
-        resolved: true,
-        new_conflicts: []
-      }
-
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await transactionService.resolveConflict(
-        'tx-123',
-        'conflict-1',
-        { action: 'remove' }
-      )
-
-      expect(apiService.post).toHaveBeenCalledWith(
-        '/api/transaction/tx-123/conflict/conflict-1/resolve/',
-        { action: 'remove' }
-      )
-      expect(_result.resolved).toBe(true)
-    })
-  })
-
-  describe('status(_txId)', () => {
-    it('debería hacer GET a /api/transaction/{txId}/status/', async () => {
-      const _mockData = {
-        transaction_id: 'tx-123',
-        step: 1,
-        status: 'processing',
-        data: {}
-      }
-
-      apiService.get.mockResolvedValue(_mockData)
-
-      const _result = await transactionService.status('tx-123')
-
-      expect(apiService.get).toHaveBeenCalledWith('/api/transaction/tx-123/status/')
-      expect(_result.transaction_id).toBe('tx-123')
-    })
+  test('steppers usan useLocalTransaction', () => {
+    const fs = require('fs')
+    const steppers = [
+      'src/components/transaction/AssignFunctionStepper.jsx',
+      'src/components/transaction/CreateUserStepper.jsx',
+      'src/components/transaction/ExportCSVStepper.jsx',
+    ]
+    for (const path of steppers) {
+      const src = fs.readFileSync(path, 'utf8')
+      expect(src).toContain('useLocalTransaction')
+      expect(src).not.toContain("from '@hooks/domain/useTransaction'")
+    }
   })
 })

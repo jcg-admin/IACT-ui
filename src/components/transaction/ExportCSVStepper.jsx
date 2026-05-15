@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/domain/useTransaction'
+import useLocalTransaction from '@hooks/domain/useLocalTransaction'
 import useJobStatus from '@hooks/domain/useJobStatus'
 import FormStepper from './FormStepper'
 import FilterForm from './content/FilterForm'
@@ -26,7 +26,7 @@ function ExportCSVStepper({ onComplete }) {
     nextStep,
     confirmTx,
     cancelTx
-  } = useTransaction('export_csv')
+  } = useLocalTransaction('export_csv')
 
   const { job, progress, downloadResult, stopPolling } = useJobStatus(_jobId)
 

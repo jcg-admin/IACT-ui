@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/domain/useTransaction'
+import useLocalTransaction from '@hooks/domain/useLocalTransaction'
 import FormStepper from './FormStepper'
 import SeparationRulesValidation from './content/SeparationRulesValidation'
 import ConflictResolver from './content/ConflictResolver'
@@ -24,7 +24,7 @@ function AssignFunctionStepper({ userId, onComplete }) {
     confirmTx,
     cancelTx,
     resolveConflict
-  } = useTransaction('assign_function')
+  } = useLocalTransaction('assign_function')
 
   // Iniciar transacción al montar
   React.useEffect(() => {

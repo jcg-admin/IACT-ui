@@ -13,7 +13,7 @@ const mockTransaction = {
   resolveConflict: jest.fn(),
 }
 
-jest.mock('@hooks/domain/useTransaction', () => ({
+jest.mock('@hooks/domain/useLocalTransaction', () => ({
   __esModule: true,
   default: jest.fn(() => mockTransaction),
 }))
