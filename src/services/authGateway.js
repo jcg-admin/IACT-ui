@@ -228,6 +228,55 @@ const verifyToken = withCaching(
   () => 'auth:token-valid' // Clave fija
 )
 
+/**
+ * Reset / recuperar contraseña (envía email de recuperación).
+ * POST /api/auth/reset_password/
+ */
+async function resetPasswordBase(username) {
+  const response = await apiService.post('/api/auth/reset_password/', { username })
+  return response
+}
+
+const resetPassword = withLogging(
+  withValidation(
+    resetPasswordBase,
+    (username) => {
+      if (!username || typeof username !== 'string') {
+        return { valid: false, message: 'Username or email required' }
+      }
+      return { valid: true }
+    },
+    { fnName: 'authService.resetPassword' }
+  ),
+  'authService.resetPassword'
+)
+
+/**
+ * Cambiar contraseña del usuario autenticado.
+ * POST /api/auth/change-password/
+ */
+async function changePasswordBase(currentPassword, newPassword) {
+  const response = await apiService.post('/api/auth/change-password/', {
+    current_password: currentPassword,
+    new_password: newPassword,
+  })
+  return response
+}
+
+const changePassword = withLogging(
+  withValidation(
+    changePasswordBase,
+    (currentPassword, newPassword) => {
+      if (!currentPassword) return { valid: false, message: 'Current password required' }
+      if (!newPassword)     return { valid: false, message: 'New password required' }
+      return { valid: true }
+    },
+    { fnName: 'authService.changePassword' }
+  ),
+  'authService.changePassword',
+  { logArgs: false }
+)
+
 async function getActiveSessions() {
   const response = await apiService.get('/api/auth/sessions/')
   return response
@@ -247,10 +296,12 @@ const authService = {
   getCurrentUser,
   register,
   verifyToken,
+  resetPassword,
+  changePassword,
   getActiveSessions,
   getSessions,
   revokeSession,
 }
 
 export default authService
-export { login, logout, getCurrentUser, register, verifyToken, getActiveSessions, getSessions, revokeSession }
+export { login, logout, getCurrentUser, register, verifyToken, resetPassword, changePassword, getActiveSessions, getSessions, revokeSession }

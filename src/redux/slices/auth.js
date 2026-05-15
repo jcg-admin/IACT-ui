@@ -1,77 +1,63 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import apiService from '@api/apiClient';
-import authService from '@api/authGateway';
-import { clearSession } from './session';
-
 /**
- * Auth Slice - SECURITY HARDENED
- * 
- * IMPORTANTE:
- * - NO guardar tokens en Redux
- * - NO guardar tokens en localStorage
- * - Tokens guardados en httpOnly cookies por backend
- * - Solo guardar user data sin información sensible
+ * auth.js slice — IACT v2
+ *
+ * Todos los thunks delegan al authGateway — ningún thunk llama apiService directamente.
+ *
+ * SECURITY:
+ *   - Los tokens NO se guardan en Redux ni en localStorage.
+ *   - El backend configura httpOnly cookies en el login.
+ *   - Solo se guarda datos de usuario (sin información sensible).
  */
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import authGateway from '@api/authGateway'
+import { clearSession } from './session'
 
-// Async thunk para login
+// ── Thunks ───────────────────────────────────────────────────────────────────
+
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async (credentials, { rejectWithValue }) => {
+  async ({ username, password }, { rejectWithValue }) => {
     try {
-      // Llamar a backend que configura httpOnly cookies
-      const response = await apiService.post('/api/token/', {
-        username: credentials.username,
-        password: credentials.password,
-      });
-
-      // Backend NO retorna tokens en response (están en httpOnly cookies)
-      // Solo retornar datos de usuario
-      return response.data;
+      return await authGateway.login(username, password)
     } catch (error) {
-      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
-);
+)
 
-// Async thunk para logout
 export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue, dispatch }) => {
     try {
-      // Notificar al backend que usuario se desloguea
-      await apiService.post('/api/logout/', {});
-      // Limpiar sesión también
-      dispatch(clearSession());
-      return null;
+      await authGateway.logout()
+      dispatch(clearSession())
+      return null
     } catch (error) {
-      // Proceder con logout local incluso si backend falla
-      dispatch(clearSession());
-      return null;
+      // Logout local aunque falle el backend
+      dispatch(clearSession())
+      return null
     }
   }
-);
+)
 
-// Async thunk para obtener usuario actual
 export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiService.get('/api/user/');
-      return response.data;
+      return await authGateway.getCurrentUser()
     } catch (error) {
-      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null });
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
-);
+)
 
 export const recoverPassword = createAsyncThunk(
   'auth/recoverPassword',
   async (username, { rejectWithValue }) => {
     try {
-      const res = await apiService.post('/api/auth/recover-password/', { username })
-      return res
-    } catch (err) {
-      return rejectWithValue({ message: err.message || 'Error al recuperar contraseña', statusCode: null })
+      return await authGateway.resetPassword(username)
+    } catch (error) {
+      return rejectWithValue({ message: error.message || 'Error al recuperar contraseña', statusCode: null })
     }
   }
 )
@@ -80,13 +66,9 @@ export const changePassword = createAsyncThunk(
   'auth/changePassword',
   async ({ currentPassword, newPassword }, { rejectWithValue }) => {
     try {
-      const res = await apiService.post('/api/auth/change-password/', {
-        current_password: currentPassword,
-        new_password: newPassword,
-      })
-      return res
-    } catch (err) {
-      return rejectWithValue({ message: err.message || 'Error al cambiar contraseña', statusCode: null })
+      return await authGateway.changePassword(currentPassword, newPassword)
+    } catch (error) {
+      return rejectWithValue({ message: error.message || 'Error al cambiar contraseña', statusCode: null })
     }
   }
 )
@@ -95,9 +77,9 @@ export const fetchActiveSessions = createAsyncThunk(
   'auth/fetchActiveSessions',
   async (_, { rejectWithValue }) => {
     try {
-      return await authService.getActiveSessions()
-    } catch (err) {
-      return rejectWithValue({ message: err.message, statusCode: err.response?.status ?? null })
+      return await authGateway.getActiveSessions()
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
@@ -106,13 +88,15 @@ export const revokeSession = createAsyncThunk(
   'auth/revokeSession',
   async (sessionId, { rejectWithValue }) => {
     try {
-      await authService.revokeSession(sessionId)
+      await authGateway.revokeSession(sessionId)
       return sessionId
-    } catch (err) {
-      return rejectWithValue({ message: err.message, statusCode: err.response?.status ?? null })
+    } catch (error) {
+      return rejectWithValue({ message: error.message, statusCode: error.response?.status ?? null })
     }
   }
 )
+
+// ── Slice ─────────────────────────────────────────────────────────────────────
 
 const authSlice = createSlice({
   name: 'auth',
@@ -126,120 +110,93 @@ const authSlice = createSlice({
     sessionsError: null,
   },
   reducers: {
-    // Logout local (llamar también logoutUser)
     logout(state) {
-      state.user = null;
-      state.isAuthenticated = false;
-      state.error = null;
+      state.user = null
+      state.isAuthenticated = false
+      state.error = null
     },
-    
-    // Limpiar error
     clearError(state) {
-      state.error = null;
+      state.error = null
     },
   },
   extraReducers: (builder) => {
     builder
       // Login
-      .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+      .addCase(loginUser.pending,    (state) => { state.isLoading = true; state.error = null })
+      .addCase(loginUser.fulfilled,  (state, action) => {
+        state.isAuthenticated = true
+        state.user = action.payload
+        state.isLoading = false
+        state.error = null
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.isAuthenticated = true;
-        state.user = action.payload;
-        state.isLoading = false;
-        state.error = null;
-        // SECURITY: NO guardar tokens aqui
-        // Backend configura httpOnly cookies
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-        state.isAuthenticated = false;
-        state.user = null;
+      .addCase(loginUser.rejected,   (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+        state.isAuthenticated = false
+        state.user = null
       })
 
       // Logout
       .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.isAuthenticated = false;
-        state.error = null;
-        // SECURITY: Cookies borradas por backend
+        state.user = null
+        state.isAuthenticated = false
+        state.error = null
       })
-      .addCase(logoutUser.rejected, (state) => {
-        // Logout local incluso si falla backend
-        state.user = null;
-        state.isAuthenticated = false;
+      .addCase(logoutUser.rejected,  (state) => {
+        state.user = null
+        state.isAuthenticated = false
       })
 
-      // Get current user
-      .addCase(getCurrentUser.pending, (state) => {
-        state.isLoading = true;
-      })
+      // GetCurrentUser
+      .addCase(getCurrentUser.pending,   (state) => { state.isLoading = true })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.isLoading = false;
+        state.user = action.payload
+        state.isAuthenticated = true
+        state.isLoading = false
       })
-      .addCase(getCurrentUser.rejected, (state) => {
-        state.user = null;
-        state.isAuthenticated = false;
-        state.isLoading = false;
-      })
-
-      // Recover password
-      .addCase(recoverPassword.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(recoverPassword.fulfilled, (state) => {
-        state.isLoading = false;
-      })
-      .addCase(recoverPassword.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+      .addCase(getCurrentUser.rejected,  (state) => {
+        state.user = null
+        state.isAuthenticated = false
+        state.isLoading = false
       })
 
-      // Change password
-      .addCase(changePassword.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(changePassword.fulfilled, (state) => {
-        state.isLoading = false;
-      })
-      .addCase(changePassword.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+      // RecoverPassword
+      .addCase(recoverPassword.pending,   (state) => { state.isLoading = true; state.error = null })
+      .addCase(recoverPassword.fulfilled, (state) => { state.isLoading = false })
+      .addCase(recoverPassword.rejected,  (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
       })
 
-      // Fetch active sessions
-      .addCase(fetchActiveSessions.pending, (state) => {
-        state.sessionsLoading = true;
-        state.sessionsError = null;
-      })
-      .addCase(fetchActiveSessions.fulfilled, (state, action) => {
-        state.sessions = action.payload;
-        state.sessionsLoading = false;
-      })
-      .addCase(fetchActiveSessions.rejected, (state, action) => {
-        state.sessionsLoading = false;
-        state.sessionsError = action.payload?.message ?? 'Error al cargar sesiones';
+      // ChangePassword
+      .addCase(changePassword.pending,   (state) => { state.isLoading = true; state.error = null })
+      .addCase(changePassword.fulfilled, (state) => { state.isLoading = false })
+      .addCase(changePassword.rejected,  (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
       })
 
-      // Revoke session
+      // Sessions
+      .addCase(fetchActiveSessions.pending,    (state) => { state.sessionsLoading = true; state.sessionsError = null })
+      .addCase(fetchActiveSessions.fulfilled,  (state, action) => {
+        state.sessions = action.payload
+        state.sessionsLoading = false
+      })
+      .addCase(fetchActiveSessions.rejected,   (state, action) => {
+        state.sessionsLoading = false
+        state.sessionsError = action.payload?.message ?? 'Error al cargar sesiones'
+      })
       .addCase(revokeSession.fulfilled, (state, action) => {
-        state.sessions = state.sessions.filter((s) => s.id !== action.payload);
+        state.sessions = state.sessions.filter((s) => s.id !== action.payload)
       })
-      .addCase(revokeSession.rejected, (state, action) => {
-        state.sessionsError = action.payload?.message ?? 'Error al revocar sesión';
-      });
+      .addCase(revokeSession.rejected,  (state, action) => {
+        state.sessionsError = action.payload?.message ?? 'Error al revocar sesión'
+      })
   },
-});
+})
 
-export const { logout, clearError } = authSlice.actions;
-export const selectActiveSessions = (state) => state.auth.sessions;
-export const selectSessionsLoading = (state) => state.auth.sessionsLoading;
-export const selectSessionsError = (state) => state.auth.sessionsError;
-export default authSlice.reducer;
+export const { logout, clearError } = authSlice.actions
+export const selectActiveSessions   = (state) => state.auth.sessions
+export const selectSessionsLoading  = (state) => state.auth.sessionsLoading
+export const selectSessionsError    = (state) => state.auth.sessionsError
+export default authSlice.reducer
