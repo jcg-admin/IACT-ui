@@ -211,6 +211,51 @@ class ReportsService {
   async getIVRTransfersReport(filters = {}) {
     return apiService.get('/api/reports/ivr/transfers/', { params: filters })
   }
+  // ── Exportación extendida ───────────────────────────────────────────────
+
+  /** GET /api/reports/export/ — listar jobs de exportación del usuario */
+  async getExportJobs(params = {}) {
+    return apiService.get('/api/reports/export/', { params })
+  }
+
+  /** GET /api/reports/export/{id}/ — estado del job de exportación (UC_RPT_04 CA-18) */
+  async getExportJobDetail(jobId) {
+    return apiService.get(`/api/reports/export/${jobId}/`)
+  }
+
+  /** DELETE /api/reports/export/{id}/ — cancelar job (UC_RPT_04 CA-17) */
+  async cancelExport(jobId) {
+    return apiService.delete(`/api/reports/export/${jobId}/`)
+  }
+
+  // ── Schedules extendidos ────────────────────────────────────────────────
+
+  /** PATCH /api/reports/schedules/{id}/ — modificar/pausar/reanudar schedule */
+  async updateSchedule(id, data) {
+    return apiService.patch(`/api/reports/schedules/${id}/`, data)
+  }
+
+  // ── IVR adicionales ─────────────────────────────────────────────────────
+
+  /**
+   * GET /api/reports/ivr/unique-clients/ — clientes únicos sin client_id raw (CNST-026).
+   * Distinto de getUniqueClientsReport() que usa sp_rpt_clientes.
+   */
+  async getUniqueClientsAnonReport(params = {}) {
+    return apiService.get('/api/reports/ivr/unique-clients/', { params })
+  }
+
+  /** GET /api/reports/realtime/ — métricas tiempo real (UC_RPT_02 — STUB SSE) */
+  async getRealtimeMetrics(params = {}) {
+    return apiService.get('/api/reports/realtime/', { params })
+  }
+
+  // ── Agentes extendido ───────────────────────────────────────────────────
+
+  /** GET /api/reports/agents/{id}/ — detalle privilegiado de agente (UC_RPT_12 RPT-015) */
+  async getAgentDetail(agentId) {
+    return apiService.get(`/api/reports/agents/${agentId}/`)
+  }
 }
 
 export default new ReportsService()
