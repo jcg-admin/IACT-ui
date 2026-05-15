@@ -17,6 +17,15 @@ const TRIMESTRES = ['Q01_25', 'Q02_25', 'Q03_25']
 const SEGMENTOS  = ['Nacional', 'Puebla']
 const DEFAULT_FILTERS = { trimestre: 'Q01_25', segmento: 'Nacional' }
 
+// Genera URL compartible para el reporte — utilidad client-side (sin API)
+function buildShareUrl(reportType, filters = {}) {
+  const params = new URLSearchParams(
+    Object.fromEntries(Object.entries(filters).filter(([, v]) => v != null))
+  )
+  const query = params.toString()
+  return `${window.location.origin}/reports/${reportType}${query ? '?' + query : ''}`
+}
+
 export default function CampaignsReport() {
   const dispatch = useDispatch()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -52,7 +61,7 @@ export default function CampaignsReport() {
   }
 
   function handleShare() {
-    const url = reportsService.generateShareUrl('campaigns', filters)
+    const url = buildShareUrl('campaigns', filters)
     setShareModal({ isOpen: true, url })
   }
 

@@ -8,7 +8,7 @@ jest.mock('../../../services/reportsGateway', () => ({
   default: {
     exportReport: jest.fn().mockResolvedValue({ job_id: 'job-abc-123' }),
     getExportJobStatus: jest.fn().mockResolvedValue({ status: 'queued', progress: 0, file_url: null, error: null }),
-    cancelExportJob: jest.fn().mockResolvedValue({ status: 'cancelled' }),
+    cancelExport: jest.fn().mockResolvedValue({ status: 'cancelled' }),
   },
 }))
 
@@ -24,7 +24,7 @@ beforeEach(() => {
   svc = jest.requireMock('../../../services/reportsGateway').default
   svc.exportReport.mockResolvedValue({ job_id: 'job-abc-123' })
   svc.getExportJobStatus.mockResolvedValue({ status: 'queued', progress: 0, file_url: null, error: null })
-  svc.cancelExportJob.mockResolvedValue({ status: 'cancelled' })
+  svc.cancelExport.mockResolvedValue({ status: 'cancelled' })
 })
 
 describe('ReportExport — estructura base', () => {
@@ -151,7 +151,7 @@ describe('ReportExport — polling y estados del job', () => {
     })
   })
 
-  it('botón cancelar visible cuando status=queued; click llama cancelExportJob', async () => {
+  it('botón cancelar visible cuando status=queued; click llama cancelExport', async () => {
     svc.exportReport.mockResolvedValueOnce({ job_id: 'job-cancel-222' })
     svc.getExportJobStatus.mockResolvedValue({
       status: 'queued', progress: 0, file_url: null, error: null,
@@ -165,7 +165,7 @@ describe('ReportExport — polling y estados del job', () => {
     expect(screen.getByRole('button', { name: /cancelar exportación/i })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /cancelar exportación/i }))
-    expect(svc.cancelExportJob).toHaveBeenCalledWith('job-cancel-222')
+    expect(svc.cancelExport).toHaveBeenCalledWith('job-cancel-222')
   })
 })
 

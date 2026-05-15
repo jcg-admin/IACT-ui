@@ -80,7 +80,7 @@ export default function ReportExport() {
 
   async function handleCancel() {
     if (pollingRef.current) clearInterval(pollingRef.current)
-    await reportsService.cancelExportJob(jobId)
+    await reportsService.cancelExport(jobId)
     setJobId(null)
     setJobStatus(null)
     setFileUrl(null)

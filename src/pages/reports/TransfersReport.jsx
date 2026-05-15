@@ -22,6 +22,15 @@ const SEGMENTOS  = ['Nacional', 'Puebla']
 
 const DEFAULT_FILTERS = { trimestre: 'Q01_25', segmento: 'Nacional', fecha: '' }
 
+// Genera URL compartible para el reporte — utilidad client-side (sin API)
+function buildShareUrl(reportType, filters = {}) {
+  const params = new URLSearchParams(
+    Object.fromEntries(Object.entries(filters).filter(([, v]) => v != null))
+  )
+  const query = params.toString()
+  return `${window.location.origin}/reports/${reportType}${query ? '?' + query : ''}`
+}
+
 export default function TransfersReport() {
   const dispatch = useDispatch()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -34,7 +43,7 @@ export default function TransfersReport() {
     setLoading(true)
     setError(null)
     try {
-      const res = await reportsService.getTransfersByCentro({ trimestre: f.trimestre, segmento: f.segmento, ...(f.fecha ? { fecha: f.fecha } : {}) })
+      const res = await reportsService.getIVRTransfersReport({ trimestre: f.trimestre, segmento: f.segmento, ...(f.fecha ? { fecha: f.fecha } : {}) })
       setData(Array.isArray(res) ? res : (res?.results ?? res?.data ?? []))
     } catch (err) {
       setError(err.message)
@@ -59,7 +68,7 @@ export default function TransfersReport() {
   }
 
   function handleShare() {
-    const url = reportsService.generateShareUrl('transfers', filters)
+    const url = buildShareUrl('transfers', filters)
     setShareModal({ isOpen: true, url })
   }
 

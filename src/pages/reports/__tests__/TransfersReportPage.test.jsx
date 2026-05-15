@@ -20,7 +20,7 @@ const MOCK_ROW = {
 jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
-    getTransfersByCentro: jest.fn().mockResolvedValue([]),
+    getIVRTransfersReport: jest.fn().mockResolvedValue([]),
     generateShareUrl: jest.fn(() => 'https://example.com/reports/shared?type=transfers'),
   },
 }))
@@ -151,27 +151,27 @@ describe('TransfersReport — filtros reales (trimestre / segmento)', () => {
 })
 
 describe('TransfersReport — llamada al servicio', () => {
-  it('llama a reportsService.getTransfersByCentro en mount', async () => {
+  it('llama a reportsService.getIVRTransfersReport en mount', async () => {
     const svc = jest.requireMock('../../../services/reportsGateway').default
-    svc.getTransfersByCentro.mockClear()
+    svc.getIVRTransfersReport.mockClear()
     wrapper(<TransfersReport />)
     await screen.findByRole('heading', { level: 1 })
-    expect(svc.getTransfersByCentro).toHaveBeenCalledTimes(1)
+    expect(svc.getIVRTransfersReport).toHaveBeenCalledTimes(1)
   })
 
   it('llama con filtros que incluyen trimestre y segmento', async () => {
     const svc = jest.requireMock('../../../services/reportsGateway').default
-    svc.getTransfersByCentro.mockClear()
+    svc.getIVRTransfersReport.mockClear()
     wrapper(<TransfersReport />)
     await screen.findByRole('heading', { level: 1 })
-    const [callArg] = svc.getTransfersByCentro.mock.calls[0]
+    const [callArg] = svc.getIVRTransfersReport.mock.calls[0]
     expect(callArg).toHaveProperty('trimestre')
     expect(callArg).toHaveProperty('segmento')
   })
 
   it('renderiza filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsGateway').default
-    svc.getTransfersByCentro.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
+    svc.getIVRTransfersReport.mockResolvedValueOnce([MOCK_ROW, MOCK_ROW])
     wrapper(<TransfersReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })

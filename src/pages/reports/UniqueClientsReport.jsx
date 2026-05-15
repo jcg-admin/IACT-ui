@@ -15,6 +15,15 @@ const TRIMESTRES = ['', 'Q01_25', 'Q02_25', 'Q03_25']
 
 const DEFAULT_FILTERS = { trimestre: '' }
 
+// Genera URL compartible para el reporte — utilidad client-side (sin API)
+function buildShareUrl(reportType, filters = {}) {
+  const params = new URLSearchParams(
+    Object.fromEntries(Object.entries(filters).filter(([, v]) => v != null))
+  )
+  const query = params.toString()
+  return `${window.location.origin}/reports/${reportType}${query ? '?' + query : ''}`
+}
+
 export default function UniqueClientsReport() {
   const dispatch = useDispatch()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -27,7 +36,7 @@ export default function UniqueClientsReport() {
     setLoading(true)
     setError(null)
     try {
-      const res = await reportsService.getUniqueClients(f.trimestre ? { trimestre: f.trimestre } : {})
+      const res = await reportsService.getUniqueClientsReport(f.trimestre ? { trimestre: f.trimestre } : {})
       setData(Array.isArray(res) ? res : (res?.results ?? res?.data ?? []))
     } catch (err) {
       setError(err.message)
@@ -50,7 +59,7 @@ export default function UniqueClientsReport() {
   }
 
   function handleShare() {
-    const url = reportsService.generateShareUrl('unique-clients', filters)
+    const url = buildShareUrl('unique-clients', filters)
     setShareModal({ isOpen: true, url })
   }
 

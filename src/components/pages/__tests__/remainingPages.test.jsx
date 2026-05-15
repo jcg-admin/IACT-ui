@@ -80,6 +80,7 @@ function buildStore(extra = {}) {
   return configureStore({
     reducer: {
       auth: (state = { user: { id: 1, first_name: 'Ana' }, isAuthenticated: true }) => state,
+      user: (state = { users: [], loading: false, error: null, total: 0, userDetail: null, actionLoading: false }) => state,
       alerts: (state = { alerts: [], subscriptions: [], loading: false, error: null }) => state,
       access: (state = { userPermissions: [], functions: [], groups: [], loading: false, error: null }) => state,
     },
@@ -89,6 +90,17 @@ function buildStore(extra = {}) {
 function wrap(ui) {
   return render(<Provider store={buildStore()}>{ui}</Provider>)
 }
+
+jest.mock('../../../redux/slices/user', () => ({
+  fetchUsers:     jest.fn(() => ({ type: 'users/fetchUsers' })),
+  createUser:     jest.fn(() => ({ type: 'users/createUser' })),
+  deactivateUser: jest.fn(() => ({ type: 'users/deactivateUser' })),
+  blockUser:      jest.fn(() => ({ type: 'users/blockUser' })),
+  unblockUser:    jest.fn(() => ({ type: 'users/unblockUser' })),
+  patchUser:      jest.fn(() => ({ type: 'users/patchUser' })),
+  selectUsers:        (s) => s.user?.users ?? [],
+  selectUsersLoading: (s) => s.user?.loading ?? false,
+}))
 
 describe('UserManagement page', () => {
   it('renders user management heading', () => {

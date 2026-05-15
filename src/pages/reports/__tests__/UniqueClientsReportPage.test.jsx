@@ -11,7 +11,7 @@ const MOCK_ROWS = [
 jest.mock('../../../services/reportsGateway', () => ({
   __esModule: true,
   default: {
-    getUniqueClients: jest.fn().mockResolvedValue([]),
+    getUniqueClientsReport: jest.fn().mockResolvedValue([]),
     generateShareUrl: jest.fn(() => 'https://example.com/reports/shared?type=unique-clients'),
   },
 }))
@@ -112,7 +112,7 @@ describe('UniqueClientsReport — filtro de trimestre', () => {
 describe('UniqueClientsReport — renderiza filas del servicio', () => {
   it('muestra filas cuando el servicio retorna datos', async () => {
     const svc = jest.requireMock('../../../services/reportsGateway').default
-    svc.getUniqueClients.mockResolvedValueOnce(MOCK_ROWS)
+    svc.getUniqueClientsReport.mockResolvedValueOnce(MOCK_ROWS)
     wrapper(<UniqueClientsReport />)
     expect(await screen.findByText('Rows: 2')).toBeInTheDocument()
   })

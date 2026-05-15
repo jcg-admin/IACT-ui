@@ -27,6 +27,15 @@ const SEGMENTOS = ['Nacional', 'Puebla']
 
 const DEFAULT_FILTERS = { periodo: 'last_7d', segmento: '' }
 
+// Genera URL compartible para el reporte — utilidad client-side (sin API)
+function buildShareUrl(reportType, filters = {}) {
+  const params = new URLSearchParams(
+    Object.fromEntries(Object.entries(filters).filter(([, v]) => v != null))
+  )
+  const query = params.toString()
+  return `${window.location.origin}/reports/${reportType}${query ? '?' + query : ''}`
+}
+
 export default function HistoricalReports() {
   const dispatch = useDispatch()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -62,7 +71,7 @@ export default function HistoricalReports() {
   }
 
   function handleShare() {
-    const url = reportsService.generateShareUrl('history', filters)
+    const url = buildShareUrl('history', filters)
     setShareModal({ isOpen: true, url })
   }
 

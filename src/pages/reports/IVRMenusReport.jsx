@@ -19,6 +19,15 @@ const SEGMENTOS  = ['Nacional', 'Puebla']
 
 const DEFAULT_FILTERS = { trimestre: 'Q01_25', segmento: 'Nacional' }
 
+// Genera URL compartible para el reporte — utilidad client-side (sin API)
+function buildShareUrl(reportType, filters = {}) {
+  const params = new URLSearchParams(
+    Object.fromEntries(Object.entries(filters).filter(([, v]) => v != null))
+  )
+  const query = params.toString()
+  return `${window.location.origin}/reports/${reportType}${query ? '?' + query : ''}`
+}
+
 export default function IVRMenusReport() {
   const dispatch = useDispatch()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -31,7 +40,7 @@ export default function IVRMenusReport() {
     setLoading(true)
     setError(null)
     try {
-      const res = await reportsService.getIvrMenus({ trimestre: f.trimestre, segmento: f.segmento })
+      const res = await reportsService.getIVRMenusReport({ trimestre: f.trimestre, segmento: f.segmento })
       setData(Array.isArray(res) ? res : (res?.results ?? res?.data ?? []))
     } catch (err) {
       setError(err.message)
@@ -56,7 +65,7 @@ export default function IVRMenusReport() {
   }
 
   function handleShare() {
-    const url = reportsService.generateShareUrl('ivr-menus', filters)
+    const url = buildShareUrl('ivr-menus', filters)
     setShareModal({ isOpen: true, url })
   }
 
