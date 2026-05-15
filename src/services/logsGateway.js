@@ -98,6 +98,30 @@ class LogsService {
   async getMonitorWeekdays(params = {}) {
     return apiService.get('/api/pipeline/monitor/weekdays/', { params })
   }
+  // ── UC_LOG_04 + extensiones ──────────────────────────────────────────
+
+  /** GET /api/logs/export/ — listar jobs de exportación de logs */
+  async getLogExportJobs(params = {}) {
+    return apiService.get('/api/logs/export/', { params })
+  }
+
+  /**
+   * POST /api/logs/export/ — encolar exportación de logs.
+   * Retorna { job_id } para seguimiento async.
+   */
+  async enqueueLogExport(params = {}) {
+    return apiService.post('/api/logs/export/', params)
+  }
+
+  /** GET /api/logs/pipeline-events/ — eventos del pipeline analítico (UC_LOG_08) */
+  async getPipelineLogEvents(params = {}) {
+    return apiService.get('/api/logs/pipeline-events/', { params })
+  }
+
+  /** GET /api/pipeline/ivr-health/ — health check de conexión MariaDB */
+  async getPipelineIVRHealth() {
+    return apiService.get('/api/pipeline/ivr-health/')
+  }
 }
 
 export default new LogsService()
