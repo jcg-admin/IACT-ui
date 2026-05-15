@@ -1,273 +1,119 @@
 /**
- * Frontend Audit Service
- * IACT v4.0 - Audit Module
- * API client para endpoints de auditoria (READ-ONLY)
- * CNST-009: Auditoria Inmutable
+ * auditGateway.js — IACT v2 (migrado de fetch() v4.0 a apiService)
+ *
+ * Dominio Auditoría (UC_AUD_01..04, UC_PERM_10):
+ *   CNST-009: Auditoría Inmutable — solo append-only (no update/delete).
+ *   Autenticación vía httpOnly cookies — interceptor de apiClient.js.
+ *
+ * URLs canónicas (schema OpenAPI IACT-api, Errors: 0):
+ *   GET  /api/audit/logs/                    UC_AUD_01
+ *   GET  /api/audit/logs/{id}/               UC_AUD_02
+ *   POST /api/audit/search/                  UC_AUD_02
+ *   POST /api/audit/export/                  UC_AUD_03 — retorna {job_id}, NO blob
+ *   POST /api/audit/compliance-report/       UC_AUD_04
+ *   POST /api/audit/compliance-verify/       UC_AUD_04
+ *   GET  /api/audit/audit-events/            UC_PERM_10
+ *   GET  /api/audit/audit-events/{id}/       UC_PERM_10
+ *   GET  /api/audit/audit-events/aggregate/  UC_PERM_10
+ *   POST /api/audit/audit-events/export/     UC_AUD_03 / UC_PERM_10
+ *   GET  /api/audit/general/                 UC_AUD_01 (timeline cross-módulo)
+ *   GET  /api/audit/integrity/               UC_AUD_04 (verificar HMAC-SHA256)
+ *
+ * ELIMINADOS (sin endpoint en IACT-api):
+ *   getAuditSummary()      → /audit/summary no existe
+ *   getLogsByUser()        → usar getAuditLogs({ user_id }) con filtros
+ *   getLogsByResource()    → usar getAuditLogs({ resource_type, resource_id })
+ *   getCriticalLogs()      → usar getAuditLogs({ severity: 'CRITICAL' })
+ *   generateComplianceReport() → duplicado de getComplianceReport()
+ *   logEvent()             → CNST-009: solo el backend emite eventos de auditoría
  */
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+import apiService from './apiClient'
 
 class AuditService {
-    /**
-     * UC_AUD_01: Obtener logs de auditoria
-     */
-    async getAuditLogs(filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const queryParams = new URLSearchParams(filters);
-        const response = await fetch(`${API_BASE_URL}/audit/logs?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch audit logs');
-        }
+  // ── UC_AUD_01 — Consultar log de auditoría ────────────────────────────────
 
-        return response.json();
-    }
+  /** GET /api/audit/logs/ — listar logs con filtros opcionales */
+  async getAuditLogs(filters = {}) {
+    return apiService.get('/api/audit/logs/', { params: filters })
+  }
 
-    /**
-     * UC_AUD_02: Buscar en logs de auditoria
-     */
-    async searchLogs(searchParams) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/search`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(searchParams),
-        });
+  /** GET /api/audit/logs/{id}/ — detalle de registro */
+  async getAuditLogDetail(logId) {
+    return apiService.get(`/api/audit/logs/${logId}/`)
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to search logs');
-        }
+  // ── UC_AUD_02 — Buscar en log de auditoría ────────────────────────────────
 
-        return response.json();
-    }
+  /** POST /api/audit/search/ — búsqueda avanzada */
+  async searchLogs(searchParams) {
+    return apiService.post('/api/audit/search/', searchParams)
+  }
 
-    /**
-     * UC_AUD_03: Exportar logs de auditoria
-     */
-    async exportLogs(format = 'csv', filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/export`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                format,
-                filters,
-            }),
-        });
+  // ── UC_AUD_03 — Exportar log de auditoría ────────────────────────────────
 
-        if (!response.ok) {
-            throw new Error('Failed to export logs');
-        }
+  /**
+   * POST /api/audit/export/ — solicitar exportación async.
+   * Retorna { job_id } — NO retorna blob.
+   * El archivo se descarga cuando el job completa (ver reportsGateway.getExportJobs).
+   */
+  async exportLogs(format = 'csv', filters = {}) {
+    return apiService.post('/api/audit/export/', { format, filters })
+  }
 
-        return response.blob();
-    }
+  // ── UC_AUD_04 — Compliance ────────────────────────────────────────────────
 
-    /**
-     * UC_AUD_04: Obtener reporte de compliance
-     */
-    async getComplianceReport(filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const queryParams = new URLSearchParams(filters);
-        const response = await fetch(`${API_BASE_URL}/audit/compliance?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  /**
+   * POST /api/audit/compliance-report/ — generar reporte de compliance.
+   * Preserva firma: getComplianceReport(filters)
+   */
+  async getComplianceReport(filters = {}) {
+    return apiService.post('/api/audit/compliance-report/', filters)
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch compliance report');
-        }
+  /**
+   * POST /api/audit/compliance-verify/ — verificar firma HMAC del reporte.
+   * Preserva firma: verifyCompliance(reportId)
+   */
+  async verifyCompliance(reportId) {
+    return apiService.post('/api/audit/compliance-verify/', { report_id: reportId })
+  }
 
-        return response.json();
-    }
+  // ── UC_PERM_10 — Audit Events ─────────────────────────────────────────────
 
-    /**
-     * Obtener resumen de auditoria
-     */
-    async getAuditSummary() {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/summary`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  /** GET /api/audit/audit-events/ — listar eventos de auditoría */
+  async getAuditEvents(params = {}) {
+    return apiService.get('/api/audit/audit-events/', { params })
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch audit summary');
-        }
+  /** GET /api/audit/audit-events/{id}/ — detalle de evento */
+  async getAuditEventDetail(eventId) {
+    return apiService.get(`/api/audit/audit-events/${eventId}/`)
+  }
 
-        return response.json();
-    }
+  /** GET /api/audit/audit-events/aggregate/ — agregaciones */
+  async getAuditEventAggregations(params = {}) {
+    return apiService.get('/api/audit/audit-events/aggregate/', { params })
+  }
 
-    /**
-     * Obtener detalles de un log específico
-     */
-    async getLogDetails(logId) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/logs/${logId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  /** POST /api/audit/audit-events/export/ — exportar eventos */
+  async exportAuditEvents(filters = {}) {
+    return apiService.post('/api/audit/audit-events/export/', filters)
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch log details');
-        }
+  // ── UC_AUD_01 (ext) — Timeline general ────────────────────────────────────
 
-        return response.json();
-    }
+  /** GET /api/audit/general/ — timeline cross-módulo */
+  async getGeneralTimeline(params = {}) {
+    return apiService.get('/api/audit/general/', { params })
+  }
 
-    /**
-     * Obtener logs por usuario
-     */
-    async getLogsByUser(userId, filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const queryParams = new URLSearchParams({ ...filters, user_id: userId });
-        const response = await fetch(`${API_BASE_URL}/audit/logs/user/${userId}?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+  // ── UC_AUD_04 (ext) — Integridad ──────────────────────────────────────────
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch user logs');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener logs por recurso
-     */
-    async getLogsByResource(resourceType, resourceId, filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const queryParams = new URLSearchParams({
-            ...filters,
-            resource_type: resourceType,
-            resource_id: resourceId,
-        });
-        const response = await fetch(`${API_BASE_URL}/audit/logs/resource?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch resource logs');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener logs críticos
-     */
-    async getCriticalLogs() {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/logs/critical`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch critical logs');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Validar integridad de logs (CNST-009)
-     */
-    async validateLogIntegrity(dateStart, dateEnd) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/validate-integrity`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                date_start: dateStart,
-                date_end: dateEnd,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to validate log integrity');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Generar reporte de compliance con signature
-     */
-    async generateComplianceReport(filters = {}) {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE_URL}/audit/compliance/generate`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(filters),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to generate compliance report');
-        }
-
-        return response.blob();
-    }
-
-    /**
-     * BR_008: Log an error event to the audit trail.
-     * Append-only per BR_010 — no update/delete endpoint exists.
-     * Fire-and-forget: errors here must not interrupt the UI flow.
-     */
-    async logEvent(event) {
-        const token = localStorage.getItem('accessToken');
-        if (!token) return; // Not authenticated — skip audit logging
-
-        try {
-            await fetch(`${API_BASE_URL}/audit/events`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(event),
-            });
-        } catch {
-            // Audit logging must never throw — it is observability, not business logic
-        }
-    }
+  /** GET /api/audit/integrity/ — verificar integridad HMAC-SHA256 (CNST-009) */
+  async verifyIntegrity(params = {}) {
+    return apiService.get('/api/audit/integrity/', { params })
+  }
 }
 
-export default new AuditService();
+export default new AuditService()
