@@ -6,8 +6,7 @@
 
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createAlert, selectLoading, selectError, selectSuccess } from '../../redux/slices/alerts'
-import alertsGateway from '../../services/alertsGateway'
+import { createAlert, dryRunAlertRule, selectLoading, selectError, selectSuccess, selectDryRunResult } from '../../redux/slices/alerts'
 
 const METRICS = [
   { value: 'SL', label: 'Nivel de servicio (SL)' },
@@ -53,9 +52,11 @@ export default function AlertConfig() {
   const loading = useSelector(selectLoading)
   const error = useSelector(selectError)
   const success = useSelector(selectSuccess)
+  const dryRunResultStore = useSelector(selectDryRunResult)
 
   const [config, setConfig] = useState({ ...EMPTY_FORM })
-  const [dryRunResult, setDryRunResult] = useState(null)
+  // dryRunResult lee del store (despacha dryRunAlertRule → Redux)
+  const dryRunResult = dryRunResultStore
   const [dryRunLoading, setDryRunLoading] = useState(false)
 
   function toggle(field, value) {
@@ -78,17 +79,13 @@ export default function AlertConfig() {
 
   async function handleDryRun() {
     setDryRunLoading(true)
-    setDryRunResult(null)
     try {
-      const result = await alertsGateway.validateCondition({
-        metric: config.metric,
-        scope: config.scope,
+      await dispatch(dryRunAlertRule({
+        metric:    config.metric,
+        scope:     config.scope,
         threshold: config.threshold,
-        window: config.window,
-      })
-      setDryRunResult({ ok: true, data: result })
-    } catch (e) {
-      setDryRunResult({ ok: false, message: e.message || 'Condición inválida' })
+        window:    config.window,
+      }))
     } finally {
       setDryRunLoading(false)
     }
@@ -206,9 +203,9 @@ export default function AlertConfig() {
                   color: dryRunResult.ok ? '#6ee7b7' : '#fca5a5',
                 }}
               >
-                {dryRunResult.ok
-                  ? `Condición válida — ${JSON.stringify(dryRunResult.data)}`
-                  : `Error: ${dryRunResult.message}`}
+                {dryRunResult?.status === 'error'
+                  ? `Error: ${dryRunResult?.message ?? 'Condición inválida'}`
+                  : `Condición validada — ${JSON.stringify(dryRunResult)}`}
               </div>
             )}
           </div>

@@ -5,20 +5,15 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTemplates, selectTemplates, selectLoading } from '../../redux/slices/alerts';
 
 export default function Templates() {
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [categoryFilter, setCategoryFilter] = useState('');
 
-    const dispatch = useDispatch();
-    const loading = useSelector(selectLoading);
 
     useEffect(() => {
-        dispatch(fetchTemplates());
-        // Cargar plantillas de ejemplo
+        // Las plantillas son datos estáticos — el endpoint /api/alerts/templates/ no existe en IACT-api
         setTemplates([
             {
                 id: 1,
@@ -87,7 +82,7 @@ export default function Templates() {
                 isDefault: true,
             },
         ]);
-    }, [dispatch]);
+    }, []);
 
     const getFilteredTemplates = () => {
         let filtered = templates;
