@@ -265,16 +265,63 @@ export const revokeExceptionalPermission = createAsyncThunk(
     }
 );
 
-export const validateGroupAssignment = createAsyncThunk(
-    'access/validateGroupAssignment',
-    async ({ userId, groupId }, { rejectWithValue }) => {
-        try {
-            return await accessService.validateGroupAssignment(userId, groupId);
-        } catch (error) {
-            return rejectWithValue({ message: error.message, statusCode: null });
-        }
+
+export const fetchEffectivePermissions = createAsyncThunk(
+    'access/fetchEffectivePermissions',
+    async (userId, { rejectWithValue }) => {
+        try { return await accessService.getEffectivePermissions(userId) }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
     }
 );
+
+export const verifyPermission = createAsyncThunk(
+    'access/verifyPermission',
+    async ({ userId, code }, { rejectWithValue }) => {
+        try { return await accessService.verifyPermission(userId, code) }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
+    }
+);
+
+export const previewExceptionalPermission = createAsyncThunk(
+    'access/previewExceptionalPermission',
+    async ({ userId, params = {} }, { rejectWithValue }) => {
+        try { return await accessService.previewExceptionalPermission(userId, params) }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
+    }
+);
+
+export const assignGrouperToUser = createAsyncThunk(
+    'access/assignGrouperToUser',
+    async ({ userId, agrId }, { rejectWithValue }) => {
+        try { return await accessService.assignGrouper(userId, agrId) }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
+    }
+);
+
+export const fetchMyModules = createAsyncThunk(
+    'access/fetchMyModules',
+    async (_, { rejectWithValue }) => {
+        try { return await accessService.getMyModules() }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
+    }
+);
+
+export const fetchGroupers = createAsyncThunk(
+    'access/fetchGroupers',
+    async (params, { rejectWithValue }) => {
+        try { return await accessService.getGroupers(params) }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
+    }
+);
+
+export const fetchSeparationRuleDetail = createAsyncThunk(
+    'access/fetchSeparationRuleDetail',
+    async (id, { rejectWithValue }) => {
+        try { return await accessService.getSeparationRuleDetail(id) }
+        catch (e) { return rejectWithValue({ message: e.message, statusCode: null }) }
+    }
+);
+
 
 /**
  * Initial State
@@ -284,14 +331,19 @@ const initialState = {
     functions: [],
     userPermissions: {},
     userAssignedFunctions: [],
+    effectivePermissions: [],
+    permissionVerification: null,
+    exceptionalPreview: null,
     separationRules: [],
+    separationRuleDetail: null,
     separationConflicts: [],
     auditLog: [],
     groups: [],
+    groupers: [],
     groupFunctions: [],
     exceptionalPermissions: [],
+    myModules: [],
     loading: false,
-    validatingGroup: false,
     error: null,
     success: false,
     selectedUser: null,
@@ -632,19 +684,41 @@ const accessSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
+        builder
+            .addCase(fetchEffectivePermissions.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(fetchEffectivePermissions.fulfilled, (state, action) => { state.loading = false; state.effectivePermissions = action.payload?.permissions ?? action.payload ?? []; })
+            .addCase(fetchEffectivePermissions.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
 
         builder
-            .addCase(validateGroupAssignment.pending, (state) => {
-                state.validatingGroup = true;
-                state.error = null;
-            })
-            .addCase(validateGroupAssignment.fulfilled, (state) => {
-                state.validatingGroup = false;
-            })
-            .addCase(validateGroupAssignment.rejected, (state, action) => {
-                state.validatingGroup = false;
-                state.error = action.payload;
-            });
+            .addCase(verifyPermission.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(verifyPermission.fulfilled, (state, action) => { state.loading = false; state.permissionVerification = action.payload; })
+            .addCase(verifyPermission.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
+        builder
+            .addCase(previewExceptionalPermission.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(previewExceptionalPermission.fulfilled, (state, action) => { state.loading = false; state.exceptionalPreview = action.payload; })
+            .addCase(previewExceptionalPermission.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
+        builder
+            .addCase(assignGrouperToUser.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(assignGrouperToUser.fulfilled, (state) => { state.loading = false; state.success = true; })
+            .addCase(assignGrouperToUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
+        builder
+            .addCase(fetchMyModules.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(fetchMyModules.fulfilled, (state, action) => { state.loading = false; state.myModules = action.payload?.modules ?? action.payload ?? []; })
+            .addCase(fetchMyModules.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
+        builder
+            .addCase(fetchGroupers.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(fetchGroupers.fulfilled, (state, action) => { state.loading = false; state.groupers = action.payload?.results ?? action.payload ?? []; })
+            .addCase(fetchGroupers.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
+        builder
+            .addCase(fetchSeparationRuleDetail.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(fetchSeparationRuleDetail.fulfilled, (state, action) => { state.loading = false; state.separationRuleDetail = action.payload; })
+            .addCase(fetchSeparationRuleDetail.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+
     },
 });
 
@@ -666,6 +740,13 @@ export const selectError = (state) => state.access.error;
 export const selectSuccess = (state) => state.access.success;
 export const selectSelectedUser = (state) => state.access.selectedUser;
 export const selectExceptionalPermissions = (state) => state.access.exceptionalPermissions;
+
+export const selectEffectivePermissions = (state) => state.access.effectivePermissions;
+export const selectPermissionVerification = (state) => state.access.permissionVerification;
+export const selectExceptionalPreview     = (state) => state.access.exceptionalPreview;
+export const selectGroupers               = (state) => state.access.groupers;
+export const selectMyModules              = (state) => state.access.myModules;
+export const selectSeparationRuleDetail   = (state) => state.access.separationRuleDetail;
 
 export const { clearError, clearSuccess, setSelectedUser, resetState } = accessSlice.actions;
 
