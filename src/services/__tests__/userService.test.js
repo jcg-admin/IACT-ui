@@ -154,3 +154,37 @@ describe('updateMyProfile', () => {
     expect(typeof userService.updateMyProfile).toBe('undefined')
   })
 })
+
+// ── patchUser — T6.4 ──────────────────────────────────────────────────────────
+describe('patchUser(id, data)', () => {
+  it('PATCH /api/users/{id}/ con datos parciales', async () => {
+    await userService.patchUser(5, { email: 'new@test.com' })
+    expect(apiService.patch).toHaveBeenCalledWith(
+      '/api/users/5/', expect.objectContaining({ email: 'new@test.com' })
+    )
+  })
+  it('usa PATCH, no PUT (actualización parcial)', async () => {
+    await userService.patchUser(5, {})
+    expect(apiService.patch).toHaveBeenCalledTimes(1)
+  })
+  it('propaga error 403', async () => {
+    apiService.patch.mockRejectedValueOnce({ status: 403 })
+    await expect(userService.patchUser(5, {})).rejects.toMatchObject({ status: 403 })
+  })
+})
+
+// ── deleteUser — T6.4 ─────────────────────────────────────────────────────────
+describe('deleteUser(id)', () => {
+  it('DELETE /api/users/{id}/', async () => {
+    await userService.deleteUser(9)
+    expect(apiService.delete).toHaveBeenCalledWith('/api/users/9/')
+  })
+  it('interpola el id en la URL', async () => {
+    await userService.deleteUser('usr-88')
+    expect(apiService.delete).toHaveBeenCalledWith('/api/users/usr-88/')
+  })
+  it('propaga error 403', async () => {
+    apiService.delete.mockRejectedValueOnce({ status: 403 })
+    await expect(userService.deleteUser(9)).rejects.toMatchObject({ status: 403 })
+  })
+})
