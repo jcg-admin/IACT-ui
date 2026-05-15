@@ -9,7 +9,7 @@ export {
   useForm,
   useJobStatus,
   useMetrics,
-  useTransaction,
+  useLocalTransaction, // T5.2: sustituye a useTransaction (API inexistente)
   useRealTimeChannel,
   useAlertFeed,
   usePasswordStrength,

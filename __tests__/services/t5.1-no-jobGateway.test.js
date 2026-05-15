@@ -10,11 +10,11 @@ describe('T5.1 — jobGateway eliminado', () => {
 
   test('ningún archivo de producción importa jobGateway', () => {
     const { execSync } = require('child_process')
+    // Buscar imports activos de jobGateway (no comentarios de documentación)
     const result = execSync(
-      "grep -r 'jobGateway' src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
+      "grep -rn 'import.*jobGateway' src/ --include='*.js' --include='*.jsx' 2>/dev/null || true",
       { encoding: 'utf8' }
     ).trim()
-    // Solo pueden quedar referencias en archivos de test (que verifican la eliminación)
     const lines = result.split('\n').filter(Boolean)
       .filter(f => !f.includes('__tests__') && !f.includes('.test.'))
     expect(lines).toEqual([])

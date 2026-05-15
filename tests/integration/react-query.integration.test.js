@@ -14,10 +14,10 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useJobStatus, useStartJob } from '@hooks/useJobs'
 import { useAuthUser, useLogin, useLogout } from '@hooks/useIdentity'
-import jobService from '@api/jobGateway'
+import reportsService from '@api/reportsGateway'
 import authService from '@api/authGateway'
 
-jest.mock('@api/jobGateway')
+jest.mock('@api/reportsGateway')
 jest.mock('@api/authGateway')
 
 describe('React Query Integration Tests', () => {
@@ -54,7 +54,7 @@ describe('React Query Integration Tests', () => {
         error: null,
       }
 
-      jobService.status.mockResolvedValue(mockJob)
+      reportsService.getExportJobDetail.mockResolvedValue(mockJob)
 
       // First hook instance
       const { result: result1 } = renderHook(() => useJobStatus('job-123'), {
@@ -65,7 +65,7 @@ describe('React Query Integration Tests', () => {
         expect(result1.current.isSuccess).toBe(true)
       })
 
-      expect(jobService.status).toHaveBeenCalledTimes(1)
+      expect(reportsService.getExportJobDetail).toHaveBeenCalledTimes(1)
 
       // Second hook instance (should use cache)
       const { result: result2 } = renderHook(() => useJobStatus('job-123'), {
@@ -77,7 +77,7 @@ describe('React Query Integration Tests', () => {
       expect(result2.current.isSuccess).toBe(true)
 
       // Should NOT have called service again
-      expect(jobService.status).toHaveBeenCalledTimes(1)
+      expect(reportsService.getExportJobDetail).toHaveBeenCalledTimes(1)
     })
 
     it('should treat different jobIds as different cache entries', async () => {
@@ -97,7 +97,7 @@ describe('React Query Integration Tests', () => {
         error: null,
       }
 
-      jobService.status
+      reportsService.getExportJobDetail
         .mockResolvedValueOnce(mockJob1)
         .mockResolvedValueOnce(mockJob2)
 
@@ -114,7 +114,7 @@ describe('React Query Integration Tests', () => {
         expect(result2.current.isSuccess).toBe(true)
       })
 
-      expect(jobService.status).toHaveBeenCalledTimes(2)
+      expect(reportsService.getExportJobDetail).toHaveBeenCalledTimes(2)
       expect(result1.current.data.jobId).toBe('job-123')
       expect(result2.current.data.jobId).toBe('job-456')
     })
@@ -172,8 +172,8 @@ describe('React Query Integration Tests', () => {
         eta: 60,
       }
 
-      jobService.status.mockResolvedValueOnce(initialJob)
-      jobService.start.mockResolvedValue(startedJob)
+      reportsService.getExportJobDetail.mockResolvedValueOnce(initialJob)
+      reportsService.exportReport.mockResolvedValue(startedJob)
 
       // First fetch job status
       const { result: queryResult } = renderHook(() => useJobStatus('job-123'), {
@@ -184,7 +184,7 @@ describe('React Query Integration Tests', () => {
         expect(queryResult.current.isSuccess).toBe(true)
       })
 
-      const callsBeforeMutation = jobService.status.mock.calls.length
+      const callsBeforeMutation = reportsService.getExportJobDetail.mock.calls.length
 
       // Start a new job (mutation)
       const { result: mutationResult } = renderHook(() => useStartJob(), {
@@ -263,7 +263,7 @@ describe('React Query Integration Tests', () => {
         error: null,
       }
 
-      jobService.status.mockResolvedValue(mockJob)
+      reportsService.getExportJobDetail.mockResolvedValue(mockJob)
 
       const { result } = renderHook(() => useJobStatus('job-123'), {
         wrapper,
@@ -278,7 +278,7 @@ describe('React Query Integration Tests', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(jobService.status).toHaveBeenCalled()
+      expect(reportsService.getExportJobDetail).toHaveBeenCalled()
     })
   })
 
@@ -356,8 +356,8 @@ describe('React Query Integration Tests', () => {
       }
 
       authService.login.mockResolvedValue(mockUser)
-      jobService.start.mockResolvedValue(startedJob)
-      jobService.status.mockResolvedValue(jobStatus)
+      reportsService.exportReport.mockResolvedValue(startedJob)
+      reportsService.getExportJobDetail.mockResolvedValue(jobStatus)
 
       // Step 1: Login
       const { result: loginResult } = renderHook(() => useLogin(), { wrapper })

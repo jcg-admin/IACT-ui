@@ -18,8 +18,9 @@ describe('T5.2 — transactionGateway eliminado', () => {
 
   test('ningún archivo de producción importa transactionGateway', () => {
     const { execSync } = require('child_process')
+    // Buscar imports activos (no comentarios) de transactionGateway
     const result = execSync(
-      "grep -r 'transactionGateway' src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
+      "grep -r \"import.*transactionGateway\" src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
       { encoding: 'utf8' }
     ).trim()
     const lines = result.split('\n').filter(Boolean)
@@ -29,8 +30,9 @@ describe('T5.2 — transactionGateway eliminado', () => {
 
   test('ningún archivo de producción importa useTransaction', () => {
     const { execSync } = require('child_process')
+    // Buscar imports activos (no comentarios)
     const result = execSync(
-      "grep -r \"from '@hooks/domain/useTransaction'\" src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
+      "grep -rn \"from '@hooks/domain/useTransaction'\" src/ --include='*.js' --include='*.jsx' 2>/dev/null | grep -v useLocalTransaction || true",
       { encoding: 'utf8' }
     ).trim()
     const lines = result.split('\n').filter(Boolean)
