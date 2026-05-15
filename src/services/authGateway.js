@@ -290,6 +290,23 @@ async function revokeSession(sessionId) {
   return response
 }
 
+
+async function getOwnSessions() {
+  return apiService.get('/api/auth/sessions/own/')
+}
+
+async function closeSession(sessionId) {
+  return apiService.post(`/api/auth/sessions/${sessionId}/close/`)
+}
+
+async function closeAllSessions() {
+  return apiService.post('/api/auth/sessions/close-all/')
+}
+
+async function getMyMenu() {
+  return apiService.get('/api/me/menu/')
+}
+
 const authService = {
   login,
   logout,
@@ -301,7 +318,11 @@ const authService = {
   getActiveSessions,
   getSessions,
   revokeSession,
+  getOwnSessions,
+  closeSession,
+  closeAllSessions,
+  getMyMenu,
 }
 
 export default authService
-export { login, logout, getCurrentUser, register, verifyToken, resetPassword, changePassword, getActiveSessions, getSessions, revokeSession }
+export { login, logout, getCurrentUser, register, verifyToken, resetPassword, changePassword, getActiveSessions, getSessions, revokeSession, getOwnSessions, closeSession, closeAllSessions, getMyMenu }
