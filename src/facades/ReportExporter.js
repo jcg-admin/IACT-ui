@@ -12,7 +12,7 @@
  * Uses: exportService, notification system
  */
 
-import exportService from '@api/exportGateway'
+import exportService from '@utils/exportUtils'
 import { getNotificationService } from '@api/notificationGateway'
 
 class ReportExporter {

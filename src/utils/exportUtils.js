@@ -1,17 +1,17 @@
 /**
- * Export Service - Professional data export to Excel and PDF
- * 
- * Provides utilities to export data to multiple formats:
- * - Excel (.xlsx) - Using ExcelJS
- * - PDF (.pdf) - Using jsPDF + html2canvas
- * 
- * Supports:
- * ✅ Table data export
- * ✅ Custom styling (colors, fonts, borders)
- * ✅ Headers and footers
- * ✅ Auto-sizing columns
- * ✅ Professional formatting
- * ✅ Error handling
+ * exportUtils.js — IACT v2 (T5.4: movido de services/exportGateway.js)
+ *
+ * Utilidad client-side para exportación a Excel y PDF.
+ * NO es un gateway de API — usa ExcelJS y jsPDF en el navegador.
+ *
+ * Proporciona:
+ *   exportToExcel(data, options)     → XLSX via ExcelJS
+ *   exportTableToPDF(element, opts)  → PDF via jsPDF + html2canvas
+ *   exportToCSV(data, options)       → CSV (texto plano)
+ *   validateExportData(data, columns)→ validación previa
+ *   getFileNameWithTimestamp(name, ext) → nombre con timestamp
+ *
+ * Importar desde: @utils/exportUtils (no desde @api/exportGateway)
  */
 
 import ExcelJS from 'exceljs'

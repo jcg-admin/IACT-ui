@@ -22,6 +22,7 @@ module.exports = {
     '^@api/(.*)$': '<rootDir>/src/services/$1',
     '^@mocks/(.*)$': '<rootDir>/src/mocks/$1',
     '^@shared/(.*)$': '<rootDir>/src/utils/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@store/(.*)$': '<rootDir>/src/redux/$1',
     '^@screens/(.*)$': '<rootDir>/src/pages/$1',
     '^@router/(.*)$': '<rootDir>/src/router/$1',
