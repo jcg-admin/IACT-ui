@@ -1,449 +1,241 @@
 /**
- * Frontend Access Service
- * IACT v4.0 - Access Module
- * API client para endpoints de control de acceso
+ * accessGateway.js — IACT v2 (migrado de fetch() v4.0 a apiService)
+ *
+ * Dominio Control de Acceso / RBAC:
+ *   Autenticación vía httpOnly cookies — gestionada por apiClient.js interceptor.
+ *   NO usar localStorage ni fetch() directo.
+ *
+ * URLs basadas en schema OpenAPI IACT-api (drf-spectacular Errors: 0).
+ *
+ * ELIMINADOS (sin endpoint en IACT-api):
+ *   getSegments()           → /access/segments no existe
+ *   assignSegment()         → /access/segments/assign no existe
+ *   validateGroupAssignment → /access/groups/{id}/validate-for-user no existe
+ *   getGroupCascadeImpact   → /access/groups/{id}/cascade-impact no existe
  */
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+import apiService from './apiClient'
 
 class AccessService {
-    getAuthHeaders() {
-        return {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-            'Content-Type': 'application/json',
-        };
-    }
 
-    /**
-     * Obtener todas las funciones disponibles
-     */
-    async getAllFunctions() {
-        const response = await fetch(`${API_BASE_URL}/access/functions`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
+  // ── Funciones ────────────────────────────────────────────────────────────
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch functions');
-        }
+  /** GET /api/access/functions/ — catálogo de funciones (ACC-003) */
+  async getAllFunctions(params = {}) {
+    return apiService.get('/api/access/functions/', { params })
+  }
 
-        return response.json();
-    }
+  /** GET /api/access/permissions/{userId}/ — permisos del usuario (ACC-003) */
+  async getUserPermissions(userId) {
+    return apiService.get(`/api/access/permissions/${userId}/`)
+  }
 
-    /**
-     * UC-ACC-03: Obtener permisos del usuario
-     */
-    async getUserPermissions(userId) {
-        const response = await fetch(`${API_BASE_URL}/access/permissions/${userId}`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
+  /** GET /api/access/users/{userId}/effective-permissions/ — permisos efectivos (UC_ACC_03) */
+  async getEffectivePermissions(userId) {
+    return apiService.get(`/api/access/users/${userId}/effective-permissions/`)
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch user permissions');
-        }
+  /** GET /api/access/permissions/verify/ — verificar permiso de usuario (UC_PERM_07) */
+  async verifyPermission(userId, functionCode) {
+    return apiService.get('/api/access/permissions/verify/', {
+      params: { user_id: userId, function_code: functionCode },
+    })
+  }
 
-        return response.json();
-    }
+  // ── Asignación de funciones (UC_ACC_01 / UC_ACC_02) ──────────────────────
 
-    /**
-     * UC-ACC-01: Asignar funciones a un usuario (operación bulk).
-     * POST /users/{userId}/functions/
-     */
-    async assignFunctions(userId, functionIds, expiresAt = null) {
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/functions/`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({
-                function_ids: functionIds,
-                expires_at: expiresAt,
-            }),
-        });
+  /**
+   * POST /api/access/users/{userId}/functions/assign/ — asignar funciones (bulk)
+   * Preserva compatibilidad con código que llama assignFunctions(userId, ids, expiresAt).
+   */
+  async assignFunctions(userId, functionIds, expiresAt = null) {
+    return apiService.post(`/api/access/users/${userId}/functions/assign/`, {
+      function_ids: functionIds,
+      expires_at: expiresAt,
+    })
+  }
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to assign functions');
-        }
+  /**
+   * DELETE /api/access/users/{userId}/functions/revoke/ — revocar funciones (bulk)
+   */
+  async revokeFunctions(userId, functionIds, revokeReason) {
+    return apiService.delete(`/api/access/users/${userId}/functions/revoke/`, {
+      data: { function_ids: functionIds, revoke_reason: revokeReason },
+    })
+  }
 
-        return response.json();
-    }
+  // ── AGRs / Grupos de acceso ───────────────────────────────────────────────
 
-    /**
-     * UC-ACC-02: Revocar funciones de un usuario (operación bulk).
-     * DELETE /users/{userId}/functions/
-     */
-    async revokeFunctions(userId, functionIds, revokeReason) {
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/functions/`, {
-            method: 'DELETE',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({
-                function_ids: functionIds,
-                revoke_reason: revokeReason,
-            }),
-        });
+  /** GET /api/access/access-groups/ — listar AGRs */
+  async getFunctionGroups(params = {}) {
+    return apiService.get('/api/access/access-groups/', { params })
+  }
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to revoke functions');
-        }
+  /** GET /api/access/access-groups/{id}/ — detalle de AGR (incluye funciones) */
+  async getGroupFunctions(groupId) {
+    return apiService.get(`/api/access/access-groups/${groupId}/`)
+  }
 
-        return response.json();
-    }
+  /** POST /api/access/access-groups/ — crear AGR (UC_PERM_05) */
+  async createGroup(data) {
+    return apiService.post('/api/access/access-groups/', data)
+  }
 
-    /**
-     * Valida reglas de separación de funciones antes de asignar (UC-043 / CNST-005).
-     * POST /access/separation-rules/validate
-     */
-    async validateSeparationRules(userId, functionId) {
-        const response = await fetch(`${API_BASE_URL}/access/separation-rules/validate`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({
-                userId,
-                functionId,
-            }),
-        });
+  /** PATCH /api/access/access-groups/{id}/ — actualizar AGR */
+  async updateGroup(id, data) {
+    return apiService.patch(`/api/access/access-groups/${id}/`, data)
+  }
 
-        if (!response.ok) {
-            throw new Error('Separation rules validation failed');
-        }
+  /** DELETE /api/access/access-groups/{id}/ — retirar AGR (soft-delete) */
+  async retireGroup(id, retireReason) {
+    return apiService.delete(`/api/access/access-groups/${id}/`, {
+      data: { retire_reason: retireReason },
+    })
+  }
 
-        return response.json();
-    }
+  /** POST /api/access/access-groups/{groupId}/functions/ — asignar funciones a AGR */
+  async assignFunctionsToGroup(groupId, functionIds, changeReason) {
+    return apiService.post(`/api/access/access-groups/${groupId}/functions/`, {
+      function_ids: functionIds,
+      change_reason: changeReason,
+    })
+  }
 
-    /**
-     * UC-ACC-09: Obtener auditoría de cambios de acceso
-     */
-    async getAccessAudit(userId = null) {
-        const path = userId != null ? `/access/audit/${userId}` : '/access/audit/';
-        const response = await fetch(`${API_BASE_URL}${path}`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
+  // ── Asignación de AGR a usuario ───────────────────────────────────────────
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch audit log');
-        }
+  /** POST /api/access/users/{userId}/agr/ — asignar AGR a usuario (UC_ACC_04) */
+  async assignAccessGroup(userId, agrId, expiresAt = null) {
+    return apiService.post(`/api/access/users/${userId}/agr/`, {
+      agr_id: agrId,
+      expires_at: expiresAt,
+    })
+  }
 
-        return response.json();
-    }
+  /** DELETE /api/access/users/{userId}/agr/{agrId}/ — revocar AGR de usuario (UC_PERM_02) */
+  async revokeAccessGroup(userId, agrId) {
+    return apiService.delete(`/api/access/users/${userId}/agr/${agrId}/`)
+  }
 
-    /**
-     * UC-AUD-03: Exportar auditoría de forma asíncrona.
-     * POST /audit/export/ — retorna 202 + { job_id } (NO blob).
-     * El archivo se descarga por separado cuando el job completa.
-     */
-    async exportAuditLog(filters, period, format, includeArchive) {
-        const response = await fetch(`${API_BASE_URL}/audit/export/`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({
-                filters,
-                period,
-                format,
-                include_archive: includeArchive,
-            }),
-        });
+  /** POST /api/access/groupers/assign — asignar agrupador a usuario (UC_ACC_04) */
+  async assignGrouper(userId, agrId) {
+    return apiService.post('/api/access/groupers/assign', {
+      user_id: userId,
+      agr_id: agrId,
+    })
+  }
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to request audit export');
-        }
+  /** GET /api/access/groupers/ — listar agrupadores (UC_PERM_05) */
+  async getGroupers(params = {}) {
+    return apiService.get('/api/access/groupers/', { params })
+  }
 
-        return response.json();
-    }
+  // ── Reglas de separación de funciones (SoD) ───────────────────────────────
 
-    /**
-     * UC-ACC-04: Asignar grupo de acceso (AGR) a un usuario.
-     * POST /users/{userId}/access-groups/
-     */
-    async assignAccessGroup(userId, agrId, expiresAt = null) {
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/access-groups/`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({
-                agr_id: agrId,
-                expires_at: expiresAt,
-            }),
-        });
+  /** GET /api/access/separation-rules/ — listar reglas SoD */
+  async getSeparationRules(params = {}) {
+    return apiService.get('/api/access/separation-rules/', { params })
+  }
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to assign access group');
-        }
+  /** GET /api/access/separation-rules/{id}/ — detalle de regla */
+  async getSeparationRuleDetail(id) {
+    return apiService.get(`/api/access/separation-rules/${id}/`)
+  }
 
-        return response.json();
-    }
+  /** POST /api/access/separation-rules/ — crear regla SoD */
+  async createSeparationRule(data) {
+    return apiService.post('/api/access/separation-rules/', data)
+  }
 
-    /**
-     * UC-PERM-02: Revocar grupo de acceso de un usuario.
-     * DELETE /users/{userId}/access-groups/{agrId}
-     */
-    async revokeAccessGroup(userId, agrId) {
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/access-groups/${agrId}`, {
-            method: 'DELETE',
-            headers: this.getAuthHeaders(),
-        });
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.message || 'Failed to revoke access group');
-        }
-        return response.json().catch(() => ({}));
-    }
+  /** PATCH /api/access/separation-rules/{id}/ — actualizar regla */
+  async updateSeparationRule(id, data) {
+    return apiService.patch(`/api/access/separation-rules/${id}/`, data)
+  }
 
-    /**
-     * Obtener segmentos
-     */
-    async getSegments() {
-        const response = await fetch(`${API_BASE_URL}/access/segments`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
+  /** DELETE /api/access/separation-rules/{id}/ — eliminar regla */
+  async deleteSeparationRule(id) {
+    return apiService.delete(`/api/access/separation-rules/${id}/`)
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch segments');
-        }
+  /**
+   * POST /api/access/separation-rules/validate — validar conflictos SoD antes de asignar.
+   * Preserva firma: validateSeparationRules(userId, functionId)
+   */
+  async validateSeparationRules(userId, functionId) {
+    return apiService.post('/api/access/separation-rules/validate', {
+      user_id: userId,
+      function_id: functionId,
+    })
+  }
 
-        return response.json();
-    }
+  // ── Permisos excepcionales ────────────────────────────────────────────────
 
-    /**
-     * Asignar segmento (deferred — sin spec UC verificada)
-     */
-    async assignSegment(userId, segmentId) {
-        const response = await fetch(`${API_BASE_URL}/access/segments/assign`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({
-                userId,
-                segmentId,
-            }),
-        });
+  /**
+   * POST /api/access/users/{userId}/exceptional-permissions/ — conceder (UC_ACC_08)
+   */
+  async grantExceptionalPermission(userId, payload) {
+    return apiService.post(
+      `/api/access/users/${userId}/exceptional-permissions/`,
+      payload
+    )
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to assign segment');
-        }
+  /**
+   * GET /api/access/users/{userId}/exceptional-permissions/ — listar excepcionales
+   */
+  async getExceptionalPermissions(userId) {
+    return apiService.get(`/api/access/users/${userId}/exceptional-permissions/`)
+  }
 
-        return response.json();
-    }
+  /**
+   * GET /api/access/users/{userId}/exceptional-permissions/preview/ — preview sin persistir (UC_PERM_03)
+   */
+  async previewExceptionalPermission(userId, params = {}) {
+    return apiService.get(
+      `/api/access/users/${userId}/exceptional-permissions/preview/`,
+      { params }
+    )
+  }
 
-    // Gestión de grupos/AGRs
+  /**
+   * DELETE /api/access/users/{userId}/exceptional-permissions/{permId}/ — revocar (UC_PERM_04)
+   */
+  async revokeExceptionalPermission(userId, permissionId, revokeReason) {
+    return apiService.delete(
+      `/api/access/users/${userId}/exceptional-permissions/${permissionId}/`,
+      { data: { revoke_reason: revokeReason } }
+    )
+  }
 
-    /**
-     * Crear grupo de acceso (AGR).
-     * POST /api/access/groups/
-     */
-    async createGroup(data) {
-        const response = await fetch(`${API_BASE_URL}/access/groups/`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify(data),
-        });
+  // ── Auditoría de acceso ───────────────────────────────────────────────────
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to create group');
-        }
+  /**
+   * GET /api/access/audit/ — listar eventos de cambios de acceso (UC_ACC_09).
+   * Compatibilidad: getAccessAudit(userId) filtra por target_user_id.
+   */
+  async getAccessAudit(userId = null) {
+    const params = userId != null ? { target_user_id: userId } : {}
+    return apiService.get('/api/access/audit/', { params })
+  }
 
-        return response.json();
-    }
+  /**
+   * POST /api/audit/export/ — exportar auditoría async → job_id.
+   * NOTA: pertenece al dominio /api/audit/, no /api/access/audit/.
+   * Preservado aquí por compatibilidad con código existente.
+   */
+  async exportAuditLog(filters, period, format, includeArchive) {
+    return apiService.post('/api/audit/export/', {
+      filters,
+      period,
+      format,
+      include_archive: includeArchive,
+    })
+  }
 
-    /**
-     * Actualizar grupo de acceso (AGR).
-     * PATCH /api/access/groups/{id}/
-     */
-    async updateGroup(id, data) {
-        const response = await fetch(`${API_BASE_URL}/access/groups/${id}/`, {
-            method: 'PATCH',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify(data),
-        });
+  // ── Menú dinámico ────────────────────────────────────────────────────────
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to update group');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Retirar grupo de acceso (soft-delete a state=RETIRED).
-     * DELETE /api/access/groups/{id}/ con { retire_reason }
-     */
-    async retireGroup(id, retireReason) {
-        const response = await fetch(`${API_BASE_URL}/access/groups/${id}/`, {
-            method: 'DELETE',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({ retire_reason: retireReason }),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to retire group');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Asignar funciones a un grupo (AGR).
-     * POST /api/access/groups/{groupId}/functions/
-     */
-    async assignFunctionsToGroup(groupId, functionIds, change_reason) {
-        const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/functions/`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({ function_ids: functionIds, change_reason }),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to assign functions to group');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener funciones de un grupo (AGR).
-     * GET /api/access/groups/{groupId}/functions/
-     */
-    async getGroupFunctions(groupId) {
-        const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/functions/`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch group functions');
-        }
-
-        return response.json();
-    }
-
-    /**
-     * Obtener todos los grupos de acceso (AGR).
-     * GET /api/access/groups/
-     */
-    async getFunctionGroups() {
-        const response = await fetch(`${API_BASE_URL}/access/groups/`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch function groups');
-        }
-
-        return response.json();
-    }
-
-    // uc-adm-01: separation rules CRUD (mock-first — backend endpoint pending)
-
-    async getSeparationRules() {
-        const response = await fetch(`${API_BASE_URL}/access/separation-rules`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
-        if (!response.ok) throw new Error('Failed to fetch separation rules');
-        return response.json();
-    }
-
-    async createSeparationRule(data) {
-        const response = await fetch(`${API_BASE_URL}/access/separation-rules`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error('Failed to create separation rule');
-        return response.json();
-    }
-
-    async updateSeparationRule(id, data) {
-        const response = await fetch(`${API_BASE_URL}/access/separation-rules/${id}`, {
-            method: 'PUT',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error('Failed to update separation rule');
-        return response.json();
-    }
-
-    async deleteSeparationRule(id) {
-        const response = await fetch(`${API_BASE_URL}/access/separation-rules/${id}`, {
-            method: 'DELETE',
-            headers: this.getAuthHeaders(),
-        });
-        if (!response.ok) throw new Error('Failed to delete separation rule');
-        return response.json();
-    }
-
-    // UC_PERM_03: conceder permiso excepcional
-    async grantExceptionalPermission(userId, payload) {
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/exceptional-permissions/`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify(payload),
-        });
-        if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            const error = new Error(err.message || 'Failed to grant exceptional permission');
-            error.statusCode = response.status;
-            error.detail = err.detail || null;
-            throw error;
-        }
-        return response.json();
-    }
-
-    // UC-015: obtener permisos excepcionales activos de un usuario
-    async getExceptionalPermissions(userId) {
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/exceptional-permissions/`, {
-            method: 'GET',
-            headers: this.getAuthHeaders(),
-        });
-        if (!response.ok) throw new Error('Failed to fetch exceptional permissions');
-        return response.json();
-    }
-
-    // UC-015: revocar permiso excepcional
-    async revokeExceptionalPermission(userId, permissionId, revoke_reason) {
-        const response = await fetch(
-            `${API_BASE_URL}/users/${userId}/exceptional-permissions/${permissionId}/`,
-            {
-                method: 'DELETE',
-                headers: this.getAuthHeaders(),
-                body: JSON.stringify({ revoke_reason }),
-            }
-        );
-        if (!response.ok) throw new Error('Failed to revoke exceptional permission');
-        return response.json();
-    }
-
-    // GAP-2: validar asignación de grupo antes del POST
-    async validateGroupAssignment(userId, groupId) {
-        const response = await fetch(`${API_BASE_URL}/access/groups/${groupId}/validate-for-user`, {
-            method: 'POST',
-            headers: this.getAuthHeaders(),
-            body: JSON.stringify({ user_id: userId }),
-        });
-        if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            throw new Error(err.message || 'Failed to validate group assignment');
-        }
-        return response.json();
-    }
-
-    // GAP-5: preview de impacto cascade al cambiar composición de un grupo
-    async getGroupCascadeImpact(groupId, addFunctionIds) {
-        const ids = Array.isArray(addFunctionIds) ? addFunctionIds.join(',') : addFunctionIds;
-        const response = await fetch(
-            `${API_BASE_URL}/access/groups/${groupId}/cascade-impact?add_function_ids=${ids}`,
-            { method: 'GET', headers: this.getAuthHeaders() }
-        );
-        if (!response.ok) throw new Error('Failed to fetch cascade impact');
-        return response.json();
-    }
+  /** GET /api/access/my-modules/ — módulos accesibles del usuario (UC_PERM_08) */
+  async getMyModules() {
+    return apiService.get('/api/access/my-modules/')
+  }
 }
 
-export default new AccessService();
+export default new AccessService()
