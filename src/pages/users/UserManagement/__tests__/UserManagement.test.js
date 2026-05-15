@@ -12,8 +12,23 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useDispatch: () => jest.fn(),
   useSelector: (selector) => selector({
+    user:   { users: [
+      { id: '1', username: 'john_doe', email: 'john@test.com', first_name: 'John', last_name: 'Doe', access_groups: [], status: 'Active', created_at: '2024-01-15T10:30:00Z' },
+      { id: '2', username: 'jane_smith', email: 'jane@test.com', first_name: 'Jane', last_name: 'Smith', access_groups: [], status: 'Active', created_at: '2024-02-20T14:45:00Z' },
+    ], loading: false, error: null, total: 2, userDetail: null, actionLoading: false },
     access: { groups: [], functions: [], loading: false, error: null },
   }),
+}))
+
+jest.mock('../../../../redux/slices/user', () => ({
+  fetchUsers:     jest.fn(() => ({ type: 'users/fetchUsers' })),
+  createUser:     jest.fn(() => ({ type: 'users/createUser' })),
+  deactivateUser: jest.fn(() => ({ type: 'users/deactivateUser' })),
+  blockUser:      jest.fn(() => ({ type: 'users/blockUser' })),
+  unblockUser:    jest.fn(() => ({ type: 'users/unblockUser' })),
+  patchUser:      jest.fn(() => ({ type: 'users/patchUser' })),
+  selectUsers:        (s) => s.user?.users ?? [],
+  selectUsersLoading: (s) => s.user?.loading ?? false,
 }))
 
 jest.mock('../../../../redux/slices/access', () => ({

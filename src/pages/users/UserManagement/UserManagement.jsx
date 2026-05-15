@@ -11,7 +11,10 @@ import userAuth from '../../../facades/UserIdentity'
 import reportExporter from '../../../facades/ReportExporter'
 import { getNotificationService } from '@api/notificationGateway'
 import { assignGroupToUser, revokeGroupFromUser, selectGroups } from '../../../redux/slices/access'
-import userGateway from '../../../services/userGateway'
+import {
+  fetchUsers, createUser, deactivateUser, blockUser, unblockUser,
+  selectUsers, selectUsersLoading,
+} from '../../../redux/slices/user'
 import GroupAssignModal from '../../../components/access/GroupAssignModal'
 import ConfirmModal from '../../../components/shared/ConfirmModal'
 import UserList from './UserList'
@@ -20,11 +23,9 @@ import './UserManagement.scss'
 
 export default function UserManagement() {
   const dispatch = useDispatch()
-  const groups = useSelector(selectGroups)
-
-  // State
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
+  const groups     = useSelector(selectGroups)
+  const users      = useSelector(selectUsers)
+  const loading    = useSelector(selectUsersLoading)
   const [showForm, setShowForm] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -33,91 +34,27 @@ export default function UserManagement() {
 
   const notify = getNotificationService()
 
-  // Load users on mount
+  // Load users on mount via Redux
   useEffect(() => {
-    loadUsers()
-  }, [])
+    dispatch(fetchUsers())
+  }, [dispatch])
 
   /**
-   * Load users list
-   * In production, would call a service
-   */
-  const loadUsers = async () => {
-    try {
-      setLoading(true)
-      
-      // Mock data - in production, call API
-      const mockUsers = [
-        {
-          id: '1',
-          username: 'john_doe',
-          email: 'john@example.com',
-          first_name: 'John',
-          last_name: 'Doe',
-          access_groups: ['AGR-010'],
-          status: 'Active',
-          created_at: '2024-01-15T10:30:00Z'
-        },
-        {
-          id: '2',
-          username: 'jane_smith',
-          email: 'jane@example.com',
-          first_name: 'Jane',
-          last_name: 'Smith',
-          access_groups: ['AGR-001'],
-          status: 'Active',
-          created_at: '2024-02-20T14:45:00Z'
-        },
-        {
-          id: '3',
-          username: 'bob_wilson',
-          email: 'bob@example.com',
-          first_name: 'Bob',
-          last_name: 'Wilson',
-          access_groups: [],
-          status: 'Inactive',
-          created_at: '2024-03-10T09:15:00Z'
-        }
-      ]
-
-      setUsers(mockUsers)
-      setLoading(false)
-    } catch (error) {
-      notify.error(`Failed to load users: ${error.message}`)
-      setLoading(false)
-    }
-  }
-
-  /**
-   * Handle create new user
+   * Handle create new user — UC_USR_01 → POST /api/users/create/
    */
   const handleCreateUser = async (userData) => {
-    try {
-      // Use UserIdentity facade to create account
-      const newUser = await userAuth.createAccount({
-        username: userData.username,
-        password: userData.password,
-        email: userData.email,
-        first_name: userData.firstName,
-        last_name: userData.lastName
-      })
-
-      // Add to list
-      setUsers([...users, {
-        id: newUser.user_id,
-        username: newUser.username,
-        email: newUser.email,
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        access_groups: [],
-        status: 'Active',
-        created_at: new Date().toISOString()
-      }])
-
-      notify.success(`User ${userData.username} created successfully`)
+    const result = await dispatch(createUser({
+      username:   userData.username,
+      password:   userData.password,
+      email:      userData.email,
+      first_name: userData.firstName,
+      last_name:  userData.lastName,
+    }))
+    if (!result.error) {
+      notify.success(`Usuario ${userData.username} creado correctamente`)
       setShowForm(false)
-    } catch (error) {
-      notify.error(`Failed to create user: ${error.message}`)
+    } else {
+      notify.error(`Error al crear usuario: ${result.payload?.message ?? 'Error desconocido'}`)
     }
   }
 
@@ -130,50 +67,46 @@ export default function UserManagement() {
   }
 
   /**
-   * Handle update user
+   * Handle update user — UC_USR_03 → PATCH /api/users/{id}/
    */
   const handleUpdateUser = async (userData) => {
-    try {
-      // In production, call user update API
-      setUsers(users.map(u => 
-        u.id === selectedUser.id 
-          ? {
-              ...u,
-              email: userData.email,
-              first_name: userData.firstName,
-              last_name: userData.lastName,
-              state: userData.state
-            }
-          : u
-      ))
-
-      notify.success(`User ${userData.username} updated successfully`)
+    if (!selectedUser) return
+    const result = await dispatch(
+      require('../../../redux/slices/user').patchUser({
+        id:   selectedUser.id,
+        data: {
+          email:      userData.email,
+          first_name: userData.firstName,
+          last_name:  userData.lastName,
+        },
+      })
+    )
+    if (!result.error) {
+      notify.success(`Usuario ${userData.username} actualizado correctamente`)
       setShowForm(false)
       setSelectedUser(null)
-    } catch (error) {
-      notify.error(`Failed to update user: ${error.message}`)
+    } else {
+      notify.error(`Error al actualizar: ${result.payload?.message ?? 'Error desconocido'}`)
     }
   }
 
-  // UC_USR_05: bloquear usuario
+  // UC_USR_05: bloquear usuario → dispatch thunk
   const handleBlockUser = async (userId) => {
-    try {
-      await userGateway.blockUser(userId)
-      setUsers(users.map(u => u.id === userId ? { ...u, state: 'BLOCKED' } : u))
+    const result = await dispatch(blockUser(userId))
+    if (!result.error) {
       notify.success('Usuario bloqueado correctamente')
-    } catch (error) {
-      notify.error(`Error al bloquear usuario: ${error.message}`)
+    } else {
+      notify.error(`Error al bloquear usuario: ${result.payload?.message ?? 'Error'}`)
     }
   }
 
-  // UC_USR_06: desbloquear usuario
+  // UC_USR_06: desbloquear usuario → dispatch thunk
   const handleUnblockUser = async (userId) => {
-    try {
-      await userGateway.unblockUser(userId)
-      setUsers(users.map(u => u.id === userId ? { ...u, state: 'ACTIVE' } : u))
+    const result = await dispatch(unblockUser(userId))
+    if (!result.error) {
       notify.success('Usuario desbloqueado correctamente')
-    } catch (error) {
-      notify.error(`Error al desbloquear usuario: ${error.message}`)
+    } else {
+      notify.error(`Error al desbloquear usuario: ${result.payload?.message ?? 'Error'}`)
     }
   }
 
@@ -187,11 +120,11 @@ export default function UserManagement() {
   const handleConfirmDeactivate = async () => {
     const { userId } = deactivateModal
     setDeactivateModal({ isOpen: false, userId: null })
-    try {
-      setUsers(users.map(u => u.id === userId ? { ...u, state: 'ELIMINATED' } : u))
+    const result = await dispatch(deactivateUser(userId))
+    if (!result.error) {
       notify.success('Usuario dado de baja correctamente')
-    } catch (error) {
-      notify.error(`Error al dar de baja: ${error.message}`)
+    } else {
+      notify.error(`Error al dar de baja: ${result.payload?.message ?? 'Error'}`)
     }
   }
 
