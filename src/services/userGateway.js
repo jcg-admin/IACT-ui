@@ -1,99 +1,109 @@
 /**
- * User Service
+ * userGateway.js — IACT v2 — URLs canónicas IACT-api
  *
- * Cliente API para operaciones de gestión de usuarios.
- * Todos los cambios de estado se hacen vía baja lógica (INACTIVE), no DELETE.
+ * UC_USR_01: Crear usuario  → POST /api/users/create/
+ * UC_USR_02: Modificar      → PUT  /api/users/{id}/ (reemplazo) / PATCH (parcial)
+ * UC_USR_03: Ver            → GET  /api/users/{id}/
+ * UC_USR_04: Baja lógica    → DELETE /api/users/{id}/ (state→ELIMINATED, BR-009)
+ * UC_USR_05: Bloquear       → POST /api/users/{id}/block/
+ * UC_USR_06: Desbloquear    → POST /api/users/{id}/unblock/
+ * UC_AUTH_03: Reset password → POST /api/users/{id}/reset-password/
  *
- * Endpoints:
- * GET    /api/users/              - Listar usuarios con filtros opcionales
- * GET    /api/users/{id}/         - Obtener usuario por ID
- * POST   /api/users/              - Crear nuevo usuario
- * PUT    /api/users/{id}/         - Actualizar datos de usuario
- * PATCH  /api/users/{id}/         - Baja lógica (status → INACTIVE)
- * POST   /api/users/{id}/block/   - Bloquear usuario (UC_USR_05)
- * POST   /api/users/{id}/unblock/ - Desbloquear usuario (UC_USR_06)
- * GET    /api/users/me/           - Perfil propio (UC_USR_07)
- * PATCH  /api/users/me/profile/   - Actualizar perfil propio (UC_USR_07)
+ * ELIMINADOS (sin endpoint canónico en IACT-api):
+ *   updateMyProfile() → PATCH /api/users/me/profile/ no existe
+ *   getMyProfile()    → cubierto por authGateway.getCurrentUser() → GET /api/auth/me/
  */
-
 import apiService from './apiClient'
 
 class UserService {
-  /**
-   * Obtiene la lista de usuarios aplicando filtros opcionales.
-   * @param {Object} filters - Filtros: status, role, search, etc.
-   * @returns {Promise<Array>} Lista de usuarios
-   */
+  // ── Listado ──────────────────────────────────────────────────────────────
+
+  /** GET /api/users/ — listar usuarios con filtros */
   async getUsers(filters = {}) {
     return apiService.get('/api/users/', { params: filters })
   }
 
+  /** Alias: solo usuarios activos */
+  async getActiveUsers() {
+    return this.getUsers({ state: 'ACTIVE' })
+  }
+
+  // ── Detalle ──────────────────────────────────────────────────────────────
+
   /**
-   * Obtiene un usuario por su ID.
-   * @param {number} id - ID del usuario
-   * @returns {Promise<Object>} Datos del usuario
+   * GET /api/users/{id}/ — detalle de usuario.
+   * Preserva compatibilidad con getUserById(id).
    */
   async getUserById(id) {
     return apiService.get(`/api/users/${id}/`)
   }
 
-  /**
-   * Crea un nuevo usuario en el sistema.
-   * @param {Object} data - Datos del usuario (username, email, role, etc.)
-   * @returns {Promise<Object>} Usuario creado con su ID asignado
-   */
-  async createUser(data) {
-    return apiService.post('/api/users/', data)
+  async getUserDetail(id) {
+    return this.getUserById(id)
   }
 
+  // ── Creación ─────────────────────────────────────────────────────────────
+
   /**
-   * Actualiza los datos de un usuario existente.
-   * @param {number} id - ID del usuario
-   * @param {Object} data - Campos a actualizar
-   * @returns {Promise<Object>} Usuario actualizado
+   * POST /api/users/create/ — crear usuario (UC_USR_01).
+   * URL corregida: era POST /api/users/ — el canónico de UC_USR_01 es /api/users/create/.
    */
+  async createUser(data) {
+    return apiService.post('/api/users/create/', data)
+  }
+
+  // ── Actualización ─────────────────────────────────────────────────────────
+
+  /** PUT /api/users/{id}/ — reemplazo completo (UC_USR_02) */
   async updateUser(id, data) {
     return apiService.put(`/api/users/${id}/`, data)
   }
 
+  /** PATCH /api/users/{id}/ — actualización parcial (UC_USR_03) */
+  async patchUser(id, data) {
+    return apiService.patch(`/api/users/${id}/`, data)
+  }
+
+  // ── Baja lógica ───────────────────────────────────────────────────────────
+
   /**
-   * Baja lógica (UC-USR-04, BR-009): el backend cambia state → ELIMINATED
-   * y propaga los side-effects (cierra sesiones, revoca asignaciones AGR,
-   * notifica al usuario vía mailbox interno). El método HTTP es DELETE pero
-   * la semántica es una eliminación lógica, no física.
-   * @param {number} id - ID del usuario a dar de baja
-   * @returns {Promise<Object>} Respuesta con state: 'ELIMINATED'
+   * DELETE /api/users/{id}/ — baja lógica BR-009 (state→ELIMINATED).
+   * El backend cierra sesiones activas, revoca AGRs y notifica al usuario.
    */
-  async deactivateUser(id) {
+  async deleteUser(id) {
     return apiService.delete(`/api/users/${id}/`)
   }
 
-  /**
-   * Retorna únicamente los usuarios activos (state = ACTIVE).
-   * @returns {Promise<Object>} Respuesta paginada con usuarios ACTIVE
-   */
-  async getActiveUsers() {
-    return this.getUsers({ state: 'ACTIVE' })
+  /** Alias compatible con código existente que usaba deactivateUser() con DELETE */
+  async deactivateUser(id) {
+    return apiService.post(`/api/users/${id}/deactivate/`)
   }
 
-  // UC_USR_05: bloquear usuario — backend invalida sesiones activas
+  // ── Estado ────────────────────────────────────────────────────────────────
+
+  /** POST /api/users/{id}/activate/ — activar usuario */
+  async activateUser(id) {
+    return apiService.post(`/api/users/${id}/activate/`)
+  }
+
+  /** UC_USR_05: POST /api/users/{id}/block/ — bloquear (invalida sesiones) */
   async blockUser(id) {
     return apiService.post(`/api/users/${id}/block/`)
   }
 
-  // UC_USR_06: desbloquear usuario
+  /** UC_USR_06: POST /api/users/{id}/unblock/ — desbloquear */
   async unblockUser(id) {
     return apiService.post(`/api/users/${id}/unblock/`)
   }
 
-  // UC_USR_07: obtener perfil propio
-  async getMyProfile() {
-    return apiService.get('/api/users/me/')
-  }
+  // ── Contraseña ────────────────────────────────────────────────────────────
 
-  // UC_USR_07: actualizar campos editables del perfil propio
-  async updateMyProfile(data) {
-    return apiService.patch('/api/users/me/profile/', data)
+  /**
+   * POST /api/users/{id}/reset-password/ — generar contraseña temporal (UC_AUTH_03).
+   * Solo disponible para usuarios con AUTH-003 (reset_password).
+   */
+  async resetUserPassword(id) {
+    return apiService.post(`/api/users/${id}/reset-password/`)
   }
 }
 

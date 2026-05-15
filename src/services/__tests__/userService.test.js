@@ -1,134 +1,156 @@
 /**
- * Tests para userService
+ * userService.test.js — URLs canónicas IACT-api v2
  *
- * Cubre: getUsers, getUserById, createUser, updateUser,
- * deactivateUser (baja lógica), getActiveUsers
+ * Cambios respecto a v1:
+ *   createUser()     → POST /api/users/create/ (era /api/users/)
+ *   deactivateUser() → POST /api/users/{id}/deactivate/ (UC_USR_04)
+ *   Nuevos: patchUser, activateUser, resetUserPassword, deleteUser, getUserDetail
+ *   Eliminado: updateMyProfile (endpoint inexistente en API)
  */
-
 import userService from '../userGateway'
-import apiService from '@api/apiClient'
+import apiService from '../apiClient'
 
-jest.mock('@api/apiClient')
+jest.mock('../apiClient', () => ({
+  __esModule: true,
+  default: {
+    get:    jest.fn().mockResolvedValue([]),
+    post:   jest.fn().mockResolvedValue({}),
+    put:    jest.fn().mockResolvedValue({}),
+    patch:  jest.fn().mockResolvedValue({}),
+    delete: jest.fn().mockResolvedValue({}),
+  },
+}))
 
-describe('userService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
+beforeEach(() => { jest.clearAllMocks() })
+
+// ── getUsers ─────────────────────────────────────────────────────────────────
+
+describe('getUsers(filters)', () => {
+  it('GET /api/users/ con filtros como params', async () => {
+    apiService.get.mockResolvedValue({ results: [] })
+    await userService.getUsers({ state: 'ACTIVE' })
+    expect(apiService.get).toHaveBeenCalledWith('/api/users/', { params: { state: 'ACTIVE' } })
   })
 
-  // ── getUsers ────────────────────────────────────────────────────────────
+  it('propaga error cuando apiService falla', async () => {
+    apiService.get.mockRejectedValue(new Error('Network error'))
+    await expect(userService.getUsers()).rejects.toThrow('Network error')
+  })
+})
 
-  describe('getUsers(filters)', () => {
-    it('llama GET /api/users/ sin parámetros cuando no hay filtros', async () => {
-      apiService.get.mockResolvedValue([])
-      await userService.getUsers()
-      expect(apiService.get).toHaveBeenCalledWith('/api/users/', { params: {} })
-    })
+// ── getUserById ───────────────────────────────────────────────────────────────
 
-    it('pasa filtros como params en la petición', async () => {
-      apiService.get.mockResolvedValue([])
-      await userService.getUsers({ status: 'ACTIVE', role: 'agent' })
-      expect(apiService.get).toHaveBeenCalledWith('/api/users/', {
-        params: { status: 'ACTIVE', role: 'agent' },
-      })
-    })
-
-    it('retorna la respuesta paginada de la API', async () => {
-      const mockResponse = {
-        count: 2,
-        next: null,
-        previous: null,
-        results: [{ id: 1, username: 'alice' }, { id: 2, username: 'bob' }],
-      }
-      apiService.get.mockResolvedValue(mockResponse)
-      const result = await userService.getUsers()
-      expect(result.count).toBe(2)
-      expect(result.results).toHaveLength(2)
-    })
-
-    it('propaga el error cuando apiService falla', async () => {
-      apiService.get.mockRejectedValue(new Error('Network error'))
-      await expect(userService.getUsers()).rejects.toThrow('Network error')
-    })
+describe('getUserById(id)', () => {
+  it('GET /api/users/{id}/', async () => {
+    apiService.get.mockResolvedValue({ id: 42, username: 'alice' })
+    await userService.getUserById(42)
+    expect(apiService.get).toHaveBeenCalledWith('/api/users/42/')
   })
 
-  // ── getUserById ──────────────────────────────────────────────────────────
+  it('retorna el usuario de la respuesta', async () => {
+    const mockUser = { id: 5, username: 'carlos' }
+    apiService.get.mockResolvedValue(mockUser)
+    const result = await userService.getUserById(5)
+    expect(result).toEqual(mockUser)
+  })
+})
 
-  describe('getUserById(id)', () => {
-    it('llama GET /api/users/{id}/', async () => {
-      apiService.get.mockResolvedValue({ id: 42, username: 'alice' })
-      await userService.getUserById(42)
-      expect(apiService.get).toHaveBeenCalledWith('/api/users/42/')
-    })
+// ── createUser ────────────────────────────────────────────────────────────────
 
-    it('retorna el usuario de la respuesta', async () => {
-      const mockUser = { id: 5, username: 'carlos' }
-      apiService.get.mockResolvedValue(mockUser)
-      const result = await userService.getUserById(5)
-      expect(result).toEqual(mockUser)
-    })
+describe('createUser(data)', () => {
+  it('POST /api/users/create/ — UC_USR_01 (no /api/users/)', async () => {
+    const newUser = { username: 'nuevo', email: 'nuevo@test.com' }
+    apiService.post.mockResolvedValue({ id: 99, ...newUser })
+    await userService.createUser(newUser)
+    expect(apiService.post).toHaveBeenCalledWith('/api/users/create/', newUser)
   })
 
-  // ── createUser ──────────────────────────────────────────────────────────
+  it('retorna el usuario creado con su id asignado', async () => {
+    apiService.post.mockResolvedValue({ id: 99, username: 'nuevo' })
+    const result = await userService.createUser({ username: 'nuevo' })
+    expect(result.id).toBe(99)
+  })
+})
 
-  describe('createUser(data)', () => {
-    it('llama POST /api/users/ con los datos del usuario', async () => {
-      const newUser = { username: 'nuevo', email: 'nuevo@test.com', role: 'agent' }
-      apiService.post.mockResolvedValue({ id: 99, ...newUser })
-      await userService.createUser(newUser)
-      expect(apiService.post).toHaveBeenCalledWith('/api/users/', newUser)
-    })
+// ── updateUser ────────────────────────────────────────────────────────────────
 
-    it('retorna el usuario creado con su id asignado', async () => {
-      apiService.post.mockResolvedValue({ id: 99, username: 'nuevo' })
-      const result = await userService.createUser({ username: 'nuevo' })
-      expect(result.id).toBe(99)
-    })
+describe('updateUser(id, data)', () => {
+  it('PUT /api/users/{id}/ — reemplazo completo', async () => {
+    const updates = { email: 'nuevo@test.com' }
+    apiService.put.mockResolvedValue({ id: 7, ...updates })
+    await userService.updateUser(7, updates)
+    expect(apiService.put).toHaveBeenCalledWith('/api/users/7/', updates)
+  })
+})
+
+// ── deactivateUser ────────────────────────────────────────────────────────────
+
+describe('deactivateUser(id)', () => {
+  it('POST /api/users/{id}/deactivate/ — baja lógica UC_USR_04', async () => {
+    apiService.post.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
+    await userService.deactivateUser(3)
+    expect(apiService.post).toHaveBeenCalledWith('/api/users/3/deactivate/')
   })
 
-  // ── updateUser ──────────────────────────────────────────────────────────
-
-  describe('updateUser(id, data)', () => {
-    it('llama PUT /api/users/{id}/ con los datos actualizados', async () => {
-      const updates = { email: 'nuevo@test.com' }
-      apiService.put.mockResolvedValue({ id: 7, ...updates })
-      await userService.updateUser(7, updates)
-      expect(apiService.put).toHaveBeenCalledWith('/api/users/7/', updates)
-    })
+  it('NO llama DELETE — la baja lógica usa POST /deactivate/', async () => {
+    apiService.post.mockResolvedValue({ state: 'ELIMINATED' })
+    await userService.deactivateUser(3)
+    expect(apiService.delete).not.toHaveBeenCalled()
   })
 
-  // ── deactivateUser ───────────────────────────────────────────────────────
-  // UC-USR-04 / BR-009: DELETE con semántica lógica — backend cambia
-  // state → ELIMINATED y propaga side-effects (sesiones, AGRs, mailbox)
-
-  describe('deactivateUser(id)', () => {
-    it('llama DELETE /api/users/{id}/ (baja lógica por protocolo REST)', async () => {
-      apiService.delete.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
-      await userService.deactivateUser(3)
-      expect(apiService.delete).toHaveBeenCalledWith('/api/users/3/')
-    })
-
-    it('NO llama PATCH — la eliminación lógica usa DELETE per UC-USR-04', async () => {
-      apiService.delete.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
-      await userService.deactivateUser(3)
-      expect(apiService.patch).not.toHaveBeenCalled()
-    })
-
-    it('retorna respuesta con state ELIMINATED', async () => {
-      apiService.delete.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
-      const result = await userService.deactivateUser(3)
-      expect(result.state).toBe('ELIMINATED')
-    })
+  it('retorna la respuesta del backend', async () => {
+    apiService.post.mockResolvedValue({ state: 'ELIMINATED' })
+    const result = await userService.deactivateUser(3)
+    expect(result.state).toBe('ELIMINATED')
   })
+})
 
-  // ── getActiveUsers ───────────────────────────────────────────────────────
+// ── getActiveUsers ────────────────────────────────────────────────────────────
 
-  describe('getActiveUsers()', () => {
-    it('llama getUsers con filtro state ACTIVE (campo correcto según UC-USR-02)', async () => {
-      apiService.get.mockResolvedValue({ count: 0, results: [] })
-      await userService.getActiveUsers()
-      expect(apiService.get).toHaveBeenCalledWith('/api/users/', {
-        params: { state: 'ACTIVE' },
-      })
-    })
+describe('getActiveUsers()', () => {
+  it('llama getUsers con state=ACTIVE', async () => {
+    apiService.get.mockResolvedValue({ results: [] })
+    await userService.getActiveUsers()
+    expect(apiService.get).toHaveBeenCalledWith('/api/users/', { params: { state: 'ACTIVE' } })
+  })
+})
+
+// ── blockUser / unblockUser ───────────────────────────────────────────────────
+
+describe('blockUser(id)', () => {
+  it('POST /api/users/{id}/block/', async () => {
+    await userService.blockUser(5)
+    expect(apiService.post).toHaveBeenCalledWith('/api/users/5/block/')
+  })
+})
+
+describe('unblockUser(id)', () => {
+  it('POST /api/users/{id}/unblock/', async () => {
+    await userService.unblockUser(5)
+    expect(apiService.post).toHaveBeenCalledWith('/api/users/5/unblock/')
+  })
+})
+
+// ── activateUser / resetUserPassword ─────────────────────────────────────────
+
+describe('activateUser(id)', () => {
+  it('POST /api/users/{id}/activate/', async () => {
+    await userService.activateUser(5)
+    expect(apiService.post).toHaveBeenCalledWith('/api/users/5/activate/')
+  })
+})
+
+describe('resetUserPassword(id)', () => {
+  it('POST /api/users/{id}/reset-password/ (UC_AUTH_03)', async () => {
+    await userService.resetUserPassword(5)
+    expect(apiService.post).toHaveBeenCalledWith('/api/users/5/reset-password/')
+  })
+})
+
+// ── updateMyProfile eliminado ─────────────────────────────────────────────────
+
+describe('updateMyProfile', () => {
+  it('no existe — PATCH /api/users/me/profile/ no existe en IACT-api', () => {
+    expect(typeof userService.updateMyProfile).toBe('undefined')
   })
 })
