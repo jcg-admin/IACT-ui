@@ -96,6 +96,39 @@ export const revokeSession = createAsyncThunk(
   }
 )
 
+
+export const fetchOwnSessions = createAsyncThunk(
+  'auth/fetchOwnSessions',
+  async (_, { rejectWithValue }) => {
+    try { return await authGateway.getOwnSessions() }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const closeSessionAction = createAsyncThunk(
+  'auth/closeSession',
+  async (sessionId, { rejectWithValue }) => {
+    try { await authGateway.closeSession(sessionId); return sessionId }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const closeAllSessionsAction = createAsyncThunk(
+  'auth/closeAllSessions',
+  async (_, { rejectWithValue }) => {
+    try { return await authGateway.closeAllSessions() }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchMyMenu = createAsyncThunk(
+  'auth/fetchMyMenu',
+  async (_, { rejectWithValue }) => {
+    try { return await authGateway.getMyMenu() }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const authSlice = createSlice({
@@ -106,6 +139,8 @@ const authSlice = createSlice({
     isLoading: false,
     error: null,
     sessions: [],
+    ownSessions: [],
+    myMenu: [],
     sessionsLoading: false,
     sessionsError: null,
   },
@@ -192,11 +227,22 @@ const authSlice = createSlice({
       .addCase(revokeSession.rejected,  (state, action) => {
         state.sessionsError = action.payload?.message ?? 'Error al revocar sesión'
       })
+
+      .addCase(fetchOwnSessions.pending,    (state) => { state.sessionsLoading = true })
+      .addCase(fetchOwnSessions.fulfilled,  (state, action) => { state.sessionsLoading = false; state.ownSessions = action.payload ?? [] })
+      .addCase(fetchOwnSessions.rejected,   (state, action) => { state.sessionsLoading = false; state.sessionsError = action.payload?.message })
+      .addCase(closeSessionAction.fulfilled, (state, action) => { state.ownSessions = state.ownSessions.filter(s => s.id !== action.payload); state.sessions = state.sessions.filter(s => s.id !== action.payload) })
+      .addCase(closeSessionAction.rejected,  (state, action) => { state.sessionsError = action.payload?.message })
+      .addCase(closeAllSessionsAction.fulfilled, (state) => { state.ownSessions = []; state.sessions = [] })
+      .addCase(closeAllSessionsAction.rejected,  (state, action) => { state.sessionsError = action.payload?.message })
+      .addCase(fetchMyMenu.fulfilled, (state, action) => { state.myMenu = action.payload?.menu ?? action.payload ?? [] })
   },
 })
 
 export const { logout, clearError } = authSlice.actions
 export const selectActiveSessions   = (state) => state.auth.sessions
+export const selectOwnSessions      = (state) => state.auth.ownSessions
+export const selectMyMenu           = (state) => state.auth.myMenu
 export const selectSessionsLoading  = (state) => state.auth.sessionsLoading
 export const selectSessionsError    = (state) => state.auth.sessionsError
 export default authSlice.reducer
