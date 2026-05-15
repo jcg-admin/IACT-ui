@@ -122,6 +122,50 @@ export const fetchPipelineStatus = createAsyncThunk(
   }
 )
 
+
+export const fetchPipelineEvents = createAsyncThunk(
+  'logs/fetchPipelineEvents',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      return await logsService.getPipelineEvents(params)
+    } catch (error) {
+      return rejectWithValue({ message: error.message })
+    }
+  }
+)
+
+export const fetchJobConfig = createAsyncThunk(
+  'logs/fetchJobConfig',
+  async (jobName, { rejectWithValue }) => {
+    try {
+      return await logsService.getJobConfig(jobName)
+    } catch (error) {
+      return rejectWithValue({ message: error.message })
+    }
+  }
+)
+
+export const updateJobConfig = createAsyncThunk(
+  'logs/updateJobConfig',
+  async ({ jobName, data }, { rejectWithValue }) => {
+    try {
+      return await logsService.updateJobConfig(jobName, data)
+    } catch (error) {
+      return rejectWithValue({ message: error.message })
+    }
+  }
+)
+
+export const fetchMonitorWeekdays = createAsyncThunk(
+  'logs/fetchMonitorWeekdays',
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      return await logsService.getMonitorWeekdays(params)
+    } catch (error) {
+      return rejectWithValue({ message: error.message })
+    }
+  }
+)
 const logsSlice = createSlice({
   name: 'logs',
   initialState: {
@@ -130,6 +174,9 @@ const logsSlice = createSlice({
     etlAvailability: [],
     pipelineErrors: [],
     pipelineStatus: null,
+  pipelineEvents: [],
+  jobConfig: null,
+  monitorWeekdays: [],
     searchResults: [],
     infraLogs: [],
     systemStatus: null,

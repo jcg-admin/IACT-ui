@@ -6,11 +6,12 @@
  * - Automatic logging (all operations)
  * - Automatic validation (username, email, password)
  * 
- * API Endpoints:
- * POST   /api/token/                  - Login
- * POST   /api/logout/                 - Logout
- * GET    /api/user/                   - Get current user
- * POST   /api/register/               - Register
+ * API Endpoints (IACT-api v2):
+ * POST   /api/auth/login/             - Login (UC_AUTH_01)
+ * POST   /api/auth/logout/            - Logout (UC_AUTH_02)
+ * GET    /api/auth/me/                - Get current user (UC_AUTH_01)
+ * GET    /api/auth/sessions/          - Listar sesiones (UC_AUTH_05)
+ * DELETE /api/auth/sessions/{id}/close/ - Cerrar sesión (UC_AUTH_05)
  */
 
 import apiService from './apiClient'
@@ -32,17 +33,19 @@ import {
  */
 async function loginBase(username, password) {
   try {
-    const response = await apiService.post('/api/token/', {
+    const response = await apiService.post('/api/auth/login/', {
       username,
       password,
     })
     
+    const user = response.user || {}
     const result = {
-      user_id: response.user_id,
-      username: response.username,
-      email: response.email,
-      first_name: response.first_name || '',
-      last_name: response.last_name || '',
+      user_id:   user.user_id,
+      username:  user.username,
+      full_name: user.full_name || '',
+      tokens:    response.tokens || {},
+      session:   response.session || {},
+      next_step: response.next_step || null,
     }
 
     const notify = getNotificationService()
@@ -61,7 +64,7 @@ async function loginBase(username, password) {
  */
 async function logoutBase() {
   try {
-    const response = await apiService.post('/api/logout/', {})
+    const response = await apiService.post('/api/auth/logout/', {})
     
     const result = {
       status: response.status || 'success',
@@ -81,7 +84,7 @@ async function logoutBase() {
  * Get current authenticated user
  */
 async function getCurrentUserBase() {
-  const response = await apiService.get('/api/user/')
+  const response = await apiService.get('/api/auth/me/')
   
   return {
     user_id: response.user_id,
@@ -126,10 +129,10 @@ async function registerBase(data) {
  * Verify token (check if still valid)
  */
 async function verifyTokenBase() {
-  const response = await apiService.post('/api/token/verify/', {})
-  
+  const response = await apiService.get('/api/auth/me/')
   return {
-    is_valid: response.is_valid || true,
+    is_valid: Boolean(response && response.user_id),
+    user: response,
   }
 }
 
@@ -230,6 +233,9 @@ async function getActiveSessions() {
   return response
 }
 
+const getSessions = getActiveSessions
+
+
 async function revokeSession(sessionId) {
   const response = await apiService.delete(`/api/auth/sessions/${sessionId}/`)
   return response
@@ -242,8 +248,9 @@ const authService = {
   register,
   verifyToken,
   getActiveSessions,
+  getSessions,
   revokeSession,
 }
 
 export default authService
-export { login, logout, getCurrentUser, register, verifyToken, getActiveSessions, revokeSession }
+export { login, logout, getCurrentUser, register, verifyToken, getActiveSessions, getSessions, revokeSession }

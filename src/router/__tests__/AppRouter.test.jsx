@@ -104,37 +104,37 @@ describe('/access-denied route', () => {
 
 describe('FunctionCatalog — route permissions mapping', () => {
     it('VIEW_ACCESS protects /access/* routes', () => {
-        expect(FunctionCatalog.VIEW_ACCESS).toBe('access:view');
+        expect(FunctionCatalog.VIEW_ACCESS).toBe('ACC-003');
     });
 
     it('VIEW_AUDIT protects /audit/* routes', () => {
-        expect(FunctionCatalog.VIEW_AUDIT).toBe('audit:view');
+        expect(FunctionCatalog.VIEW_AUDIT).toBe('AUD-001');
     });
 
     it('VIEW_ALERTS protects /alerts/* routes', () => {
-        expect(FunctionCatalog.VIEW_ALERTS).toBe('alerts:view');
+        expect(FunctionCatalog.VIEW_ALERTS).toBe('ALR-001');
     });
 
-    it('VIEW_PIPELINE_LOGS (not VIEW_LOGS) maps to logs:view_etl (G-F4)', () => {
-        expect(FunctionCatalog.VIEW_PIPELINE_LOGS).toBe('logs:view_etl');
+    it('VIEW_PIPELINE_LOGS (not VIEW_LOGS) maps to LOG-004 (RBAC v5.4.0) (G-F4)', () => {
+        expect(FunctionCatalog.VIEW_PIPELINE_LOGS).toBe('LOG-004');
     });
 
-    it('SEARCH_LOGS (not VIEW_LOGS) maps to logs:search (G-F5)', () => {
-        expect(FunctionCatalog.SEARCH_LOGS).toBe('logs:search');
+    it('SEARCH_LOGS (not VIEW_LOGS) maps to LOG-003 (RBAC v5.4.0) (G-F5)', () => {
+        expect(FunctionCatalog.SEARCH_LOGS).toBe('LOG-003');
     });
 
-    it('EXPORT_LOGS (not VIEW_LOGS) maps to logs:export (G-F6)', () => {
-        expect(FunctionCatalog.EXPORT_LOGS).toBe('logs:export');
+    it('EXPORT_LOGS (not VIEW_LOGS) maps to LOG-002 (RBAC v5.4.0) (G-F6)', () => {
+        expect(FunctionCatalog.EXPORT_LOGS).toBe('LOG-002');
     });
 
-    it('MANAGE_CATALOG maps to adm:manage_catalog — Admin nav item guard (G-M3)', () => {
-        expect(FunctionCatalog.MANAGE_CATALOG).toBe('adm:manage_catalog');
+    it('MANAGE_CATALOG maps to ADM-001 (RBAC v5.4.0) — Admin nav item guard (G-M3)', () => {
+        expect(FunctionCatalog.MANAGE_CATALOG).toBe('ADM-001');
     });
 });
 
 describe('ALL_NAV_LINKS — Admin item visibility by capacidades (G-M3)', () => {
-    it('Admin nav item is filtered out when user lacks adm:manage_catalog', () => {
-        const capacidades = ['auth:view_own_sessions', 'reports:view', 'logs:view_app'];
+    it('Admin nav item is filtered out when user lacks ADM-001 (RBAC v5.4.0)', () => {
+        const capacidades = ['AUTH-001', 'RPT-001', 'LOG-001'];
         const hasPermission = jest.fn((perm) => capacidades.includes(perm));
         usePermisos.mockReturnValue({ hasPermission, loading: false });
 
@@ -142,11 +142,11 @@ describe('ALL_NAV_LINKS — Admin item visibility by capacidades (G-M3)', () => 
         expect(hasPermission(adminPermission)).toBe(false);
     });
 
-    it('Admin nav item passes filter when user has adm:manage_catalog (permissions-admin)', () => {
+    it('Admin nav item passes filter when user has ADM-001 (RBAC v5.4.0) (permissions-admin)', () => {
         const adminCapacidades = [
-            'auth:view_own_sessions', 'auth:view_all_sessions',
-            'logs:view_app', 'logs:export',
-            'adm:manage_catalog', 'adm:create_separation_rule', 'access:assign_to_group',
+            'AUTH-001', 'auth:view_all_sessions',
+            'LOG-001', 'LOG-002',
+            'ADM-001', 'ACC-011', 'ACC-007',
         ];
         const hasPermission = jest.fn((perm) => adminCapacidades.includes(perm));
         usePermisos.mockReturnValue({ hasPermission, loading: false });
@@ -162,9 +162,9 @@ describe('ALL_NAV_LINKS — Admin item visibility by capacidades (G-M3)', () => 
 // Since the hook is a closure inside AppRouter, we re-create its logic here
 // to test it in isolation, matching the exact spec from T-005.
 describe('useFilteredNavLinks — children filtering (G-S3)', () => {
-    const VIEW_REPORTS = 'reports:view';
+    const VIEW_REPORTS = 'RPT-001';
     const VIEW_METRICS = 'reports:view_metrics';
-    const MANAGE_CATALOG = 'adm:manage_catalog';
+    const MANAGE_CATALOG = 'ADM-001';
     const MANAGE_GROUPS = 'access:manage_groups';
     const MANAGE_ACCESS = 'access:manage_access';
 
@@ -293,21 +293,21 @@ import permissionsAdminJson from '../../mocks/permissions-admin.json';
 
 // Actual permission constants from catalog (T-009)
 const FC = {
-    VIEW_REPORTS:       'reports:view',
+    VIEW_REPORTS:       'RPT-001',
     VIEW_METRICS:       'reports:kpis',
-    MANAGE_CATALOG:     'adm:manage_catalog',
+    MANAGE_CATALOG:     'ADM-001',
     MANAGE_GROUPS:      'access:create_group',
     MANAGE_ACCESS:      'access:assign',
-    VIEW_LOGS:          'logs:view_app',
-    VIEW_PIPELINE_LOGS: 'logs:view_etl',
-    SEARCH_LOGS:        'logs:search',
-    EXPORT_LOGS:        'logs:export',
-    VIEW_OWN_SESSIONS:  'auth:view_own_sessions',
+    VIEW_LOGS:          'LOG-001',
+    VIEW_PIPELINE_LOGS: 'LOG-004',
+    SEARCH_LOGS:        'LOG-003',
+    EXPORT_LOGS:        'LOG-002',
+    VIEW_OWN_SESSIONS:  'AUTH-001',
     VIEW_DASHBOARD:     'reports:dashboard',
-    VIEW_ACCESS:        'access:view',
-    MANAGE_SEPARATION_RULES: 'access:view_separation_rules',
-    VIEW_AUDIT:         'audit:view',
-    VIEW_ALERTS:        'alerts:view',
+    VIEW_ACCESS:        'ACC-003',
+    MANAGE_SEPARATION_RULES: 'ACC-005',
+    VIEW_AUDIT:         'AUD-001',
+    VIEW_ALERTS:        'ALR-001',
     VIEW_USERS:         'users:view',
     VIEW_INFRA_LOGS:    'logs:view_infra',
     VIEW_SYSTEM_HEALTH: 'logs:view_health',
@@ -455,7 +455,7 @@ describe('Integration: permissions-admin.json user (userId=99) — T-010', () =>
 
 // ── Alerts accordion nav filtering (T-015) ───────────────────────────────────
 
-const VIEW_ALERTS        = 'alerts:view';
+const VIEW_ALERTS        = 'ALR-001';
 const CONFIGURE_TEAM     = 'alerts:config_team';
 const VIEW_ALERT_HISTORY = 'alerts:history';
 const MANAGE_ALERTS      = 'alerts:configure';
@@ -521,7 +521,7 @@ describe('Alerts accordion — nav children filtering (T-015)', () => {
 
 // ── Audit accordion nav filtering (T-018) ────────────────────────────────────
 
-const VIEW_AUDIT_CAP    = 'audit:view';
+const VIEW_AUDIT_CAP    = 'AUD-001';
 const SEARCH_AUDIT_CAP  = 'audit:search';
 const EXPORT_AUDIT_CAP  = 'audit:export';
 const VIEW_COMPLIANCE   = 'audit:compliance';

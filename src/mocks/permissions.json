@@ -19,20 +19,20 @@
     ]
   },
   "capacidades": [
-    "auth:view_own_sessions",
-    "auth:view_all_sessions",
-    "reports:view",
-    "reports:dashboard",
-    "reports:kpis",
-    "reports:charts",
-    "reports:filter",
-    "reports:export_csv",
-    "reports:export_excel",
-    "reports:export_pdf",
-    "users:view",
-    "alerts:view",
-    "alerts:configure",
-    "alerts:history"
+    "AUTH-001",
+    "AUTH-004",
+    "RPT-001",
+    "RPT-002",
+    "RPT-007",
+    "RPT-008",
+    "RPT-003",
+    "RPT-004",
+    "RPT-005",
+    "RPT-006",
+    "USR-009",
+    "ALR-001",
+    "ALR-002",
+    "ALR-006"
   ],
   "funciones_accesibles": [
     {

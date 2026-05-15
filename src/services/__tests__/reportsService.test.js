@@ -14,10 +14,10 @@ beforeEach(() => {
 })
 
 describe('reportsService.getDashboardMetrics', () => {
-  it('llama GET /api/reports/metrics/dashboard/', async () => {
+  it('llama GET /api/reports/dashboard/', async () => {
     apiService.get.mockResolvedValue({ totalUsers: 100 })
     const result = await reportsService.getDashboardMetrics()
-    expect(apiService.get).toHaveBeenCalledWith('/api/reports/metrics/dashboard/')
+    expect(apiService.get).toHaveBeenCalledWith('/api/reports/dashboard/')
     expect(result.totalUsers).toBe(100)
   })
 
@@ -64,63 +64,63 @@ describe('reportsService.getCampaignsReport', () => {
 })
 
 describe('reportsService.scheduleReport', () => {
-  it('llama POST /api/reports/scheduled/ con config', async () => {
+  it('llama POST /api/reports/schedules/ con config', async () => {
     const config = { name: 'Daily', type: 'agents', schedule: 'daily' }
     apiService.post.mockResolvedValue({ id: 99, ...config })
     const result = await reportsService.scheduleReport(config)
-    expect(apiService.post).toHaveBeenCalledWith('/api/reports/scheduled/', config)
+    expect(apiService.post).toHaveBeenCalledWith('/api/reports/schedules/', config)
     expect(result.id).toBe(99)
   })
 })
 
 describe('reportsService.getScheduledReports', () => {
-  it('llama GET /api/reports/scheduled/', async () => {
+  it('llama GET /api/reports/schedules/', async () => {
     apiService.get.mockResolvedValue({ results: [] })
     await reportsService.getScheduledReports()
-    expect(apiService.get).toHaveBeenCalledWith('/api/reports/scheduled/', { params: {} })
+    expect(apiService.get).toHaveBeenCalledWith('/api/reports/schedules/', { params: {} })
   })
 })
 
 describe('reportsService.pauseSchedule', () => {
-  it('llama PATCH /api/reports/scheduled/{id}/pause/', async () => {
-    apiService.patch.mockResolvedValue({ status: 'paused' })
+  it('llama POST /api/reports/schedules/{id}/pause/', async () => {
+    apiService.post.mockResolvedValue({ status: 'paused' })
     const result = await reportsService.pauseSchedule(42)
-    expect(apiService.patch).toHaveBeenCalledWith('/api/reports/scheduled/42/pause/')
+    expect(apiService.post).toHaveBeenCalledWith('/api/reports/schedules/42/pause/', {})
     expect(result.status).toBe('paused')
   })
 })
 
 describe('reportsService.resumeSchedule', () => {
-  it('llama PATCH /api/reports/scheduled/{id}/resume/', async () => {
-    apiService.patch.mockResolvedValue({ status: 'active' })
+  it('llama POST /api/reports/schedules/{id}/resume/', async () => {
+    apiService.post.mockResolvedValue({ status: 'active' })
     const result = await reportsService.resumeSchedule(42)
-    expect(apiService.patch).toHaveBeenCalledWith('/api/reports/scheduled/42/resume/')
+    expect(apiService.post).toHaveBeenCalledWith('/api/reports/schedules/42/resume/', {})
     expect(result.status).toBe('active')
   })
 })
 
 describe('reportsService.deleteSchedule', () => {
-  it('llama DELETE /api/reports/scheduled/{id}/', async () => {
+  it('llama DELETE /api/reports/schedules/{id}/', async () => {
     apiService.delete.mockResolvedValue({})
     await reportsService.deleteSchedule(42)
-    expect(apiService.delete).toHaveBeenCalledWith('/api/reports/scheduled/42/')
+    expect(apiService.delete).toHaveBeenCalledWith('/api/reports/schedules/42/')
   })
 })
 
 describe('reportsService.runScheduleNow', () => {
-  it('llama POST /api/reports/scheduled/{id}/run/', async () => {
+  it('llama POST /api/reports/schedules/{id}/run/', async () => {
     apiService.post.mockResolvedValue({ job_id: 'run-1' })
     const result = await reportsService.runScheduleNow(42)
-    expect(apiService.post).toHaveBeenCalledWith('/api/reports/scheduled/42/run/')
+    expect(apiService.post).toHaveBeenCalledWith('/api/reports/schedules/42/run/')
     expect(result.job_id).toBe('run-1')
   })
 })
 
 describe('reportsService.getScheduleHistory', () => {
-  it('llama GET /api/reports/scheduled/{id}/runs/', async () => {
+  it('llama GET /api/reports/schedules/{id}/runs/', async () => {
     apiService.get.mockResolvedValue([{ run_id: 'r-1' }])
     const result = await reportsService.getScheduleHistory(42)
-    expect(apiService.get).toHaveBeenCalledWith('/api/reports/scheduled/42/runs/')
+    expect(apiService.get).toHaveBeenCalledWith('/api/reports/schedules/42/runs/')
     expect(result[0].run_id).toBe('r-1')
   })
 })

@@ -4,13 +4,13 @@
  * Cliente API para administración de catálogos RBAC (funciones y AGRs).
  *
  * Endpoints:
- * GET   /api/admin/functions/       - Listar funciones RBAC
- * POST  /api/admin/functions/       - Crear función RBAC
- * PATCH /api/admin/functions/{id}/  - Actualizar / desactivar función
- * GET   /api/admin/agr/             - Listar AGRs (Agrupadores de Funciones)
- * POST  /api/admin/agr/             - Crear AGR
- * PATCH /api/admin/agr/{id}/        - Actualizar / desactivar AGR
- * GET   /api/admin/separation-rules/ - Listar reglas de separación
+ * GET   /api/access/functions/       - Listar funciones RBAC
+ * POST  /api/access/functions/       - Crear función RBAC
+ * PATCH /api/access/functions/{id}/  - Actualizar / desactivar función
+ * GET   /api/access/access-groups/             - Listar AGRs (Agrupadores de Funciones)
+ * POST  /api/access/access-groups/             - Crear AGR
+ * PATCH /api/access/access-groups/{id}/        - Actualizar / desactivar AGR
+ * GET   /api/access/separation-rules/ - Listar reglas de separación
  */
 
 import apiService from './apiClient'
@@ -23,7 +23,7 @@ class AdminService {
    * @returns {Promise<Object>} Lista de funciones con metadata
    */
   async getFunctions() {
-    return apiService.get('/api/admin/functions/')
+    return apiService.get('/api/access/functions/')
   }
 
   /**
@@ -32,7 +32,7 @@ class AdminService {
    * @returns {Promise<Object>} Función creada con su ID
    */
   async createFunction(data) {
-    return apiService.post('/api/admin/functions/', data)
+    return apiService.post('/api/access/functions/', data)
   }
 
   /**
@@ -42,7 +42,7 @@ class AdminService {
    * @returns {Promise<Object>} Función actualizada
    */
   async updateFunction(id, data) {
-    return apiService.patch(`/api/admin/functions/${id}/`, data)
+    return apiService.patch(`/api/access/functions/${id}/`, data)
   }
 
   /**
@@ -51,7 +51,7 @@ class AdminService {
    * @returns {Promise<Object>} Función con active: false
    */
   async deactivateFunction(id) {
-    return apiService.patch(`/api/admin/functions/${id}/`, { active: false })
+    return apiService.patch(`/api/access/functions/${id}/`, { active: false })
   }
 
   // ── AGRs (Agrupadores de Funciones Relacionadas) ─────────────────────────
@@ -60,8 +60,10 @@ class AdminService {
    * Obtiene el catálogo completo de AGRs.
    * @returns {Promise<Object>} Lista de AGRs
    */
+  async getAGRList() { return this.getAGRCatalog() }
+
   async getAGRCatalog() {
-    return apiService.get('/api/admin/agr/')
+    return apiService.get('/api/access/access-groups/')
   }
 
   /**
@@ -70,7 +72,7 @@ class AdminService {
    * @returns {Promise<Object>} AGR creado con su ID
    */
   async createAGR(data) {
-    return apiService.post('/api/admin/agr/', data)
+    return apiService.post('/api/access/access-groups/', data)
   }
 
   /**
@@ -80,7 +82,7 @@ class AdminService {
    * @returns {Promise<Object>} AGR actualizado
    */
   async updateAGR(id, data) {
-    return apiService.patch(`/api/admin/agr/${id}/`, data)
+    return apiService.patch(`/api/access/access-groups/${id}/`, data)
   }
 
   /**
@@ -89,7 +91,7 @@ class AdminService {
    * @returns {Promise<Object>} AGR con active: false
    */
   async deactivateAGR(id) {
-    return apiService.patch(`/api/admin/agr/${id}/`, { active: false })
+    return apiService.patch(`/api/access/access-groups/${id}/`, { active: false })
   }
 
   // ── Reglas de separación de funciones ───────────────────────────────────
@@ -99,39 +101,39 @@ class AdminService {
    * @returns {Promise<Object>} Lista de reglas de separación
    */
   async getSeparationRules() {
-    return apiService.get('/api/admin/separation-rules/')
+    return apiService.get('/api/access/separation-rules/')
   }
 
   async createSeparationRule(data) {
-    return apiService.post('/api/admin/separation-rules/', data)
+    return apiService.post('/api/access/separation-rules/', data)
   }
 
   async updateSeparationRule(id, data) {
-    return apiService.patch(`/api/admin/separation-rules/${id}/`, data)
+    return apiService.patch(`/api/access/separation-rules/${id}/`, data)
   }
 
   async toggleSeparationRuleStatus(id) {
-    return apiService.patch(`/api/admin/separation-rules/${id}/`, {})
+    return apiService.patch(`/api/access/separation-rules/${id}/`, {})
   }
 
   // ── Composición de AGR de sistema (UC-ADM-03) ────────────────────────────
 
   async getAGRComposition(agrId) {
-    return apiService.get(`/api/admin/system-groups/${agrId}/functions/`)
+    return apiService.get(`/api/access/system-groups/${agrId}/functions/`)
   }
 
   async addFunctionToAGR(agrId, functionCodename) {
-    return apiService.post(`/api/admin/system-groups/${agrId}/functions/`, {
+    return apiService.post(`/api/access/system-groups/${agrId}/functions/`, {
       function_codename: functionCodename,
     })
   }
 
   async removeFunctionFromAGR(agrId, functionCodename) {
-    return apiService.delete(`/api/admin/system-groups/${agrId}/functions/${functionCodename}/`)
+    return apiService.delete(`/api/access/system-groups/${agrId}/functions/${functionCodename}/`)
   }
 
   async getAGRImpact(agrId) {
-    return apiService.get(`/api/admin/system-groups/${agrId}/impact/`)
+    return apiService.get(`/api/access/system-groups/${agrId}/impact/`)
   }
 
   // ── Catálogo de MenuItems (UC-ADM-04/05) ────────────────────────────────
@@ -141,45 +143,45 @@ class AdminService {
     if (status) params.set('status', status)
     if (mod) params.set('module', mod)
     const query = params.toString()
-    return apiService.get(`/api/admin/menu-items/${query ? `?${query}` : ''}`)
+    return apiService.get(`/api/access/menu-items/${query ? `?${query}` : ''}`)
   }
 
   async createMenuItem(data) {
-    return apiService.post('/api/admin/menu-items/', data)
+    return apiService.post('/api/access/menu-items/', data)
   }
 
   async updateMenuItem(id, data) {
-    return apiService.patch(`/api/admin/menu-items/${id}/`, data)
+    return apiService.patch(`/api/access/menu-items/${id}/`, data)
   }
 
   async publishMenuItem(id) {
-    return apiService.post(`/api/admin/menu-items/${id}/publish/`)
+    return apiService.post(`/api/access/menu-items/${id}/publish/`)
   }
 
   async deprecateMenuItem(id) {
-    return apiService.post(`/api/admin/menu-items/${id}/deprecate/`)
+    return apiService.post(`/api/access/menu-items/${id}/deprecate/`)
   }
 
   async reactivateMenuItem(id) {
-    return apiService.post(`/api/admin/menu-items/${id}/reactivate/`)
+    return apiService.post(`/api/access/menu-items/${id}/reactivate/`)
   }
 
   async archiveMenuItem(id) {
-    return apiService.post(`/api/admin/menu-items/${id}/archive/`)
+    return apiService.post(`/api/access/menu-items/${id}/archive/`)
   }
 
   async bulkReorderMenuItems(items) {
-    return apiService.patch('/api/admin/menu-items/bulk-reorder/', { items })
+    return apiService.patch('/api/access/menu-items/bulk-reorder/', { items })
   }
 
   async blockAutoArchive(id, blockReason) {
-    return apiService.post(`/api/admin/menu-items/${id}/block-archive/`, {
+    return apiService.post(`/api/access/menu-items/${id}/block-archive/`, {
       block_reason: blockReason,
     })
   }
 
   async unblockAutoArchive(id) {
-    return apiService.delete(`/api/admin/menu-items/${id}/block-archive/`)
+    return apiService.delete(`/api/access/menu-items/${id}/block-archive/`)
   }
 }
 

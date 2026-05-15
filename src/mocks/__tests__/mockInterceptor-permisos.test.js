@@ -33,9 +33,9 @@ describe('mockInterceptor — /api/permisos/verificar/ handler (G-M1)', () => {
       expect(response.data.user_id).toBe(10)
     })
 
-    it('response for user 10 capacidades includes auth:view_own_sessions', async () => {
+    it('response for user 10 capacidades includes AUTH-001 (auth:view_own_sessions)', async () => {
       const response = await callGet('/api/permisos/verificar/10/capacidades/')
-      expect(response.data.capacidades).toContain('auth:view_own_sessions')
+      expect(response.data.capacidades).toContain('AUTH-001') // auth:view_own_sessions (RBAC v5.4.0)
     })
 
     it('response for user 10 includes access_groups array', async () => {
@@ -48,9 +48,9 @@ describe('mockInterceptor — /api/permisos/verificar/ handler (G-M1)', () => {
       expect(response.status).toBe(200)
     })
 
-    it('response for user 99 includes adm:manage_catalog (SP-02 — AGR-010)', async () => {
+    it('response for user 99 includes ADM-001 (adm:manage_catalog) (SP-02 — AGR-010)', async () => {
       const response = await callGet('/api/permisos/verificar/99/capacidades/')
-      expect(response.data.capacidades).toContain('adm:manage_catalog')
+      expect(response.data.capacidades).toContain('ADM-001') // adm:manage_catalog (RBAC v5.4.0)
     })
 
     it('returns 404 for unknown userId', async () => {

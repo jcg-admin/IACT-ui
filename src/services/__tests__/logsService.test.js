@@ -11,16 +11,16 @@ jest.mock('../apiClient', () => ({
 const apiService = require('../apiClient').default
 
 describe('logsService.getLogs', () => {
-  it('calls GET /api/logs/ with params', async () => {
+  it('calls GET /api/logs/django/tail/ with params', async () => {
     await logsService.getLogs({ level: 'ERROR' })
-    expect(apiService.get).toHaveBeenCalledWith('/api/logs/', { params: { level: 'ERROR' } })
+    expect(apiService.get).toHaveBeenCalledWith('/api/logs/django/tail/', { params: { level: 'ERROR' } })
   })
 })
 
 describe('logsService.getETLLogs', () => {
-  it('calls GET /api/logs/etl/', async () => {
+  it('calls GET /api/logs/etl/tail/', async () => {
     await logsService.getETLLogs()
-    expect(apiService.get).toHaveBeenCalledWith('/api/logs/etl/', { params: {} })
+    expect(apiService.get).toHaveBeenCalledWith('/api/logs/etl/tail/', { params: {} })
   })
 })
 
@@ -46,15 +46,15 @@ describe('logsService.getInfraLogs', () => {
 })
 
 describe('logsService.getSystemStatus', () => {
-  it('calls GET /api/system/status/', async () => {
+  it('calls GET /api/logs/health/', async () => {
     await logsService.getSystemStatus()
-    expect(apiService.get).toHaveBeenCalledWith('/api/system/status/')
+    expect(apiService.get).toHaveBeenCalledWith('/api/logs/health/')
   })
 })
 
 describe('logsService.getPerformanceMetrics', () => {
-  it('calls GET /api/system/metrics/', async () => {
+  it('calls GET /api/logs/metrics/', async () => {
     await logsService.getPerformanceMetrics()
-    expect(apiService.get).toHaveBeenCalledWith('/api/system/metrics/', { params: {} })
+    expect(apiService.get).toHaveBeenCalledWith('/api/logs/metrics/', { params: {} })
   })
 })
