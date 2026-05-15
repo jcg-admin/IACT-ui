@@ -38,8 +38,7 @@ const AlertsGateway = {
 
   /** UC_ALR_04: Obtener historial de alertas disparadas */
   getAlertHistory(filters = {}) {
-    const params = new URLSearchParams(filters).toString()
-    return apiService.get(`/api/alerts/history/${params ? `?${params}` : ''}`)
+    return apiService.get('/api/alerts/history/', { params: filters })
   },
 
   /** Templates */
