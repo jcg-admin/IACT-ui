@@ -164,6 +164,91 @@ export const deleteSavedView = createAsyncThunk(
 
 // ── Slice ────────────────────────────────────────────────────────────────────
 
+
+export const fetchExportJobs = createAsyncThunk('reports/fetchExportJobs',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await reportsService.getExportJobs(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchExportJobDetail = createAsyncThunk('reports/fetchExportJobDetail',
+  async (id, { rejectWithValue }) => {
+    try { return await reportsService.getExportJobDetail(id) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const cancelExport = createAsyncThunk('reports/cancelExport',
+  async (id, { rejectWithValue }) => {
+    try { await reportsService.cancelExport(id); return id }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const updateSchedule = createAsyncThunk('reports/updateSchedule',
+  async ({ id, data }, { rejectWithValue }) => {
+    try { return await reportsService.updateSchedule(id, data) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchUniqueClientsAnon = createAsyncThunk('reports/fetchUniqueClientsAnon',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await reportsService.getUniqueClientsAnonReport(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchRealtimeMetrics = createAsyncThunk('reports/fetchRealtimeMetrics',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await reportsService.getRealtimeMetrics(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchAgentDetail = createAsyncThunk('reports/fetchAgentDetail',
+  async (id, { rejectWithValue }) => {
+    try { return await reportsService.getAgentDetail(id) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const createSavedView = createAsyncThunk('reports/createSavedView',
+  async (data, { rejectWithValue }) => {
+    try { return await reportsService.createSavedView(data) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const updateSavedView = createAsyncThunk('reports/updateSavedView',
+  async ({ id, data }, { rejectWithValue }) => {
+    try { return await reportsService.updateSavedView(id, data) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const cloneSavedView = createAsyncThunk('reports/cloneSavedView',
+  async (id, { rejectWithValue }) => {
+    try { return await reportsService.cloneSavedView(id) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchSavedViewDetail = createAsyncThunk('reports/fetchSavedViewDetail',
+  async (id, { rejectWithValue }) => {
+    try { return await reportsService.getSavedViewDetail(id) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchDashboardData = createAsyncThunk('reports/fetchDashboardData',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await reportsService.getDashboardMetrics(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
 const reportsSlice = createSlice({
   name: 'reports',
   initialState: {
@@ -177,6 +262,13 @@ const reportsSlice = createSlice({
     loading: false,
     scheduleActionLoading: false,
     error: null,
+    exportJobId: null,
+    exportJobs: [],
+    exportJobDetail: null,
+    realtimeMetrics: null,
+    agentDetail: null,
+    savedViewDetail: null,
+    uniqueClientsAnon: [],
   },
   reducers: {
     updateMetrics: (state, action) => {
@@ -312,9 +404,22 @@ const reportsSlice = createSlice({
       .addCase(deleteSavedView.rejected, (state, action) => {
         state.error = action.payload
       })
+
+    builder
+      .addCase(fetchExportJobs.fulfilled,     (state, a) => { state.exportJobs = a.payload?.results ?? a.payload ?? [] })
+      .addCase(fetchExportJobDetail.fulfilled, (state, a) => { state.exportJobDetail = a.payload })
+      .addCase(cancelExport.fulfilled,         (state, a) => { state.exportJobs = state.exportJobs.filter(j => j.id !== a.payload) })
+      .addCase(updateSchedule.fulfilled,       (state, a) => { const idx = state.scheduledReports.findIndex(s => s.id === a.payload?.id); if (idx >= 0) state.scheduledReports[idx] = a.payload })
+      .addCase(fetchUniqueClientsAnon.fulfilled,(state, a) => { state.uniqueClientsAnon = a.payload?.results ?? a.payload ?? [] })
+      .addCase(fetchRealtimeMetrics.fulfilled,  (state, a) => { state.realtimeMetrics = a.payload })
+      .addCase(fetchAgentDetail.fulfilled,      (state, a) => { state.agentDetail = a.payload })
+      .addCase(createSavedView.fulfilled,       (state, a) => { state.savedViews.push(a.payload) })
+      .addCase(updateSavedView.fulfilled,       (state, a) => { const idx = state.savedViews.findIndex(v => v.id === a.payload?.id); if (idx >= 0) state.savedViews[idx] = a.payload })
+      .addCase(cloneSavedView.fulfilled,        (state, a) => { state.savedViews.push(a.payload) })
+      .addCase(fetchSavedViewDetail.fulfilled,  (state, a) => { state.savedViewDetail = a.payload })
+      .addCase(fetchDashboardData.fulfilled,    (state, a) => { state.metrics = a.payload })
   },
 })
-
 export const { updateMetrics } = reportsSlice.actions
 
 // ── Selectores ───────────────────────────────────────────────────────────────

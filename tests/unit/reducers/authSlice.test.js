@@ -6,6 +6,8 @@ describe('authSlice', () => {
     user: null,
     isLoading: false,
     error: null,
+    ownSessions: [],
+    myMenu: [],
     sessions: [],
     sessionsLoading: false,
     sessionsError: null,

@@ -166,6 +166,39 @@ export const fetchMonitorWeekdays = createAsyncThunk(
     }
   }
 )
+
+export const fetchPipelineIVRHealth = createAsyncThunk(
+  'logs/fetchPipelineIVRHealth',
+  async (_, { rejectWithValue }) => {
+    try { return await logsService.getPipelineIVRHealth() }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchLogExportJobs = createAsyncThunk(
+  'logs/fetchLogExportJobs',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await logsService.getLogExportJobs(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const enqueueLogExport = createAsyncThunk(
+  'logs/enqueueLogExport',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await logsService.enqueueLogExport(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
+export const fetchPipelineLogEvents = createAsyncThunk(
+  'logs/fetchPipelineLogEvents',
+  async (params = {}, { rejectWithValue }) => {
+    try { return await logsService.getPipelineLogEvents(params) }
+    catch (e) { return rejectWithValue({ message: e.message }) }
+  }
+)
+
 const logsSlice = createSlice({
   name: 'logs',
   initialState: {
@@ -177,6 +210,10 @@ const logsSlice = createSlice({
   pipelineEvents: [],
   jobConfig: null,
   monitorWeekdays: [],
+  ivrHealth: null,
+  logExportJobs: [],
+  logExportJobId: null,
+  pipelineLogEvents: [],
     searchResults: [],
     infraLogs: [],
     systemStatus: null,
