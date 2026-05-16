@@ -3,6 +3,7 @@
  * Formulario de creación/edición de usuarios con baja lógica (UC-USR-04).
  */
 
+import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import './UserForm.scss'
 
@@ -265,3 +266,11 @@ export default function UserForm({ user, onSubmit, onCancel, onDeactivate }) {
     </div>
   )
 }
+
+UserForm.propTypes = {
+  user:         PropTypes.object,
+  onSubmit:     PropTypes.func.isRequired,
+  onCancel:     PropTypes.func.isRequired,
+  onDeactivate: PropTypes.func,
+}
+

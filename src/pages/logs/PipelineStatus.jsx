@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -152,3 +153,14 @@ export default function PipelineStatus() {
     </div>
   )
 }
+
+EstadoBadge.propTypes = {
+  estado: PropTypes.string.isRequired,
+}
+
+CounterCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  count: PropTypes.number,
+  color: PropTypes.string,
+}
+

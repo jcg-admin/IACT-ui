@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@store/slices/auth';
+import PropTypes from 'prop-types'
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -88,3 +89,8 @@ function Layout({ children }) {
 }
 
 export default Layout;
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
+}
+

@@ -4,6 +4,7 @@
  * UC_USR_05/06: botones Bloquear/Desbloquear con modal de confirmación.
  */
 
+import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import userAuth from '../../../facades/UserIdentity'
 import ConfirmModal from '../../../components/shared/ConfirmModal'
@@ -194,3 +195,13 @@ export default function UserList({ users, loading, onEdit, onDeactivate, onBlock
     </div>
   )
 }
+
+UserList.propTypes = {
+  users:        PropTypes.array,
+  loading:      PropTypes.bool,
+  onEdit:       PropTypes.func,
+  onDeactivate: PropTypes.func,
+  onBlock:      PropTypes.func,
+  onUnblock:    PropTypes.func,
+}
+

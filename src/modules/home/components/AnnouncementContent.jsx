@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 function renderParagraphs(paragraphs, keyPrefix) {
   if (!Array.isArray(paragraphs)) {
     return null;
@@ -60,3 +61,12 @@ function AnnouncementContent({ announcement }) {
 }
 
 export default AnnouncementContent;
+
+AnnouncementContent.propTypes = {
+  announcement: PropTypes.shape({
+    title:   PropTypes.string,
+    content: PropTypes.string,
+    date:    PropTypes.string,
+  }).isRequired,
+}
+

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useState } from 'react';
 import useRequest from '@hooks/domain/useRequest';
 
@@ -152,3 +153,8 @@ function UserProfile({ userId }) {
 }
 
 export default UserProfile;
+
+UserProfile.propTypes = {
+  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+}
+

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -141,3 +142,13 @@ export default function SharedViews() {
     </div>
   )
 }
+
+SentTable.propTypes = {
+  shares:   PropTypes.array.isRequired,
+  onRevoke: PropTypes.func.isRequired,
+}
+
+ReceivedTable.propTypes = {
+  shares: PropTypes.array.isRequired,
+}
+

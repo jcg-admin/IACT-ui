@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const ToastContext = createContext();
@@ -38,3 +39,8 @@ export function useToast() {
   }
   return context;
 }
+
+ToastProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+}
+

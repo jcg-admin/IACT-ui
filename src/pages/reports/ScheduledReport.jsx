@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -269,3 +270,14 @@ export default function ScheduledReport() {
     </div>
   )
 }
+
+Field.propTypes = {
+  htmlFor:  PropTypes.string,
+  label:    PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+}
+
+CreateForm.propTypes = {
+  onCancel: PropTypes.func.isRequired,
+}
+

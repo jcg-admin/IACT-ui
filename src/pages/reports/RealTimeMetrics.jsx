@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { useRealTimeMetrics } from '@hooks/domain/useRealTimeMetrics'
 
@@ -83,3 +84,11 @@ export default function RealTimeMetrics() {
     </div>
   )
 }
+
+MetricCard.propTypes = {
+  label:     PropTypes.string.isRequired,
+  value:     PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  unit:      PropTypes.string,
+  highlight: PropTypes.bool,
+}
+

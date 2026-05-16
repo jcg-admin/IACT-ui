@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 const MockDataNotice = ({ isVisible, message, details }) => {
   if (!isVisible) {
     return null;
@@ -16,3 +17,10 @@ MockDataNotice.defaultProps = {
 };
 
 export default MockDataNotice;
+
+MockDataNotice.propTypes = {
+  isVisible: PropTypes.bool,
+  message:   PropTypes.string,
+  details:   PropTypes.string,
+}
+
