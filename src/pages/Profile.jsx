@@ -1,4 +1,5 @@
 // UC_USR_07: editar perfil propio — scope: nombre, apellido, correo, preferencias de notificación
+// NOTA: pendiente de consolidar con src/components/pages/Profile/Profile.jsx.
 import React, { useState, useEffect } from 'react'
 import userGateway from '../services/userGateway'
 
