@@ -6,7 +6,10 @@
 
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createAlert, dryRunAlertRule, selectLoading, selectError, selectSuccess, selectDryRunResult } from '../../redux/slices/alerts'
+import {
+  createAlert, dryRunAlertRule, clearDryRunResult,
+  selectLoading, selectError, selectDryRunResult,
+} from '../../redux/slices/alerts'
 
 const METRICS = [
   { value: 'SL', label: 'Nivel de servicio (SL)' },
@@ -51,11 +54,9 @@ export default function AlertConfig() {
   const dispatch = useDispatch()
   const loading = useSelector(selectLoading)
   const error = useSelector(selectError)
-  const success = useSelector(selectSuccess)
   const dryRunResultStore = useSelector(selectDryRunResult)
 
   const [config, setConfig] = useState({ ...EMPTY_FORM })
-  // dryRunResult lee del store (despacha dryRunAlertRule → Redux)
   const dryRunResult = dryRunResultStore
   const [dryRunLoading, setDryRunLoading] = useState(false)
 
@@ -70,10 +71,10 @@ export default function AlertConfig() {
   }
 
   async function handleCreate() {
-    await dispatch(createAlert(config))
-    if (success) {
+    const result = await dispatch(createAlert(config))
+    if (createAlert.fulfilled.match(result)) {
       setConfig({ ...EMPTY_FORM })
-      setDryRunResult(null)
+      dispatch(clearDryRunResult())
     }
   }
 
@@ -262,14 +263,14 @@ export default function AlertConfig() {
 
           {error && (
             <div role="alert" className="error-banner">
-              {error}
+              {typeof error === 'string' ? error : error?.message ?? 'Error desconocido'}
             </div>
           )}
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: 'auto' }}>
             <button
               className="btn btn-secondary"
-              onClick={() => { setConfig({ ...EMPTY_FORM }); setDryRunResult(null) }}
+              onClick={() => { setConfig({ ...EMPTY_FORM }); dispatch(clearDryRunResult()) }}
               type="button"
             >
               Limpiar

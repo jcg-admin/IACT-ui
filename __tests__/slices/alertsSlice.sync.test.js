@@ -88,3 +88,28 @@ describe('alerts.slice — sincronización T3.1', () => {
     expect(s.alertRuleDetail).toBe(null)
   })
 })
+
+describe('alertsSlice — clearDryRunResult', () => {
+  it('limpia dryRunResult a null sin afectar el resto del estado', () => {
+    const store = configureStore({
+      reducer: { alerts: reducer },
+      preloadedState: {
+        alerts: {
+          ...alertsModule.default(undefined, { type: '@@INIT' }),
+          dryRunResult: { ok: true, status: 'ok' },
+          error: null,
+          success: false,
+        },
+      },
+      middleware: (g) => g({ serializableCheck: false }),
+    })
+
+    store.dispatch(alertsModule.clearDryRunResult())
+
+    const state = store.getState().alerts
+    expect(state.dryRunResult).toBeNull()
+    // El resto del estado no se ve afectado
+    expect(state.error).toBeNull()
+    expect(state.success).toBe(false)
+  })
+})

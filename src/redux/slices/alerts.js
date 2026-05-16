@@ -103,9 +103,10 @@ const alertsSlice = createSlice({
   name: 'alerts',
   initialState,
   reducers: {
-    clearError:   (state) => { state.error = null },
-    clearSuccess: (state) => { state.success = false },
-    resetState:   () => initialState,
+    clearError:        (state) => { state.error = null },
+    clearSuccess:      (state) => { state.success = false },
+    clearDryRunResult: (state) => { state.dryRunResult = null },
+    resetState:        () => initialState,
   },
   extraReducers: (builder) => {
     const pending  = (key) => (state) => { state[key] = true;  state.error = null }
@@ -195,7 +196,7 @@ const alertsSlice = createSlice({
   },
 })
 
-export const { clearError, clearSuccess, resetState } = alertsSlice.actions
+export const { clearError, clearSuccess, clearDryRunResult, resetState } = alertsSlice.actions
 
 // Selectors
 export const selectAlerts             = (s) => s.alerts.alerts
