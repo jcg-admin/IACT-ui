@@ -29,7 +29,7 @@ import { DashboardLayout } from '@layouts/DashboardLayout'
 import { PageTransition, AnimatedLoadingSpinner } from '@ui/animations'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import { FunctionCatalog } from '../permissions/catalog'
-import { selectIsAuthenticated } from '@store/selectors'
+import { selectIsAuthenticated, selectUser } from '@store/selectors'
 import { usePermisos } from '../hooks/usePermisos'
 
 // ── Lazy imports ────────────────────────────────────────────────────────────
@@ -269,6 +269,7 @@ const RouteLoadingFallback = () => (
 function RoutesWithTransitions() {
   const location = useLocation()
   const navLinks = useFilteredNavLinks()
+  const currentUser = useSelector(selectUser)
 
   return (
     <PageTransition key={location.pathname}>
@@ -302,9 +303,9 @@ function RoutesWithTransitions() {
               <DashboardLayout
                 navLinks={navLinks}
                 userInfo={{
-                  name: 'John Doe',
-                  email: 'john.doe@example.com',
-                  avatar_url: 'https://via.placeholder.com/40',
+                  name:       currentUser?.name       ?? '',
+                  email:      currentUser?.email      ?? '',
+                  avatar_url: currentUser?.avatar_url ?? '',
                 }}
                 currentPage="Dashboard"
               />
