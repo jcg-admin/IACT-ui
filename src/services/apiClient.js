@@ -112,7 +112,7 @@ class APIService {
         if (isRetryableError(error) && attempt < this.retryAttempts) {
           // Exponential backoff
           const delay = this.retryDelay * Math.pow(2, attempt - 1);
-          console.log(`[API] Retrying request (${attempt}/${this.retryAttempts}) after ${delay}ms`);
+          console.debug(`[API] Retrying request (${attempt}/${this.retryAttempts}) after ${delay}ms`);
           await this._sleep(delay);
           continue;
         }

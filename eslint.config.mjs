@@ -34,7 +34,7 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'warn',
       'no-unused-vars': 'warn',
-      'no-console': ['warn', { allow: ['error', 'warn'] }],
+      'no-console': ['warn', { allow: ['error', 'warn', 'debug', 'group', 'groupEnd', 'info'] }],
     },
   },
   {

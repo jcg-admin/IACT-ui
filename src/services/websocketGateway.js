@@ -30,7 +30,7 @@ class WebSocketService {
 
         this.socket.onopen = () => {
           clearTimeout(timeout);
-          console.log('[WebSocket] Connected');
+          console.debug('[WebSocket] Connected');
           this.reconnectAttempts = 0;
           this.startHeartbeat();
           this.emit('open');
@@ -55,7 +55,7 @@ class WebSocketService {
         };
 
         this.socket.onclose = () => {
-          console.log('[WebSocket] Disconnected');
+          console.debug('[WebSocket] Disconnected');
           this.stopHeartbeat();
           this.emit('close');
           this.attemptReconnect();
@@ -148,7 +148,7 @@ class WebSocketService {
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    console.log(`[WebSocket] Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`);
+    console.debug(`[WebSocket] Reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts})`);
 
     setTimeout(() => {
       this.connect(this.token);

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- Decorador de caché: el logging de HIT/MISS/EXPIRED es intencional */
 /**
  * withCaching Decorator
  * 
@@ -38,17 +39,23 @@ export const withCaching = (fn, ttl = 5 * 60 * 1000, keyFn = null) => {
       const now = Date.now()
 
       if (now - cached.timestamp < ttl) {
-        console.log(`[CACHE HIT] ${fnName}:${cacheKey}`)
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[CACHE HIT] ${fnName}:${cacheKey}`)
+        }
         return cached.value
       }
 
       // Expirado, remover del caché
       cache.delete(cacheKey)
-      console.log(`[CACHE EXPIRED] ${fnName}:${cacheKey}`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[CACHE EXPIRED] ${fnName}:${cacheKey}`)
+      }
     }
 
     // No en caché o expirado, ejecutar función
-    console.log(`[CACHE MISS] ${fnName}:${cacheKey}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[CACHE MISS] ${fnName}:${cacheKey}`)
+    }
 
     try {
       const result = await fn.apply(this, args)
@@ -84,15 +91,21 @@ export const withCachingAdvanced = (fn, ttl = 5 * 60 * 1000, keyFn = null) => {
       const now = Date.now()
 
       if (now - cached.timestamp < ttl) {
-        console.log(`[CACHE HIT] ${fnName}:${cacheKey}`)
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[CACHE HIT] ${fnName}:${cacheKey}`)
+        }
         return cached.value
       }
 
       cache.delete(cacheKey)
-      console.log(`[CACHE EXPIRED] ${fnName}:${cacheKey}`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[CACHE EXPIRED] ${fnName}:${cacheKey}`)
+      }
     }
 
-    console.log(`[CACHE MISS] ${fnName}:${cacheKey}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[CACHE MISS] ${fnName}:${cacheKey}`)
+    }
 
     try {
       const result = await fn.apply(this, args)
@@ -112,7 +125,9 @@ export const withCachingAdvanced = (fn, ttl = 5 * 60 * 1000, keyFn = null) => {
     if (pattern === null) {
       // Limpiar todo el caché
       cache.clear()
-      console.log(`[CACHE CLEARED] ${fnName}`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[CACHE CLEARED] ${fnName}`)
+      }
     } else if (typeof pattern === 'string') {
       // Limpiar por patrón de clave
       for (const key of cache.keys()) {
@@ -120,7 +135,9 @@ export const withCachingAdvanced = (fn, ttl = 5 * 60 * 1000, keyFn = null) => {
           cache.delete(key)
         }
       }
-      console.log(`[CACHE INVALIDATED] ${fnName}:${pattern}`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[CACHE INVALIDATED] ${fnName}:${pattern}`)
+      }
     } else if (typeof pattern === 'function') {
       // Limpiar por función predicado
       for (const key of cache.keys()) {
@@ -128,7 +145,9 @@ export const withCachingAdvanced = (fn, ttl = 5 * 60 * 1000, keyFn = null) => {
           cache.delete(key)
         }
       }
-      console.log(`[CACHE INVALIDATED] ${fnName} (by predicate)`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[CACHE INVALIDATED] ${fnName} (by predicate)`)
+      }
     }
   }
 

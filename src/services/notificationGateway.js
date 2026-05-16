@@ -132,7 +132,7 @@ class NotificationService {
   _showNotification(message, type, duration) {
     if (!this.toastContext) {
       console.warn('NotificationService: Toast context not initialized')
-      console.log(`[${type}] ${message}`)
+      console.debug(`[${type}] ${message}`)
       return null
     }
 

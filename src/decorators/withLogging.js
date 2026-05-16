@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- Decorador de logging: el uso de console es intencional */
 /**
  * withLogging Decorator
  * 
@@ -61,34 +62,38 @@ export const withLogging = (fn, fnName = fn.name || 'anonymous', options = {}) =
 
     const startTime = performance.now()
 
-    // Log inicio
-    if (logArgs) {
-      console.log(`[LOG] ${fnName} called with:`, sanitizedArgs)
-    } else {
-      console.log(`[LOG] ${fnName} called`)
+    // Log inicio — solo en desarrollo
+    if (process.env.NODE_ENV !== 'production') {
+      if (logArgs) {
+        console.log(`[LOG] ${fnName} called with:`, sanitizedArgs)
+      } else {
+        console.log(`[LOG] ${fnName} called`)
+      }
     }
 
     try {
       const result = await fn.apply(this, args)
       const duration = (performance.now() - startTime).toFixed(2)
 
-      // Log éxito
-      if (logTime) {
-        console.log(`[LOG] ${fnName} completed in ${duration}ms`)
-      }
+      // Log éxito — solo en desarrollo
+      if (process.env.NODE_ENV !== 'production') {
+        if (logTime) {
+          console.log(`[LOG] ${fnName} completed in ${duration}ms`)
+        }
 
-      if (logResult && typeof result === 'object') {
-        console.log(`[LOG] ${fnName} result:`, {
-          type: result?.constructor?.name,
-          keys: Object.keys(result || {}).length,
-        })
-      } else if (logResult) {
-        const resultStr =
-          typeof result === 'string' && result.length > maxArgLength
-            ? result.substring(0, maxArgLength) + '...'
-            : result
+        if (logResult && typeof result === 'object') {
+          console.log(`[LOG] ${fnName} result:`, {
+            type: result?.constructor?.name,
+            keys: Object.keys(result || {}).length,
+          })
+        } else if (logResult) {
+          const resultStr =
+            typeof result === 'string' && result.length > maxArgLength
+              ? result.substring(0, maxArgLength) + '...'
+              : result
 
-        console.log(`[LOG] ${fnName} result:`, resultStr)
+          console.log(`[LOG] ${fnName} result:`, resultStr)
+        }
       }
 
       return result
@@ -127,19 +132,21 @@ export const withLoggingLevels = (fn, fnName = fn.name, level = 'INFO') => {
   return async function (...args) {
     const startTime = performance.now()
 
-    if (currentLevel <= LOG_LEVELS.TRACE) {
-      console.log(`[TRACE] ${fnName} called with args:`, args)
-    } else if (currentLevel <= LOG_LEVELS.DEBUG) {
-      console.log(`[DEBUG] ${fnName} called`)
-    } else if (currentLevel <= LOG_LEVELS.INFO) {
-      console.log(`[INFO] ${fnName} executing`)
+    if (process.env.NODE_ENV !== 'production') {
+      if (currentLevel <= LOG_LEVELS.TRACE) {
+        console.log(`[TRACE] ${fnName} called with args:`, args)
+      } else if (currentLevel <= LOG_LEVELS.DEBUG) {
+        console.log(`[DEBUG] ${fnName} called`)
+      } else if (currentLevel <= LOG_LEVELS.INFO) {
+        console.log(`[INFO] ${fnName} executing`)
+      }
     }
 
     try {
       const result = await fn.apply(this, args)
       const duration = (performance.now() - startTime).toFixed(2)
 
-      if (currentLevel <= LOG_LEVELS.INFO) {
+      if (process.env.NODE_ENV !== 'production' && currentLevel <= LOG_LEVELS.INFO) {
         console.log(`[INFO] ${fnName} completed in ${duration}ms`)
       }
 

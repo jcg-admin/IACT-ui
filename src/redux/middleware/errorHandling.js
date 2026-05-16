@@ -142,7 +142,10 @@ export const autoRetryMiddleware = (store) => (next) => (action) => {
     const error = action.payload;
 
     if (isRetryableError(error)) {
-      console.log('[Auto Retry] Retrying action:', action.type);
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console -- log de diagnóstico bajo guard NODE_ENV
+        console.log('[Auto Retry] Retrying action:', action.type)
+      }
       // El retry ya se maneja en apiService, este middleware es informativo
     }
   }

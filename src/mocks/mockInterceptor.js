@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- Archivo de mock: no llega a produccion */
 /**
  * Mock Interceptor
  * Intercepta requests y retorna mock data
@@ -1932,7 +1933,7 @@ class MockInterceptor {
     let testEstado = 'ok'
     try {
       testEstado = new URL(url, 'http://localhost').searchParams.get('test_estado') ?? 'ok'
-    } catch (_) {}
+    } catch (_) { /* URL relativa sin hostname — continuar con valor por defecto */ }
 
     if (testEstado === 'stale') {
       return {
@@ -2009,7 +2010,7 @@ class MockInterceptor {
     try {
       const sp = new URL(url, 'http://localhost').searchParams
       params = { error_type: sp.get('error_type'), trimestre: sp.get('trimestre') }
-    } catch (_) {}
+    } catch (_) { /* URL relativa sin hostname — continuar con valor por defecto */ }
 
     const errors = [
       {
@@ -2059,7 +2060,7 @@ class MockInterceptor {
     let testState = null
     try {
       testState = new URL(url, 'http://localhost').searchParams.get('test_state')
-    } catch (_) {}
+    } catch (_) { /* URL relativa sin hostname — continuar con valor por defecto */ }
 
     const frescoDataset = {
       dataset: 'ivr_llamadas_nacional',

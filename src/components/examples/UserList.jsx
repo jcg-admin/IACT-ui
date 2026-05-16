@@ -15,8 +15,8 @@ function UserList() {
     method: 'GET',
     autoFetch: true,
     dependencies: [page, limit],
-    onSuccess: (data) => {
-      console.log('Users loaded:', data);
+    onSuccess: (_data) => {
+      // Callback de éxito — sin acción adicional
     },
   });
 

@@ -26,13 +26,13 @@ export const useRealTimeChannel = (url, token, enabled = true) => {
 
     // Manejadores de eventos
     const handleOpen = () => {
-      console.log('[useWebSocket] Connected');
+      console.debug('[useWebSocket] Connected');
       setIsReady(true);
       setError(null);
     };
 
     const handleClose = () => {
-      console.log('[useWebSocket] Disconnected');
+      console.debug('[useWebSocket] Disconnected');
       setIsReady(false);
     };
 
