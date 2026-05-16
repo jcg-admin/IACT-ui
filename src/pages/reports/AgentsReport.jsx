@@ -4,6 +4,7 @@ import ReportTable from '../../components/reports/ReportTable'
 import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
 import ShareReportModal from '../../components/reports/ShareReportModal'
 import reportsService from '../../services/reportsGateway'
+import { buildShareUrl } from '../../utils/reportShareUrl'
 
 const COLUMNS = [
   { key: 'cMenu',                  label: 'Menú IVR' },
@@ -18,15 +19,6 @@ const COLUMNS = [
 const TRIMESTRES = ['Q01_25', 'Q02_25', 'Q03_25']
 const SEGMENTOS  = ['Nacional', 'Puebla']
 const DEFAULT_FILTERS = { trimestre: 'Q01_25', segmento: 'Nacional' }
-
-// Genera URL compartible para el reporte — utilidad client-side (sin API)
-function buildShareUrl(reportType, filters = {}) {
-  const params = new URLSearchParams(
-    Object.fromEntries(Object.entries(filters).filter(([, v]) => v != null))
-  )
-  const query = params.toString()
-  return `${window.location.origin}/reports/${reportType}${query ? '?' + query : ''}`
-}
 
 export default function AgentsReport() {
   const dispatch = useDispatch()
@@ -59,11 +51,11 @@ export default function AgentsReport() {
     try {
       const { saveFilter } = await import('../../redux/slices/savedFilters')
       dispatch(saveFilter({ name, filters }))
-    } catch (_) {}
+    } catch (_) { /* guardar vista es opcional — fallo no interrumpe al usuario */ }
   }
 
   function handleShare() {
-    const url = buildShareUrl('agents', filters)
+    const url = buildShareUrl('/reports/agents', filters)
     setShareModal({ isOpen: true, url })
   }
 
