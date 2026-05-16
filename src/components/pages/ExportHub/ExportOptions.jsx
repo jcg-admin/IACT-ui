@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function ExportOptions({ selectedFormat, onFormatChange }) {
   return (
@@ -46,4 +47,8 @@ export default function ExportOptions({ selectedFormat, onFormatChange }) {
       </div>
     </div>
   )
+}
+ExportOptions.propTypes = {
+  selectedFormat: PropTypes.string,
+  onFormatChange: PropTypes.func.isRequired,
 }

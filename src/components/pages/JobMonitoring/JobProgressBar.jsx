@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function JobProgressBar({ progress, status, rowsProcessed }) {
   return (
@@ -23,4 +24,9 @@ export default function JobProgressBar({ progress, status, rowsProcessed }) {
       </div>
     </div>
   )
+}
+JobProgressBar.propTypes = {
+  progress:      PropTypes.number,
+  status:        PropTypes.string,
+  rowsProcessed: PropTypes.number,
 }

@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import Table from '@ui/presentational/Table';
 import Modal from '@ui/shared/Modal';
 import { useToast } from '../../context/ToastContext';
+import PropTypes from 'prop-types'
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -304,3 +305,9 @@ function UserModal({ isOpen, user, onClose, onSave }) {
 }
 
 export default UserList;
+UserModal.propTypes = {
+  isOpen:  PropTypes.bool.isRequired,
+  user:    PropTypes.object,
+  onClose: PropTypes.func.isRequired,
+  onSave:  PropTypes.func.isRequired,
+}

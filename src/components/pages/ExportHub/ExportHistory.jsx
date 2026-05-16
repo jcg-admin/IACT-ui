@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function ExportHistory({ exports }) {
   if (exports.length === 0) {
@@ -36,4 +37,7 @@ export default function ExportHistory({ exports }) {
       </div>
     </div>
   )
+}
+ExportHistory.propTypes = {
+  exports: PropTypes.array,
 }

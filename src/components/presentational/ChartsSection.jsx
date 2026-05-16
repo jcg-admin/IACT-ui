@@ -1,5 +1,6 @@
 import React from 'react';
 import Chart from './Chart';
+import PropTypes from 'prop-types'
 
 function ChartsSection({ charts }) {
   return (
@@ -17,3 +18,6 @@ function ChartsSection({ charts }) {
 }
 
 export default React.memo(ChartsSection);
+ChartsSection.propTypes = {
+  charts: PropTypes.array,
+}

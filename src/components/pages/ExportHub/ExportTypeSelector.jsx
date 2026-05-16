@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const EXPORT_TYPES = [
   { id: 'users', name: 'Users', icon: '👥', description: 'User accounts and profiles' },
@@ -29,4 +30,8 @@ export default function ExportTypeSelector({ selectedType, onSelect }) {
       ))}
     </div>
   )
+}
+ExportTypeSelector.propTypes = {
+  selectedType: PropTypes.string,
+  onSelect:     PropTypes.func.isRequired,
 }

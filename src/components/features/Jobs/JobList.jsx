@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import Table from '@ui/presentational/Table';
 import Modal from '@ui/shared/Modal';
 import { useToast } from '../../context/ToastContext';
+import PropTypes from 'prop-types'
 
 function JobList() {
   const [jobs, setJobs] = useState([]);
@@ -271,3 +272,10 @@ function JobDetailsModal({ isOpen, job, onClose, onCancel, onRetry }) {
 }
 
 export default JobList;
+JobList.propTypes = {
+  isOpen:       PropTypes.bool,
+  job:          PropTypes.object,
+  onClose:      PropTypes.func,
+  onCancel:     PropTypes.func,
+  onRetry:      PropTypes.func,
+}

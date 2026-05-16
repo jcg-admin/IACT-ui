@@ -6,6 +6,7 @@
 
 import React, { createContext, useState, useEffect, useCallback } from 'react'
 import userAuth from '../../../facades/UserIdentity'
+import PropTypes from 'prop-types'
 
 export const SessionContext = createContext()
 
@@ -79,4 +80,7 @@ export default function SessionProvider({ children }) {
       {children}
     </SessionContext.Provider>
   )
+}
+SessionProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 }

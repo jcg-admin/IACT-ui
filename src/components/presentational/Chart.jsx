@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'
 import {
   LineChart,
   Line,
@@ -39,3 +40,7 @@ function Chart({ data, dataKey = 'value' }) {
 }
 
 export default React.memo(Chart);
+Chart.propTypes = {
+  data:    PropTypes.array,
+  dataKey: PropTypes.string,
+}

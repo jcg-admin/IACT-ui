@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import PropTypes from 'prop-types'
 
 const COLORS = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b']
 
@@ -50,4 +51,9 @@ export default function ChartComponent({ title, type, data }) {
       </ResponsiveContainer>
     </div>
   )
+}
+ChartComponent.propTypes = {
+  title: PropTypes.string,
+  type:  PropTypes.string,
+  data:  PropTypes.array,
 }

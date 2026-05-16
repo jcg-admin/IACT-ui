@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react'
 import { getNotificationService } from '@api/notificationGateway'
+import PropTypes from 'prop-types'
 
 export default function CustomReportForm({ onGenerateReport }) {
   const [reportConfig, setReportConfig] = useState({
@@ -109,4 +110,7 @@ export default function CustomReportForm({ onGenerateReport }) {
       </button>
     </div>
   )
+}
+CustomReportForm.propTypes = {
+  onGenerateReport: PropTypes.func.isRequired,
 }

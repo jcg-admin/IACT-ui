@@ -1,5 +1,6 @@
 import React from 'react';
 import MetricCard from './MetricCard';
+import PropTypes from 'prop-types'
 
 function MetricsGrid({ metrics }) {
   return (
@@ -12,3 +13,6 @@ function MetricsGrid({ metrics }) {
 }
 
 export default React.memo(MetricsGrid);
+MetricsGrid.propTypes = {
+  metrics: PropTypes.array,
+}
