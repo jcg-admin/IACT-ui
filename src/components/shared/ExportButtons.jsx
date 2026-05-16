@@ -17,6 +17,7 @@
 import React from 'react'
 import { AnimatedButton } from '@ui/animations'
 import { useExport } from '@hooks/domain/useExport'
+import PropTypes from 'prop-types'
 
 /**
  * ExportButtons Component
@@ -156,3 +157,17 @@ export default function ExportButtons({
  *     showCSV={false}
  *   />
  */
+ExportButtons.propTypes = {
+  data:       PropTypes.array.isRequired,
+  exportName: PropTypes.string.isRequired,
+  headers:    PropTypes.arrayOf(PropTypes.string),
+  columns:    PropTypes.arrayOf(PropTypes.string),
+  tableRef:   PropTypes.object,
+  title:      PropTypes.string,
+  variant:    PropTypes.string,
+  showExcel:  PropTypes.bool,
+  showPDF:    PropTypes.bool,
+  showCSV:    PropTypes.bool,
+  className:  PropTypes.string,
+  gap:        PropTypes.string,
+}

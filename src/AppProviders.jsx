@@ -18,6 +18,7 @@ import store from '@store/store'
 import { queryClient } from '@lib/queryClient'
 import { ToastProvider, useToast } from './context/ToastContext'
 import { registerNotificationService } from '@api/notificationGateway'
+import PropTypes from 'prop-types'
 
 /**
  * Initializes notification service with toast context
@@ -56,6 +57,10 @@ export function AppProviders({ children }) {
       </Provider>
     </QueryClientProvider>
   )
+}
+
+AppProviders.propTypes = {
+  children: PropTypes.node.isRequired,
 }
 
 export default AppProviders

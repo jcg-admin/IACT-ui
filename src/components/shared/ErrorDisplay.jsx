@@ -299,3 +299,10 @@ function ErrorHistoryViewer() {
 }
 
 export { ErrorHistoryViewer };
+
+import PropTypes from 'prop-types'
+ErrorDetailsModal.propTypes = {
+  error:   PropTypes.shape({ message: PropTypes.string, statusCode: PropTypes.number }),
+  isOpen:  PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+}
