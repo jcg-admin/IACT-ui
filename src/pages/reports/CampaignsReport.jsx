@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import ReportTable from '../../components/reports/ReportTable'
 import SavedFiltersPanel from '../../components/reports/SavedFiltersPanel'
@@ -26,7 +26,7 @@ export default function CampaignsReport() {
   const [error, setError] = useState(null)
   const [shareModal, setShareModal] = useState({ isOpen: false, url: '' })
 
-  async function loadData(f = filters) {
+  const loadData = useCallback(async (f = filters) => {
     setLoading(true)
     setError(null)
     try {
@@ -37,9 +37,9 @@ export default function CampaignsReport() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
 
-  useEffect(() => { loadData() }, [])
+  useEffect(() => { loadData() }, [loadData])
 
   function handleReset() { setFilters(DEFAULT_FILTERS); loadData(DEFAULT_FILTERS) }
 

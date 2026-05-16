@@ -35,6 +35,7 @@ export default function ReportExport() {
   const [fileUrl, setFileUrl] = useState(null)
   const pollingRef = useRef(null)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- cleanup de intervalo al desmontar, sin deps intencional
   useEffect(() => {
     return () => { if (pollingRef.current) clearInterval(pollingRef.current) }
   }, [])

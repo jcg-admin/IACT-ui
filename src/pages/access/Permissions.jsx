@@ -19,6 +19,7 @@ export default function Permissions() {
     const error = useSelector(selectError);
     const userPermissions = useSelector(state => state.access.userPermissions);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- carga inicial al montar
     useEffect(() => {
         loadUsers();
     }, []);
