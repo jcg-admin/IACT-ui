@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Modal from '@ui/shared/Modal'
+import PropTypes from 'prop-types'
 import {
   createShare,
   resetCreateStatus,
@@ -203,4 +204,22 @@ export default function ShareReportModal({ isOpen, onClose, url = '', viewId = n
       }
     </Modal>
   )
+}
+ShareForm.propTypes = {
+  viewId:   PropTypes.number,
+  viewName: PropTypes.string,
+  onClose:  PropTypes.func.isRequired,
+}
+
+UrlCopyContent.propTypes = {
+  url:     PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+}
+
+ShareReportModal.propTypes = {
+  isOpen:   PropTypes.bool.isRequired,
+  onClose:  PropTypes.func.isRequired,
+  url:      PropTypes.string,
+  viewId:   PropTypes.number,
+  viewName: PropTypes.string,
 }

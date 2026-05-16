@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function ReportFilters({ filters, onChange, onApply, onReset }) {
   return (
@@ -23,4 +24,10 @@ export default function ReportFilters({ filters, onChange, onApply, onReset }) {
       <button className="btn btn-secondary" onClick={onReset}>Limpiar</button>
     </div>
   )
+}
+ReportFilters.propTypes = {
+  filters:  PropTypes.object,
+  onChange: PropTypes.func,
+  onApply:  PropTypes.func,
+  onReset:  PropTypes.func,
 }

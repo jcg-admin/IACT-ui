@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchSavedFilters, deleteFilter, setDefaultFilter, selectSavedFilters, selectSavedFiltersLoading } from '../../redux/slices/savedFilters'
 import LoadingSpinner from '../shared/LoadingSpinner'
 import ShareReportModal from './ShareReportModal'
+import PropTypes from 'prop-types'
 
 export default function SavedFiltersPanel({ onApply }) {
   const dispatch = useDispatch()
@@ -93,4 +94,7 @@ export default function SavedFiltersPanel({ onApply }) {
       />
     </div>
   )
+}
+SavedFiltersPanel.propTypes = {
+  onApply: PropTypes.func.isRequired,
 }

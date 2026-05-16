@@ -1,5 +1,6 @@
 import React from 'react'
 import LoadingSpinner from '../shared/LoadingSpinner'
+import PropTypes from 'prop-types'
 
 export default function ReportTable({ columns, data, loading, emptyMessage = 'No hay datos para el período seleccionado.' }) {
   if (loading) return <LoadingSpinner message="Cargando..." />
@@ -27,4 +28,10 @@ export default function ReportTable({ columns, data, loading, emptyMessage = 'No
       </tbody>
     </table>
   )
+}
+ReportTable.propTypes = {
+  columns:      PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, label: PropTypes.string })).isRequired,
+  data:         PropTypes.array.isRequired,
+  loading:      PropTypes.bool,
+  emptyMessage: PropTypes.string,
 }

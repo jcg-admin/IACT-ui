@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types'
 
 const FUNCTION_CATEGORIES = {
     PIPELINE: 'Pipeline',
@@ -362,4 +363,12 @@ export default function FunctionSelector({
             </div>
         </div>
     );
+}
+FunctionSelector.propTypes = {
+  allFunctions:         PropTypes.array,
+  selectedFunctionIds:  PropTypes.array,
+  currentUserFunctions: PropTypes.array,
+  onSelectionChange:    PropTypes.func,
+  onConflictDetected:   PropTypes.func,
+  readOnly:             PropTypes.bool,
 }

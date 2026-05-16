@@ -19,6 +19,7 @@
 import React from 'react';
 import Select from 'react-select';
 import './SelectDropdown.scss';
+import PropTypes from 'prop-types'
 
 const customStyles = {
   control: (base, state) => ({
@@ -231,4 +232,17 @@ export default function SelectDropdown({
       />
     </div>
   );
+}
+SelectDropdown.propTypes = {
+  options:         PropTypes.array.isRequired,
+  value:           PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  onChange:        PropTypes.func.isRequired,
+  isMulti:         PropTypes.bool,
+  isClearable:     PropTypes.bool,
+  isSearchable:    PropTypes.bool,
+  isDisabled:      PropTypes.bool,
+  placeholder:     PropTypes.string,
+  label:           PropTypes.string,
+  required:        PropTypes.bool,
+  noOptionsMessage:PropTypes.func,
 }

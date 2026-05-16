@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types'
 
 const SEPARATION_RULES_INFO = {
     'SR-001': {
@@ -222,4 +223,9 @@ export default function SeparationRulesValidator({ conflicts = [], selectedFunct
             )}
         </div>
     );
+}
+SeparationRulesValidator.propTypes = {
+  conflicts:         PropTypes.array,
+  selectedFunctions: PropTypes.array,
+  onProceedAnyway:   PropTypes.func,
 }

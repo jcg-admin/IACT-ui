@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types'
 
 export default function PermissionsTable({
     permissions = [],
@@ -224,4 +225,10 @@ export default function PermissionsTable({
             </div>
         </div>
     );
+}
+PermissionsTable.propTypes = {
+  permissions: PropTypes.array,
+  onRevoke:    PropTypes.func,
+  loading:     PropTypes.bool,
+  showStats:   PropTypes.bool,
 }
