@@ -7,7 +7,6 @@ import {
   selectReportsLoading,
   selectReportsError,
 } from '@store/slices/reports'
-import LoadingSpinner from '../../components/shared/LoadingSpinner'
 import ConfirmModal from '../../components/shared/ConfirmModal'
 import Table from '@ui/presentational/Table'
 

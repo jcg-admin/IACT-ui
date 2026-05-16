@@ -12,7 +12,6 @@ import {
     clearError,
     clearSuccess,
 } from '../../redux/slices/access';
-import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import Table from '@ui/presentational/Table';
 
 const EMPTY_FORM = { name: '', description: '', code: '' };

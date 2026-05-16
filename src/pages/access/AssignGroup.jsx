@@ -18,7 +18,6 @@ import {
   clearError,
   resetState,
 } from '@store/slices/access'
-import SeparationRulesValidator from '@ui/access/SeparationRulesValidator'
 
 export default function AssignGroup() {
   const dispatch = useDispatch()

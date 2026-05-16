@@ -14,7 +14,6 @@ import {
   selectFunctions,
   selectAdminLoading,
 } from '../../redux/slices/admin'
-import LoadingSpinner from '../../components/shared/LoadingSpinner'
 import ConfirmModal from '../../components/shared/ConfirmModal'
 import Table from '@ui/presentational/Table'
 

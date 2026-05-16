@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAllFunctions, assignFunction, revokeFunction,
     fetchUserAssignedFunctions,
-    validateSeparationRules, selectLoading, selectError, selectSuccess,
+    selectLoading, selectError, selectSuccess,
     selectUserAssignedFunctions, clearSuccess,
 } from '../../redux/slices/access';
 import FunctionSelector from '../../components/access/FunctionSelector';

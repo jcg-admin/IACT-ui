@@ -7,7 +7,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import userAuth from '../../../facades/UserIdentity'
 import reportExporter from '../../../facades/ReportExporter'
 import { getNotificationService } from '@api/notificationGateway'
 import { assignGroupToUser, revokeGroupFromUser, selectGroups } from '../../../redux/slices/access'
