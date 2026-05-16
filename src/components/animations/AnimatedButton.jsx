@@ -23,6 +23,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import PropTypes from 'prop-types'
 
 /**
  * Check if user prefers reduced motion
@@ -166,4 +167,12 @@ export default function AnimatedButton({
 export const buttonVariants = getButtonVariants(false)
 
 export { getButtonVariants, getPrefersReducedMotion }
-
+AnimatedButton.propTypes = {
+  children:  PropTypes.node,
+  className: PropTypes.string,
+  onClick:   PropTypes.func,
+  disabled:  PropTypes.bool,
+  type:      PropTypes.oneOf(['button', 'submit', 'reset']),
+  variant:   PropTypes.string,
+  title:     PropTypes.string,
+}

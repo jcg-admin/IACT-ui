@@ -11,6 +11,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
+import PropTypes from 'prop-types'
 
 /**
  * Spinner rotation animation
@@ -155,3 +156,9 @@ export default function AnimatedLoadingSpinner({
  * Export animation variants for custom use
  */
 export { spinnerVariants, containerVariants }
+AnimatedLoadingSpinner.propTypes = {
+  fullScreen: PropTypes.bool,
+  size:       PropTypes.oneOf(['sm', 'md', 'lg']),
+  message:    PropTypes.string,
+  overlay:    PropTypes.bool,
+}

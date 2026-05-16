@@ -12,6 +12,7 @@
 
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import PropTypes from 'prop-types'
 
 /**
  * Backdrop (overlay) animation
@@ -172,3 +173,10 @@ export default function ModalAnimation({
  * Export animation variants for custom use
  */
 export { backdropVariants, modalVariants }
+ModalAnimation.propTypes = {
+  isOpen:    PropTypes.bool.isRequired,
+  onClose:   PropTypes.func.isRequired,
+  children:  PropTypes.node,
+  className: PropTypes.string,
+  size:      PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
+}
