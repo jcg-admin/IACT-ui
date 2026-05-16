@@ -1,9 +1,15 @@
 /**
- * alertsPages.test.jsx — v2
+ * alertsPages.test.jsx — v3
  *
  * CORRECCIÓN T4.2:
  *   AlertConfig: validateCondition → dryRunAlertRule thunk
  *   Templates:   fetchTemplates eliminado (endpoint inexistente)
+ *
+ * CORRECCIÓN H-F1-003:
+ *   Mock actualizado al estado actual del slice (FASE 1):
+ *   - selectSuccess eliminado (AlertConfig ya no lo importa)
+ *   - clearDryRunResult añadido (nuevo reducer de FASE 1)
+ *   - stub del reducer actualizado con dryRunResult
  */
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
@@ -20,18 +26,19 @@ jest.mock('../../../redux/slices/alerts', () => ({
   unsubscribeFromAlert: jest.fn(() => ({ type: 'alerts/unsubscribeFromAlert' })),
   dryRunAlertRule:      jest.fn(() => ({ type: 'alerts/dryRunAlertRule' })),
   // fetchTemplates y selectTemplates NO existen en v2
+  // selectSuccess eliminado: AlertConfig usa createAlert.fulfilled.match() — FASE 1
+  clearDryRunResult:    jest.fn(() => ({ type: 'alerts/clearDryRunResult' })),
   selectAlerts:         (s) => s.alerts.alerts,
   selectHistory:        (s) => s.alerts.history,
   selectSubscriptions:  (s) => s.alerts.subscriptions,
   selectLoading:        (s) => s.alerts.loading,
   selectError:          (s) => s.alerts.error,
-  selectSuccess:        (s) => s.alerts.success,
   selectDryRunResult:   (s) => s.alerts.dryRunResult ?? null,
 }))
 
 const alertsReducer = (state = {
   alerts: [], history: [], subscriptions: [],
-  loading: false, error: null, success: false, dryRunResult: null,
+  loading: false, error: null, dryRunResult: null,
 }) => state
 
 function buildStore() {
@@ -85,6 +92,16 @@ describe('AlertConfig — dryRunAlertRule (T4.2)', () => {
     expect(src).toContain('dryRunAlertRule')
     // Verifica que validateCondition NO está
     expect(src).not.toContain('validateCondition')
+  })
+
+  it('usa clearDryRunResult y NO importa selectSuccess (H-F1-003)', () => {
+    const src = require('fs').readFileSync('src/pages/alerts/AlertConfig.jsx', 'utf8')
+    // clearDryRunResult debe estar importado (añadido en FASE 1)
+    expect(src).toContain('clearDryRunResult')
+    // selectSuccess fue eliminado — AlertConfig usa createAlert.fulfilled.match()
+    expect(src).not.toContain('selectSuccess')
+    // setDryRunResult nunca existió — confirmar ausencia
+    expect(src).not.toContain('setDryRunResult')
   })
 })
 

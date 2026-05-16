@@ -581,3 +581,30 @@ describe('Audit accordion — nav children filtering (T-018)', () => {
         expect(auditoriaItem.children.length).toBeGreaterThanOrEqual(1);
     });
 });
+
+// ── H-F3-002: verificar que userInfo proviene de selectUser y no de datos ficticios ──
+
+describe('AppRouter — userInfo desde selectUser (H-F3-002)', () => {
+    it('AppRouter.jsx importa selectUser y NO contiene datos ficticios hardcodeados', () => {
+        const src = require('fs').readFileSync('src/router/AppRouter.jsx', 'utf8')
+
+        // selectUser debe estar importado desde @store/selectors
+        expect(src).toContain('selectUser')
+        expect(src).toContain('useSelector(selectUser)')
+
+        // Datos ficticios eliminados en FASE 3
+        expect(src).not.toContain('John Doe')
+        expect(src).not.toContain('john.doe@example.com')
+        expect(src).not.toContain('via.placeholder.com')
+    })
+
+    it('userInfo usa optional chaining para proteger el caso user=null', () => {
+        const src = require('fs').readFileSync('src/router/AppRouter.jsx', 'utf8')
+        // Optional chaining en las tres propiedades
+        expect(src).toContain("currentUser?.name")
+        expect(src).toContain("currentUser?.email")
+        expect(src).toContain("currentUser?.avatar_url")
+        // Fallback a string vacío para evitar undefined
+        expect(src).toMatch(/currentUser\?\.name\s*\?\?\s*''/)
+    })
+})

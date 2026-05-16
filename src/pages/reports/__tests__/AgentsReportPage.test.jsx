@@ -1,7 +1,15 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import AgentsReport from '../AgentsReport'
+
+// H-F2-002: mock de buildShareUrl para verificar que se llama con el basePath correcto
+jest.mock('../../../utils/reportShareUrl', () => ({
+  buildShareUrl: jest.fn((basePath, filters) =>
+    `https://example.com${basePath}?trimestre=${filters.trimestre}&segmento=${filters.segmento}`
+  ),
+}))
 
 const MOCK_ROW = {
   trimestre: 'Q01_25',
@@ -155,5 +163,23 @@ describe('AgentsReport — Compartir (uc-rpt-11)', () => {
   it('renders Compartir button', () => {
     wrapper(<AgentsReport />)
     expect(screen.getByRole('button', { name: /compartir/i })).toBeInTheDocument()
+  })
+
+  it('llama a buildShareUrl con basePath /reports/agents (H-F2-002)', async () => {
+    const { buildShareUrl } = require('../../../utils/reportShareUrl')
+    buildShareUrl.mockClear()
+
+    wrapper(<AgentsReport />)
+    await userEvent.click(screen.getByRole('button', { name: /compartir/i }))
+
+    expect(buildShareUrl).toHaveBeenCalledWith(
+      '/reports/agents',
+      expect.objectContaining({ trimestre: expect.any(String), segmento: expect.any(String) })
+    )
+    // Verificar que NO se llama con el formato antiguo 'agents' (sin /reports/)
+    expect(buildShareUrl).not.toHaveBeenCalledWith(
+      'agents',
+      expect.anything()
+    )
   })
 })
