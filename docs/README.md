@@ -1,3 +1,28 @@
+# IACT-ui · docs/ (historico de implementacion + referencia de componentes)
+
+> **Politica:** la documentacion canonica del proyecto IACT vive en
+> [`IACT-docs/source/`](../../IACT-docs/source/). Este directorio
+> contiene:
+>
+> 1. **Referencia de componentes/guides** (vigente, mantenida aqui):
+>    `components/`, `guides/`, `api/`, `analysis/`. Estos archivos
+>    son cercanos al codigo y se actualizan con el.
+> 2. **Archivos historicos**: `HALLAZGOS-FASE*-*.md`,
+>    `PLAN-IMPL-*.md`, `ANALISIS-*-2026-*.md`. **No se actualizan**;
+>    su contenido fue absorbido en iniciativas en
+>    `IACT-docs/source/gestion/pm/iniciativas/`.
+> 3. **Documentos portados a IACT-docs**: `ARCHITECTURE.md`,
+>    `STATE_DESIGN.md`, `SETUP.md`, `QUICK_START.md`, `DEPLOYMENT.md`,
+>    `TROUBLESHOOTING.md`, `CONTRIBUTING.md`. Se preservan aqui como
+>    referencia pero la version canonica vive en IACT-docs
+>    (`source/arquitectura-tecnica/frontend/`,
+>    `source/onboarding/`, `source/devops/runbooks/`).
+>
+> Cualquier decision arquitectonica nueva o ADR de UI se documenta
+> **directamente en `IACT-docs/source/frontend/`** o
+> `source/arquitectura-tecnica/frontend/`. Ver iniciativa
+> `integrar-docs-internos-multi-repo` en IACT-docs.
+
 # IACT Frontend Documentation
 
 Documentación técnica completa para el proyecto IACT Frontend.
