@@ -72,7 +72,7 @@ export default function Segments() {
     });
     const [users, setUsers] = useState([]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- carga inicial al montar
+     
     useEffect(() => {
         loadUsers();
     }, []);

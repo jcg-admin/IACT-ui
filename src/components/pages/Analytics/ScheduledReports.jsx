@@ -14,7 +14,7 @@ export default function ScheduledReports() {
 
   const notify = getNotificationService()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga inicial al montar, loadSchedules definida después
+   
   useEffect(() => {
     loadSchedules()
   }, [])

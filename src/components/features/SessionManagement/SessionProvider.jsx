@@ -16,7 +16,7 @@ export default function SessionProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   // Check session on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   useEffect(() => {
     checkSession()
   }, [])

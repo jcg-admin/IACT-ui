@@ -16,7 +16,7 @@ export function useLocalTransaction(txType) {
   })
   const isMounted = useRef(true)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- cleanup al desmontar, sin dependencias intencional
+   
   useEffect(() => {
     return () => { isMounted.current = false }
   }, [])
