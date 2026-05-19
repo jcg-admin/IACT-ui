@@ -16,9 +16,11 @@ function Table({
   data,
   onRowClick,
   onActionClick,
+  actions,
   loading = false,
   selectable = false,
   sortable = true,
+  emptyMessage = 'No hay datos para mostrar',
 }) {
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -80,7 +82,7 @@ function Table({
   if (!data || data.length === 0) {
     return (
       <div className="table-container">
-        <p className="table-empty">No hay datos para mostrar</p>
+        <p className="table-empty">{emptyMessage}</p>
       </div>
     );
   }
@@ -117,7 +119,7 @@ function Table({
                 </div>
               </th>
             ))}
-            {onActionClick && <th className="table-cell">Acciones</th>}
+            {(onActionClick || actions) && <th className="table-cell">Acciones</th>}
           </tr>
         </thead>
         <tbody className="table-body">
@@ -143,7 +145,25 @@ function Table({
                   {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}
-              {onActionClick && (
+              {actions && (
+                <td className="table-cell table-cell--actions">
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {actions
+                      .filter((action) => !action.hidden?.(row))
+                      .map((action) => (
+                        <button
+                          key={action.label}
+                          className={`btn btn-sm ${action.variant ? `btn-${action.variant}` : 'btn-secondary'}`}
+                          disabled={action.disabled?.(row) ?? false}
+                          onClick={(e) => { e.stopPropagation(); action.onClick(row); }}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                  </div>
+                </td>
+              )}
+              {!actions && onActionClick && (
                 <td className="table-cell table-cell--actions">
                   <button
                     className="btn btn-sm btn-secondary"
@@ -176,9 +196,19 @@ Table.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   onRowClick: PropTypes.func,
   onActionClick: PropTypes.func,
+  actions: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      onClick: PropTypes.func.isRequired,
+      variant: PropTypes.string,
+      disabled: PropTypes.func,
+      hidden: PropTypes.func,
+    })
+  ),
   loading: PropTypes.bool,
   selectable: PropTypes.bool,
   sortable: PropTypes.bool,
+  emptyMessage: PropTypes.string,
 };
 
 export default Table;

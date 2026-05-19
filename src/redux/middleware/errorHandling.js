@@ -4,15 +4,18 @@
  */
 
 import {
-  handleAPIError,
+  handleHttpError,
   setContextError,
   setErrorHandling,
-} from '@redux/slices/errorSlice';
+} from '@store/slices/error';
 import {
   UnauthorizedError,
   RateLimitError,
+  NetworkAuthRequiredError,
   isRetryableError,
-} from '@utils/apiErrors';
+} from '@shared/apiErrors';
+import { navigateTo } from '@shared/navigation';
+import auditService from '../../services/auditGateway';
 
 /**
  * Middleware para manejar errores de async thunks
@@ -21,7 +24,10 @@ import {
 export const errorHandlingMiddleware = (store) => (next) => (action) => {
   // Detectar acciones rechazadas (async thunks que fallaron)
   if (action.type && action.type.endsWith('/rejected')) {
-    const error = action.payload;
+    const rawError = action.payload;
+    const error = typeof rawError === 'string'
+      ? { message: rawError, statusCode: null, code: 'UNKNOWN' }
+      : (rawError ?? { message: 'Error desconocido', statusCode: null, code: 'UNKNOWN' })
     const context = _extractContextFromAction(action.type);
 
     // Marcar que estamos manejando un error
@@ -29,18 +35,26 @@ export const errorHandlingMiddleware = (store) => (next) => (action) => {
 
     // Handle special error types
     if (error instanceof UnauthorizedError) {
-      // Dispatch logout event
       window.dispatchEvent(new CustomEvent('auth:unauthorized'));
     } else if (error instanceof RateLimitError) {
-      // Show rate limit message
-      console.warn('[API] Rate limit exceeded:', error.message);
+      // RFC 6585 §4: surface retryAfter so the UI can show a countdown
+      store.dispatch(handleHttpError({
+        ...error.toJSON(),
+        retryAfter: error.retryAfter,
+      }));
+    } else if (error instanceof NetworkAuthRequiredError) {
+      // RFC 6585 §6: captive portal — redirect to the network login page
+      if (error.loginUrl) {
+        navigateTo(error.loginUrl);
+      }
+      return next(action);
     }
 
     // Set error context
     if (context) {
       store.dispatch(setContextError({ context, error }));
     } else {
-      store.dispatch(handleAPIError(error));
+      store.dispatch(handleHttpError(error));
     }
 
     // Dejar de marcar manejo de error
@@ -63,6 +77,7 @@ function _extractContextFromAction(actionType) {
 
 /**
  * Middleware para logging de errores
+ * BR_008: Todo acceso/error autenticado se registra en el audit trail.
  */
 export const errorLoggingMiddleware = (store) => (next) => (action) => {
   if (action.type && action.type.endsWith('/rejected')) {
@@ -74,12 +89,12 @@ export const errorLoggingMiddleware = (store) => (next) => (action) => {
       timestamp,
       action: action.type,
       error: {
-        code: error.code,
-        message: error.message,
-        statusCode: error.statusCode,
-        stack: error.stack,
+        code: error?.code,
+        message: error?.message,
+        statusCode: error?.statusCode,
+        stack: error?.stack,
       },
-      retryable: isRetryableError(error),
+      retryable: isRetryableError(error ?? {}),
       state: {
         auth: {
           isAuthenticated: state.auth?.isAuthenticated,
@@ -93,11 +108,24 @@ export const errorLoggingMiddleware = (store) => (next) => (action) => {
     // Send to error tracking service (Sentry, etc)
     if (typeof window !== 'undefined' && window.errorTracker) {
       window.errorTracker.captureException(error, {
-        tags: {
-          action: action.type,
-          code: error.code,
-        },
+        tags: { action: action.type, code: error?.code },
         extra: errorLog,
+      });
+    }
+
+    // BR_008: log authenticated HTTP errors (4xx/5xx) to audit trail
+    const statusCode = error?.statusCode;
+    const isAuthenticated = state.auth?.isAuthenticated;
+    if (isAuthenticated && statusCode >= 400) {
+      auditService.logEvent({
+        event_type: 'HTTP_ERROR',
+        timestamp,
+        user_id: state.auth?.user?.id ?? null,
+        action: action.type,
+        status_code: statusCode,
+        error_code: error?.code ?? null,
+        message: error?.message ?? null,
+        retryable: isRetryableError(error ?? {}),
       });
     }
   }
@@ -114,7 +142,10 @@ export const autoRetryMiddleware = (store) => (next) => (action) => {
     const error = action.payload;
 
     if (isRetryableError(error)) {
-      console.log('[Auto Retry] Retrying action:', action.type);
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console -- log de diagnóstico bajo guard NODE_ENV
+        console.log('[Auto Retry] Retrying action:', action.type)
+      }
       // El retry ya se maneja en apiService, este middleware es informativo
     }
   }

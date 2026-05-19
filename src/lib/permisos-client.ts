@@ -15,6 +15,8 @@ import type {
   GruposUsuarioResponse,
   PermisosCache,
   MenuCache,
+} from '../types/permisos.types';
+import {
   PermisosError,
   UnauthorizedError,
   ForbiddenError,
@@ -214,6 +216,7 @@ export class PermisosClient {
 
   private log(message: string, data?: any): void {
     if (this.enableLogging) {
+      // eslint-disable-next-line no-console -- logging controlado por this.enableLogging
       console.log(`[PermisosClient] ${message}`, data || '');
     }
   }

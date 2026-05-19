@@ -1,52 +1,42 @@
 /**
- * Analytics Dashboard Styles
+ * Analytics Dashboard — tabs, métricas, charts, report builder.
+ * Variables disponibles vía sass-loader additionalData.
  */
 
 .analytics-dashboard {
-  padding: 2rem;
+  padding: $spacing-xl;
   max-width: 1400px;
   margin: 0 auto;
 
+  // .page-header viene de _pages-shared.scss
   .page-header {
-    margin-bottom: 2rem;
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1f2937;
-      margin: 0 0 0.5rem 0;
-    }
-
-    p {
-      color: #6b7280;
-      margin: 0;
-    }
+    margin-bottom: $spacing-xl;
   }
 
   .tabs {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #e5e7eb;
+    gap: $spacing-md;
+    margin-bottom: $spacing-xl;
+    border-bottom: 2px solid $gray-200;
 
     .tab {
-      padding: 1rem 1.5rem;
+      padding: $spacing-md $spacing-lg;
       border: none;
       background: none;
       font-size: 1rem;
       font-weight: 500;
-      color: #6b7280;
+      color: $text-muted;
       cursor: pointer;
       border-bottom: 3px solid transparent;
       transition: all 0.2s;
 
       &:hover {
-        color: #1f2937;
+        color: $secondary-color;
       }
 
       &.active {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
+        color: $primary-color;
+        border-bottom-color: $primary-color;
       }
     }
   }
@@ -54,27 +44,27 @@
   .tab-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: $spacing-xl;
   }
 }
 
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  gap: $spacing-lg;
 }
 
 .metrics-card {
   background: white;
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: $spacing-lg;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   .card-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
 
     .icon {
       font-size: 2rem;
@@ -84,7 +74,7 @@
       margin: 0;
       font-size: 0.875rem;
       font-weight: 600;
-      color: #6b7280;
+      color: $text-muted;
       text-transform: uppercase;
     }
   }
@@ -97,20 +87,15 @@
     .value {
       font-size: 2rem;
       font-weight: 600;
-      color: #1f2937;
+      color: $secondary-color;
     }
 
     .trend {
       font-size: 0.875rem;
       font-weight: 600;
 
-      &.trend-positive {
-        color: #10b981;
-      }
-
-      &.trend-negative {
-        color: #ef4444;
-      }
+      &.trend-positive { color: $success-color; }
+      &.trend-negative { color: $error-color; }
     }
   }
 }
@@ -118,87 +103,87 @@
 .charts-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 2rem;
+  gap: $spacing-xl;
 }
 
 .chart-container {
   background: white;
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: $spacing-lg;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   h3 {
-    margin: 0 0 1rem 0;
+    margin: 0 0 $spacing-md 0;
     font-size: 1rem;
     font-weight: 600;
-    color: #1f2937;
+    color: $secondary-color;
   }
 }
 
 .export-section {
   background: white;
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: $spacing-lg;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   h3 {
-    margin: 0 0 1rem 0;
+    margin: 0 0 $spacing-md 0;
     font-size: 1rem;
     font-weight: 600;
-    color: #1f2937;
+    color: $secondary-color;
   }
 
   .export-buttons {
     display: flex;
-    gap: 1rem;
+    gap: $spacing-md;
   }
 }
 
 .report-builder {
   background: white;
   border-radius: 0.5rem;
-  padding: 2rem;
+  padding: $spacing-xl;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   max-width: 600px;
 
   h2 {
-    margin: 0 0 2rem 0;
+    margin: 0 0 $spacing-xl 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: #1f2937;
+    color: $secondary-color;
   }
 
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: $spacing-lg;
 
     label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: $spacing-sm;
       font-weight: 500;
-      color: #374151;
+      color: $border-color;
       font-size: 0.875rem;
     }
 
     input,
     select {
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #d1d5db;
+      padding: $spacing-sm 0.75rem;
+      border: 1px solid $gray-300;
       border-radius: 0.375rem;
       font-size: 1rem;
       font-family: inherit;
 
       &:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
       }
     }
 
     .checkboxes {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: $spacing-sm;
 
       label {
         display: flex;
@@ -207,7 +192,7 @@
 
         input {
           width: auto;
-          margin-right: 0.5rem;
+          margin-right: $spacing-sm;
         }
       }
     }
@@ -220,122 +205,72 @@
 
 .scheduled-reports {
   &.loading {
-    padding: 2rem;
+    padding: $spacing-xl;
     text-align: center;
-    color: #6b7280;
+    color: $text-muted;
   }
 
   .reports-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: $spacing-xl;
 
     h2 {
       margin: 0;
       font-size: 1.25rem;
       font-weight: 600;
-      color: #1f2937;
+      color: $secondary-color;
     }
   }
 
   .schedules-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+    gap: $spacing-lg;
   }
 
   .schedule-card {
     background: white;
     border-radius: 0.5rem;
-    padding: 1.5rem;
+    padding: $spacing-lg;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border-left: 4px solid transparent;
 
-    &.status-active {
-      border-left-color: #10b981;
-    }
-
-    &.status-paused {
-      border-left-color: #f59e0b;
-      opacity: 0.7;
-    }
+    &.status-active  { border-left-color: $success-color; }
+    &.status-paused  { border-left-color: $warning-color; opacity: 0.7; }
 
     .schedule-info {
-      margin-bottom: 1rem;
+      margin-bottom: $spacing-md;
 
       h3 {
         margin: 0 0 0.5rem 0;
         font-size: 1rem;
-        color: #1f2937;
+        color: $secondary-color;
       }
 
       p {
         margin: 0.25rem 0;
         font-size: 0.875rem;
-        color: #6b7280;
+        color: $text-muted;
 
         &.email {
           font-family: monospace;
-          color: #3b82f6;
+          color: $primary-color;
         }
 
         &.last-run {
           font-size: 0.75rem;
-          color: #9ca3af;
+          color: $text-muted;
         }
       }
     }
 
     .schedule-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: $spacing-sm;
 
-      button {
-        flex: 1;
-      }
-    }
-  }
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  &.btn-primary {
-    background: #3b82f6;
-    color: white;
-
-    &:hover:not(:disabled) {
-      background: #2563eb;
-    }
-  }
-
-  &.btn-secondary {
-    background: #e5e7eb;
-    color: #374151;
-
-    &:hover:not(:disabled) {
-      background: #d1d5db;
-    }
-  }
-
-  &.btn-danger {
-    background: #ef4444;
-    color: white;
-
-    &:hover:not(:disabled) {
-      background: #dc2626;
+      button { flex: 1; }
     }
   }
 }

@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function ExportPreview({ preview }) {
   return (
@@ -48,4 +49,7 @@ export default function ExportPreview({ preview }) {
       </div>
     </div>
   )
+}
+ExportPreview.propTypes = {
+  preview: PropTypes.object,
 }

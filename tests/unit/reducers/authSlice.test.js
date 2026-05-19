@@ -1,4 +1,4 @@
-import authReducer, { logout, clearError, loginUser } from '@redux/slices/authSlice';
+import authReducer, { logout, clearError, loginUser } from '@store/slices/auth';
 
 describe('authSlice', () => {
   const initialState = {
@@ -6,6 +6,11 @@ describe('authSlice', () => {
     user: null,
     isLoading: false,
     error: null,
+    ownSessions: [],
+    myMenu: [],
+    sessions: [],
+    sessionsLoading: false,
+    sessionsError: null,
   };
 
   describe('reducers', () => {

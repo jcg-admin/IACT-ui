@@ -10,8 +10,9 @@
 
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import LoginInput from '@components/auth/LoginInput'
-import PasswordStrength from '@components/auth/PasswordStrength'
+import { Link } from 'react-router-dom'
+import LoginInput from '@ui/auth/LoginInput'
+import PasswordStrength from '@ui/auth/PasswordStrength'
 import '@styles/components/_login-page.scss'
 
 function LoginForm({ onSubmit, loading, error }) {
@@ -167,9 +168,9 @@ function LoginForm({ onSubmit, loading, error }) {
                 />
                 <label htmlFor="rememberMe">Recuérdame</label>
               </div>
-              <a href="#forgot" className="login-page__forgot-password">
+              <Link to="/recover-password" className="login-page__forgot-password">
                 Olvidé mi contraseña
-              </a>
+              </Link>
             </div>
 
             {/* Submit Button */}

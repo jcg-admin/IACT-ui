@@ -1,72 +1,96 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import MetricsGrid from '@components/presentational/MetricsGrid';
-import ChartsSection from '@components/presentational/ChartsSection';
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchDashboardMetrics, selectMetrics, selectReportsLoading } from '@store/slices/reports'
+import { selectContextError } from '@store/slices/error'
+import LoadingSpinner from '@ui/shared/LoadingSpinner'
+import styles from './Dashboard.module.scss'
 
-const mockMetrics = [
-  { id: 1, label: 'Total Usuarios', value: '1,234', change: '+12%', trend: 'up' },
-  { id: 2, label: 'Activos Hoy', value: '567', change: '+5%', trend: 'up' },
-  { id: 3, label: 'Tasa Crecimiento', value: '23%', change: '-2%', trend: 'down' },
-  { id: 4, label: 'Revenue', value: '$45.2K', change: '+18%', trend: 'up' },
-];
+export default function Dashboard() {
+  const dispatch = useDispatch()
+  const { user } = useSelector((state) => state.auth)
+  const metrics = useSelector(selectMetrics)
+  const loading = useSelector(selectReportsLoading)
+  const error = useSelector(selectContextError('reports'))
 
-const mockCharts = [
-  {
-    id: 1,
-    title: 'Usuarios por Mes',
-    type: 'line',
-    data: [
-      { month: 'Ene', value: 400 },
-      { month: 'Feb', value: 450 },
-      { month: 'Mar', value: 520 },
-      { month: 'Abr', value: 580 },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Distribucion por Role',
-    type: 'pie',
-    data: [
-      { name: 'Admin', value: 20 },
-      { name: 'User', value: 60 },
-      { name: 'Guest', value: 20 },
-    ],
-  },
-];
-
-function Dashboard() {
-  const { user } = useSelector(state => state.auth);
+  useEffect(() => {
+    dispatch(fetchDashboardMetrics())
+  }, [dispatch])
 
   return (
-    <div className="p-lg">
-      <div>
+    <div className="page-container">
+      <div className="page-header">
         <h1>Bienvenido, {user?.first_name || 'Usuario'}</h1>
-        <p style={{ color: '#cbd5e1', marginBottom: '24px' }}>
-          Aqui esta un resumen de tu dashboard
+        <p className="page-subtitle">
+          Dashboard IVR — Trimestre {metrics?.trimestre_activo ?? '…'}
         </p>
       </div>
 
-      <MetricsGrid metrics={mockMetrics} />
+      {error?.message && (
+        <div className="error-banner" role="alert">
+          Error al cargar dashboard: {error.message}
+        </div>
+      )}
 
-      <div style={{ marginTop: '32px' }}>
-        <h2>Graficos</h2>
-        <div className="grid-2">
-          {mockCharts.map(chart => (
-            <div key={chart.id} className="card">
+      {loading && !metrics?.total_llamadas ? (
+        <LoadingSpinner message="Cargando datos del dashboard…" />
+      ) : (
+        <>
+          <div className={styles.kpiGrid}>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Total Llamadas</span>
+              <span className={styles.kpiValue}>
+                {metrics?.total_llamadas?.toLocaleString() ?? '—'}
+              </span>
+            </div>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Total Abandonadas</span>
+              <span className={styles.kpiValue}>
+                {metrics?.total_abandonadas?.toLocaleString() ?? '—'}
+              </span>
+            </div>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Tasa de Abandono</span>
+              <span className={styles.kpiValue}>
+                {metrics?.tasa_abandono != null
+                  ? `${metrics.tasa_abandono.toFixed(2)}%`
+                  : '—'}
+              </span>
+            </div>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Trimestre</span>
+              <span className={styles.kpiValue}>
+                {metrics?.trimestre_activo ?? '—'}
+              </span>
+            </div>
+          </div>
+
+          {metrics?.centros_principales?.length > 0 && (
+            <div className={`${styles.centrosCard} card`}>
               <div className="card-header">
-                <h3 className="card-title">{chart.title}</h3>
+                <h3 className="card-title">Centros de Transferencia Principales</h3>
               </div>
               <div className="card-body">
-                <div style={{ height: '300px', background: '#111827', borderRadius: '8px' }}>
-                  Grafico: {chart.type}
-                </div>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Centro</th>
+                      <th className={styles.colRight}>Llamadas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {metrics.centros_principales.map((c) => (
+                      <tr key={c.centro}>
+                        <td>{c.centro}</td>
+                        <td className={styles.colRight}>{c.total.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
+        </>
+      )}
     </div>
-  );
+  )
 }
-
-export default Dashboard;

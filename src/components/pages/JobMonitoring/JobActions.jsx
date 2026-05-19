@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function JobActions({ job, onCancel, onViewDetails }) {
   return (
@@ -25,4 +26,9 @@ export default function JobActions({ job, onCancel, onViewDetails }) {
       )}
     </div>
   )
+}
+JobActions.propTypes = {
+  job:           PropTypes.object.isRequired,
+  onCancel:      PropTypes.func,
+  onViewDetails: PropTypes.func,
 }

@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import appConfigReducer from './slices/appConfigSlice';
-import homeReducer from '@modules/home/state/homeSlice';
-import healthReducer from './slices/healthSlice';
+import appConfigReducer from './slices/appConfig';
+import homeReducer from '@modules/home/state/home';
+import healthReducer from './slices/health';
 
 export const store = configureStore({
   reducer: {

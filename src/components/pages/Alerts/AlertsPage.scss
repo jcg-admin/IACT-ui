@@ -1,0 +1,63 @@
+/**
+ * AlertsPage — alert-card con color semántico por severidad.
+ * Variables disponibles vía sass-loader additionalData.
+ */
+
+.alerts-page {
+  .alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .alert-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: $spacing-lg;
+    border-left: 4px solid $border-color;
+
+    &.alert-critical { border-left-color: $error-color; }
+    &.alert-high     { border-left-color: darken($warning-color, 10%); }
+    &.alert-medium   { border-left-color: $warning-color; }
+    &.alert-low      { border-left-color: $success-color; }
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-sm;
+    }
+
+    &__title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: $secondary-color;
+      margin: 0 0 0.375rem 0;
+    }
+
+    &__message {
+      font-size: 0.875rem;
+      color: $text-muted;
+      margin: 0 0 $spacing-sm 0;
+    }
+
+    &__time {
+      font-size: 0.75rem;
+      color: $text-secondary;
+    }
+  }
+
+  .subscriptions-section {
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $border-color;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $secondary-color;
+      margin: 0 0 $spacing-md 0;
+    }
+  }
+}

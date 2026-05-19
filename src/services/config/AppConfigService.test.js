@@ -1,5 +1,5 @@
-import { AppConfigService } from './AppConfigService';
-import { resetMockUsageMetrics, getMockUsageMetrics } from '@services/utils/mockUsageTracker';
+import { AppConfigService } from './AppConfig';
+import { resetMockUsageMetrics, getMockUsageMetrics } from '@api/utils/mockUsageTracker';
 import { loadMock } from '@mocks/registry';
 
 const { data: configMock } = loadMock('config');

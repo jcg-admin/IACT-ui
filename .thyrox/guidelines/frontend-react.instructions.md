@@ -110,3 +110,71 @@ function UserCard({ userId }) {
   ...
 }
 ```
+
+## Regla 7: CJS mock factory para componentes React en Jest
+
+Al mockear un componente importado con `import X from '...'`, usar la forma CJS directa.
+Sin `__esModule: true`, la forma `{ default: fn }` causa double-wrap de Babel →
+"Element type is invalid" en runtime de tests.
+
+```js
+// CORRECTO — CJS factory directa
+jest.mock('@components/reports/SavedFiltersPanel', () =>
+  function SavedFiltersPanel({ onSave }) {
+    return <div data-testid="saved-filters-panel" />
+  }
+)
+
+// CORRECTO — alternativa con __esModule explícito
+jest.mock('@components/reports/SavedFiltersPanel', () => ({
+  __esModule: true,
+  default: ({ onSave }) => <div data-testid="saved-filters-panel" />,
+}))
+
+// INCORRECTO — double-wrap silencioso
+jest.mock('@components/reports/SavedFiltersPanel', () => ({
+  default: ({ onSave }) => <div data-testid="saved-filters-panel" />,
+}))
+```
+
+## Regla 8: Mock-first service para endpoints de backend ausentes
+
+Cuando el backend no tiene el endpoint listo, implementar el service method con
+datos simulados. El componente queda 100% funcional. Activar el endpoint real
+es un cambio de 1 línea.
+
+```js
+// CORRECTO — mock-first con TODO claro
+async getETLAvailability() {
+  // TODO: replace mock — GET /api/etl/availability
+  return [
+    { source: 'CRM', lastUpdate: new Date().toISOString(), status: 'ok', freshnessMinutes: 12 },
+  ]
+}
+
+// Cuando el backend esté listo: reemplazar el return por la llamada real
+async getETLAvailability() {
+  const response = await this.client.get('/api/etl/availability')
+  return response.data
+}
+```
+
+## Regla 9: Grep consumers antes de agregar exports a un slice
+
+Al agregar un nuevo selector o thunk a un slice existente, identificar todos los
+archivos de test que importan ese slice y actualizar sus mocks en el mismo commit.
+De lo contrario, los tests fallan con "You must pass a selector to useSelector".
+
+```bash
+# Antes de agregar selectX a accessSlice.js:
+grep -r "from '@redux/slices/accessSlice'" src --include="*.test.*" -l
+# → lista de test files que necesitan actualización de mock
+```
+
+```js
+// En cada test file encontrado — agregar el selector nuevo al mock:
+jest.mock('@redux/slices/accessSlice', () => ({
+  // ... mocks existentes ...
+  selectX: (s) => s.access?.x ?? defaultValue,  // ← agregar esto
+}))
+```

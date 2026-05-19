@@ -1,0 +1,30 @@
+.logoBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  user-select: none;
+
+  &:hover {
+    background-color: $gray-100;
+  }
+
+  &:focus {
+    outline: 2px solid $primary-color;
+  }
+}
+
+.logo {
+  font-size: 24px;
+  display: inline-block;
+}
+
+.text {
+  font-size: 18px;
+  font-weight: 600;
+  color: $secondary-color;
+  white-space: nowrap;
+}

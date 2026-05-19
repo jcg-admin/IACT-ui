@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react'
 import reportExporter from '../../../facades/ReportExporter'
-import { getNotificationService } from '@services/notificationService'
+import { getNotificationService } from '@api/notificationGateway'
 import ExportTypeSelector from './ExportTypeSelector'
 import ExportOptions from './ExportOptions'
 import ExportPreview from './ExportPreview'
@@ -37,9 +37,9 @@ export default function ExportHub() {
   const getMockData = (type) => {
     const dataMap = {
       users: [
-        { id: '1', name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
-        { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active' },
-        { id: '3', name: 'Bob Wilson', email: 'bob@example.com', role: 'User', status: 'Inactive' }
+        { id: '1', name: 'John Doe', email: 'john@example.com', access_groups: ['AGR-010'], status: 'Active' },
+        { id: '2', name: 'Jane Smith', email: 'jane@example.com', access_groups: ['AGR-001'], status: 'Active' },
+        { id: '3', name: 'Bob Wilson', email: 'bob@example.com', access_groups: [], status: 'Inactive' }
       ],
       jobs: [
         { id: 'job-1', type: 'export', status: 'completed', progress: 100, rows: 2500 },

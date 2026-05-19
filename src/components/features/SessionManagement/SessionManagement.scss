@@ -1,5 +1,6 @@
 /**
- * Session Management Styles
+ * SessionManagement — warning banner y cards de sesión.
+ * Variables disponibles vía sass-loader additionalData.
  */
 
 .session-warning {
@@ -8,22 +9,22 @@
   right: 20px;
   z-index: 1000;
   background: white;
-  border: 2px solid #ef4444;
+  border: 2px solid $error-color;
   border-radius: 0.5rem;
-  padding: 1.5rem;
+  padding: $spacing-lg;
   max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   .warning-content {
     h3 {
       margin: 0 0 0.5rem 0;
-      color: #ef4444;
+      color: $error-color;
       font-size: 1rem;
     }
 
     p {
-      margin: 0 0 1rem 0;
-      color: #6b7280;
+      margin: 0 0 $spacing-md 0;
+      color: $text-muted;
       font-size: 0.875rem;
     }
   }
@@ -34,7 +35,7 @@
 
     button {
       flex: 1;
-      padding: 0.5rem 1rem;
+      padding: $spacing-sm $spacing-md;
       font-size: 0.875rem;
       border: none;
       border-radius: 0.375rem;
@@ -47,83 +48,61 @@
 
 .active-sessions,
 .login-history {
-  padding: 2rem;
+  padding: $spacing-xl;
   max-width: 1200px;
   margin: 0 auto;
-
-  .page-header {
-    margin-bottom: 2rem;
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #1f2937;
-      margin: 0 0 0.5rem 0;
-    }
-
-    p {
-      color: #6b7280;
-      margin: 0;
-    }
-  }
 
   &.loading {
     text-align: center;
     padding: 3rem;
-    color: #6b7280;
+    color: $text-muted;
   }
 }
 
 .sessions-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  gap: $spacing-lg;
 
   .session-card {
     background: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid $gray-200;
     border-radius: 0.5rem;
-    padding: 1.5rem;
+    padding: $spacing-lg;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
     &.current {
-      border-color: #10b981;
-      background: #f0fdf4;
+      border-color: $success-color;
+      background: rgba($success-color, 0.05);
     }
 
     .session-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: $spacing-md;
 
       h3 {
         margin: 0;
         font-size: 1rem;
-        color: #111827;
+        color: $secondary-color;
       }
 
-      .badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-
-        &.badge-current {
-          background: #dcfce7;
-          color: #166534;
-        }
+      // .badge base viene de iact-kit; solo el modificador de página
+      .badge-current {
+        background: rgba($success-color, 0.15);
+        color: darken($success-color, 20%);
       }
     }
 
     .session-details {
-      margin-bottom: 1rem;
+      margin-bottom: $spacing-md;
 
       .detail {
         display: flex;
         justify-content: space-between;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #e5e7eb;
+        padding: $spacing-sm 0;
+        border-bottom: 1px solid $gray-200;
         font-size: 0.875rem;
 
         &:last-child {
@@ -132,28 +111,18 @@
 
         .label {
           font-weight: 500;
-          color: #6b7280;
+          color: $text-muted;
         }
 
         .value {
-          color: #111827;
+          color: $secondary-color;
         }
       }
     }
 
+    // Ancho completo para el botón de cerrar sesión dentro del card
     .btn {
       width: 100%;
-      padding: 0.5rem 1rem;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-weight: 500;
-
-      &:hover {
-        background: #dc2626;
-      }
     }
   }
 }
@@ -167,90 +136,49 @@
   overflow: hidden;
 
   thead {
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
+    background: $gray-50;
+    border-bottom: 1px solid $gray-200;
 
     th {
-      padding: 1rem;
+      padding: $spacing-md;
       text-align: left;
       font-weight: 600;
-      color: #374151;
+      color: $border-color;
       font-size: 0.875rem;
     }
   }
 
   tbody {
     tr {
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid $gray-200;
 
       &:hover {
-        background: #f9fafb;
+        background: $gray-50;
       }
 
       &.status-success {
-        border-left: 3px solid #10b981;
+        border-left: 3px solid $success-color;
       }
 
       &.status-failed {
-        border-left: 3px solid #ef4444;
+        border-left: 3px solid $error-color;
       }
 
       td {
-        padding: 1rem;
-        color: #111827;
+        padding: $spacing-md;
+        color: $secondary-color;
 
         &.ip {
           font-family: 'Courier New', monospace;
-          color: #6b7280;
+          color: $text-muted;
         }
 
-        .badge {
-          display: inline-block;
-          padding: 0.25rem 0.75rem;
-          border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 600;
-
-          &.badge-success {
-            background: #dcfce7;
-            color: #166534;
-          }
-
-          &.badge-failed {
-            background: #fee2e2;
-            color: #991b1b;
-          }
+        // .badge-success viene de iact-kit; .badge-failed es modificador de página
+        .badge-failed {
+          background: rgba($error-color, 0.1);
+          color: darken($error-color, 20%);
         }
       }
-    }
-  }
-}
-
-.btn {
-  &.btn-primary {
-    background: #3b82f6;
-    color: white;
-
-    &:hover {
-      background: #2563eb;
-    }
-  }
-
-  &.btn-secondary {
-    background: #e5e7eb;
-    color: #374151;
-
-    &:hover {
-      background: #d1d5db;
-    }
-  }
-
-  &.btn-danger {
-    background: #ef4444;
-    color: white;
-
-    &:hover {
-      background: #dc2626;
     }
   }
 }

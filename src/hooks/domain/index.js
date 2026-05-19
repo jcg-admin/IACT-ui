@@ -1,31 +1,14 @@
 // Domain hooks - Business logic specific hooks
 
-export { useAuth } from './useAuth'
+export { useIdentity } from './useIdentity'
 export { useJobs } from './useJobs'
 export { useExport } from './useExport'
 export { useForm } from './useForm'
-export { useDashboard } from './useDashboard'
-export { useJobPolling } from './useJobPolling'
+export { useJobStatus } from './useJobStatus'
 export { useMetrics } from './useMetrics'
-export { useTransaction } from './useTransaction'
-export { useWebSocket } from './useWebSocket'
-export { useAlertPolling } from './useAlertPolling'
+export { useLocalTransaction } from './useLocalTransaction' // T5.2: sustituye a useTransaction
+export { useRealTimeChannel } from './useRealTimeChannel'
+export { useAlertFeed } from './useAlertFeed'
 export { usePasswordStrength } from './usePasswordStrength'
 export { useMenuToggle } from './useMenuToggle'
-export { useAPI } from './useAPI'
-
-export default {
-  useAuth,
-  useJobs,
-  useExport,
-  useForm,
-  useDashboard,
-  useJobPolling,
-  useMetrics,
-  useTransaction,
-  useWebSocket,
-  useAlertPolling,
-  usePasswordStrength,
-  useMenuToggle,
-  useAPI
-}
+export { useRequest } from './useRequest'

@@ -34,7 +34,7 @@ Header/
 ## Imports (with barrel exports)
 
 ```javascript
-import { Header, LogoBrand, MenuButton, BreadcrumbNav, NotificationBell, UserMenu } from '@components/common/Header'
+import { Header, LogoBrand, MenuButton, BreadcrumbNav, NotificationBell, UserMenu } from '@ui/common/Header'
 ```
 
 ## Notes

@@ -41,7 +41,7 @@ En `redux/store.js`, agregar el formSlice:
 import { configureStore } from '@reduxjs/toolkit';
 
 // ... otros slices
-import formReducer from './slices/formSlice';
+import formReducer from './slices/form';
 
 export const store = configureStore({
   reducer: {
@@ -62,7 +62,7 @@ export const store = configureStore({
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import DateTimeInput from '../components/DateTimeInputs/DateTimeInput';
-import { setDateStart } from '../redux/slices/formSlice';
+import { setDateStart } from '../redux/slices/form';
 
 function MyComponent() {
   const [dateStart, setDateStart] = useState(null);
@@ -106,7 +106,7 @@ function MyComponent() {
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import SelectDropdown from '../components/DateTimeInputs/SelectDropdown';
-import { setSelectedAction } from '../redux/slices/formSlice';
+import { setSelectedAction } from '../redux/slices/form';
 
 function MyComponent() {
   const [selectedAction, setSelectedAction] = useState(null);
@@ -168,7 +168,7 @@ import {
   selectDateStart,
   selectDateEnd,
   selectSelectedAction,
-} from '../../redux/slices/formSlice';
+} from '../../redux/slices/form';
 
 export default function AuditPage() {
   const dispatch = useDispatch();
@@ -289,7 +289,7 @@ import {
   setSearchQuery,
   resetFilters,
   resetForm,
-} from '../redux/slices/formSlice';
+} from '../redux/slices/form';
 
 dispatch(setDateStart(new Date()));
 dispatch(setSelectedAction({ value: 'CREATE', label: 'Crear' }));
@@ -308,7 +308,7 @@ import {
   selectActiveFilters,
   selectIsLoading,
   selectError,
-} from '../redux/slices/formSlice';
+} from '../redux/slices/form';
 
 const dateStart = useSelector(selectDateStart);
 const allFilters = useSelector(selectActiveFilters);

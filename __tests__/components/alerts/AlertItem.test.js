@@ -5,7 +5,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import AlertItem from '@components/alerts/AlertItem'
+import AlertItem from '@ui/alerts/AlertItem'
 
 describe('AlertItem Component', () => {
   const _mockAlert = {

@@ -7,45 +7,104 @@ Complete overview of all documentation files and organization.
 ```
 docs/
 ├── README.md                          ← START HERE (main index)
-├── QUICK_START.md                     ← 5-minute setup
+├── QUICK_START.md                     ← 5-minute setup (general)
 ├── SETUP.md                           ← Detailed setup guide
 ├── ARCHITECTURE.md                    ← System architecture
-├── API.md                             ← Component/module APIs
-├── TROUBLESHOOTING.md                 ← Common issues
 ├── CONTRIBUTING.md                    ← How to contribute
 ├── DEPLOYMENT.md                      ← Production deployment
+├── TROUBLESHOOTING.md                 ← Common issues
+├── STATE_DESIGN.md                    ← Redux state design
 ├── DOCUMENTATION_STRUCTURE.md         ← This file
+│
+├── api/                               ← API reference
+│   └── HOOKS.md                       ← Custom hooks API
+│
+├── components/                        ← Component docs
+│   ├── Modal.md
+│   └── Table.md
+│
+├── examples/                          ← Working code examples
+│   ├── ejemplo-auditpage.jsx          ← AuditPage with DateTimeInputs + formSlice
+│   └── ejemplo-breakpoints-responsivo.jsx ← Responsive breakpoints example
 │
 ├── guides/                            ← Development guides
 │   ├── COMPONENT_GUIDE.md             ← How to build components
-│   ├── REDUX_GUIDE.md                 ← State management
-│   ├── ROUTING_GUIDE.md               ← Navigation & routing
-│   ├── CSS_MODULES_GUIDE.md           ← Styling system
-│   ├── TESTING_GUIDE.md               ← Testing patterns
-│   └── EVENT_CLEANUP_GUIDE.md         ← Memory leak prevention
+│   ├── TESTING.md                     ← Testing patterns
+│   ├── THEME.md                       ← Theming system
+│   ├── breakpoints-implementation.md  ← Breakpoints responsive implementation
+│   ├── clean-code-refactoring.md      ← Clean code refactoring plan
+│   ├── comment-cleanup.md             ← Comment cleanup guide
+│   ├── decorator-examples.md          ← Decorator pattern examples
+│   ├── ejecucion.md                   ← Execution / run guide
+│   ├── export-service.md              ← Export service guide
+│   ├── facade-pattern.md              ← Facade pattern guide
+│   ├── import-organization.md         ← Import organization guide
+│   ├── instalacion-componentes.md     ← Component installation guide
+│   ├── mock-interceptor-pattern.md    ← MockInterceptor: mocks en capa de red (no en componentes)
+│   ├── permisos.md                    ← RBAC permissions guide
+│   ├── quickstart-scss.md             ← Quick start post-Tailwind removal (SCSS utilities)
+│   ├── rbac-naming-standard.md        ← RBAC v5.2.1 naming standard (inglés, sin acrónimos)
+│   ├── rest-api-conventions.md        ← Convenciones OAS3/REST para URLs de endpoints
+│   ├── responsive-bootstrap.md        ← Bootstrap responsive utilities
+│   ├── responsive-guide.md            ← Responsive utilities guide
+│   ├── responsive-usage.md            ← Responsive utilities usage
+│   ├── resumen-react-redux.md         ← DateTimeInputs + formSlice implementation
+│   ├── scss-utilities.md              ← SCSS utilities reference
+│   ├── services-setup.md              ← Services setup guide
+│   └── variable-naming.md             ← Variable naming conventions
 │
-├── raid-party-lessons/                ← Professional patterns
-│   ├── LESSON_3_21_CSS_MODULES.md     ← Scoped styling (Raid Party)
-│   ├── LESSON_3_22_EVENT_CLEANUP.md   ← Event cleanup (Raid Party)
-│   ├── LESSON_3_23_FEATURE_FOLDERS.md ← Code organization (Raid Party)
+├── analysis/                          ← Technical analysis documents
+│   ├── breakpoints.md                 ← Breakpoints analysis
+│   ├── changelog-tailwind-removal.md  ← Tailwind CSS removal changelog
+│   ├── comparative-mx-template.md     ← MX-template comparative analysis
+│   ├── header-requirements.md         ← Header component requirements
+│   ├── implementacion-actual.md       ← Current implementation analysis
+│   ├── mx-template-pickers.md         ← MX-template to IACT pickers migration
+│   ├── patterns-implementation.md     ← Patterns implementation analysis
+│   ├── phase-0-current-state.md       ← Phase 0 current state analysis
+│   ├── test-fixes-priority.md         ← Test fixes priority plan
+│   ├── testing-sessions.md            ← Testing sessions patterns and results
+│   ├── utilities-nomenclature.md      ← Utilities nomenclature analysis
+│   ├── webpack-config-advanced.md     ← Advanced webpack config patterns (from develop branch)
+│   ├── webpack-optimization.md        ← Webpack optimization plan
+│   ├── webpack5-exhaustivo.md         ← Exhaustive Webpack 5 analysis
+│   ├── webpack5-iact-implementacion.md ← Webpack 5 IACT implementation analysis
+│   ├── webpack5-parte1.md             ← Webpack 5 analysis part 1
+│   └── webpack5-parte2.md             ← Webpack 5 analysis part 2
+│
+├── project-scope/                     ← Project planning and history
+│   ├── PHASES_COMPLETED.md            ← Phase-by-phase progress tracker
+│   ├── feature-implementation-plan.md ← Feature implementation plan
+│   ├── implementation-history.md      ← Consolidated iteration history (ITER 1–6, Phases 1–5)
+│   ├── implementation-plan.md         ← Implementation plan
+│   ├── plan-implementacion.md         ← Plan de implementación (español)
+│   ├── project-structure-legacy.md    ← Legacy project structure reference
+│   ├── roadmap-final.md               ← Final optimized roadmap
+│   └── webpack-improvements-roadmap.md ← Webpack improvements roadmap
+│
+├── raid-party-lessons/                ← Patterns from Raid Party app
+│   ├── LESSON_3_21_CSS_MODULES.md     ← CSS Modules lesson
+│   ├── LESSON_3_22_EVENT_CLEANUP.md   ← Event cleanup lesson
+│   ├── LESSON_3_23_FEATURE_FOLDERS.md ← Feature folders lesson
 │   ├── DETAILED_LESSON_3_21.md        ← Detailed CSS Modules
 │   ├── DETAILED_LESSON_3_22.md        ← Detailed Event Cleanup
-│   └── DETAILED_LESSON_3_23.md        ← Detailed Feature Folders
-│
-├── project-scope/                     ← Project planning
-│   ├── SCOPE.md                       ← Full project scope
-│   ├── ATOMIC_TASKS.md                ← Task breakdown
-│   └── PHASES_COMPLETED.md            ← Phase-by-phase progress
+│   ├── DETAILED_LESSON_3_23.md        ← Detailed Feature Folders
+│   ├── adaptation-analysis.md         ← Raid Party → IACT adaptation analysis
+│   ├── deep-analysis.md               ← Deep Raid Party analysis
+│   ├── functionality-analysis.md      ← Raid Party useful functionality
+│   └── summary.md                     ← Consolidated summary + pickers analysis
 │
 └── reference/                         ← Reference materials
-    ├── DEPENDENCIES.md                ← npm dependencies
-    ├── RAID_PARTY_STRUCTURE.md        ← Raid Party app reference
-    └── API_REFERENCE.md               ← Complete API reference
+    ├── DEPENDENCIES.md                ← npm dependencies reference
+    ├── RAID_PARTY_STRUCTURE.md        ← Raid Party app structure reference
+    ├── design-patterns.md             ← Design patterns reference
+    ├── patterns-implementables.md     ← Implementable patterns
+    └── webpack-summary.md             ← Webpack complete summary
 ```
 
-## File Purposes
+## File Purposes by Category
 
-### Root Level Documentation
+### Root-level docs (general audience)
 
 | File | Purpose | Audience |
 |------|---------|----------|
@@ -53,90 +112,36 @@ docs/
 | QUICK_START.md | 5-minute setup | New developers |
 | SETUP.md | Detailed installation | Setup phase |
 | ARCHITECTURE.md | System design | Developers |
-| API.md | Component/module APIs | Developers |
-| TROUBLESHOOTING.md | Problem solving | Everyone |
 | CONTRIBUTING.md | Contribution guidelines | Contributors |
-| DEPLOYMENT.md | Production deployment | DevOps/Deployment |
+| DEPLOYMENT.md | Production deployment | DevOps |
+| TROUBLESHOOTING.md | Problem solving | Everyone |
+| STATE_DESIGN.md | Redux state design | Developers |
 
-### Guides (guides/)
+### guides/ (how to do things)
 
-Deep dives into specific topics:
-- **COMPONENT_GUIDE.md** - Build new components
-- **REDUX_GUIDE.md** - Manage state
-- **ROUTING_GUIDE.md** - Set up routes
-- **CSS_MODULES_GUIDE.md** - Write styles
-- **TESTING_GUIDE.md** - Write tests
-- **EVENT_CLEANUP_GUIDE.md** - Prevent memory leaks
+Active guides for ongoing development. Each guide covers a specific technical topic
+relevant to contributing to IACT-UI.
 
-### Raid Party Lessons (raid-party-lessons/)
+### analysis/ (what we found / what needs doing)
 
-Professional patterns from production app:
-- **Lesson 3.21** - CSS Modules implementation
-- **Lesson 3.22** - Event cleanup and memory safety
-- **Lesson 3.23** - Feature folders and barrel exports
+Technical analysis documents from architectural investigations. These represent
+point-in-time analysis — check dates and compare to current state before acting.
 
-Each lesson has:
-- Quick summary version
-- Detailed implementation version
+### project-scope/ (what we planned and built)
 
-### Project Scope (project-scope/)
+Planning documents and implementation history. `implementation-history.md` consolidates
+all iteration logs (ITER 1–6) and the 5-phase feature implementation.
 
-Planning and progress documentation:
-- **SCOPE.md** - What's included/excluded
-- **ATOMIC_TASKS.md** - Individual task details
-- **PHASES_COMPLETED.md** - Phase progress
+### raid-party-lessons/ (patterns from external reference)
 
-### Reference (reference/)
+Lessons learned from analyzing the Raid Party metaverse app. These patterns are
+prioritized based on effort/impact for IACT-UI adoption.
 
-Reference materials:
-- **DEPENDENCIES.md** - All npm packages
-- **RAID_PARTY_STRUCTURE.md** - Raid Party architecture reference
-- **API_REFERENCE.md** - Full API docs
+### reference/ (look-it-up docs)
 
-## How to Use This Documentation
+Static reference material that doesn't change often. Design patterns, dependencies,
+webpack configuration summaries.
 
-### I want to...
-- **Set up the project** → [QUICK_START.md](./QUICK_START.md)
-- **Understand the system** → [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **Build a component** → [guides/COMPONENT_GUIDE.md](./guides/COMPONENT_GUIDE.md)
-- **Manage state** → [guides/REDUX_GUIDE.md](./guides/REDUX_GUIDE.md)
-- **Set up routing** → [guides/ROUTING_GUIDE.md](./guides/ROUTING_GUIDE.md)
-- **Write tests** → [guides/TESTING_GUIDE.md](./guides/TESTING_GUIDE.md)
-- **Deploy to production** → [DEPLOYMENT.md](./DEPLOYMENT.md)
-- **Troubleshoot issues** → [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
-- **Learn professional patterns** → [raid-party-lessons/](./raid-party-lessons/)
+### examples/ (working code)
 
-## Documentation Standards
-
-All documentation follows:
-- Clear hierarchy (H1, H2, H3)
-- Code examples
-- Clear language
-- Cross-references
-- Updated regularly
-
-## Updating Documentation
-
-When you:
-1. Add a feature → update relevant guides
-2. Change architecture → update ARCHITECTURE.md
-3. Fix a bug → add to TROUBLESHOOTING.md
-4. Learn something → add to relevant guide
-5. Complete a task → update PHASES_COMPLETED.md
-
-## Documentation Quality Checklist
-
-- [ ] Clear title and purpose
-- [ ] Code examples (where applicable)
-- [ ] Step-by-step instructions
-- [ ] Links to related docs
-- [ ] Updated timestamp
-- [ ] Spell checked
-- [ ] No broken links
-
----
-
-**Last Updated:** April 25, 2026  
-**Status:** Complete ✅
-
-See [README.md](./README.md) to get started.
+Runnable JSX examples demonstrating specific features or components.

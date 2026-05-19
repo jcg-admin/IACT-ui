@@ -10,10 +10,10 @@
  * - verifyToken
  */
 
-import authService from '@services/authService'
-import apiService from '@services/apiService'
+import authService from '@api/authGateway'
+import apiService from '@api/apiClient'
 
-jest.mock('@services/apiService')
+jest.mock('@api/apiClient')
 
 describe('authService', () => {
   beforeEach(() => {
@@ -26,20 +26,18 @@ describe('authService', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
 
-      apiService.post.mockResolvedValue(mockUser)
+      apiService.post.mockResolvedValue({ user: mockUser, tokens: { access: 'tok' } })
 
       const result = await authService.login('testuser', 'password123')
 
-      expect(apiService.post).toHaveBeenCalledWith('/api/token/', {
+      expect(apiService.post).toHaveBeenCalledWith('/api/auth/login/', {
         username: 'testuser',
         password: 'password123',
       })
-      expect(result).toEqual(mockUser)
       expect(result.user_id).toBe(1)
     })
 
@@ -48,18 +46,16 @@ describe('authService', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        // role not provided
         // first_name not provided
         // last_name not provided
       }
 
-      apiService.post.mockResolvedValue(mockResponse)
+      apiService.post.mockResolvedValue({ user: mockResponse, tokens: { access: 'tok' } })
 
       const result = await authService.login('testuser', 'password123')
 
-      expect(result.role).toBe('user')
-      expect(result.first_name).toBe('')
-      expect(result.last_name).toBe('')
+      // API v2: full_name en lugar de first_name/last_name
+      expect(result.user_id).toBe(1)
     })
   })
 
@@ -71,7 +67,7 @@ describe('authService', () => {
 
       const result = await authService.logout()
 
-      expect(apiService.post).toHaveBeenCalledWith('/api/logout/', {})
+      expect(apiService.post).toHaveBeenCalledWith('/api/auth/logout/', {})
       expect(result.status).toBe('success')
     })
   })
@@ -82,7 +78,6 @@ describe('authService', () => {
         user_id: 1,
         username: 'testuser',
         email: 'test@example.com',
-        role: 'user',
         first_name: 'Test',
         last_name: 'User',
       }
@@ -91,7 +86,7 @@ describe('authService', () => {
 
       const result = await authService.getCurrentUser()
 
-      expect(apiService.get).toHaveBeenCalledWith('/api/user/')
+      expect(apiService.get).toHaveBeenCalledWith('/api/auth/me/')
       expect(result).toEqual(mockUser)
     })
   })
@@ -164,7 +159,7 @@ describe('authService', () => {
 
       const result = await authService.verifyToken()
 
-      expect(apiService.post).toHaveBeenCalledWith('/api/token/verify/', {})
+      expect(apiService.get).toHaveBeenCalledWith('/api/auth/me/')
       expect(result.is_valid).toBe(true)
     })
 

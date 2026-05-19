@@ -5,22 +5,22 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './LogoBrand.module.scss'
+import './LogoBrand.scss'
 
-export default function LogoBrand({ 
+export default function LogoBrand({
   appName = 'IACT Dashboard',
-  onClick = () => {} 
+  onClick = () => {},
 }) {
   return (
-    <div 
-      className={styles.logoBrand}
+    <div
+      className="logoBrand"
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyPress={(e) => e.key === 'Enter' && onClick()}
     >
-      <span className={styles.logo}>📊</span>
-      <span className={styles.text}>{appName}</span>
+      <span className="logo">📊</span>
+      <span className="text">{appName}</span>
     </div>
   )
 }

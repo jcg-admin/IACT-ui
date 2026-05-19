@@ -12,6 +12,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
+import PropTypes from 'prop-types'
 
 /**
  * Animation variants for page transitions
@@ -72,3 +73,6 @@ export default function PageTransition({ children, ...props }) {
  * Export animation variants for custom use
  */
 export { pageVariants }
+PageTransition.propTypes = {
+  children: PropTypes.node.isRequired,
+}

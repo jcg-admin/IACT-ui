@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- Middleware de logging: el propósito del archivo es loggear */
 /**
  * REDUX LOGGER MIDDLEWARE
  * Loguea todas las actions y state changes
@@ -5,15 +6,16 @@
  */
 
 const loggerMiddleware = (store) => (next) => (action) => {
-  console.group(`ACTION: ${action.type}`);
-  console.info('dispatching', action);
+  const result = next(action)
 
-  const result = next(action);
+  if (process.env.NODE_ENV === 'development') {
+    console.group(`ACTION: ${action.type}`)
+    console.info('dispatching', action)
+    console.log('next state', store.getState())
+    console.groupEnd()
+  }
 
-  console.log('next state', store.getState());
-  console.groupEnd();
-
-  return result;
-};
+  return result
+}
 
 export default loggerMiddleware;

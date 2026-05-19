@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { getNotificationService } from '@services/notificationService'
+import { getNotificationService } from '@api/notificationGateway'
 
 export default function ScheduledReports() {
   const [schedules, setSchedules] = useState([])
@@ -14,6 +14,7 @@ export default function ScheduledReports() {
 
   const notify = getNotificationService()
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- carga inicial al montar, loadSchedules definida después
   useEffect(() => {
     loadSchedules()
   }, [])

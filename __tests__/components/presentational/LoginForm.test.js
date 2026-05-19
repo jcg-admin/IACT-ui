@@ -4,9 +4,15 @@
  */
 
 import React from 'react'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render as tlRender, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import LoginForm from '@components/presentational/LoginForm'
+import { MemoryRouter } from 'react-router-dom'
+import LoginForm from '@ui/presentational/LoginForm'
+
+// LoginForm uses <Link> internally — all renders need a router context
+function render(ui, options) {
+  return tlRender(ui, { wrapper: MemoryRouter, ...options })
+}
 
 describe('LoginForm Component', () => {
   const _mockSubmit = jest.fn()

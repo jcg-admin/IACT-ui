@@ -5,7 +5,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './NavLink.module.scss'
+import './NavLink.scss'
 
 export default function NavLink({
   label = 'Link',
@@ -16,13 +16,13 @@ export default function NavLink({
 }) {
   return (
     <button
-      className={`${styles.navLink} ${isActive ? styles.active : ''}`}
+      className={`navLink${isActive ? ' active' : ''}`}
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       title={title}
     >
-      {icon && <span className={styles.icon}>{icon}</span>}
-      <span className={styles.label}>{label}</span>
+      {icon && <span className="icon">{icon}</span>}
+      <span className="label">{label}</span>
     </button>
   )
 }

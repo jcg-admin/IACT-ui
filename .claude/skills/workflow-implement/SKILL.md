@@ -9,7 +9,7 @@ hooks:
     once: true
     type: command
     command: "bash .claude/scripts/set-session-phase.sh 'Phase 10'"
-updated_at: 2026-04-20 13:08:54
+updated_at: 2026-05-08 15:28:51
 ---
 
 # /workflow-execute — Stage 10: IMPLEMENT
@@ -80,7 +80,9 @@ Claude DEBE preguntar antes cuando: la tarea no estaba en el plan, el cambio es 
    - Agregar una entrada a una lista de referencias sin modificar las existentes
 4. Implementar el cambio respetando las reglas de los tech skills activos
 5. Si falla: crear `context/errors/ERR-NNN-descripcion.md` usando `assets/error-report.md.template` antes de reintentar con otro approach
-6. Commit con Conventional Commits: `type(scope): T-NNN — descripción`
+6. Si la tarea incluye `git mv`: ejecutar `git status` después de cualquier edición al archivo renombrado. El `git add` implícito del mv no captura ediciones posteriores — aparecen como "modified" no staged. Hacer `git add <nuevo-path>` explícito antes del commit (PAT-GIT-001).
+
+8. Commit con Conventional Commits: `type(scope): T-NNN — descripción`
 
 **PAT-004 — Checkbox-at-commit (OBLIGATORIO):** El `[x]` va en el MISMO commit que implementa el T-NNN. NUNCA acumular checkboxes para después — el drift entre task-plan y commits crece exponencialmente con cada batch omitido.
 ```bash
@@ -93,8 +95,8 @@ git add src/feature.ts && git commit -m "feat(wp): implement T-042"
 # ... más tarde: git add task-plan.md && git commit -m "sync checkboxes"
 ```
 
-7. Actualizar checkbox en `*-task-plan.md`: `- [ ]` → `- [x]`
-8. Actualizar ROADMAP.md: `[ ]` → `[x]` con fecha
+9. Actualizar checkbox en `*-task-plan.md`: `- [ ]` → `- [x]`
+10. Actualizar ROADMAP.md: `[ ]` → `[x]` con fecha
 
 **Pre-flight para ejecución paralela (antes de lanzar agentes):**
 1. Listar archivos que toca cada agente

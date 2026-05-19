@@ -1,18 +1,18 @@
 /**
- * UserAuth Facade Tests
+ * UserIdentity Facade Tests
  * 
  * Tests for authentication and user profile operations
  */
 
-import userAuth from '../UserAuth'
-import authService from '@services/authService'
-import { getNotificationService } from '@services/notificationService'
+import userAuth from '../UserIdentity'
+import authService from '@api/authGateway'
+import { getNotificationService } from '@api/notificationGateway'
 
 // Mock dependencies
-jest.mock('@services/authService')
-jest.mock('@services/notificationService')
+jest.mock('@api/authGateway')
+jest.mock('@api/notificationGateway')
 
-describe('UserAuth Facade', () => {
+describe('UserIdentity Facade', () => {
   let mockNotify
 
   beforeEach(() => {
@@ -28,7 +28,7 @@ describe('UserAuth Facade', () => {
   describe('startSession', () => {
     it('should login and load full profile', async () => {
       const mockUser = { user_id: '1', username: 'john', email: 'john@example.com' }
-      const mockProfile = { role: 'Admin', first_name: 'John', last_name: 'Doe' }
+      const mockProfile = { first_name: 'John', last_name: 'Doe' }
       const mockVerification = { is_valid: true }
 
       authService.login.mockResolvedValue(mockUser)
@@ -41,7 +41,6 @@ describe('UserAuth Facade', () => {
       expect(authService.getCurrentUser).toHaveBeenCalled()
       expect(authService.verifyToken).toHaveBeenCalled()
       expect(result.user_id).toBe('1')
-      expect(result.role).toBe('Admin')
       expect(result.sessionStarted).toBeDefined()
       expect(mockNotify.success).toHaveBeenCalled()
     })
@@ -114,7 +113,7 @@ describe('UserAuth Facade', () => {
 
       authService.register.mockResolvedValue(mockNewUser)
       authService.login.mockResolvedValue(mockNewUser)
-      authService.getCurrentUser.mockResolvedValue({ role: 'User' })
+      authService.getCurrentUser.mockResolvedValue({ username: 'newuser' })
       authService.verifyToken.mockResolvedValue(mockVerification)
 
       const result = await userAuth.createAccount(userData)

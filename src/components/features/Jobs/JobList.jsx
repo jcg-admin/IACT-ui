@@ -5,9 +5,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Table from '@components/presentational/Table';
-import Modal from '@components/shared/Modal';
+import Table from '@ui/presentational/Table';
+import Modal from '@ui/shared/Modal';
 import { useToast } from '../../context/ToastContext';
+import PropTypes from 'prop-types'
 
 function JobList() {
   const [jobs, setJobs] = useState([]);
@@ -86,14 +87,14 @@ function JobList() {
       label: 'Progreso',
       render: (value) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
+          <div className="progress-bar-track" style={{
             flex: 1,
             height: '8px',
             backgroundColor: '#1f2937',
             borderRadius: '4px',
             overflow: 'hidden',
           }}>
-            <div style={{
+            <div className="progress-bar-fill" style={{
               height: '100%',
               width: `${value}%`,
               backgroundColor: '#0ea5e9',
@@ -271,3 +272,10 @@ function JobDetailsModal({ isOpen, job, onClose, onCancel, onRetry }) {
 }
 
 export default JobList;
+JobList.propTypes = {
+  isOpen:       PropTypes.bool,
+  job:          PropTypes.object,
+  onClose:      PropTypes.func,
+  onCancel:     PropTypes.func,
+  onRetry:      PropTypes.func,
+}

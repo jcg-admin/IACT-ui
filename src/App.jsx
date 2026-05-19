@@ -8,7 +8,10 @@
 import React, { Suspense } from 'react'
 import { AppRouter } from '@router'
 import { AppProviders } from './AppProviders'
-import ToastContainer from '@components/shared/Toast/ToastContainer'
+import ToastContainer from '@ui/shared/Toast/ToastContainer'
+import ApiErrorAlert from '@ui/feedback/ApiErrorAlert'
+import ServerErrorBanner from '@ui/feedback/ServerErrorBanner'
+import RootErrorBoundary from '@ui/shared/ErrorBoundaries'
 import '@styles/main.scss'
 
 /**
@@ -40,10 +43,14 @@ function LoadingFallback() {
 export default function App() {
   return (
     <AppProviders>
-      <Suspense fallback={<LoadingFallback />}>
-        <AppRouter />
-      </Suspense>
+      <ServerErrorBanner />
+      <RootErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <AppRouter />
+        </Suspense>
+      </RootErrorBoundary>
       <ToastContainer />
+      <ApiErrorAlert />
     </AppProviders>
   )
 }

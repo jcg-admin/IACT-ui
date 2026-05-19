@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setUser } from '@redux/slices/authSlice'
-import { AnimatedButton } from '@components/animations'
+import { setUser } from '@store/slices/auth'
+import { AnimatedButton } from '@ui/animations'
 
 function Profile() {
   const { user } = useSelector(state => state.auth);

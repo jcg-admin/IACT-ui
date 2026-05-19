@@ -3,19 +3,18 @@
 
 // Domain hooks - Business logic specific
 export {
-  useAuth,
+  useIdentity,
   useJobs,
   useExport,
   useForm,
-  useDashboard,
-  useJobPolling,
+  useJobStatus,
   useMetrics,
-  useTransaction,
-  useWebSocket,
-  useAlertPolling,
+  useLocalTransaction, // T5.2: sustituye a useTransaction (API inexistente)
+  useRealTimeChannel,
+  useAlertFeed,
   usePasswordStrength,
   useMenuToggle,
-  useAPI
+  useRequest
 } from './domain'
 
 // Utility hooks - Reusable generic hooks

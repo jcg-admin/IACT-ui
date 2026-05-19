@@ -1,28 +1,37 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import appConfigReducer from '@state/slices/appConfigSlice';
-import homeReducer from '@modules/home/state/homeSlice';
-import healthReducer from '@state/slices/healthSlice';
+import appConfigReducer from '@state/slices/appConfig';
+import homeReducer from '@modules/home/state/home';
+import healthReducer from '@state/slices/health';
 import App from './App';
-import { setConfig } from '@state/slices/appConfigSlice';
-import { AppConfigService } from '@services/config/AppConfigService';
-import { CallsService } from '@services/calls/CallsService';
-import { HealthService } from '@services/health/HealthService';
+import { setConfig } from '@state/slices/appConfig';
+import { AppConfigService } from '@api/config/AppConfig';
+import { CallsService } from '@api/calls/CallsGateway';
+import { HealthService } from '@api/health/HealthGateway';
 
-jest.mock('@services/config/AppConfigService', () => ({
+jest.mock('@ui/navigation/Header/Header', () => ({
+  __esModule: true,
+  default: ({ onLogout }) => (
+    <header data-testid="app-header">
+      <button onClick={onLogout} data-testid="logout-btn">Logout</button>
+    </header>
+  ),
+}));
+
+jest.mock('@api/config/AppConfig', () => ({
   AppConfigService: {
     getConfig: jest.fn(),
   },
 }));
 
-jest.mock('@services/calls/CallsService', () => ({
+jest.mock('@api/calls/CallsGateway', () => ({
   CallsService: {
     getCalls: jest.fn(),
   },
 }));
 
-jest.mock('@services/health/HealthService', () => ({
+jest.mock('@api/health/HealthGateway', () => ({
   HealthService: {
     getStatus: jest.fn(),
   },
@@ -34,6 +43,7 @@ const createTestStore = () => {
       appConfig: appConfigReducer,
       home: homeReducer,
       observability: healthReducer,
+      auth: (state = { user: null, isAuthenticated: false }) => state,
     },
   });
 };

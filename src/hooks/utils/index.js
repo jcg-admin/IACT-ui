@@ -12,18 +12,3 @@ export { useMountedState } from './useMountedState'
 export { usePrevious } from './usePrevious'
 export { useThrottle } from './useThrottle'
 export { useTimeout } from './useTimeout'
-
-export default {
-  useAsync,
-  useBreakpoint,
-  useClickAway,
-  useDebounce,
-  useInterval,
-  useKeyPress,
-  useLocalStorage,
-  useMediaQuery,
-  useMountedState,
-  usePrevious,
-  useThrottle,
-  useTimeout
-}

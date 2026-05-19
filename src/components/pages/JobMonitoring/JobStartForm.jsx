@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
 export default function JobStartForm({ onSubmit, onCancel }) {
   const [jobType, setJobType] = useState('export')
@@ -67,4 +68,8 @@ export default function JobStartForm({ onSubmit, onCancel }) {
       </form>
     </div>
   )
+}
+JobStartForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func,
 }

@@ -28,8 +28,8 @@ $z-content: 1;
 
 // Header
 $header-height: 64px;
-$header-bg: #ffffff;
-$header-border: #e5e7eb;
+$header-bg: white;
+$header-border: $gray-200;
 $header-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
 // Sidebar
@@ -37,8 +37,8 @@ $sidebar-width-desktop: 250px;
 $sidebar-width-collapsed: 60px;
 $sidebar-width-mobile: 75%;
 $sidebar-max-width-mobile: 280px;
-$sidebar-bg: #ffffff;
-$sidebar-border: #e5e7eb;
+$sidebar-bg: white;
+$sidebar-border: $gray-200;
 $sidebar-transition: 0.3s ease-out;
 
 // Main content

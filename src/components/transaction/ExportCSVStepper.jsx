@@ -7,12 +7,12 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/useTransaction'
-import useJobPolling from '@hooks/useJobPolling'
+import useLocalTransaction from '@hooks/domain/useLocalTransaction'
+import useJobStatus from '@hooks/domain/useJobStatus'
 import FormStepper from './FormStepper'
 import FilterForm from './content/FilterForm'
 import PreviewResults from './content/PreviewResults'
-import ProgressBar from '@components/jobs/ProgressBar'
+import ProgressBar from '@ui/jobs/ProgressBar'
 
 function ExportCSVStepper({ onComplete }) {
   const [_stepData, setStepData] = useState({})
@@ -26,9 +26,9 @@ function ExportCSVStepper({ onComplete }) {
     nextStep,
     confirmTx,
     cancelTx
-  } = useTransaction('export_csv')
+  } = useLocalTransaction('export_csv')
 
-  const { job, progress, downloadResult, stopPolling } = useJobPolling(_jobId)
+  const { job, progress, downloadResult, stopPolling } = useJobStatus(_jobId)
 
   // Iniciar transacción al montar
   React.useEffect(() => {

@@ -1,0 +1,34 @@
+/**
+ * AccessPage — layout de pestañas.
+ * Variables disponibles vía sass-loader additionalData.
+ */
+
+.access-page {
+  .tab-nav {
+    display: flex;
+    border-bottom: 2px solid $border-color;
+    margin-bottom: $spacing-xl;
+
+    .tab-btn {
+      padding: $spacing-sm $spacing-lg;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: $text-muted;
+      transition: color 0.2s, border-color 0.2s;
+
+      &:hover {
+        color: $secondary-color;
+      }
+
+      &.active {
+        color: $primary-color;
+        border-bottom-color: $primary-color;
+      }
+    }
+  }
+}

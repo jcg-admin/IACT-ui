@@ -1,53 +1,47 @@
-# Lesson 3.21: CSS Modules (Raid Party)
+# Lesson 3.21: CSS Modules (Raid Party) — SUPERSEDED
 
-Professional CSS module implementation from Raid Party production app.
+> **Estado:** Esta lección documenta un patrón que fue evaluado y descartado.
+> El proyecto usa SCSS global puro (ver sección "Decisión" abajo).
 
 ## What Are CSS Modules?
 
-CSS Modules provide scoped styling, preventing naming conflicts.
+CSS Modules provide scoped styling by transforming class names to unique
+hashes at compile time (`styles.container` → `Component_container__a3Bx2`).
 
-## Implementation
+## Por qué no se usa en este proyecto
 
-### File Pattern
+El proyecto sigue el patrón estándar de Sass en React:
+
+```javascript
+// ✅ Patrón del proyecto
+import './Component.scss'
+
+export default function Component() {
+  return <div className="container">Content</div>
+}
+```
+
+CSS Modules requiere un objeto intermediario (`import styles from ...`) y
+`className={styles.xxx}`, lo cual es inconsistente con el resto del codebase
+donde las páginas y componentes usan strings de clase directos.
+
+## Decisión
+
+Los 11 archivos `.module.scss` fueron convertidos a `.scss` planos en la
+auditoría de variables SCSS. El patrón unificado del proyecto es:
+
 ```
 Component/
-├── Component.jsx
-├── Component.module.scss  ← Scoped to this component
+├── Component.jsx       ← import './Component.scss'  +  className="name"
+├── Component.scss      ← clases SCSS globales, variables disponibles sin @import
 ├── Component.test.js
 └── index.jsx
 ```
 
-### Usage
-```javascript
-// Component.jsx
-import styles from './Component.module.scss'
-
-export default function Component() {
-  return <div className={styles.container}>Content</div>
-}
-```
-
-## Benefits
-
-✅ No naming conflicts  
-✅ Better performance  
-✅ Easier maintenance  
-✅ Clear CSS ownership  
-
-## All 13 Components Using CSS Modules
-
-- Header.module.scss
-- LogoBrand.module.scss
-- MenuButton.module.scss
-- BreadcrumbNav.module.scss
-- NotificationBell.module.scss
-- UserMenu.module.scss
-- Sidebar.module.scss
-- SidebarNav.module.scss
-- NavLink.module.scss
-- DashboardLayout.module.scss
-- Dashboard.module.scss
+Las variables SCSS (`$primary-color`, `$gray-200`, `$spacing-md`, etc.) están
+disponibles en todos los archivos SCSS vía `sass-loader.additionalData` —
+no se necesita `@import` ni `@use` manual.
 
 ---
 
-See [Architecture](../ARCHITECTURE.md) for complete overview.
+Ver [Architecture](../ARCHITECTURE.md) y [scss-page-patterns](../guides/scss-page-patterns.md).

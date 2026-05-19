@@ -1,58 +1,31 @@
 /**
- * alertService Tests
+ * alertService.test.js — post-T5.3
+ *
+ * alertGateway.js fue eliminado en T5.3.
+ * alertGateway tenía 1 método: getNew(since) → GET /api/alerts/ (URL incorrecta).
+ * La funcionalidad está cubierta por alertsGateway.getAlerts() → GET /api/alerts/active/
  */
-
-import alertService from '@services/alertService'
-import apiService from '@services/apiService'
-
-jest.mock('@services/apiService')
-
-describe('alertService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
+describe('T5.3 — alertGateway eliminado (consolidado en alertsGateway)', () => {
+  test('alertGateway.js no existe en src/services/', () => {
+    const fs = require('fs')
+    expect(fs.existsSync('src/services/alertGateway.js')).toBe(false)
   })
 
-  describe('getNew(_since)', () => {
-    it('debería hacer GET a /api/alerts/', async () => {
-      const _mockData = {
-        alerts: [
-          { id: 'a1', title: 'Alert 1', isRead: false }
-        ]
-      }
+  test('alertsGateway.getAlerts() cubre la funcionalidad de alertGateway.getNew()', () => {
+    const alertsGateway = require('../alertsGateway').default
+    expect(typeof alertsGateway.getAlerts).toBe('function')
+    expect(typeof alertsGateway.getActiveAlerts).toBe('function')
+  })
 
-      apiService.get.mockResolvedValue(_mockData)
-
-      const _result = await alertService.getNew()
-
-      expect(apiService.get).toHaveBeenCalledWith('/api/alerts/')
-      expect(_result.alerts).toHaveLength(1)
-    })
-
-    it('debería enviar since parameter si está', async () => {
-      const _timestamp = '2026-01-01T00:00:00Z'
-      const _mockData = { alerts: [] }
-
-      apiService.get.mockResolvedValue(_mockData)
-
-      await alertService.getNew(_timestamp)
-
-      expect(apiService.get).toHaveBeenCalledWith('/api/alerts/?since=2026-01-01T00:00:00Z')
-    })
-
-    it('debería retornar array de alertas', async () => {
-      const _mockData = {
-        alerts: [
-          { id: 'a1', title: 'Alert 1', severity: 'info', isRead: false },
-          { id: 'a2', title: 'Alert 2', severity: 'warning', isRead: false }
-        ]
-      }
-
-      apiService.get.mockResolvedValue(_mockData)
-
-      const _result = await alertService.getNew()
-
-      expect(Array.isArray(_result.alerts)).toBe(true)
-      expect(_result.alerts).toHaveLength(2)
-    })
+  test('ningún archivo de producción importa alertGateway (distinto de alertsGateway)', () => {
+    const { execSync } = require('child_process')
+    const result = execSync(
+      "grep -r \"from.*alertGateway'\" src/ --include='*.js' --include='*.jsx' -l 2>/dev/null || true",
+      { encoding: 'utf8' }
+    ).trim()
+    // Excluir alertsGateway.js (es el correcto) y tests
+    const lines = result.split('\n').filter(Boolean)
+      .filter(f => !f.includes('alertsGateway') && !f.includes('__tests__') && !f.includes('.test.'))
+    expect(lines).toEqual([])
   })
 })

@@ -1,77 +1,42 @@
 /**
  * ActiveSessions Component
- * 
- * Display active sessions and devices
+ *
+ * Display active sessions and devices — UC-AUTH sessions management.
  */
 
-import React, { useState, useEffect } from 'react'
-import userAuth from '../../../facades/UserAuth'
-import { getNotificationService } from '@services/notificationService'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  fetchActiveSessions,
+  revokeSession,
+  selectActiveSessions,
+  selectSessionsLoading,
+  selectSessionsError,
+} from '@store/slices/auth'
+import { logoutAllSessions } from '@store/slices/session'
 
 export default function ActiveSessions() {
-  const [sessions, setSessions] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  const notify = getNotificationService()
+  const dispatch = useDispatch()
+  const sessions = useSelector(selectActiveSessions)
+  const loading = useSelector(selectSessionsLoading)
+  const error = useSelector(selectSessionsError)
 
   useEffect(() => {
-    loadSessions()
-  }, [])
+    dispatch(fetchActiveSessions())
+  }, [dispatch])
 
-  const loadSessions = async () => {
-    try {
-      setLoading(true)
-      
-      // Mock data - in production, call API
-      const mockSessions = [
-        {
-          id: 'session-1',
-          device: 'Chrome on MacOS',
-          ip: '192.168.1.100',
-          location: 'San Francisco, CA',
-          lastActive: new Date(Date.now() - 300000).toISOString(),
-          isCurrent: true
-        },
-        {
-          id: 'session-2',
-          device: 'Safari on iPhone',
-          ip: '192.168.1.101',
-          location: 'San Francisco, CA',
-          lastActive: new Date(Date.now() - 3600000).toISOString(),
-          isCurrent: false
-        },
-        {
-          id: 'session-3',
-          device: 'Firefox on Windows',
-          ip: '192.168.1.102',
-          location: 'New York, NY',
-          lastActive: new Date(Date.now() - 86400000).toISOString(),
-          isCurrent: false
-        }
-      ]
-
-      setSessions(mockSessions)
-      setLoading(false)
-    } catch (error) {
-      notify.error(`Failed to load sessions: ${error.message}`)
-      setLoading(false)
-    }
+  const handleRevokeSession = (sessionId) => {
+    if (!window.confirm('Revoke this session?')) return
+    dispatch(revokeSession(sessionId))
   }
 
-  const handleRevokeSession = async (sessionId) => {
-    if (!window.confirm('Revoke this session?')) return
-
-    try {
-      // In production, call API to revoke session
-      setSessions(prev => prev.filter(s => s.id !== sessionId))
-      notify.success('Session revoked')
-    } catch (error) {
-      notify.error('Failed to revoke session')
-    }
+  const handleCloseAllSessions = () => {
+    if (!window.confirm('¿Cerrar todas las sesiones activas? Serás desconectado de todos los dispositivos.')) return
+    dispatch(logoutAllSessions())
   }
 
   if (loading) {
-    return <div className="active-sessions loading">Loading sessions...</div>
+    return <div className="active-sessions loading" role="status" aria-busy="true">Loading sessions...</div>
   }
 
   return (
@@ -79,7 +44,22 @@ export default function ActiveSessions() {
       <div className="page-header">
         <h1>Active Sessions</h1>
         <p>Manage your active sessions and devices</p>
+        {sessions.length > 1 && (
+          <button
+            onClick={handleCloseAllSessions}
+            className="btn btn-danger"
+            data-testid="close-all-btn"
+          >
+            Cerrar todas las sesiones
+          </button>
+        )}
       </div>
+
+      {error && (
+        <div role="alert" className="error-banner" style={{ marginBottom: '16px' }}>
+          {error}
+        </div>
+      )}
 
       <div className="sessions-list">
         {sessions.map((sess) => (

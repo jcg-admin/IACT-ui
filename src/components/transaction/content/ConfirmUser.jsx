@@ -12,7 +12,7 @@ function ConfirmUser({ data }) {
           <p>{data.email}</p>
           <p>@{data.username}</p>
         </div>
-        <p className="confirm-note">Presiona "Confirmar" para completar la creación.</p>
+        <p className="confirm-note">Presiona &quot;Confirmar&quot; para completar la creación.</p>
       </div>
     </div>
   )

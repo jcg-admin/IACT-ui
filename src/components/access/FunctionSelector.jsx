@@ -1,24 +1,59 @@
 /**
  * FunctionSelector.jsx
  * IACT v4.0 - Access Module
- * UC_ACC_01: Componente para seleccionar funciones con validación SoD
+ * UC_ACC_01: Componente para seleccionar funciones con validación de reglas de separación
  */
 
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types'
 
 const FUNCTION_CATEGORIES = {
     PIPELINE: 'Pipeline',
-    USUARIO: 'Usuarios',
-    AUDITORIA: 'Auditoria',
-    ACCESO: 'Control de Acceso',
-    CONFIGURACION: 'Configuración',
+    USERS: 'Users',
+    AUDIT: 'Audit',
+    ACCESS: 'Access Control',
+    CONFIG: 'Configuration',
     DASHBOARD: 'Dashboard',
 };
 
-const SOD_RULES = {
-    'SOD-001': { setA: /^PIP-/, setB: /^AUD-/, desc: 'Pipeline vs Auditoria' },
-    'SOD-002': { setA: /^USR-/, setB: /^AUD-/, desc: 'Usuario vs Auditoria' },
-    'SOD-003': { setA: /^ACC-/, setB: /^AUD-/, desc: 'Acceso vs Auditoria' },
+// Separation rules use predicate functions against codenames (e.g. 'view_pipeline_status').
+// Regex against function_id codes (PIP-*, AUD-*) was silently broken — those codes
+// never appear in func.code which carries the RBAC codename.
+const SEPARATION_RULES = {
+    'SR-001': {
+        setA: (codename) =>
+            codename.startsWith('view_pipeline') ||
+            codename.startsWith('view_data') ||
+            codename.startsWith('request_pipeline'),
+        setB: (codename) =>
+            codename.startsWith('view_audit') ||
+            codename.startsWith('search_audit') ||
+            codename.startsWith('export_audit') ||
+            codename.startsWith('generate_compliance'),
+        desc: 'pipeline_audit_separation',
+    },
+    'SR-002': {
+        setA: (codename) =>
+            codename.startsWith('manage_users') ||
+            codename.startsWith('create_user') ||
+            codename.startsWith('edit_user'),
+        setB: (codename) =>
+            codename.startsWith('view_audit') ||
+            codename.startsWith('search_audit') ||
+            codename.startsWith('export_audit'),
+        desc: 'users_audit_separation',
+    },
+    'SR-003': {
+        setA: (codename) =>
+            codename.startsWith('manage_access') ||
+            codename.startsWith('assign_function') ||
+            codename.startsWith('revoke_function'),
+        setB: (codename) =>
+            codename.startsWith('view_audit') ||
+            codename.startsWith('search_audit') ||
+            codename.startsWith('export_audit'),
+        desc: 'access_audit_separation',
+    },
 };
 
 export default function FunctionSelector({
@@ -36,20 +71,27 @@ export default function FunctionSelector({
         Object.keys(FUNCTION_CATEGORIES)
     );
 
+    useEffect(() => {
+        if (selectedFunctionIds.length > 0 && allFunctions.length > 0) {
+            detectConflicts(selectedFunctionIds);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     /**
-     * Detectar conflictos SoD
+     * Detectar conflictos de separación
      */
     const detectConflicts = (newSelection) => {
         const conflictList = [];
 
-        const selectedCodes = newSelection.map(id => {
+        const selectedCodenames = newSelection.map(id => {
             const func = allFunctions.find(f => f.id === id);
             return func ? func.code : null;
         }).filter(Boolean);
 
-        for (const [ruleCode, rule] of Object.entries(SOD_RULES)) {
-            const inSetA = selectedCodes.filter(code => rule.setA.test(code));
-            const inSetB = selectedCodes.filter(code => rule.setB.test(code));
+        for (const [ruleCode, rule] of Object.entries(SEPARATION_RULES)) {
+            const inSetA = selectedCodenames.filter(code => rule.setA(code));
+            const inSetB = selectedCodenames.filter(code => rule.setB(code));
 
             if (inSetA.length > 0 && inSetB.length > 0) {
                 conflictList.push({
@@ -105,7 +147,7 @@ export default function FunctionSelector({
     const getFilteredFunctions = () => {
         const filtered = {};
 
-        for (const [category, _] of Object.entries(FUNCTION_CATEGORIES)) {
+        for (const [category] of Object.entries(FUNCTION_CATEGORIES)) {
             filtered[category] = allFunctions.filter(func => {
                 const matchesSearch = !searchTerm ||
                     func.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -175,18 +217,8 @@ export default function FunctionSelector({
 
             {/* Alertas de Conflicto */}
             {hasConflicts && (
-                <div
-                    style={{
-                        marginBottom: '16px',
-                        padding: '12px',
-                        backgroundColor: '#7f1d1d',
-                        border: '1px solid #dc2626',
-                        borderRadius: '4px',
-                        color: '#fca5a5',
-                        fontSize: '14px',
-                    }}
-                >
-                    <strong>Conflictos SoD detectados:</strong>
+                <div role="alert" className="error-banner">
+                    <strong>Conflictos de Separación detectados:</strong>
                     <ul style={{ margin: '8px 0 0 16px', paddingLeft: '16px' }}>
                         {conflicts.map((conflict, idx) => (
                             <li key={idx}>
@@ -331,4 +363,12 @@ export default function FunctionSelector({
             </div>
         </div>
     );
+}
+FunctionSelector.propTypes = {
+  allFunctions:         PropTypes.array,
+  selectedFunctionIds:  PropTypes.array,
+  currentUserFunctions: PropTypes.array,
+  onSelectionChange:    PropTypes.func,
+  onConflictDetected:   PropTypes.func,
+  readOnly:             PropTypes.bool,
 }

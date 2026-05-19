@@ -1,5 +1,6 @@
 import React from 'react';
 import '@styles/components/_toast.scss';
+import PropTypes from 'prop-types'
 
 function Toast({ id, message, type, onRemove }) {
   return (
@@ -19,3 +20,9 @@ function Toast({ id, message, type, onRemove }) {
 }
 
 export default Toast;
+Toast.propTypes = {
+  id:       PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  message:  PropTypes.string.isRequired,
+  type:     PropTypes.oneOf(['success', 'error', 'warning', 'info']),
+  onRemove: PropTypes.func.isRequired,
+}

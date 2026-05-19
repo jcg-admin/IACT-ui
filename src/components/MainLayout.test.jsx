@@ -1,12 +1,51 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import MainLayout from './MainLayout';
-import { PermissionsService } from '@services/permissions/PermissionsService';
+import { PermissionsService } from '@api/permissions/Permissions';
 
-jest.mock('@services/permissions/PermissionsService', () => ({
+jest.mock('@api/permissions/Permissions', () => ({
   PermissionsService: {
     getNormalizedPermissions: jest.fn(),
   },
 }));
+
+jest.mock('@ui/navigation/Header/Header', () => ({
+  __esModule: true,
+  default: ({ onLogout, userInfo }) => (
+    <header data-testid="app-header">
+      <span>{userInfo?.name}</span>
+      <button onClick={onLogout} data-testid="logout-btn">Logout</button>
+    </header>
+  ),
+}));
+
+jest.mock('@store/slices/auth', () => ({
+  logoutUser: jest.fn(() => ({ type: 'auth/logoutUser' })),
+}));
+
+jest.mock('@store/selectors', () => ({
+  selectUser: (s) => s.auth?.user ?? null,
+}));
+
+function buildStore(auth = {}) {
+  return configureStore({
+    reducer: {
+      auth: (state = { user: null, ...auth }) => state,
+    },
+  });
+}
+
+function renderLayout(children, storeState = {}) {
+  return render(
+    <Provider store={buildStore(storeState)}>
+      <MainLayout>
+        {children}
+      </MainLayout>
+    </Provider>
+  );
+}
 
 describe('MainLayout', () => {
   beforeEach(() => {
@@ -28,12 +67,26 @@ describe('MainLayout', () => {
     jest.clearAllMocks();
   });
 
+  it('renders Header component with logout button', () => {
+    renderLayout(<div>Contenido</div>);
+    expect(screen.getByTestId('app-header')).toBeInTheDocument();
+    expect(screen.getByTestId('logout-btn')).toBeInTheDocument();
+  });
+
+  it('passes user info to Header', () => {
+    renderLayout(<div />, { user: { first_name: 'Ana', email: 'ana@test.com' } });
+    expect(screen.getByText('Ana')).toBeInTheDocument();
+  });
+
+  it('dispatches logoutUser when logout button is clicked', () => {
+    const { logoutUser } = require('@store/slices/auth');
+    renderLayout(<div />);
+    fireEvent.click(screen.getByTestId('logout-btn'));
+    expect(logoutUser).toHaveBeenCalled();
+  });
+
   it('renders navigation items based on permissions service', async () => {
-    render(
-      <MainLayout>
-        <div>Contenido</div>
-      </MainLayout>
-    );
+    renderLayout(<div>Contenido</div>);
 
     await waitFor(() => {
       expect(screen.getByText(/Dashboards/)).toBeInTheDocument();
@@ -48,23 +101,15 @@ describe('MainLayout', () => {
       new Error('sin permisos')
     );
 
-    render(
-      <MainLayout>
-        <div>Contenido</div>
-      </MainLayout>
-    );
+    renderLayout(<div>Contenido</div>);
 
-    const placeholder = await screen.findByTestId('menu-placeholder');
-    expect(placeholder).toHaveTextContent(/Menu no disponible/);
+    await waitFor(() => {
+      expect(screen.getByTestId('menu-placeholder')).toHaveTextContent(/Menu no disponible/);
+    });
   });
 
   it('renders children content', () => {
-    render(
-      <MainLayout>
-        <div>Contenido principal</div>
-      </MainLayout>
-    );
-
+    renderLayout(<div>Contenido principal</div>);
     expect(screen.getByText(/Contenido principal/)).toBeInTheDocument();
   });
 });

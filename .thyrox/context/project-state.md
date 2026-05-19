@@ -4,7 +4,7 @@ category: Estado Actual
 version: unknown
 purpose: Dashboard del proyecto THYROX — estado actual y navegación
 goal: Punto de entrada para entender estado actual y próximos pasos
-updated_at: 2026-04-26 00:58:19
+updated_at: 2026-05-08 20:29:15
 ```
 
 # Project State — THYROX
@@ -13,12 +13,12 @@ updated_at: 2026-04-26 00:58:19
 
 **Versión:** unknown
 **Estado:** Activo — framework thyrox con 0 FASEs completadas
-**Última actualización:** 2026-04-26 00:58:19
-**Branch activo:** `feature/project-setup`
+**Última actualización:** 2026-05-08 20:29:15
+**Branch activo:** `claude/project-analysis-N9IkV`
 
 ---
 
-## Agentes nativos (`29` agentes en `.claude/agents/`)
+## Agentes nativos (`30` agentes en `.claude/agents/`)
 
 - `agentic-reasoning` — DEPRECATED — absorbido por deep-dive (Capa 7 calibración THYROX). Usar cuando
 - `agentic-validator` — Valida código Python agentic contra el catálogo AP-01..AP-42. Detecta: violaci
@@ -38,7 +38,8 @@ updated_at: 2026-04-26 00:58:19
 - `pm-coordinator` — Coordinator para PMBOK — gestión de proyectos PMI, 5 grupos de procesos (Init
 - `postgresql-expert` — Tech-expert para PostgreSQL. Usar cuando se trabaja con PostgreSQL queries, sche
 - `pps-coordinator` — Coordinator para PPS — Practical Problem Solving (Toyota TBP): Go-and-See, 5 W
-- `react-expert` — Experto en React, hooks y ecosistema frontend. Usar cuando el usuario necesite i
+- `react-expert` — Experto en React, hooks y ecosistema frontend para IACT-UI. Usar cuando el usuar
+- `redux-expert` — Experto en Redux Toolkit (RTK) para IACT-UI. Conoce slices, createAsyncThunk, se
 - `rm-coordinator` — Coordinator para RM — Requirements Management: elicitación, análisis, especi
 - `rup-coordinator` — Coordinator para RUP — Rational Unified Process: 4 fases iterativas (Inception
 - `skill-generator` — Genera archivos de skill (.claude/skills/ o .claude/agents/) para una tecnologí
@@ -48,7 +49,7 @@ updated_at: 2026-04-26 00:58:19
 - `task-synthesizer` — Consolida outputs existentes de análisis (cluster reports, gap analyses) en un 
 - `tech-detector` — Detecta el stack tecnológico de un proyecto analizando archivos de configuraci�
 - `thyrox-coordinator` — Coordinator genérico para THYROX — lee el YAML de metodología dinámicamente
-- `webpack-expert` — Tech-expert para Webpack y bundling de assets. Conoce configuración de entry/ou
+- `webpack-expert` — Tech-expert para Webpack y bundling de assets en IACT-UI. Conoce el archivo úni
 
 ---
 

@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import styles from './UserMenu.module.scss'
+import ConfirmModal from '@ui/shared/ConfirmModal'
+import './UserMenu.scss'
 
 export default function UserMenu({
   userInfo = { name: 'User', email: '' },
@@ -13,43 +14,66 @@ export default function UserMenu({
   onSettings = () => {},
 }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
     setIsOpen(false)
+    setShowLogoutModal(true)
+  }
+
+  const handleConfirmLogout = () => {
+    setShowLogoutModal(false)
     onLogout()
   }
 
-  return (
-    <div className={styles.userMenu}>
-      <button
-        className={styles.trigger}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-label="User menu"
-      >
-        👤 {userInfo.name || 'User'}
-      </button>
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false)
+  }
 
-      {isOpen && (
-        <div className={styles.dropdown}>
-          <div className={styles.userInfo}>
-            <div className={styles.name}>{userInfo.name}</div>
-            {userInfo.email && <div className={styles.email}>{userInfo.email}</div>}
+  return (
+    <>
+      <div className="userMenu">
+        <button
+          className="trigger"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-label="User menu"
+        >
+          👤 {userInfo.name || 'User'}
+        </button>
+
+        {isOpen && (
+          <div className="dropdown">
+            <div className="userInfo">
+              <div className="name">{userInfo.name}</div>
+              {userInfo.email && <div className="email">{userInfo.email}</div>}
+            </div>
+            <div className="divider" />
+            <button className="option" onClick={onSettings}>
+              ⚙️ Settings
+            </button>
+            <button className="option" onClick={() => setIsOpen(false)}>
+              👁️ Profile
+            </button>
+            <div className="divider" />
+            <button className="logoutBtn" onClick={handleLogoutClick}>
+              🚪 Logout
+            </button>
           </div>
-          <div className={styles.divider} />
-          <button className={styles.option} onClick={onSettings}>
-            ⚙️ Settings
-          </button>
-          <button className={styles.option} onClick={() => setIsOpen(false)}>
-            👁️ Profile
-          </button>
-          <div className={styles.divider} />
-          <button className={styles.logoutBtn} onClick={handleLogout}>
-            🚪 Logout
-          </button>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={handleCancelLogout}
+        onConfirm={handleConfirmLogout}
+        title="Cerrar sesión"
+        message="¿Estás seguro de que deseas cerrar sesión?"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
+        variant="default"
+      />
+    </>
   )
 }
 

@@ -1,6 +1,6 @@
 import callsMock from '@mocks/llamadas.json';
-import { CallsService } from './CallsService';
-import { resetMockUsageMetrics, getMockUsageMetrics } from '@services/utils/mockUsageTracker';
+import { CallsService } from './CallsGateway';
+import { resetMockUsageMetrics, getMockUsageMetrics } from '@api/utils/mockUsageTracker';
 
 describe('CallsService', () => {
   let originalEnv;

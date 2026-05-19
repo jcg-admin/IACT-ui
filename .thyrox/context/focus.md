@@ -1,120 +1,65 @@
-```yml
-type: Estado Operacional
-project: IACT-docs
-version: 2.0.0
-created_at: 2026-04-23 09:00:00
-updated_at: 2026-04-29 06:35:00
+```yaml
+type: Focus Actual
+version: 1.0
+project: IACT-UI
+updated_at: 2026-05-09 05:25:00
+branch: claude/project-analysis-N9IkV
+wp_activo: null
 ```
 
-# Focus — IACT-docs
+# Focus — IACT-UI
 
-Navegación de la iniciativa actual del proyecto IACT-docs.
+## Estado actual — Sin WP activo
 
----
-
-## Iniciativa Actual
-
-**Estado:** entre iniciativas. Última ÉPICA cerrada el 2026-04-29 06:00.
-**Branch:** `feature/solve-problem-docs`
-**Build status:** `make clean && make html` → `build succeeded` con 0 WARN / 0 ERR / 0 CRIT.
+**Branch:** `claude/project-analysis-N9IkV`
+**Estado:** WP `report-export-complete` cerrado (Phase 11 TRACK completa). **1993 tests green.**
+**Próximo:** Pendiente definición por ejecutor.
 
 ---
 
-## Últimas ÉPICAs cerradas (orden cronológico inverso)
+## Completado — WP uc-alignment-full-audit ✓
 
-### ÉPICA 12 — methodology-recalibration (2026-04-29 06:00)
+**WP:** `2026-05-08-04-19-25-uc-alignment-full-audit`
+**Tests:** 1841 passing / 214 suites / 0 failures
 
-WP `2026-04-29-05-51-27-methodology-recalibration`. Meta-WP de
-validación adversarial vía deep-dive contra mi propia recalibración
-metodológica.
+Auditoría completa de 66 UCs de Fase 1 contra implementación real.
+4 categorías de gaps identificadas y resueltas:
 
-**Resultado:**
-- I-016 (background tasks) **relocalizado** de `.claude/rules/` a
-  `.claude/skills/thyrox/references/bash-background-tasks.md`
-  (lazy-load on-demand).
-- I-017 (micro-ciclo metodológico) **descartado** — over-engineering
-  identificado por deep-review.
-- 2 references on-demand creadas: `mechanical-bulk-edits.md` +
-  `methodology-bias-watch.md`.
-- Sesgo "realismo performativo metodológico" documentado.
+- **GAP-A (routing):** 3 rutas faltantes en AppRouter para páginas ACC ya implementadas
+- **GAP-B (páginas):** SeparationRulesCatalog (UC-ADM-01) + MenuItemCatalog (UC-ADM-04/05) implementados
+- **GAP-C (parciales):** UC-PIP-04, UC-RPT-08/09/11 confirmados pre-existentes y testeados
+- **GAP-D (estructura):** UserManagement movido a `src/pages/users/` (ubicación canónica)
 
-**Trazabilidad:** commits `79362fe`, `0a3161d`, `0a846af`.
-
-### ÉPICA 11 — md-to-rst-saneamiento (2026-04-29 05:35)
-
-WP `2026-04-29-05-35-11-md-to-rst-saneamiento`. Saneamiento masivo
-del corpus `source/` post-rebuild.
-
-**Resultado:**
-- 19222 issues → 0 (-100%) en 11 batches commit.
-- 9 scripts archivados en `scripts/` del WP como canalización
-  post-conversion para reuso futuro.
-- 8 patrones de bug del conversor original catalogados con
-  before/after.
-- Causa raíz documentada: el conversor md→rst preservó indent
-  visual sin recalcular indent semántico que RST exige.
-
-**Trazabilidad:** commits `e71a78d` → `0f884df` (11 commits) +
-`0a2549d` (post-mortem WP).
-
-### ÉPICA 8 — source-rebuild-strategy (2026-04-28)
-
-WP padre del rebuild documental. Spawneo de 16 hijos.
-
-**Estado de hijos a 2026-04-29:**
-- **14 CERRADO v1**: base-cognitiva, normativa-* (4),
-  requisitos, arquitectura-tecnica, backend, frontend, databases,
-  onboarding, quality, risks-technical-debt, gestion.
-- **2 DIFERIDO**: infrastructure (205 inputs heavy),
-  operations (203 inputs).
-
-Ver `2026-04-28-01-58-08-source-rebuild-strategy/track/children-status-summary.md`.
+Artefactos: changelog + lessons-learned (6 lecciones) + risk-register actualizado.
 
 ---
 
-## Estado de la documentación
+## Completado — WP dashboard-cleanup-naming-conventions ✓
 
-| Indicador | Valor |
-|-----------|-------|
-| `make clean && make html` | `build succeeded` |
-| WARNINGs | 0 |
-| ERRORs | 0 |
-| CRITICALs | 0 |
-| Cajones publicados en `source/` | 14 |
-| Cajones diferidos | 2 (infrastructure, operations) |
+**WP cerrado:** `2026-05-08-01-05-10-dashboard-cleanup-naming-conventions`
+**Phase 11 TRACK/EVALUATE:** completada
+
+29 tareas, 6 commits. 1799 tests, 0 regressions.
+Entregables: dashboardSlice eliminado, 5 renames de naming HAL-2..5, TD-NM-001..006 documentados.
 
 ---
 
-## Próxima decisión
+## Completado — WP api-connectivity-ux-feedback ✓
 
-Pendiente del ejecutor. Opciones identificadas:
+**WP cerrado:** `2026-05-07-23-37-33-api-connectivity-ux-feedback`
+**Branch:** `claude/project-analysis-N9IkV`
+**Phase 11 TRACK/EVALUATE:** completada
 
-| Opción | Descripción | Complejidad |
-|--------|-------------|-------------|
-| (a) Retomar WP #10 infrastructure | 205 inputs canónicos + 236 variantes en `temp-holding/`. Documentar topología de despliegue Ubuntu + Apache | Heavy |
-| (b) Retomar WP #12 operations | 203 inputs en `temp-holding/`. Documentar runbooks operativos | Heavy |
-| (c) Atacar DEBT items | DEBT-001..007 en `source/risks-technical-debt/deuda-tecnica-rebuild.rst`. DEBT-001 (vocabulario `Capacidad`→`Function`) requiere coordinación backend | Variable |
-| (d) Nueva dirección | Iniciativa fuera del rebuild documental | — |
+8 gaps de conectividad API resueltos (HAL-1..HAL-8). 18 tareas T-001..T-018.
+1825 tests passing en 212 suites. 0 regressions.
 
----
+### Entregables principales
 
-## Convenciones operativas activas
+- `mockInterceptor.js`: 5 nuevos handlers (dashboard metrics, sessions, pipeline, schedule sub-actions, schedule history)
+- `authService.js` + `authSlice.js`: `getActiveSessions`/`revokeSession` con Redux thunks y selectores
+- `ActiveSessions.jsx`: conectado al store — ya no filtra array local
+- `DashboardPage.jsx`: despacha `fetchDashboardMetrics` (reportsSlice) — ya no usa mock
+- `errorHandlingMiddleware`: normaliza string payloads → objeto `{ message, statusCode, code }`
+- 10 slices: `rejectWithValue(string)` → `rejectWithValue({ message, statusCode })`
+- Tests: ActiveSessions suite completa, 5 reportsService tests, 4 errorHandling normalization tests
 
-- **Política 0/0**: el build debe quedar siempre limpio. Verificar
-  con `make clean && make html` antes de cualquier reporte de
-  completación.
-- **STD_007**: nombres de archivo kebab-case, sin tildes/eñes/espacios,
-  sin sufijos genéricos (`README`, `TODO`).
-- **Tim Pope commits**: subject ≤72 ch imperativo, body con QUÉ y
-  POR QUÉ.
-- **Changelog en dos niveles**: `track/{wp}-changelog.md` siempre,
-  `CHANGELOG.md` raíz solo en merge a `main` con bump.
-- **Antes de codificar invariante en `.claude/rules/`**: cargar
-  `references/methodology-bias-watch.md` y responder las 4
-  preguntas de diagnóstico.
-
----
-
-**Ubicación:** `.thyrox/context/focus.md`
-**Scope:** Proyecto IACT-docs — historial reciente y próxima decisión
-**Última actualización:** 2026-04-29 06:35:00

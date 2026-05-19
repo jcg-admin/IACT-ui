@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
-import LoginPage from '../../src/components/containers/LoginPage';
+import Login from '../../src/pages/auth/Login';
 
 const mockStore = configureStore([]);
 
@@ -26,11 +26,11 @@ describe('Login Integration Tests', () => {
     });
   });
 
-  test('LoginPage renders with login form', () => {
+  test('Login renders with login form', () => {
     const { container } = render(
       <Provider store={store}>
         <BrowserRouter>
-          <LoginPage />
+          <Login />
         </BrowserRouter>
       </Provider>
     );
@@ -49,7 +49,7 @@ describe('Login Integration Tests', () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <LoginPage />
+          <Login />
         </BrowserRouter>
       </Provider>
     );
@@ -62,7 +62,7 @@ describe('Login Integration Tests', () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <LoginPage />
+          <Login />
         </BrowserRouter>
       </Provider>
     );
@@ -85,7 +85,7 @@ describe('Login Integration Tests', () => {
     const { container } = render(
       <Provider store={storeWithError}>
         <BrowserRouter>
-          <LoginPage />
+          <Login />
         </BrowserRouter>
       </Provider>
     );
@@ -98,7 +98,7 @@ describe('Login Integration Tests', () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <LoginPage />
+          <Login />
         </BrowserRouter>
       </Provider>
     );
@@ -123,7 +123,7 @@ describe('Login Integration Tests', () => {
     render(
       <Provider store={storeWithError}>
         <BrowserRouter>
-          <LoginPage />
+          <Login />
         </BrowserRouter>
       </Provider>
     );

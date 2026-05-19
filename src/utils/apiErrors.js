@@ -13,10 +13,10 @@
 /**
  * Base API Error Class
  */
-export class APIError extends Error {
+export class HttpError extends Error {
   constructor(message, code, statusCode = null, originalError = null) {
     super(message);
-    this.name = 'APIError';
+    this.name = 'HttpError';
     this.code = code;
     this.statusCode = statusCode;
     this.originalError = originalError;
@@ -24,7 +24,7 @@ export class APIError extends Error {
     
     // Mantener el stack trace en V8
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, APIError);
+      Error.captureStackTrace(this, HttpError);
     }
   }
 
@@ -47,7 +47,7 @@ export class APIError extends Error {
  * Error de timeout en la solicitud
  * Ocurre cuando: La solicitud tarda más de lo permitido
  */
-export class TimeoutError extends APIError {
+export class TimeoutError extends HttpError {
   constructor(duration = 30000) {
     super(
       `Request timeout after ${duration}ms`,
@@ -63,7 +63,7 @@ export class TimeoutError extends APIError {
  * Error de conexión
  * Ocurre cuando: No hay conexión a internet, servidor no responde
  */
-export class ConnectionError extends APIError {
+export class ConnectionError extends HttpError {
   constructor(originalError = null) {
     super(
       'No connection to server. Please check your internet connection.',
@@ -79,7 +79,7 @@ export class ConnectionError extends APIError {
  * Error de red genérico
  * Ocurre cuando: Falla en la transmisión de datos
  */
-export class NetworkError extends APIError {
+export class NetworkError extends HttpError {
   constructor(message = 'Network error occurred', originalError = null) {
     super(message, 'NETWORK_ERROR', null, originalError);
     this.name = 'NetworkError';
@@ -90,7 +90,7 @@ export class NetworkError extends APIError {
  * Aborto de solicitud
  * Ocurre cuando: El usuario cancela la solicitud
  */
-export class AbortError extends APIError {
+export class AbortError extends HttpError {
   constructor() {
     super(
       'Request was aborted',
@@ -109,7 +109,7 @@ export class AbortError extends APIError {
  * 400 Bad Request
  * Ocurre cuando: Datos inválidos enviados al servidor
  */
-export class BadRequestError extends APIError {
+export class BadRequestError extends HttpError {
   constructor(message = 'Invalid request', errors = {}) {
     super(message, 'BAD_REQUEST', 400);
     this.name = 'BadRequestError';
@@ -121,7 +121,7 @@ export class BadRequestError extends APIError {
  * 401 Unauthorized
  * Ocurre cuando: Usuario no autenticado o token expirado
  */
-export class UnauthorizedError extends APIError {
+export class UnauthorizedError extends HttpError {
   constructor(message = 'Unauthorized. Please login.') {
     super(message, 'UNAUTHORIZED', 401);
     this.name = 'UnauthorizedError';
@@ -132,7 +132,7 @@ export class UnauthorizedError extends APIError {
  * 403 Forbidden
  * Ocurre cuando: Usuario no tiene permisos para acceder al recurso
  */
-export class ForbiddenError extends APIError {
+export class ForbiddenError extends HttpError {
   constructor(message = 'You do not have permission to access this resource.') {
     super(message, 'FORBIDDEN', 403);
     this.name = 'ForbiddenError';
@@ -143,7 +143,7 @@ export class ForbiddenError extends APIError {
  * 404 Not Found
  * Ocurre cuando: El recurso solicitado no existe
  */
-export class NotFoundError extends APIError {
+export class NotFoundError extends HttpError {
   constructor(resource = 'Resource', id = null) {
     const message = id 
       ? `${resource} with ID ${id} not found.`
@@ -159,7 +159,7 @@ export class NotFoundError extends APIError {
  * 409 Conflict
  * Ocurre cuando: La solicitud entra en conflicto con el estado del servidor
  */
-export class ConflictError extends APIError {
+export class ConflictError extends HttpError {
   constructor(message = 'Request conflicts with current state.') {
     super(message, 'CONFLICT', 409);
     this.name = 'ConflictError';
@@ -170,7 +170,7 @@ export class ConflictError extends APIError {
  * 422 Unprocessable Entity
  * Ocurre cuando: La validación falla (errores de formulario)
  */
-export class ValidationError extends APIError {
+export class ValidationError extends HttpError {
   constructor(message = 'Validation failed', errors = {}) {
     super(message, 'VALIDATION_ERROR', 422);
     this.name = 'ValidationError';
@@ -179,10 +179,80 @@ export class ValidationError extends APIError {
 }
 
 /**
+ * 405 Method Not Allowed
+ * Ocurre cuando: Se usa un método HTTP no permitido para el endpoint
+ */
+export class MethodNotAllowedError extends HttpError {
+  constructor(message = 'Method not allowed for this endpoint.') {
+    super(message, 'METHOD_NOT_ALLOWED', 405);
+    this.name = 'MethodNotAllowedError';
+  }
+}
+
+/**
+ * 408 Request Timeout (server-side)
+ * Ocurre cuando: El servidor no recibió la solicitud completa a tiempo
+ * Distinto a TimeoutError (client-side)
+ */
+export class RequestTimeoutError extends HttpError {
+  constructor(message = 'The server timed out waiting for the request.') {
+    super(message, 'REQUEST_TIMEOUT', 408);
+    this.name = 'RequestTimeoutError';
+    this.retryAfter = 0;
+  }
+}
+
+/**
+ * 410 Gone
+ * Ocurre cuando: El recurso fue eliminado permanentemente (vs 404 no encontrado)
+ */
+export class GoneError extends HttpError {
+  constructor(message = 'This resource has been permanently removed.') {
+    super(message, 'GONE', 410);
+    this.name = 'GoneError';
+  }
+}
+
+/**
+ * 412 Precondition Failed
+ * Ocurre cuando: Una condición de actualización condicional (If-Match) falla
+ */
+export class PreconditionFailedError extends HttpError {
+  constructor(message = 'Precondition failed. The resource may have been modified.') {
+    super(message, 'PRECONDITION_FAILED', 412);
+    this.name = 'PreconditionFailedError';
+  }
+}
+
+/**
+ * 413 Payload Too Large
+ * Ocurre cuando: El cuerpo de la solicitud excede el límite del servidor
+ * Común en exportaciones y uploads de archivos grandes
+ */
+export class PayloadTooLargeError extends HttpError {
+  constructor(message = 'Request payload is too large.') {
+    super(message, 'PAYLOAD_TOO_LARGE', 413);
+    this.name = 'PayloadTooLargeError';
+    this.retryAfter = 0;
+  }
+}
+
+/**
+ * 415 Unsupported Media Type
+ * Ocurre cuando: El Content-Type de la solicitud no es aceptado
+ */
+export class UnsupportedMediaTypeError extends HttpError {
+  constructor(message = 'Unsupported media type. Check the Content-Type header.') {
+    super(message, 'UNSUPPORTED_MEDIA_TYPE', 415);
+    this.name = 'UnsupportedMediaTypeError';
+  }
+}
+
+/**
  * 429 Too Many Requests
  * Ocurre cuando: Rate limiting (demasiadas solicitudes)
  */
-export class RateLimitError extends APIError {
+export class RateLimitError extends HttpError {
   constructor(retryAfter = 60) {
     super(
       `Too many requests. Please try again in ${retryAfter} seconds.`,
@@ -194,6 +264,39 @@ export class RateLimitError extends APIError {
   }
 }
 
+/**
+ * 428 Precondition Required (RFC 6585 §3)
+ * Ocurre cuando: El servidor requiere que la solicitud sea condicional (If-Match)
+ */
+export class PreconditionRequiredError extends HttpError {
+  constructor(message = 'This request must be conditional. Include an If-Match header.') {
+    super(message, 'PRECONDITION_REQUIRED', 428);
+    this.name = 'PreconditionRequiredError';
+  }
+}
+
+/**
+ * 431 Request Header Fields Too Large (RFC 6585 §5)
+ * Ocurre cuando: Los headers de la solicitud son demasiado grandes (e.g. JWT muy largo)
+ */
+export class RequestHeaderFieldsTooLargeError extends HttpError {
+  constructor(message = 'Request headers are too large.') {
+    super(message, 'REQUEST_HEADER_FIELDS_TOO_LARGE', 431);
+    this.name = 'RequestHeaderFieldsTooLargeError';
+  }
+}
+
+/**
+ * 451 Unavailable For Legal Reasons (RFC 7725)
+ * Ocurre cuando: El contenido está bloqueado por razones legales
+ */
+export class UnavailableForLegalReasonsError extends HttpError {
+  constructor(message = 'This resource is unavailable for legal reasons.') {
+    super(message, 'UNAVAILABLE_FOR_LEGAL_REASONS', 451);
+    this.name = 'UnavailableForLegalReasonsError';
+  }
+}
+
 // ============================================================================
 // HTTP 5xx ERRORS (Server Errors)
 // ============================================================================
@@ -202,7 +305,7 @@ export class RateLimitError extends APIError {
  * 500 Internal Server Error
  * Ocurre cuando: Error no manejado en el servidor
  */
-export class InternalServerError extends APIError {
+export class InternalServerError extends HttpError {
   constructor(message = 'Internal server error. Please try again later.') {
     super(message, 'INTERNAL_SERVER_ERROR', 500);
     this.name = 'InternalServerError';
@@ -213,7 +316,7 @@ export class InternalServerError extends APIError {
  * 502 Bad Gateway
  * Ocurre cuando: Gateway inválido (proxy/balancer issue)
  */
-export class BadGatewayError extends APIError {
+export class BadGatewayError extends HttpError {
   constructor() {
     super(
       'Bad gateway. The server is temporarily unavailable.',
@@ -228,7 +331,7 @@ export class BadGatewayError extends APIError {
  * 503 Service Unavailable
  * Ocurre cuando: Servidor no disponible (mantenimiento, sobrecargado)
  */
-export class ServiceUnavailableError extends APIError {
+export class ServiceUnavailableError extends HttpError {
   constructor(message = 'Service temporarily unavailable. Please try again later.') {
     super(message, 'SERVICE_UNAVAILABLE', 503);
     this.name = 'ServiceUnavailableError';
@@ -239,7 +342,7 @@ export class ServiceUnavailableError extends APIError {
  * 504 Gateway Timeout
  * Ocurre cuando: Gateway timeout (servidor tardío)
  */
-export class GatewayTimeoutError extends APIError {
+export class GatewayTimeoutError extends HttpError {
   constructor() {
     super(
       'Gateway timeout. The server took too long to respond.',
@@ -251,10 +354,35 @@ export class GatewayTimeoutError extends APIError {
 }
 
 /**
+ * 501 Not Implemented
+ * Ocurre cuando: El endpoint existe pero la funcionalidad no está implementada
+ */
+export class NotImplementedError extends HttpError {
+  constructor(message = 'This feature is not yet implemented.') {
+    super(message, 'NOT_IMPLEMENTED', 501);
+    this.name = 'NotImplementedError';
+  }
+}
+
+/**
+ * 511 Network Authentication Required (RFC 6585 §6)
+ * Ocurre cuando: Un proxy intermediario (captive portal) requiere autenticación de red
+ * DISTINTO a 401 (autenticación de aplicación). Generado por el proxy, no el origin server.
+ * El cliente MUST redirect al usuario a la URL de login indicada en el body.
+ */
+export class NetworkAuthRequiredError extends HttpError {
+  constructor(loginUrl = null, message = 'Network authentication required.') {
+    super(message, 'NETWORK_AUTH_REQUIRED', 511);
+    this.name = 'NetworkAuthRequiredError';
+    this.loginUrl = loginUrl;
+  }
+}
+
+/**
  * 5xx Server Error genérico
  * Ocurre cuando: Error del servidor sin status específico
  */
-export class ServerError extends APIError {
+export class ServerError extends HttpError {
   constructor(statusCode, message = 'Server error occurred.') {
     super(message, 'SERVER_ERROR', statusCode);
     this.name = 'ServerError';
@@ -269,7 +397,7 @@ export class ServerError extends APIError {
  * Error al parsear JSON
  * Ocurre cuando: Respuesta del servidor no es JSON válido
  */
-export class ParseError extends APIError {
+export class ParseError extends HttpError {
   constructor(originalError = null) {
     super(
       'Failed to parse server response',
@@ -285,7 +413,7 @@ export class ParseError extends APIError {
  * Error de tipo de contenido
  * Ocurre cuando: Content-Type no es application/json
  */
-export class ContentTypeError extends APIError {
+export class ContentTypeError extends HttpError {
   constructor(expectedType, receivedType) {
     super(
       `Expected ${expectedType} but received ${receivedType}`,
@@ -306,7 +434,7 @@ export class ContentTypeError extends APIError {
  * Error de lógica de negocio
  * Ocurre cuando: La operación viola reglas de negocio
  */
-export class BusinessLogicError extends APIError {
+export class BusinessLogicError extends HttpError {
   constructor(message, code = 'BUSINESS_LOGIC_ERROR') {
     super(message, code, 400);
     this.name = 'BusinessLogicError';
@@ -365,13 +493,24 @@ export function getErrorClassByStatusCode(statusCode) {
     401: UnauthorizedError,
     403: ForbiddenError,
     404: NotFoundError,
+    405: MethodNotAllowedError,
+    408: RequestTimeoutError,
     409: ConflictError,
+    410: GoneError,
+    412: PreconditionFailedError,
+    413: PayloadTooLargeError,
+    415: UnsupportedMediaTypeError,
     422: ValidationError,
+    428: PreconditionRequiredError,
     429: RateLimitError,
+    431: RequestHeaderFieldsTooLargeError,
+    451: UnavailableForLegalReasonsError,
     500: InternalServerError,
+    501: NotImplementedError,
     502: BadGatewayError,
     503: ServiceUnavailableError,
     504: GatewayTimeoutError,
+    511: NetworkAuthRequiredError,
   };
 
   const ErrorClass = statusMap[statusCode] || ServerError;
@@ -421,6 +560,8 @@ export function isRetryableError(error) {
     'CONNECTION_ERROR',
     'NETWORK_ERROR',
     'RATE_LIMIT',
+    'REQUEST_TIMEOUT',
+    'PAYLOAD_TOO_LARGE',
     'SERVICE_UNAVAILABLE',
     'BAD_GATEWAY',
     'GATEWAY_TIMEOUT',
@@ -440,7 +581,7 @@ export function getErrorMessage(error) {
     return fieldErrors || error.message;
   }
 
-  if (error instanceof APIError) {
+  if (error instanceof HttpError) {
     return error.message;
   }
 
@@ -472,7 +613,7 @@ export function logError(error, context = {}) {
 }
 
 export default {
-  APIError,
+  HttpError,
   TimeoutError,
   ConnectionError,
   NetworkError,
@@ -481,13 +622,24 @@ export default {
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
+  MethodNotAllowedError,
+  RequestTimeoutError,
   ConflictError,
+  GoneError,
+  PreconditionFailedError,
+  PayloadTooLargeError,
+  UnsupportedMediaTypeError,
   ValidationError,
+  PreconditionRequiredError,
   RateLimitError,
+  RequestHeaderFieldsTooLargeError,
+  UnavailableForLegalReasonsError,
   InternalServerError,
+  NotImplementedError,
   BadGatewayError,
   ServiceUnavailableError,
   GatewayTimeoutError,
+  NetworkAuthRequiredError,
   ServerError,
   ParseError,
   ContentTypeError,

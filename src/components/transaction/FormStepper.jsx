@@ -15,7 +15,7 @@
 
 import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { AnimatedLoadingSpinner } from '@components/animations'
+import LoadingSpinner from '@ui/shared/LoadingSpinner'
 import '@styles/components/_form-stepper.scss'
 
 function FormStepper({
@@ -119,7 +119,7 @@ function FormStepper({
       <div className="form-stepper__body">
         {isLoading && (
           <div className="form-stepper__loading">
-            <AnimatedLoadingSpinner fullScreen={false} size="md" message="Processing..." />
+            <LoadingSpinner size="md" message="Processing..." />
           </div>
         )}
 

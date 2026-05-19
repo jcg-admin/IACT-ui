@@ -7,8 +7,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
-import AlertList from '@components/alerts/AlertList'
-import sessionReducer from '@redux/slices/sessionSlice'
+import AlertList from '@ui/alerts/AlertList'
+import sessionReducer from '@store/slices/session'
 
 // Helper para renderizar con Redux
 const renderWithRedux = (component, { alerts = [] } = {}) => {

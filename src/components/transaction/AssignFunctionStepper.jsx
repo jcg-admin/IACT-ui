@@ -6,9 +6,9 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/useTransaction'
+import useLocalTransaction from '@hooks/domain/useLocalTransaction'
 import FormStepper from './FormStepper'
-import SoDValidation from './content/SoDValidation'
+import SeparationRulesValidation from './content/SeparationRulesValidation'
 import ConflictResolver from './content/ConflictResolver'
 import ConfirmAssignment from './content/ConfirmAssignment'
 
@@ -24,7 +24,7 @@ function AssignFunctionStepper({ userId, onComplete }) {
     confirmTx,
     cancelTx,
     resolveConflict
-  } = useTransaction('assign_function')
+  } = useLocalTransaction('assign_function')
 
   // Iniciar transacción al montar
   React.useEffect(() => {
@@ -33,12 +33,34 @@ function AssignFunctionStepper({ userId, onComplete }) {
     }
   }, [_tx.id, userId, startTx])
 
+  const handleNext = async () => {
+    const _result = await nextStep(_stepData)
+    if (_result.success) {
+      setStepData({})
+    }
+  }
+
+  const _handleResolveConflict = async (_conflictId, _resolution) => {
+    await resolveConflict(_conflictId, _resolution)
+  }
+
+  const _handleConfirm = async () => {
+    const _result = await confirmTx(_stepData)
+    if (_result.success) {
+      onComplete?.(_result.result)
+    }
+  }
+
+  const _handleCancel = async () => {
+    await cancelTx()
+  }
+
   // Steps definition
   const _steps = [
     {
-      title: 'Validate SoD',
+      title: 'Validate Separation Rules',
       content: (
-        <SoDValidation
+        <SeparationRulesValidation
           conflicts={_tx.conflicts}
           onNext={() => handleNext()}
         />
@@ -62,28 +84,6 @@ function AssignFunctionStepper({ userId, onComplete }) {
       )
     }
   ]
-
-  const handleNext = async () => {
-    const _result = await nextStep(_stepData)
-    if (_result.success) {
-      setStepData({})
-    }
-  }
-
-  const _handleResolveConflict = async (_conflictId, _resolution) => {
-    await resolveConflict(_conflictId, _resolution)
-  }
-
-  const _handleConfirm = async () => {
-    const _result = await confirmTx(_stepData)
-    if (_result.success) {
-      onComplete?.(_result.result)
-    }
-  }
-
-  const _handleCancel = async () => {
-    await cancelTx()
-  }
 
   return (
     <FormStepper

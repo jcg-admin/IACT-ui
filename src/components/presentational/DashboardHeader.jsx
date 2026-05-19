@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'
 
 function DashboardHeader({ user, onLogout }) {
   return (
@@ -20,3 +21,7 @@ function DashboardHeader({ user, onLogout }) {
 }
 
 export default DashboardHeader;
+DashboardHeader.propTypes = {
+  user:     PropTypes.object,
+  onLogout: PropTypes.func,
+}

@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import MainLayout from '@components/MainLayout';
-import HomePage from '../pages/HomePage';
+import { useEffect, lazy, Suspense } from 'react';
+import MainLayout from '@ui/MainLayout';
 import { useAppConfig } from '@hooks/useAppConfig';
 import { useHealthStatus } from '@hooks/useHealthStatus';
 import { useMockMetrics } from '@hooks/useMockMetrics';
+
+const HomeModule = lazy(() => import('@modules/home/HomeModule'));
 
 function App() {
   const { isLoading, config, loadConfig, source, error } = useAppConfig();
@@ -40,7 +41,9 @@ function App() {
 
   return (
     <MainLayout mockNotice={mockNotice} backendStatus={backendStatus} mockSummary={mockSummary}>
-      <HomePage />
+      <Suspense fallback={<div>Cargando módulo...</div>}>
+        <HomeModule />
+      </Suspense>
     </MainLayout>
   );
 }

@@ -31,7 +31,7 @@ const validateGroup = (group) => {
 const validateFunction = (entry) => {
   assert(isObject(entry), 'funcion invalida');
   assert(typeof entry.id === 'number', 'funcion.id debe ser numero');
-  ['nombre', 'nombre_completo', 'dominio', 'icono'].forEach((key) => {
+  ['nombre', 'module', 'dominio', 'icono'].forEach((key) => {
     assert(typeof entry[key] === 'string', `funcion.${key} debe ser string`);
   });
   assert(typeof entry.orden_menu === 'number', 'funcion.orden_menu debe ser numero');

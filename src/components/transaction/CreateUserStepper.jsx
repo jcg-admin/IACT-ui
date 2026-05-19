@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import useTransaction from '@hooks/useTransaction'
+import useLocalTransaction from '@hooks/domain/useLocalTransaction'
 import FormStepper from './FormStepper'
 import UserInfoForm from './content/UserInfoForm'
 import PermissionsSelector from './content/PermissionsSelector'
@@ -24,7 +24,7 @@ function CreateUserStepper({ onComplete }) {
     nextStep,
     confirmTx,
     cancelTx
-  } = useTransaction('create_user')
+  } = useLocalTransaction('create_user')
 
   // Iniciar transacción al montar
   React.useEffect(() => {

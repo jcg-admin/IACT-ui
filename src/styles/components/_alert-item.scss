@@ -3,17 +3,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-left: 4px solid var(--color-info);
-  background: var(--color-bg-secondary);
+  border-left: 4px solid $info-color;
+  background: $gray-50;
   border-radius: 6px;
   
-  &--info { border-left-color: var(--color-info); }
-  &--warning { border-left-color: var(--color-warning); }
-  &--danger { border-left-color: var(--color-danger); }
-  &--success { border-left-color: var(--color-success); }
+  &--info { border-left-color: $info-color; }
+  &--warning { border-left-color: $warning-color; }
+  &--danger { border-left-color: $error-color; }
+  &--success { border-left-color: $success-color; }
   
   &--unread {
-    background: var(--color-bg-tertiary);
+    background: $gray-100;
     font-weight: 500;
   }
   
@@ -27,14 +27,14 @@
     
     p {
       margin: 0;
-      color: var(--color-text-secondary);
+      color: $text-muted;
       font-size: 0.9rem;
     }
   }
   
   .alert-time {
     font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    color: $text-muted;
     margin: 0 1rem;
   }
   
@@ -50,13 +50,13 @@
       font-size: 0.85rem;
       
       &--read {
-        background: var(--color-primary);
+        background: $primary-color;
         color: white;
       }
       
       &--dismiss {
-        background: var(--color-bg-primary);
-        color: var(--color-text-secondary);
+        background: white;
+        color: $text-muted;
       }
     }
   }

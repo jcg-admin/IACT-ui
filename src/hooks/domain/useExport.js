@@ -25,8 +25,8 @@ import {
   exportTableToPDF,
   getFileNameWithTimestamp,
   validateExportData 
-} from '@services/exportService'
-import { useNotification } from '@services/notificationService'
+} from '@utils/exportUtils'
+import { useNotification } from '@api/notificationGateway'
 
 /**
  * useExport Hook
@@ -163,8 +163,7 @@ export const useExport = (data, config = {}) => {
         notify.error(result.message)
       }
 
-      // CSV is sync, so resolve immediately
-      setTimeout(() => setExporting(false), 100)
+      setExporting(false)
       return result
     } catch (error) {
       console.error('CSV export error:', error)

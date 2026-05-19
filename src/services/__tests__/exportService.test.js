@@ -9,7 +9,7 @@ import {
   exportToCSV,
   getFileNameWithTimestamp,
   validateExportData,
-} from '../exportService'
+} from '../../utils/exportUtils'
 
 // Mock ExcelJS
 jest.mock('exceljs', () => {
@@ -22,6 +22,7 @@ jest.mock('exceljs', () => {
           font: {},
           alignment: {},
           fill: {},
+          border: {},
         }),
         addRow: jest.fn().mockReturnValue({
           font: {},
@@ -31,10 +32,6 @@ jest.mock('exceljs', () => {
         insertRows: jest.fn(),
         eachRow: jest.fn(),
         lastRow: { number: 10 },
-        getCell: jest.fn().mockReturnValue({
-          value: null,
-          border: {},
-        }),
         columns: [],
       }),
       xlsx: {
@@ -115,8 +112,8 @@ describe('Export Service', () => {
     it('should handle Excel export errors', async () => {
       // Mock error
       const originalExportToExcel = exportToExcel
-      jest.mock('../exportService', () => ({
-        ...jest.requireActual('../exportService'),
+      jest.mock('../../utils/exportUtils', () => ({
+        ...jest.requireActual('../../utils/exportUtils'),
         exportToExcel: jest.fn().mockRejectedValue(new Error('Write failed')),
       }))
 

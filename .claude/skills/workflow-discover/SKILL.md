@@ -9,7 +9,7 @@ hooks:
     once: true
     type: command
     command: "bash .claude/scripts/set-session-phase.sh 'Phase 1'"
-updated_at: 2026-04-16 00:00:00
+updated_at: 2026-05-08 15:28:51
 ---
 
 # /workflow-discover — Phase 1: DISCOVER
@@ -112,6 +112,26 @@ Excepción: si el WP ya existe (retomar work package), saltar este gate.
    - Tipos: `gate-fase` | `async-completion` | `gate-operacion` | `gate-decision`
 
 Tech skills activos: si hay `frontend-react` investigar componentes; `backend-nodejs` investigar endpoints; `db-postgresql` investigar tablas y relaciones.
+
+### UC audit checklist (WPs de alineación UC→implementación)
+
+Si el WP es una auditoría de UCs contra implementación, aplicar estos dos controles adicionales:
+
+**Control 1 — Verificar rutas además de archivos (PAT-UC-AUDIT-001):**
+Una página en `src/pages/` sin ruta en `src/routes/AppRouter.jsx` no cuenta como UC
+implementado — el usuario no puede acceder a ella.
+```bash
+# Verificar que la página tiene ruta registrada
+grep -n "NombrePagina" src/routes/AppRouter.jsx
+```
+
+**Control 2 — Leer el archivo fuente antes de clasificar como gap (PAT-UC-AUDIT-002):**
+`grep` de keywords sobre nombres de archivo NO es evidencia suficiente de gap. El feature
+puede usar nombres distintos al codename del UC. Clasificar como gap requiere:
+1. Leer el componente/slice destino completo
+2. Verificar que la acción/thunk no existe (no solo que no tiene el nombre esperado)
+Solo si la acción realmente falta → clasificar como `PROVEN: gap`.
+`grep` vacío → clasificar como `INFERRED: posible gap` (pendiente verificación en Phase 10).
 
 ---
 

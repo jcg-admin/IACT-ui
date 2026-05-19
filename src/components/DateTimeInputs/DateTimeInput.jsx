@@ -20,6 +20,7 @@ import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import './DateTimeInput.scss';
+import PropTypes from 'prop-types'
 
 export default function DateTimeInput({
   value,
@@ -93,4 +94,15 @@ export default function DateTimeInput({
       </div>
     </div>
   );
+}
+DateTimeInput.propTypes = {
+  value:       PropTypes.string,
+  onChange:    PropTypes.func.isRequired,
+  type:        PropTypes.oneOf(['date', 'datetime-local', 'time']),
+  label:       PropTypes.string,
+  disabled:    PropTypes.bool,
+  minDate:     PropTypes.string,
+  maxDate:     PropTypes.string,
+  placeholder: PropTypes.string,
+  required:    PropTypes.bool,
 }

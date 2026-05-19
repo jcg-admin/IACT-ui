@@ -1,7 +1,7 @@
 /**
  * Header Component
  * Main header/navigation container with sticky positioning
- * 
+ *
  * Features:
  * - Sticky header with z-index: 10
  * - Logo/Brand on left
@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import styles from './Header.module.scss'
+import './Header.scss'
 
 export default function Header({
   currentPage = 'Dashboard',
@@ -26,42 +26,42 @@ export default function Header({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
 
   return (
-    <header className={styles.header} role="banner">
-      <div className={styles.headerContainer}>
+    <header className="header" role="banner">
+      <div className="headerContainer">
         {/* Left Section: Logo + Menu Button */}
-        <div className={styles.headerLeft}>
+        <div className="headerLeft">
           <button
-            className={styles.menuButton}
+            className="menuButton"
             onClick={onMenuClick}
             aria-label="Toggle sidebar"
             aria-expanded="false"
           >
             ☰
           </button>
-          <div className={styles.logoBrand}>
+          <div className="logoBrand">
             IACT Dashboard
           </div>
         </div>
 
         {/* Center Section: Breadcrumb */}
-        <div className={styles.breadcrumb}>
+        <div className="breadcrumb">
           Dashboard / {currentPage}
         </div>
 
         {/* Right Section: Notifications + User Menu */}
-        <div className={styles.headerRight}>
+        <div className="headerRight">
           <button
-            className={styles.notificationBell}
+            className="notificationBell"
             aria-label={`${unreadCount} notifications`}
           >
             🔔
             {unreadCount > 0 && (
-              <span className={styles.badge}>{unreadCount}</span>
+              <span className="badge">{unreadCount}</span>
             )}
           </button>
 
           <button
-            className={styles.userMenu}
+            className="userMenu"
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             aria-label="User menu"
             aria-expanded={isUserMenuOpen}
@@ -70,12 +70,12 @@ export default function Header({
           </button>
 
           {isUserMenuOpen && (
-            <div className={styles.userDropdown}>
-              <div className={styles.userDropdownContent}>
-                <div className={styles.userInfo}>
+            <div className="userDropdown">
+              <div className="userDropdownContent">
+                <div className="userInfo">
                   {userInfo.email && <p>{userInfo.email}</p>}
                 </div>
-                <button onClick={onLogout} className={styles.logoutButton}>
+                <button onClick={onLogout} className="logoutButton">
                   Logout
                 </button>
               </div>

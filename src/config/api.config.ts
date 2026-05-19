@@ -11,19 +11,8 @@ import type { PermisosClientConfig } from '../types/permisos.types';
 // ENVIRONMENT VARIABLES
 // =============================================================================
 
-const getEnvVar = (key: string, defaultValue: string): string => {
-  // Para React
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[`REACT_APP_${key}`] || defaultValue;
-  }
-
-  // Para Vite
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return (import.meta.env as any)[`VITE_${key}`] || defaultValue;
-  }
-
-  return defaultValue;
-};
+const getEnvVar = (key: string, defaultValue: string): string =>
+  process.env[`REACT_APP_${key}`] || defaultValue;
 
 // =============================================================================
 // API CONFIGURATION

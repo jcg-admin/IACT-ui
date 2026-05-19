@@ -64,7 +64,7 @@
     z-index: 3;
 
     &::placeholder {
-      color: #CBD5E1; /* Improved contrast for AAA */
+      color: $text-secondary; /* Improved contrast for AAA */
     }
 
     &:disabled {
@@ -121,7 +121,7 @@
 
   &__error {
     font-size: 0.85rem;
-    color: #EF4444; /* Improved contrast for AAA (was #FCA5A5) */
+    color: $error-color; /* Improved contrast for AAA (was lighten($error-color, 20%)) */
     margin-top: 0.25rem;
     display: block;
     opacity: 1;

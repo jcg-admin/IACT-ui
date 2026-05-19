@@ -38,7 +38,7 @@ App (Entry Point)
 
 Each feature is a self-contained folder with:
 - Component(s) (.jsx files)
-- Styles (.module.scss files)
+- Styles (.scss files)
 - Tests (.test.js files)
 - Barrel export (index.jsx or index.js)
 
@@ -46,10 +46,10 @@ Each feature is a self-contained folder with:
 Header/
 ├── index.jsx              ← Barrel export
 ├── Header.jsx             ← Main component
-├── Header.module.scss     ← Scoped styles
+├── Header.scss            ← Component styles
 ├── Header.test.js         ← Tests
 ├── LogoBrand.jsx
-├── LogoBrand.module.scss
+├── LogoBrand.scss
 ├── LogoBrand.test.js
 └── ... (more sub-components)
 ```
@@ -99,23 +99,23 @@ All routes render inside DashboardLayout, so Header and Sidebar are always visib
 ### Feature Component
 ```javascript
 // Feature/Feature.jsx
-import styles from './Feature.module.scss'
+import './Feature.scss'
 
 export default function Feature({ prop1, prop2 }) {
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Feature</h2>
+    <div className="container">
+      <h2 className="title">Feature</h2>
     </div>
   )
 }
 
-// Feature/Feature.module.scss
+// Feature/Feature.scss
 .container {
-  padding: 20px;
+  padding: $spacing-md;
 }
 
 .title {
-  color: #1f2937;
+  color: $secondary-color;
 }
 
 // Feature/Feature.test.js
@@ -131,23 +131,29 @@ export { default as Feature } from './Feature'
 
 ## Styling System
 
-### CSS Modules
-Each component has its own `.module.scss` file with scoped styles.
+### SCSS global
+Each component has its own `.scss` file. Classes are global strings —
+no CSS Modules scoping. The project uses plain SCSS following the
+standard React + Sass pattern (`import './Component.scss'`).
 
 ### Global Styles
 Located in `src/styles/abstracts/`:
-- `_variables.scss` - Design tokens
+- `_variables.scss` - Design tokens (colors, spacing, gray scale)
 - `_layout.scss` - Layout variables
 - `_animations.scss` - Animation keyframes
 
-### Import Pattern
-```scss
-// In Component.module.scss
-@import '../../styles/abstracts/variables';
+### Variables — always available, no import needed
+`webpack.config.js` injects `_variables.scss` into every SCSS file
+via `sass-loader.additionalData` using `@use ... as *`. No manual
+`@import` or `@use` needed in component SCSS files.
 
-.component {
-  background-color: $color-white;
+```scss
+// Feature.scss — variables available without any import
+.container {
+  background-color: white;
   padding: $spacing-md;
+  border: 1px solid $border-color;
+  color: $secondary-color;
 }
 ```
 
@@ -206,10 +212,15 @@ useEffect(() => {
 ## Design Tokens
 
 ### Colors
-- Primary: #3b82f6 (Blue)
-- Dark: #1f2937 (Slate-900)
-- Light: #f9fafb (Slate-50)
-- Border: #e5e7eb (Slate-200)
+- `$primary-color`: #3b82f6 (Blue)
+- `$secondary-color`: #1f2937 (Gray-800)
+- `$error-color`: #ef4444 (Red)
+- `$success-color`: #10b981 (Green)
+- `$warning-color`: #f59e0b (Amber)
+- `$info-color`: #0ea5e9 (Sky)
+- `$text-muted`: #94a3b8
+- `$border-color`: #374151
+- `$gray-50` … `$gray-900`: Tailwind gray scale
 
 ### Spacing
 - xs: 4px

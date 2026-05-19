@@ -1,73 +1,80 @@
 /**
  * AnalyticsDashboard Page
- * 
- * Comprehensive analytics and reporting interface
- * Features: Metrics, Charts, Reports, Scheduling
+ *
+ * Panel de análisis y reportes del sistema.
+ * Métricas en tiempo real vía Redux + WebSocket.
  */
 
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import reportExporter from '../../../facades/ReportExporter'
-import { getNotificationService } from '@services/notificationService'
+import { getNotificationService } from '@api/notificationGateway'
+import { getWebSocketService } from '@api/websocketGateway'
+import {
+  fetchDashboardMetrics,
+  fetchReportHistory,
+  updateMetrics,
+  selectMetrics,
+  selectReportHistory,
+  selectReportsLoading,
+} from '../../../redux/slices/reports'
 import MetricsCard from './MetricsCard'
 import ChartComponent from './ChartComponent'
-import ReportBuilder from './ReportBuilder'
+import CustomReportForm from './CustomReportForm'
 import ScheduledReports from './ScheduledReports'
 import './Analytics.scss'
 
 export default function AnalyticsDashboard() {
-  const [metrics, setMetrics] = useState({})
-  const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
+  const metrics = useSelector(selectMetrics)
+  const reportHistory = useSelector(selectReportHistory)
+  const loading = useSelector(selectReportsLoading)
+
   const [activeTab, setActiveTab] = useState('overview')
   const [reportData, setReportData] = useState(null)
 
   const notify = getNotificationService()
 
   useEffect(() => {
-    loadMetrics()
-  }, [])
+    dispatch(fetchDashboardMetrics()).catch((err) => {
+      notify.error(`Error al cargar métricas: ${err.message}`)
+    })
+    dispatch(fetchReportHistory())
+  }, [dispatch])
 
-  const loadMetrics = async () => {
-    try {
-      setLoading(true)
-      
-      // Mock metrics data
-      const mockMetrics = {
-        totalUsers: 2547,
-        activeUsers: 1832,
-        jobsCompleted: 12453,
-        jobsRunning: 28,
-        dataExported: '2.5TB',
-        avgResponseTime: '245ms'
-      }
-
-      setMetrics(mockMetrics)
-      setLoading(false)
-    } catch (error) {
-      notify.error(`Failed to load metrics: ${error.message}`)
-      setLoading(false)
+  // T-023: WebSocket — suscribir al canal "metrics" en mount, desuscribir en unmount
+  useEffect(() => {
+    const ws = getWebSocketService(process.env.REACT_APP_WS_URL)
+    const unsubscribe = ws.on('metrics', (data) => {
+      dispatch(updateMetrics(data))
+    })
+    return () => {
+      unsubscribe()
     }
-  }
+  }, [dispatch])
 
   const handleExportReport = async (format) => {
     try {
-      const data = [
-        { metric: 'Total Users', value: metrics.totalUsers },
-        { metric: 'Active Users', value: metrics.activeUsers },
-        { metric: 'Jobs Completed', value: metrics.jobsCompleted },
-        { metric: 'Data Exported', value: metrics.dataExported }
-      ]
+      const data = metrics
+        ? [
+            { metric: 'Total Users', value: metrics.totalUsers },
+            { metric: 'Active Users', value: metrics.activeUsers },
+            { metric: 'Jobs Completed', value: metrics.jobsCompleted },
+            { metric: 'Data Exported', value: metrics.dataExported },
+          ]
+        : []
 
       if (format === 'xlsx') {
         await reportExporter.exportAsExcel(data, {
-          filename: 'analytics_report.xlsx'
+          filename: 'analytics_report.xlsx',
         })
       } else if (format === 'pdf') {
-        notify.info('PDF export with charts - implement with html2pdf')
+        notify.info('Exportación PDF con gráficos — implementar con html2pdf')
       }
 
-      notify.success(`Report exported as ${format.toUpperCase()}`)
+      notify.success(`Reporte exportado como ${format.toUpperCase()}`)
     } catch (error) {
-      notify.error(`Export failed: ${error.message}`)
+      notify.error(`Error al exportar: ${error.message}`)
     }
   }
 
@@ -98,37 +105,46 @@ export default function AnalyticsDashboard() {
         >
           Scheduled
         </button>
+        <button
+          role="tab"
+          className={`tab ${activeTab === 'history' ? 'active' : ''}`}
+          onClick={() => setActiveTab('history')}
+        >
+          Historial
+        </button>
       </div>
 
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div className="tab-content">
+          {loading && <div className="loading-overlay">Cargando métricas...</div>}
+
           {/* Metrics Grid */}
           <div className="metrics-grid">
             <MetricsCard
               title="Total Users"
-              value={metrics.totalUsers}
+              value={metrics?.totalUsers}
               icon="👥"
               trend="+12%"
               trendType="positive"
             />
             <MetricsCard
               title="Active Users"
-              value={metrics.activeUsers}
+              value={metrics?.activeUsers}
               icon="🟢"
               trend="+8%"
               trendType="positive"
             />
             <MetricsCard
               title="Jobs Completed"
-              value={metrics.jobsCompleted}
+              value={metrics?.jobsCompleted}
               icon="✓"
               trend="+25%"
               trendType="positive"
             />
             <MetricsCard
               title="Data Exported"
-              value={metrics.dataExported}
+              value={metrics?.dataExported}
               icon="📦"
               trend="-5%"
               trendType="negative"
@@ -142,7 +158,7 @@ export default function AnalyticsDashboard() {
               type="line"
               data={{
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                values: [1200, 1400, 1350, 1500, 1700, 1832]
+                values: [1200, 1400, 1350, 1500, 1700, metrics?.activeUsers ?? 0],
               }}
             />
             <ChartComponent
@@ -150,7 +166,7 @@ export default function AnalyticsDashboard() {
               type="pie"
               data={{
                 labels: ['Completed', 'Running', 'Failed'],
-                values: [12453, 28, 145]
+                values: [metrics?.jobsCompleted ?? 0, metrics?.jobsRunning ?? 0, 145],
               }}
             />
           </div>
@@ -179,7 +195,7 @@ export default function AnalyticsDashboard() {
       {/* Reports Tab */}
       {activeTab === 'reports' && (
         <div className="tab-content">
-          <ReportBuilder onGenerateReport={setReportData} />
+          <CustomReportForm onGenerateReport={setReportData} />
         </div>
       )}
 
@@ -187,6 +203,35 @@ export default function AnalyticsDashboard() {
       {activeTab === 'scheduled' && (
         <div className="tab-content">
           <ScheduledReports />
+        </div>
+      )}
+
+      {/* Historial Tab */}
+      {activeTab === 'history' && (
+        <div className="tab-content">
+          <h2>Historial de reportes</h2>
+          {reportHistory.length === 0 ? (
+            <p>No hay reportes generados aún.</p>
+          ) : (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Formato</th>
+                  <th>Generado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportHistory.map((r) => (
+                  <tr key={r.id}>
+                    <td>{r.name}</td>
+                    <td>{r.format}</td>
+                    <td>{r.generated_at}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

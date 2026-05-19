@@ -44,9 +44,9 @@ function Modal({
 
   return (
     <div className="modal-overlay" onClick={handleBackdropClick}>
-      <div className={`modal modal--${size}`}>
+      <div className={`modal modal--${size}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div className="modal-header">
-          <h2 className="modal-title">{title}</h2>
+          <h2 id="modal-title" className="modal-title">{title}</h2>
           <button
             className="modal-close"
             onClick={onClose}

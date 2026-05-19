@@ -4,14 +4,26 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer from './slices/authSlice'
-import uiReducer from './slices/uiSlice'
-import userReducer from './slices/userSlice'
-import sessionReducer from './slices/sessionSlice'
-import accessReducer from './slices/accessSlice'
-import alertsReducer from './slices/alertsSlice'
-import auditReducer from './slices/auditSlice'
-import formReducer from './slices/formSlice'
+import authReducer from './slices/auth'
+import uiReducer from './slices/ui'
+import userReducer from './slices/user'
+import sessionReducer from './slices/session'
+import accessReducer from './slices/access'
+import alertsReducer from './slices/alerts'
+import auditReducer from './slices/audit'
+import formReducer from './slices/form'
+import reportsReducer from './slices/reports'
+import errorReducer from './slices/error'
+import adminReducer from './slices/admin'
+import logsReducer from './slices/logs'
+import savedFiltersReducer from './slices/savedFilters'
+import loadingReducer from './slices/loading'
+import sharesReducer from './slices/shares'
+import {
+  errorHandlingMiddleware,
+  errorLoggingMiddleware,
+} from './middleware/errorHandling'
+import { loadingMiddleware } from './middleware/loadingMiddleware'
 
 const store = configureStore({
   reducer: {
@@ -23,14 +35,20 @@ const store = configureStore({
     alerts: alertsReducer,
     audit: auditReducer,
     form: formReducer,
+    reports: reportsReducer,
+    error: errorReducer,
+    admin: adminReducer,
+    logs: logsReducer,
+    savedFilters: savedFiltersReducer,
+    shares: sharesReducer,
+    loading: loadingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore certain actions if needed
         ignoredActions: ['persist/PERSIST'],
       },
-    }),
+    }).concat(loadingMiddleware, errorLoggingMiddleware, errorHandlingMiddleware),
 })
 
 export default store

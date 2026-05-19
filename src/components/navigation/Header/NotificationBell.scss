@@ -1,0 +1,114 @@
+.notificationBell {
+  position: relative;
+}
+
+.bellButton {
+  position: relative;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $gray-100;
+  }
+
+  &:focus {
+    outline: 2px solid $primary-color;
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 20px;
+  height: 20px;
+  background-color: $error-color;
+  color: white;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 300px;
+  background-color: white;
+  border: 1px solid $gray-200;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid $gray-200;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: $gray-500;
+    padding: 0;
+  }
+}
+
+.content {
+  padding: 16px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.empty {
+  margin: 0;
+  font-size: 14px;
+  color: $gray-500;
+  text-align: center;
+  width: 100%;
+}
+
+.count {
+  margin: 0;
+  font-size: 14px;
+  color: $secondary-color;
+  font-weight: 500;
+}
+
+.footer {
+  width: 100%;
+  background-color: $gray-50;
+  border: none;
+  border-top: 1px solid $gray-200;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: $primary-color;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $gray-100;
+  }
+}

@@ -7,7 +7,7 @@ import { renderHook, act } from '@testing-library/react'
 import { useExport } from '../domain/useExport'
 
 // Mock dependencies
-jest.mock('@services/exportService', () => ({
+jest.mock('@utils/exportUtils', () => ({
   exportToExcel: jest.fn().mockResolvedValue({ success: true }),
   exportToCSV: jest.fn().mockReturnValue({ success: true }),
   exportTableToPDF: jest.fn().mockResolvedValue({ success: true }),
@@ -15,7 +15,7 @@ jest.mock('@services/exportService', () => ({
   validateExportData: jest.fn().mockReturnValue({ valid: true }),
 }))
 
-jest.mock('@services/notificationService', () => ({
+jest.mock('@api/notificationGateway', () => ({
   useNotification: jest.fn().mockReturnValue({
     success: jest.fn(),
     error: jest.fn(),
@@ -84,7 +84,7 @@ describe('useExport Hook', () => {
   })
 
   it('should validate data before export', async () => {
-    const { validateExportData } = require('@services/exportService')
+    const { validateExportData } = require('@utils/exportUtils')
     validateExportData.mockReturnValue({ valid: false, message: 'No data' })
 
     const { result } = renderHook(() => useExport([], mockConfig))

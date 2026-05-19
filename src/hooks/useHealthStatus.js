@@ -9,8 +9,8 @@ import {
   setChecking,
   setResult,
   setError,
-} from '@state/slices/healthSlice';
-import { HealthService } from '@services/health/HealthService';
+} from '@state/slices/health';
+import { HealthService } from '@api/health/HealthGateway';
 
 export const useHealthStatus = () => {
   const dispatch = useDispatch();

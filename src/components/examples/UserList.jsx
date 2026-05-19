@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import useAPI from '@hooks/useAPI';
+import useRequest from '@hooks/domain/useRequest';
+import apiService from '@api/apiClient';
 
 function UserList() {
   const [page, setPage] = useState(1);
@@ -10,12 +11,12 @@ function UserList() {
     loading,
     error,
     execute: fetchUsers,
-  } = useAPI('/api/users', {
+  } = useRequest('/api/users', {
     method: 'GET',
     autoFetch: true,
     dependencies: [page, limit],
-    onSuccess: (data) => {
-      console.log('Users loaded:', data);
+    onSuccess: (_data) => {
+      // Callback de éxito — sin acción adicional
     },
   });
 

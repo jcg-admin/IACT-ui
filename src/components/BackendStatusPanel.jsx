@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 const BackendStatusPanel = ({ health, mockSummary }) => {
   const healthStatus = health?.status ?? 'unknown';
   const lastChecked = health?.lastChecked;
@@ -41,3 +42,9 @@ BackendStatusPanel.defaultProps = {
 };
 
 export default BackendStatusPanel;
+
+BackendStatusPanel.propTypes = {
+  health:      PropTypes.object,
+  mockSummary: PropTypes.object,
+}
+

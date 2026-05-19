@@ -9,8 +9,8 @@ import {
   selectGlobalError,
   clearGlobalError,
   selectErrorHistory,
-} from '@redux/slices/errorSlice';
-import { getErrorMessage } from '@utils/apiErrors';
+} from '@store/slices/error';
+import { getErrorMessage } from '@shared/apiErrors';
 
 /**
  * Global Error Toast
@@ -299,3 +299,10 @@ function ErrorHistoryViewer() {
 }
 
 export { ErrorHistoryViewer };
+
+import PropTypes from 'prop-types'
+ErrorDetailsModal.propTypes = {
+  error:   PropTypes.shape({ message: PropTypes.string, statusCode: PropTypes.number }),
+  isOpen:  PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+}

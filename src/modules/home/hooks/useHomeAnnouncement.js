@@ -6,7 +6,7 @@ import {
   selectAnnouncementSource,
   selectError,
   fetchAnnouncement,
-} from '../state/homeSlice';
+} from '../state/home';
 
 export const useHomeAnnouncement = () => {
   const dispatch = useDispatch();

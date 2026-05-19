@@ -8,8 +8,8 @@ import {
   setConfig,
   setError,
   setLoading,
-} from '@state/slices/appConfigSlice';
-import { AppConfigService } from '@services/config/AppConfigService';
+} from '@state/slices/appConfig';
+import { AppConfigService } from '@api/config/AppConfig';
 
 export const useAppConfig = () => {
   const dispatch = useDispatch();

@@ -4,8 +4,8 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '@redux/slices/authSlice';
-import dashboardReducer from '@redux/slices/dashboardSlice';
+import authReducer from '@store/slices/auth';
+import reportsReducer from '@store/slices/reports';
 
 describe('WebSocket Integration', () => {
   let store;
@@ -14,7 +14,7 @@ describe('WebSocket Integration', () => {
     store = configureStore({
       reducer: {
         auth: authReducer,
-        dashboard: dashboardReducer,
+        reports: reportsReducer,
       },
     });
   });
@@ -31,7 +31,7 @@ describe('WebSocket Integration', () => {
 
   test('WebSocket message handler is registered', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('WebSocket connection state is tracked', () => {
@@ -46,7 +46,7 @@ describe('WebSocket Integration', () => {
 
   test('WebSocket handles partial message data', () => {
     const state = store.getState();
-    expect(state.dashboard).toBeDefined();
+    expect(state.reports).toBeDefined();
   });
 
   test('WebSocket validates token on connection', () => {

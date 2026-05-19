@@ -10,3 +10,4 @@ yarn-error.log*
 
 # Webpack cache
 .webpack_cache/
+coverage/

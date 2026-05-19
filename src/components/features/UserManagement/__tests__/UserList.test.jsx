@@ -58,18 +58,18 @@ describe('UserList Component', () => {
     });
   });
 
-  test('shows role badges', async () => {
+  test('shows access groups', async () => {
     render(<UserList />);
     await waitFor(() => {
-      expect(screen.getByText('Admin')).toBeInTheDocument();
-      expect(screen.getByText('User')).toBeInTheDocument();
+      expect(screen.getByText('AGR-010')).toBeInTheDocument();
+      expect(screen.getAllByText('AGR-001')[0]).toBeInTheDocument();
     });
   });
 
   test('shows active/inactive status', async () => {
     render(<UserList />);
     await waitFor(() => {
-      expect(screen.getByText('Activo')).toBeInTheDocument();
+      expect(screen.getAllByText('Activo')[0]).toBeInTheDocument();
     });
   });
 });

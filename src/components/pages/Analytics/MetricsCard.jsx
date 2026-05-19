@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function MetricsCard({ title, value, icon, trend, trendType }) {
   return (
@@ -21,4 +22,11 @@ export default function MetricsCard({ title, value, icon, trend, trendType }) {
       </div>
     </div>
   )
+}
+MetricsCard.propTypes = {
+  title:     PropTypes.string.isRequired,
+  value:     PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  icon:      PropTypes.string,
+  trend:     PropTypes.number,
+  trendType: PropTypes.oneOf(['up', 'down', 'neutral']),
 }

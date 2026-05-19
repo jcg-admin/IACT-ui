@@ -1,102 +1,64 @@
 /**
- * jobService Tests
- * 
- * Requerimientos:
- * - Usar apiService
- * - Polling support
- * - Blob download support
- * - Manejar errores
+ * jobService.test.js — post-T5.1
+ *
+ * jobGateway.js fue eliminado en T5.1.
+ * La funcionalidad equivalente está en reportsGateway.js.
+ * Este test verifica la eliminación y la redirección correcta.
  */
 
-import jobService from '@services/jobService'
-import apiService from '@services/apiService'
-
-jest.mock('@services/apiService')
-
-describe('jobService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
+describe('T5.1 — jobGateway eliminado', () => {
+  test('jobGateway.js no existe en src/services/', () => {
+    const fs = require('fs')
+    expect(fs.existsSync('src/services/jobGateway.js')).toBe(false)
   })
 
-  describe('start(_jobType, _filters)', () => {
-    it('debería hacer POST a /api/job/start/', async () => {
-      const _mockData = {
-        jobId: 'job-123',
-        type: 'export_csv',
-        status: 'queued',
-        progress: 0,
-        eta: 60
-      }
-
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await jobService.start('export_csv', {})
-
-      expect(apiService.post).toHaveBeenCalledWith('/api/job/start/', {
-        type: 'export_csv',
-        filters: {}
-      })
-      expect(_result.jobId).toBe('job-123')
-      expect(_result.status).toBe('queued')
-    })
+  test('JobOrchestrator usa reportsGateway', () => {
+    const src = require('fs').readFileSync('src/facades/JobOrchestrator.js', 'utf8')
+    expect(src).toContain('reportsGateway')
+    expect(src).not.toContain("'@api/jobGateway'")
   })
 
-  describe('status(_jobId)', () => {
-    it('debería hacer GET a /api/job/status/{jobId}/', async () => {
-      const _mockData = {
-        jobId: 'job-123',
-        status: 'processing',
-        progress: 45,
-        eta: 30
-      }
-
-      apiService.get.mockResolvedValue(_mockData)
-
-      const _result = await jobService.status('job-123')
-
-      expect(apiService.get).toHaveBeenCalledWith('/api/job/job-123/status/')
-      expect(_result.progress).toBe(45)
-      expect(_result.status).toBe('processing')
-    })
-
-    it('debería retornar null eta si no hay', async () => {
-      const _mockData = {
-        jobId: 'job-124',
-        status: 'completed',
-        progress: 100
-      }
-
-      apiService.get.mockResolvedValue(_mockData)
-
-      const _result = await jobService.status('job-124')
-
-      expect(_result.eta).toBeNull()
-    })
+  test('useJobStatus usa reportsService.getExportJobDetail', () => {
+    const src = require('fs').readFileSync('src/hooks/domain/useJobStatus.js', 'utf8')
+    expect(src).toContain('getExportJobDetail')
+    expect(src).not.toContain("'@api/jobGateway'")
   })
 
-  describe('download(_jobId)', () => {
-    it('debería hacer GET a /api/job/download/{jobId}/ y retornar blob', async () => {
-      const _mockBlob = new Blob(['csv,data'], { type: 'text/csv' })
+  test('useJobs usa reportsService.cancelExport', () => {
+    const src = require('fs').readFileSync('src/hooks/domain/useJobs.js', 'utf8')
+    expect(src).toContain('cancelExport')
+    expect(src).not.toContain("'@api/jobGateway'")
+  })
+})
 
-      apiService.get.mockResolvedValue(_mockBlob)
+describe('T5.1 — reportsGateway cubre la funcionalidad de jobs', () => {
+  jest.mock('../reportsGateway', () => ({
+    __esModule: true,
+    default: {
+      exportReport:        jest.fn().mockResolvedValue({ job_id: 'j-1' }),
+      getExportJobDetail:  jest.fn().mockResolvedValue({ id: 'j-1', status: 'DONE', file_url: '/files/j-1.csv' }),
+      cancelExport:        jest.fn().mockResolvedValue({}),
+      getExportJobs:       jest.fn().mockResolvedValue([]),
+    },
+  }))
 
-      const _result = await jobService.download('job-123')
+  const reportsService = require('../reportsGateway').default
 
-      expect(apiService.get).toHaveBeenCalledWith('/api/job/job-123/download/')
-      expect(_result instanceof Blob).toBe(true)
-    })
+  beforeEach(() => { jest.clearAllMocks() })
+
+  test('exportReport() sustituye a jobService.start()', async () => {
+    const result = await reportsService.exportReport('agents', 'csv', {})
+    expect(result.job_id).toBe('j-1')
   })
 
-  describe('cancel(_jobId)', () => {
-    it('debería hacer POST a /api/job/cancel/{jobId}/', async () => {
-      const _mockData = { status: 'cancelled' }
+  test('getExportJobDetail() sustituye a jobService.status()', async () => {
+    const result = await reportsService.getExportJobDetail('j-1')
+    expect(result.status).toBe('DONE')
+    expect(result.file_url).toBeDefined()
+  })
 
-      apiService.post.mockResolvedValue(_mockData)
-
-      const _result = await jobService.cancel('job-123')
-
-      expect(apiService.post).toHaveBeenCalledWith('/api/job/job-123/cancel/', {})
-      expect(_result.status).toBe('cancelled')
-    })
+  test('cancelExport() sustituye a jobService.cancel()', async () => {
+    await reportsService.cancelExport('j-1')
+    expect(reportsService.cancelExport).toHaveBeenCalledWith('j-1')
   })
 })

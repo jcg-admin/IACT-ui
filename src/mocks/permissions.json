@@ -5,70 +5,154 @@
     "email": "maria.garcia@callcenter.com",
     "grupos": [
       {
-        "id": 1,
-        "codigo": "atencion_cliente",
-        "nombre_display": "Atencion al Cliente",
-        "descripcion": "Atiende consultas y gestiona interacciones con clientes"
+        "id": 2,
+        "codigo": "AGR-002",
+        "nombre_display": "Analista de Reportes",
+        "descripcion": "Visualizador de reportes IVR"
       },
       {
-        "id": 2,
-        "codigo": "visualizacion_metricas",
-        "nombre_display": "Visualizacion de Metricas",
-        "descripcion": "Accede a reportes y analisis de desempeno"
+        "id": 4,
+        "codigo": "AGR-004",
+        "nombre_display": "Exportador de Datos",
+        "descripcion": "Exportación autorizada CSV/Excel/PDF"
       }
     ]
   },
   "capacidades": [
-    "sistema.vistas.dashboards.ver",
-    "sistema.operaciones.llamadas.ver",
-    "sistema.operaciones.llamadas.realizar",
-    "sistema.operaciones.tickets.ver",
-    "sistema.operaciones.tickets.crear",
-    "sistema.operaciones.tickets.editar",
-    "sistema.operaciones.clientes.ver",
-    "sistema.analisis.metricas.ver"
+    "AUTH-001",
+    "AUTH-004",
+    "RPT-001",
+    "RPT-002",
+    "RPT-007",
+    "RPT-008",
+    "RPT-003",
+    "RPT-004",
+    "RPT-005",
+    "RPT-006",
+    "USR-009",
+    "ALR-001",
+    "ALR-002",
+    "ALR-006"
   ],
   "funciones_accesibles": [
     {
       "id": 1,
-      "nombre": "dashboards",
-      "nombre_completo": "sistema.vistas.dashboards",
-      "dominio": "vistas",
+      "nombre": "view_dashboard",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "dashboard",
       "orden_menu": 10
     },
     {
       "id": 2,
-      "nombre": "llamadas",
-      "nombre_completo": "sistema.operaciones.llamadas",
-      "dominio": "operaciones",
+      "nombre": "view_reports",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "bar_chart",
       "orden_menu": 20
     },
     {
       "id": 3,
-      "nombre": "tickets",
-      "nombre_completo": "sistema.operaciones.tickets",
-      "dominio": "operaciones",
-      "orden_menu": 30
+      "nombre": "view_kpis",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "trending_up",
+      "orden_menu": 25
     },
     {
       "id": 4,
-      "nombre": "clientes",
-      "nombre_completo": "sistema.operaciones.clientes",
-      "dominio": "operaciones",
-      "orden_menu": 40
+      "nombre": "view_charts",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "pie_chart",
+      "orden_menu": 30
     },
     {
       "id": 5,
-      "nombre": "metricas",
-      "nombre_completo": "sistema.analisis.metricas",
-      "dominio": "analisis",
+      "nombre": "filter_reports",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "filter_list",
+      "orden_menu": 35
+    },
+    {
+      "id": 6,
+      "nombre": "export_csv",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "table_view",
+      "orden_menu": 40
+    },
+    {
+      "id": 7,
+      "nombre": "export_excel",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "grid_on",
+      "orden_menu": 45
+    },
+    {
+      "id": 8,
+      "nombre": "export_pdf",
+      "module": "reports",
+      "dominio": "reportes",
+      "icono": "picture_as_pdf",
+      "orden_menu": 50
+    },
+    {
+      "id": 9,
+      "nombre": "view_users",
+      "module": "users",
+      "dominio": "usuarios",
+      "icono": "people",
       "orden_menu": 60
+    },
+    {
+      "id": 10,
+      "nombre": "view_alerts",
+      "module": "alerts",
+      "dominio": "alertas",
+      "icono": "notifications",
+      "orden_menu": 70
+    },
+    {
+      "id": 11,
+      "nombre": "configure_alerts",
+      "module": "alerts",
+      "dominio": "alertas",
+      "icono": "tune",
+      "orden_menu": 75
+    },
+    {
+      "id": 12,
+      "nombre": "view_alert_history",
+      "module": "alerts",
+      "dominio": "alertas",
+      "icono": "history",
+      "orden_menu": 80
+    },
+    {
+      "id": 13,
+      "nombre": "view_own_sessions",
+      "module": "auth",
+      "dominio": "autenticacion",
+      "icono": "manage_accounts",
+      "orden_menu": 90
+    },
+    {
+      "id": 14,
+      "nombre": "view_all_active_sessions",
+      "module": "auth",
+      "dominio": "autenticacion",
+      "icono": "devices",
+      "orden_menu": 95
     }
   ],
   "permisos_excepcionales": [],
   "auditoria_ultimo_acceso": {
     "timestamp": "2025-11-18T12:30:00Z",
-    "capacidad": "sistema.vistas.dashboards.ver",
+    "capacidad": "reports:dashboard",
     "resultado": "permitido"
-  }
+  },
+  "_agr_nota": "AGR-011 (call_center_operator_group) y AGR-012 (supervision_group) son RESERVADOS open-closed en v5.6.0 — no asignables a usuarios de UI"
 }

@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import authReducer from '@redux/slices/authSlice';
-import { persistConfig } from '@redux/persistConfig';
+import authReducer from '@store/slices/auth';
+import { persistConfig } from '@store/persistConfig';
 
 describe('Redux Persist Integration', () => {
   let store;

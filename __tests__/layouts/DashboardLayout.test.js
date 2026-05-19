@@ -6,13 +6,28 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
 import DashboardLayout from '../../src/layouts/DashboardLayout/DashboardLayout'
 import { mockNavLinks, mockUserInfo } from '../helpers/mockData'
+import uiReducer from '../../src/redux/slices/ui'
+import userReducer from '../../src/redux/slices/user'
 
-// Wrapper for router context
-const renderWithRouter = (component) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>)
+function buildStore() {
+  return configureStore({ reducer: { ui: uiReducer, user: userReducer } })
 }
+
+// Wrapper with Redux Provider + Router context
+const renderWithProviders = (component) => {
+  return render(
+    <Provider store={buildStore()}>
+      <BrowserRouter>{component}</BrowserRouter>
+    </Provider>
+  )
+}
+
+// Keep renderWithRouter as alias for backward compat within this file
+const renderWithRouter = renderWithProviders
 
 describe('DashboardLayout Component', () => {
   describe('Rendering', () => {

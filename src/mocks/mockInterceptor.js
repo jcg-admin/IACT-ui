@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- Archivo de mock: no llega a produccion */
 /**
  * Mock Interceptor
  * Intercepta requests y retorna mock data
@@ -7,11 +8,49 @@
  */
 
 import { SENSITIVE_FIELDS } from '@config/securityConfig';
+import permissionsMock from './permissions.json';
+import permissionsAdminMock from './permissions-admin.json';
+
+const PERMISOS_BY_USER_ID = {
+  10:  permissionsMock,
+  99:  permissionsAdminMock,
+};
 
 class MockInterceptor {
   constructor() {
     this.enabled = process.env.REACT_APP_USE_MOCKS === 'true';
     this.mockDelay = 800; // ms
+    this._pipelineRunning = false;
+    this._acknowledgedAlerts = new Set();
+    this._resolvedAlerts = new Set(['alert-3']); // alert-3 starts resolved in fixtures
+    this._knownAlertIds = new Set(['alert-1', 'alert-2', 'alert-3']);
+    this._blockedMenuItems = new Map();
+    this._inactiveFunctionsByItemId = new Set();
+    this._jobPollCounters = new Map();
+
+    // UC_RPT_09: saved filters store (mutable, initialized from fixture)
+    this.resetSavedFilters()
+
+    // UC_RPT_11: shares store (mutable, initialized from fixture)
+    this.resetSharesStore()
+
+    // UC-ADM-03: composición de funciones por AGR de sistema
+    this._systemGroupFunctions = new Map();
+    const defaultCompositions = {
+      1: ['pipeline:view_status', 'pipeline:execute'],
+      2: ['reports:view', 'reports:export', 'reports:kpis'],
+      3: ['audit:view', 'audit:search', 'audit:compliance'],
+      4: [],
+      5: ['alerts:view', 'alerts:acknowledge'],
+      6: ['users:view', 'users:manage', 'users:create'],
+      7: ['access:assign', 'access:revoke', 'access:view'],
+      8: ['audit:view', 'audit:export'],
+      9: ['pipeline:execute', 'pipeline:stop'],
+      10: ['adm:manage_functions', 'adm:manage_catalog'],
+    };
+    Object.entries(defaultCompositions).forEach(([id, fns]) =>
+      this._systemGroupFunctions.set(parseInt(id), new Set(fns))
+    );
   }
 
   /**
@@ -41,8 +80,38 @@ class MockInterceptor {
     if (url.includes('/api/user/')) {
       return this._handleGetUser();
     }
+    if (url.includes('/api/reports/metrics/dashboard/')) {
+      return this._handleDashboardMetrics();
+    }
     if (url.includes('/api/metrics')) {
       return this._handleMetrics();
+    }
+    if (url.match(/\/api\/auth\/sessions\/[^/]+\/$/) && method === 'DELETE') {
+      return this._handleRevokeSession(url);
+    }
+    if (url.includes('/api/auth/sessions/')) {
+      return this._handleGetSessions();
+    }
+    if (url.includes('/api/auth/recover-password/') && method === 'POST') {
+      return this._handleRecoverPassword(body);
+    }
+    if (url.includes('/api/auth/change-password/') && method === 'POST') {
+      return this._handleChangePassword(body);
+    }
+    if (url.includes('/api/audit/logs') && method === 'GET') {
+      return this._handleGetAuditLogs(url);
+    }
+    if (url.includes('/api/users/me/profile/') && method === 'PATCH') {
+      return this._handleUpdateMyProfile(body);
+    }
+    if (url.includes('/api/users/me/')) {
+      return this._handleGetMyProfile();
+    }
+    if (url.match(/\/api\/users\/\d+\/block\//) && method === 'POST') {
+      return this._handleBlockUser(url);
+    }
+    if (url.match(/\/api\/users\/\d+\/unblock\//) && method === 'POST') {
+      return this._handleUnblockUser(url);
     }
     if (url.includes('/api/users')) {
       return this._handleUsers(method, body);
@@ -72,19 +141,325 @@ class MockInterceptor {
     if (url.includes('/api/job/start/')) {
       return this._handleJobStart(body);
     }
-    if (url.includes('/api/job/status/')) {
+    if (url.match(/\/api\/job\/[^/]+\/status\//)) {
       return this._handleJobStatus(url);
     }
-    if (url.includes('/api/job/download/')) {
+    if (url.match(/\/api\/job\/[^/]+\/download\//)) {
       return this._handleJobDownload(url);
     }
-    if (url.includes('/api/job/cancel/')) {
+    if (url.match(/\/api\/job\/[^/]+\/cancel\//)) {
       return this._handleJobCancel(url);
     }
 
+    // ACCESS — UC-ACC-01: catálogo de funciones disponibles
+    if (url.includes('/api/access/functions') && method === 'GET') {
+      return this._handleGetAllFunctions();
+    }
+
+    // ACCESS — UC-ACC-03: permisos efectivos de un usuario
+    if (url.match(/\/api\/access\/permissions\/\d+/) && method === 'GET') {
+      return this._handleGetUserPermissions(url);
+    }
+
+    // ACCESS — UC-ACC-09: auditoría sin filtro de usuario (all-scope)
+    if (url === '/api/access/audit/' && method === 'GET') {
+      return this._handleGetAccessAuditLog(url);
+    }
+    // ACCESS — UC-ACC-09: auditoría filtrada por usuario
+    if (url.match(/\/api\/access\/audit\/\d+/) && method === 'GET') {
+      return this._handleGetAccessAuditLog(url);
+    }
+
+    // ACCESS — UC-ACC-01: asignar funciones (bulk)
+    if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'POST') {
+      return this._handleAssignFunctions(body);
+    }
+
+    // ACCESS — UC-ACC-02: revocar funciones (bulk)
+    if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'DELETE') {
+      return this._handleRevokeFunctions(body);
+    }
+
+    // UC_PERM_03: conceder permiso excepcional
+    if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/$/) && method === 'POST') {
+      return this._handleGrantExceptionalPermission(url, body);
+    }
+
+    // UC-015: listar permisos excepcionales de un usuario
+    if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/$/) && method === 'GET') {
+      return this._handleListExceptionalPermissions(url);
+    }
+
+    // UC-015: revocar permiso excepcional
+    if (url.match(/\/api\/users\/\d+\/exceptional-permissions\/\d+\/$/) && method === 'DELETE') {
+      if (!body?.revoke_reason || body.revoke_reason.trim() === '') {
+        return { status: 400, data: { error: 'revoke_reason requerido', code: 'REVOKE_REASON_REQUIRED' } }
+      }
+      if (body.revoke_reason.trim().length < 10) {
+        return { status: 400, data: { error: 'revoke_reason muy corto (mínimo 10 chars)', code: 'REASON_TOO_SHORT' } }
+      }
+      return { status: 200, data: { revoked: true } };
+    }
+
+    // GAP-2: pre-validar asignación de grupo
+    if (url.match(/\/api\/access\/groups\/[^/]+\/validate-for-user/) && method === 'POST') {
+      return this._handleValidateGroupAssignment(body);
+    }
+
+    // GAP-5: cascade impact preview
+    if (url.match(/\/api\/access\/groups\/[^/]+\/cascade-impact/)) {
+      return this._handleGroupCascadeImpact(url);
+    }
+
+    // UC_PERM_05: CRUD grupos de acceso (non-system) — order matters: specific before generic
+    if (url.match(/\/api\/access\/groups\/\d+\/functions\//) && method === 'POST') {
+      return this._handleAssignFunctionsToGroup(url, body);
+    }
+    if (url.match(/\/api\/access\/groups\/\d+\/functions\//) && method === 'GET') {
+      return this._handleGetGroupFunctions(url);
+    }
+    if (url.match(/\/api\/access\/groups\/\d+\//) && method === 'DELETE') {
+      return this._handleRetireGroup(url, body);
+    }
+    if (url.match(/\/api\/access\/groups\/\d+\//) && method === 'PATCH') {
+      return this._handleUpdateGroup(url, body);
+    }
+    if (url === '/api/access/groups/' || url.match(/\/api\/access\/groups\/$/)) {
+      return this._handleAccessGroupsCRUD(method, body);
+    }
+
+    // GAP-1: validar reglas de separación (usuario + función)
+    if (url.includes('/api/access/separation-rules/validate') && method === 'POST') {
+      return this._handleValidateSeparationRules(body);
+    }
+
+    // ACCESS — UC-ACC-04: asignar grupo de acceso (AGR)
+    if (url.match(/\/api\/users\/\d+\/access-groups\/$/)) {
+      return this._handleAssignAccessGroup(body);
+    }
+
+    // REPORTS — UC-RPT-04: exportar reporte (async job)
+    if (url.includes('/api/reports/export/')) {
+      const errorCode = options?.params?.test_error || body?.test_error
+      if (errorCode === 'ROW_LIMIT_EXCEEDED') {
+        return this._error(400, 'El reporte supera el límite de filas exportables', 'ROW_LIMIT_EXCEEDED')
+      }
+      if (errorCode === 'EXPORT_LIMIT_EXCEEDED') {
+        return this._error(429, 'Ya tiene exports activos en cola. Espere a que finalicen.', 'EXPORT_LIMIT_EXCEEDED')
+      }
+      if (errorCode === 'PERMISSION_REVOKED') {
+        return this._error(403, 'Permiso reports:export revocado', 'PERMISSION_REVOKED')
+      }
+      if (errorCode === 'TOO_LARGE') {
+        return this._error(413, 'El dataset supera el límite de tamaño de archivo', 'TOO_LARGE')
+      }
+      return {
+        status: 202,
+        data: { job_id: `report-export-${Date.now()}` },
+      }
+    }
+
+    // UC-PERM-02 FA-06: preview impacto de revocación (no persiste)
+    if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/preview-revoke\//) && method === 'GET') {
+      return this._handlePreviewRevoke(url);
+    }
+
+    // ACCESS — UC-PERM-02: revocar grupo de usuario
+    if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/$/) && method === 'DELETE') {
+      if (!body?.revoke_reason || body.revoke_reason.trim() === '') {
+        return { status: 400, data: { error: 'revoke_reason requerido', code: 'REVOKE_REASON_REQUIRED' } }
+      }
+      if (body.revoke_reason.trim().length < 10) {
+        return { status: 400, data: { error: 'revoke_reason muy corto (mínimo 10 chars)', code: 'REASON_TOO_SHORT' } }
+      }
+      return { status: 200, data: { revoked: true } }
+    }
+
+    // AUDIT — UC-AUD-03: exportar auditoría (async)
+    if (url.includes('/api/audit/export/')) {
+      return this._handleAuditExport(body);
+    }
+
+    // REPORTS: IVR menu distribution (prom_llamadas)
+    if (url.includes('/api/reports/ivr-menus/')) {
+      const params = options.params || {}
+      return this._handleIvrMenus(params)
+    }
+
+    // REPORTS: unique clients per segment
+    if (url.includes('/api/reports/unique-clients/')) {
+      const params = options.params || {}
+      return this._handleUniqueClients(params)
+    }
+
+    // REPORTS — UC-019: transferencias IVR por centro
+    if (url.includes('/api/reports/transfers/')) {
+      const params = options.params || {}
+      return this._handleTransfersByCentro(params)
+    }
+
+    // REPORTS: IVR agents (virtual agents = menus)
+    if (url.includes('/api/reports/agents/')) {
+      const params = options.params || {}
+      return this._handleAgentsReport(params)
+    }
+
+    // REPORTS: transfer queues by centro
+    if (url.includes('/api/reports/queues/')) {
+      const params = options.params || {}
+      return this._handleQueuesReport(params)
+    }
+
+    // REPORTS: IVR campaign menus
+    if (url.includes('/api/reports/campaigns/')) {
+      const params = options.params || {}
+      return this._handleCampaignsReport(params)
+    }
+
+    if (url.includes('/api/reports/history/')) {
+      const params = options.params || {}
+      return this._handleReportHistory(params)
+    }
+
+    // REPORTS — UC-RPT-10: vistas guardadas
+    if (url.includes('/api/reports/saved-views/')) {
+      return this._handleSavedViews(method, url)
+    }
+
+    // ADMIN — UC-ADM-02: catálogo de funciones RBAC
+    if (url.includes('/api/admin/functions/')) {
+      return this._handleAdminFunctions(url, method, body)
+    }
+
+    // ADMIN — UC-ADM-03: composición de funciones de AGR de sistema
+    // Rutas específicas ANTES del bloque genérico agr/
+    if (url.match(/\/api\/admin\/system-groups\/(\d+)\/impact\//) && method === 'GET') {
+      return this._handleAGRImpact(url)
+    }
+    if (url.match(/\/api\/admin\/system-groups\/(\d+)\/functions\/([^/]+)\//) && method === 'DELETE') {
+      return this._handleAGRRemoveFunction(url)
+    }
+    if (url.match(/\/api\/admin\/system-groups\/(\d+)\/functions\//)) {
+      return this._handleAGRFunctions(url, method, body)
+    }
+
+    // ADMIN — UC-ADM-03: catálogo de AGRs
+    if (url.includes('/api/admin/agr/')) {
+      return this._handleAdminAGR(method, body)
+    }
+
+    // ADMIN — UC-ADM-04 CA-08: bulk reorder atómico (ANTES del bloque genérico)
+    if (url.includes('/api/admin/menu-items/bulk-reorder/') && method === 'PATCH') {
+      return this._handleMenuItemsBulkReorder(body)
+    }
+    // ADMIN — UC-ADM-05 CA-07: bloquear archivado automático
+    if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'POST') {
+      return this._handleBlockAutoArchive(url, body)
+    }
+    // ADMIN — UC-ADM-05 FA-06: desactivar block_auto_archive
+    if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'DELETE') {
+      return this._handleUnblockAutoArchive(url)
+    }
+    // ADMIN — UC-ADM-05: endpoints de transición de lifecycle (ANTES del handler genérico)
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/publish\//) && method === 'POST') {
+      return this._handleMenuItemPublish(url)
+    }
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/deprecate\//) && method === 'POST') {
+      return this._handleMenuItemDeprecate(url)
+    }
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/reactivate\//) && method === 'POST') {
+      return this._handleMenuItemReactivate(url)
+    }
+    if (url.match(/\/api\/admin\/menu-items\/\d+\/archive\//) && method === 'POST') {
+      return this._handleMenuItemArchive(url)
+    }
+    // ADMIN — UC-ADM-04/05: catálogo + lifecycle de MenuItems
+    if (url.includes('/api/admin/menu-items/')) {
+      return this._handleAdminMenuItems(method, url, body)
+    }
+
+    if (url.includes('/api/admin/separation-rules/')) {
+      return this._handleAdminSeparationRules(method, url, body)
+    }
+
+    // PERMISOS — UC-PERM-07/08: capacidades del usuario (SP-01 — ADR-BACK-005)
+    if (url.match(/\/api\/permisos\/verificar\/(\d+)\/capacidades\//)) {
+      return this._handlePermisosCapacidades(url)
+    }
+
     // ALERT ENDPOINTS
+    if (url.includes('/api/alerts/bulk-ack/') && method === 'POST') {
+      return this._handleBulkAcknowledgeAlerts(body)
+    }
+
+    if (url.match(/\/api\/alerts\/([^/]+)\/ack\//) && method === 'POST') {
+      return this._handleAcknowledgeAlert(url, body);
+    }
+
+    if (url.includes('/api/alerts/rules/') && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+      return this._handleAlertRule(url, method, body)
+    }
+
+    if (url.includes('/api/alerts/validate-condition/') && method === 'POST') {
+      return this._handleValidateCondition(body)
+    }
+
+    if (url.includes('/api/alerts/history/')) {
+      return this._handleAlertHistory()
+    }
+
+    if (url.includes('/api/alerts/subscriptions/me/')) {
+      return this._handleGetMySubscriptions()
+    }
+
+    if (url.includes('/api/alerts/subscriptions/') && (method === 'POST' || method === 'DELETE')) {
+      return this._handleAlertSubscription(url, method, body)
+    }
+
     if (url.includes('/api/alerts')) {
       return this._handleGetAlerts(url);
+    }
+
+    if (url.match(/\/api\/permisos\/verificar\/(\d+)\/menu\//)) {
+      return this._handlePermisosMenu(url);
+    }
+
+    if (url.includes('/api/v1/etl/supervision/')) {
+      return this._handlePipelineStatus(url);
+    }
+
+    if (url.match(/\/api\/etl\/logs\/\d+\/retry\//) && method === 'POST') {
+      return this._handleRetryPipeline(url, body);
+    }
+
+    if (url.match(/\/api\/reports\/scheduled\/\d+\/runs\//)) {
+      return this._handleScheduleHistory(url);
+    }
+    if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method !== 'GET') {
+      return this._handleScheduleSubAction(url, method);
+    }
+    if (url.match(/\/api\/reports\/scheduled\/\d+\//) && method === 'GET') {
+      return this._handleScheduleDetail(url);
+    }
+
+    if (url.includes('/api/reports/scheduled/')) {
+      return this._handleScheduledReports(url, method, body);
+    }
+
+    if (url.match(/\/api\/me\/filters\/\d+\//) || url.includes('/api/me/filters/')) {
+      return this._handleSavedFilters(url, method, body);
+    }
+
+    if (url.match(/\/api\/me\/shares\/\d+\//) || url.includes('/api/me/shares/')) {
+      return this._handleShares(url, method, body);
+    }
+
+    if (url.includes('/api/v1/etl/errores/')) {
+      return this._handlePipelineErrors(url);
+    }
+
+    if (url.includes('/api/v1/datos/disponibilidad/')) {
+      return this._handleETLAvailability(url);
     }
 
     // Default 404
@@ -107,15 +482,50 @@ class MockInterceptor {
         status: 200,
         data: {
           user: {
-            id: 1,
+            id: 10,
             username: 'demo',
             email: 'demo@example.com',
             first_name: 'Demo',
             last_name: 'User',
-            role: 'admin',
             date_joined: new Date().toISOString(),
           },
           // NO retornar access/refresh (estan en cookies)
+        },
+      };
+    }
+
+    if (credentials.username === 'admin' && credentials.password === 'admin123') {
+      return {
+        status: 200,
+        data: {
+          user: {
+            id: 99,
+            username: 'admin',
+            email: 'admin@example.com',
+            first_name: 'Admin',
+            last_name: 'System',
+            date_joined: new Date().toISOString(),
+          },
+        },
+      };
+    }
+
+    // UC-AUTH-01 FA-01: primer login — backend indica que debe cambiar contraseña
+    if (credentials.username === 'first_login_user' && credentials.password === 'changeme') {
+      return {
+        status: 200,
+        data: {
+          user: {
+            id: 11,
+            username: 'first_login_user',
+            email: 'firstlogin@example.com',
+            first_name: 'First',
+            last_name: 'Login',
+            date_joined: new Date().toISOString(),
+          },
+          next_step: 'change_password',
+          first_login: true,
+          warning: null,
         },
       };
     }
@@ -141,12 +551,11 @@ class MockInterceptor {
     return {
       status: 200,
       data: {
-        id: 1,
+        id: 10,
         username: 'demo',
         email: 'demo@example.com',
         first_name: 'Demo',
         last_name: 'User',
-        role: 'admin',
         date_joined: new Date().toISOString(),
       },
     };
@@ -221,7 +630,7 @@ class MockInterceptor {
           email: body.email,
           first_name: body.first_name || '',
           last_name: body.last_name || '',
-          role: 'user',
+          access_groups: [],
           date_joined: new Date().toISOString(),
         },
       };
@@ -234,7 +643,9 @@ class MockInterceptor {
    * Generate mock users
    */
   _generateMockUsers(count) {
-    const roles = ['admin', 'user', 'moderator'];
+    const sampleGroups = [['AGR-001'], ['AGR-002'], ['AGR-001', 'AGR-003'], []];
+    // UC-USR-01: campo state con enum ACTIVE/INACTIVE/BLOCKED/ELIMINATED
+    const states = ['ACTIVE', 'ACTIVE', 'ACTIVE', 'ACTIVE', 'INACTIVE', 'BLOCKED'];
     const users = [];
 
     for (let i = 0; i < count; i++) {
@@ -244,15 +655,103 @@ class MockInterceptor {
         email: `user${i + 1}@example.com`,
         first_name: `User${i + 1}`,
         last_name: `Test`,
-        role: roles[i % roles.length],
+        access_groups: sampleGroups[i % sampleGroups.length],
+        state: states[i % states.length],
         date_joined: new Date(
           Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
         ).toISOString(),
-        is_active: Math.random() > 0.1,
       });
     }
 
     return users;
+  }
+
+  // UC_PERM_02 FA-06: preview impacto de revocación (no persiste, no genera AuditEvent)
+  _handlePreviewRevoke(url) {
+    const match = url.match(/\/api\/users\/([^/]+)\/access-groups\/(\d+)\/preview-revoke\//)
+    const groupId = match ? Number(match[2]) : null
+    // AGR predefinido (id=10 = admins_group) → warnings con funciones críticas
+    if (groupId === 10) {
+      return {
+        status: 200,
+        data: {
+          functions_to_revoke: ['create_users', 'delete_users', 'block_users'],
+          functions_remaining: 0,
+          warnings: { critical_revoked: ['create_users', 'delete_users'], no_functions: true },
+        },
+      }
+    }
+    // Otros grupos → sin warnings críticos
+    return {
+      status: 200,
+      data: {
+        functions_to_revoke: ['view_reports'],
+        functions_remaining: 5,
+        warnings: { critical_revoked: [], no_functions: false },
+      },
+    }
+  }
+
+  // UC_USR_05: bloquear usuario
+  _handleBlockUser(url) {
+    const match = url.match(/\/api\/users\/(\d+)\/block\//)
+    const id = match ? Number(match[1]) : null
+    const users = this._generateMockUsers(25)
+    const user = users.find(u => u.id === id)
+    if (!user) return this._error(404, 'User not found')
+    if (user.state === 'BLOCKED') return this._error(409, 'ALREADY_BLOCKED', 'ALREADY_BLOCKED')
+    if (user.state === 'ELIMINATED') return this._error(403, 'CANNOT_BLOCK_ELIMINATED', 'CANNOT_BLOCK_ELIMINATED')
+    return { status: 200, data: { id, state: 'BLOCKED' } }
+  }
+
+  // UC_USR_06: desbloquear usuario
+  _handleUnblockUser(url) {
+    const match = url.match(/\/api\/users\/(\d+)\/unblock\//)
+    const id = match ? Number(match[1]) : null
+    const users = this._generateMockUsers(25)
+    const user = users.find(u => u.id === id)
+    if (!user) return this._error(404, 'User not found')
+    if (user.state !== 'BLOCKED') return this._error(409, 'NOT_BLOCKED', 'NOT_BLOCKED')
+    return { status: 200, data: { id, state: 'ACTIVE' } }
+  }
+
+  // UC_USR_07: perfil propio (GET)
+  _handleGetMyProfile() {
+    return {
+      status: 200,
+      data: {
+        id: 1,
+        username: 'admin',
+        first_name: 'Admin',
+        last_name: 'User',
+        email: 'admin@example.com',
+        notification_preferences: {
+          email_notifications: true,
+          push_notifications: false,
+        },
+      },
+    }
+  }
+
+  // UC_USR_07: actualizar perfil propio (PATCH)
+  _handleUpdateMyProfile(body) {
+    if (body?.email && !body.email.includes('@')) {
+      return this._error(400, 'Invalid email address', 'INVALID_EMAIL')
+    }
+    return {
+      status: 200,
+      data: {
+        id: 1,
+        username: 'admin',
+        first_name: body?.first_name ?? 'Admin',
+        last_name: body?.last_name ?? 'User',
+        email: body?.email ?? 'admin@example.com',
+        notification_preferences: body?.notification_preferences ?? {
+          email_notifications: true,
+          push_notifications: false,
+        },
+      },
+    }
   }
 
   /**
@@ -313,12 +812,13 @@ class MockInterceptor {
   /**
    * Error response
    */
-  _error(status, message) {
+  _error(status, message, code) {
     return {
       status,
       data: {
         detail: message,
         error: message,
+        ...(code ? { code } : {}),
       },
     };
   }
@@ -412,7 +912,7 @@ class MockInterceptor {
       _conflicts.push({
         id: `conflict-${i}`,
         field: `Function-${i + 1}`,
-        message: `Conflicto SoD detectado`,
+        message: `Conflicto de separación de funciones detectado`,
         severity: 'warning',
         suggestion: 'Remover función conflictiva'
       });
@@ -440,17 +940,50 @@ class MockInterceptor {
   }
 
   _handleJobStatus(url) {
-    const _jobId = url.split('/').slice(-2)[0];
+    const jobId = url.split('/').filter(Boolean).slice(-2)[0]
+    const testState = url.includes('?test_state=done') ? 'done'
+      : url.includes('?test_state=failed') ? 'failed' : null
+
+    if (testState) {
+      return {
+        status: 200,
+        data: {
+          job_id: jobId,
+          status: testState,
+          progress: testState === 'done' ? 100 : 0,
+          file_url: testState === 'done'
+            ? `https://storage.example.com/exports/${jobId}.csv?ttl=86400` : null,
+          error: testState === 'failed' ? 'Export failed' : null,
+        }
+      }
+    }
+
+    const count = (this._jobPollCounters.get(jobId) || 0) + 1
+    this._jobPollCounters.set(jobId, count)
+
+    if (count >= 3) {
+      return {
+        status: 200,
+        data: {
+          job_id: jobId,
+          status: 'done',
+          progress: 100,
+          file_url: `https://storage.example.com/exports/${jobId}.csv?ttl=86400`,
+          error: null,
+        }
+      }
+    }
 
     return {
       status: 200,
       data: {
-        jobId: _jobId,
-        status: 'processing',
-        progress: Math.floor(Math.random() * 100),
-        eta: Math.floor(Math.random() * 60)
+        job_id: jobId,
+        status: count === 1 ? 'queued' : 'running',
+        progress: count * 30,
+        file_url: null,
+        error: null,
       }
-    };
+    }
   }
 
   _handleJobDownload(url) {
@@ -470,6 +1003,669 @@ class MockInterceptor {
     };
   }
 
+  // ====== ACCESS HANDLERS (UC-ACC-01, UC-ACC-02, UC-ACC-04) ======
+
+  _handleAssignFunctions(body) {
+    if (!body || !body.function_ids || !Array.isArray(body.function_ids)) {
+      return this._error(400, 'function_ids array required');
+    }
+    return {
+      status: 201,
+      data: {
+        assigned: body.function_ids.length,
+        expires_at: body.expires_at || null,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  _handleRevokeFunctions(body) {
+    if (!body || !body.function_ids || !Array.isArray(body.function_ids)) {
+      return this._error(400, 'function_ids array required');
+    }
+    // UC_ACC_02: revoke_reason ≥10 required
+    const reason = body.revoke_reason ?? ''
+    if (reason.trim().length < 10) {
+      return this._error(400, 'revoke_reason must be at least 10 characters', 'REASON_TOO_SHORT')
+    }
+    // UC_ACC_02: LastHolderSpec — 'USR-001' has only user 1 as holder
+    const LAST_HOLDER_MAP = { 'USR-001': 1 }
+    for (const fnId of body.function_ids) {
+      if (LAST_HOLDER_MAP[fnId] !== undefined && LAST_HOLDER_MAP[fnId] === body.user_id) {
+        return this._error(409, `Cannot revoke: user is the last holder of critical function ${fnId}`, 'LAST_HOLDER_CONFLICT')
+      }
+    }
+    return {
+      status: 200,
+      data: {
+        revoked: body.function_ids.length,
+        revoke_reason: reason,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  _handleAssignAccessGroup(body) {
+    if (!body || !body.agr_id) {
+      return this._error(400, 'agr_id required');
+    }
+    return {
+      status: 201,
+      data: {
+        agr_id: body.agr_id,
+        expires_at: body.expires_at || null,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  _handleAuditExport(body) {
+    if (!body || !body.format) {
+      return this._error(400, 'format required');
+    }
+    return {
+      status: 202,
+      data: {
+        job_id: `audit-export-${Date.now()}`,
+        format: body.format,
+        status: 'queued',
+      },
+    };
+  }
+
+  // ====== REPORTS HANDLERS ======
+
+  _handleTransfersByCentro(params) {
+    const segmento = params.segmento || 'Nacional'
+    const trimestre = params.trimestre || 'Q01_25'
+
+    const ALL_ROWS = [
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020086', menu: 'cliente_colgo',     opcion: 'SIN_OPCION', total_llamadas: 901808, porcentaje: 7.7450435, misma_linea:  78589, linea_diferente: 177548, no_digito_telefono: 645671 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020085', menu: 'cliente_colgo',     opcion: 'SIN_OPCION', total_llamadas: 754321, porcentaje: 6.4726150, misma_linea:  65230, linea_diferente: 148760, no_digito_telefono: 540331 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020010', menu: 'menu_principal',    opcion: 'OPCION_1',   total_llamadas: 612450, porcentaje: 5.2565218, misma_linea:  52100, linea_diferente: 121800, no_digito_telefono: 438550 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020011', menu: 'menu_principal',    opcion: 'OPCION_2',   total_llamadas: 540102, porcentaje: 4.6357680, misma_linea:  47220, linea_diferente: 110540, no_digito_telefono: 382342 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020015', menu: 'atencion_cliente',  opcion: 'OPCION_1',   total_llamadas: 489730, porcentaje: 4.2039080, misma_linea:  41800, linea_diferente:  98760, no_digito_telefono: 349170 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020020', menu: 'atencion_cliente',  opcion: 'OPCION_2',   total_llamadas: 423560, porcentaje: 3.6353600, misma_linea:  37100, linea_diferente:  86200, no_digito_telefono: 300260 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020030', menu: 'ventas',            opcion: 'OPCION_1',   total_llamadas: 381200, porcentaje: 3.2718400, misma_linea:  32800, linea_diferente:  77400, no_digito_telefono: 271000 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020031', menu: 'ventas',            opcion: 'OPCION_2',   total_llamadas: 354800, porcentaje: 3.0453700, misma_linea:  30500, linea_diferente:  72100, no_digito_telefono: 252200 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020040', menu: 'soporte_tecnico',   opcion: 'OPCION_1',   total_llamadas: 312440, porcentaje: 2.6817000, misma_linea:  27200, linea_diferente:  64100, no_digito_telefono: 221140 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020041', menu: 'soporte_tecnico',   opcion: 'OPCION_2',   total_llamadas: 287650, porcentaje: 2.4688000, misma_linea:  24900, linea_diferente:  58700, no_digito_telefono: 204050 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020050', menu: 'cobranza',          opcion: 'OPCION_1',   total_llamadas: 254300, porcentaje: 2.1827000, misma_linea:  21800, linea_diferente:  51900, no_digito_telefono: 180600 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020051', menu: 'cobranza',          opcion: 'OPCION_2',   total_llamadas: 231800, porcentaje: 1.9896000, misma_linea:  19900, linea_diferente:  47300, no_digito_telefono: 164600 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020060', menu: 'reclamaciones',     opcion: 'OPCION_1',   total_llamadas: 198450, porcentaje: 1.7033000, misma_linea:  17100, linea_diferente:  40500, no_digito_telefono: 140850 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020061', menu: 'reclamaciones',     opcion: 'OPCION_2',   total_llamadas: 175230, porcentaje: 1.5043000, misma_linea:  15100, linea_diferente:  35700, no_digito_telefono: 124430 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Nacional', centro_transferencia: '19020070', menu: 'informacion',       opcion: 'OPCION_1',   total_llamadas: 152100, porcentaje: 1.3056000, misma_linea:  13100, linea_diferente:  31000, no_digito_telefono: 108000 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Puebla',   centro_transferencia: '29020086', menu: 'cliente_colgo',     opcion: 'SIN_OPCION', total_llamadas: 120300, porcentaje: 8.1200000, misma_linea:  10400, linea_diferente:  24500, no_digito_telefono:  85400 },
+      { trimestre: 'Q01_25', fecha: '202503', '800_transfer': 'Puebla',   centro_transferencia: '29020085', menu: 'menu_principal',    opcion: 'OPCION_1',   total_llamadas:  98760, porcentaje: 6.6700000, misma_linea:   8540, linea_diferente:  20100, no_digito_telefono:  70120 },
+      { trimestre: 'Q02_25', fecha: '202506', '800_transfer': 'Nacional', centro_transferencia: '19020086', menu: 'cliente_colgo',     opcion: 'SIN_OPCION', total_llamadas: 934150, porcentaje: 7.9800000, misma_linea:  81200, linea_diferente: 183600, no_digito_telefono: 669350 },
+      { trimestre: 'Q02_25', fecha: '202506', '800_transfer': 'Nacional', centro_transferencia: '19020085', menu: 'cliente_colgo',     opcion: 'SIN_OPCION', total_llamadas: 780100, porcentaje: 6.6700000, misma_linea:  67500, linea_diferente: 153900, no_digito_telefono: 558700 },
+      { trimestre: 'Q03_25', fecha: '202509', '800_transfer': 'Nacional', centro_transferencia: '19020086', menu: 'cliente_colgo',     opcion: 'SIN_OPCION', total_llamadas: 960200, porcentaje: 8.1300000, misma_linea:  83400, linea_diferente: 188600, no_digito_telefono: 688200 },
+    ]
+
+    const rows = ALL_ROWS.filter(
+      (r) => r['800_transfer'] === segmento && r.trimestre === trimestre
+    )
+
+    return {
+      status: 200,
+      data: rows,
+    }
+  }
+
+  _handleIvrMenus(params) {
+    const seg = (params.segmento  || 'Nacional')
+    const tri = (params.trimestre || 'Q01_25')
+
+    const ALL = [
+      // Nacional Q01_25
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',               promedio_llamadas:1.82, min_llamadas_x_cliente:1, max_llamadas_x_cliente:7320,  total_llamadas:2507905 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-FALLAINTERNET',            promedio_llamadas:1.62, min_llamadas_x_cliente:1, max_llamadas_x_cliente:7274,  total_llamadas:1650078 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',            promedio_llamadas:2.27, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4392,  total_llamadas:1514344 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'NOTMX-SEGUIMIENTOINSTALACION', promedio_llamadas:2.03, min_llamadas_x_cliente:1, max_llamadas_x_cliente:15869, total_llamadas:1107914 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'VACIO',                        promedio_llamadas:1.42, min_llamadas_x_cliente:1, max_llamadas_x_cliente:10151, total_llamadas:894019  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-MADT-DETALLE',             promedio_llamadas:1.56, min_llamadas_x_cliente:1, max_llamadas_x_cliente:8439,  total_llamadas:538633  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-SALDOOPAGOS',              promedio_llamadas:1.94, min_llamadas_x_cliente:1, max_llamadas_x_cliente:862,   total_llamadas:481015  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'SINOPCION_CABECERA',           promedio_llamadas:1.24, min_llamadas_x_cliente:1, max_llamadas_x_cliente:2186,  total_llamadas:362598  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'DESBORDE_PROMOCIONAL',         promedio_llamadas:1.68, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3663,  total_llamadas:337120  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-FALLASLINEA',              promedio_llamadas:1.36, min_llamadas_x_cliente:1, max_llamadas_x_cliente:2687,  total_llamadas:333585  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'NOTMX-CONT-CONTRATACION',      promedio_llamadas:1.51, min_llamadas_x_cliente:1, max_llamadas_x_cliente:6622,  total_llamadas:296202  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'MARQUE3',                      promedio_llamadas:1.29, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3966,  total_llamadas:231828  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'NOTMX-CONT-PORTABILIDAD',      promedio_llamadas:1.41, min_llamadas_x_cliente:1, max_llamadas_x_cliente:11217, total_llamadas:154569  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-FALLASEGQJA',              promedio_llamadas:1.30, min_llamadas_x_cliente:1, max_llamadas_x_cliente:812,   total_llamadas:118325  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-SALDOS-WT',                promedio_llamadas:1.16, min_llamadas_x_cliente:1, max_llamadas_x_cliente:1326,  total_llamadas:102885  },
+      // Puebla Q01_25
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',               promedio_llamadas:1.73, min_llamadas_x_cliente:1, max_llamadas_x_cliente:322,   total_llamadas:117215  },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'RES-FALLAS_2024',             promedio_llamadas:1.67, min_llamadas_x_cliente:1, max_llamadas_x_cliente:112,   total_llamadas:109507  },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'RES-CONTRATACIONINFINITUM_2024', promedio_llamadas:1.73, min_llamadas_x_cliente:1, max_llamadas_x_cliente:184, total_llamadas:63613  },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'NOTMX-SEGUIMIENTOINSTALACION',promedio_llamadas:1.81, min_llamadas_x_cliente:1, max_llamadas_x_cliente:41,   total_llamadas:40515   },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'RES-SALDOSPAGOS_2024',        promedio_llamadas:1.73, min_llamadas_x_cliente:1, max_llamadas_x_cliente:64,   total_llamadas:39401   },
+      // Nacional Q02_25
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',               promedio_llamadas:1.75, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4196,  total_llamadas:2752431 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',           promedio_llamadas:2.26, min_llamadas_x_cliente:1, max_llamadas_x_cliente:2532,  total_llamadas:1882586 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'NOTMX-SEGUIMIENTOINSTALACION',promedio_llamadas:1.97, min_llamadas_x_cliente:1, max_llamadas_x_cliente:2268,  total_llamadas:1231529 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'RES-FALLAINTERNET',           promedio_llamadas:1.49, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4925,  total_llamadas:1126836 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'VACIO',                       promedio_llamadas:1.44, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3949,  total_llamadas:1117580 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'RES_FALLA_STOP',              promedio_llamadas:1.70, min_llamadas_x_cliente:1, max_llamadas_x_cliente:576,   total_llamadas:802032  },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'RES-MADT-DETALLE',            promedio_llamadas:1.52, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4968,  total_llamadas:529478  },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'RES-SALDOOPAGOS',             promedio_llamadas:1.64, min_llamadas_x_cliente:1, max_llamadas_x_cliente:458,   total_llamadas:438310  },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'SINOPCION_CABECERA',          promedio_llamadas:1.22, min_llamadas_x_cliente:1, max_llamadas_x_cliente:383,   total_llamadas:418662  },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'DESBORDE_PROMOCIONAL',        promedio_llamadas:1.72, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3669,  total_llamadas:381962  },
+      // Puebla Q02_25
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'DESBORDE_CABECERA',           promedio_llamadas:1.79, min_llamadas_x_cliente:1, max_llamadas_x_cliente:243,   total_llamadas:136984  },
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',               promedio_llamadas:1.55, min_llamadas_x_cliente:1, max_llamadas_x_cliente:278,   total_llamadas:122636  },
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'RES-FALLAS_2024',             promedio_llamadas:1.46, min_llamadas_x_cliente:1, max_llamadas_x_cliente:322,   total_llamadas:87741   },
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'RES-CONTRATACIONINFINITUM_2024', promedio_llamadas:1.73, min_llamadas_x_cliente:1, max_llamadas_x_cliente:256, total_llamadas:69076  },
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'RES_FALLA_STOP',              promedio_llamadas:1.55, min_llamadas_x_cliente:1, max_llamadas_x_cliente:37,   total_llamadas:60916   },
+      // Nacional Q03_25
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',               promedio_llamadas:1.67, min_llamadas_x_cliente:1, max_llamadas_x_cliente:5595,  total_llamadas:1509164 },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',           promedio_llamadas:2.54, min_llamadas_x_cliente:1, max_llamadas_x_cliente:752,   total_llamadas:1169335 },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'NOTMX-SEGUIMIENTOINSTALACION',promedio_llamadas:1.99, min_llamadas_x_cliente:1, max_llamadas_x_cliente:1940,  total_llamadas:859797  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'RES_FALLA_STOP',              promedio_llamadas:1.61, min_llamadas_x_cliente:1, max_llamadas_x_cliente:461,   total_llamadas:769015  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'VACIO',                       promedio_llamadas:1.47, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3317,  total_llamadas:767918  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'RES-FALLAINTERNET',           promedio_llamadas:1.56, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4367,  total_llamadas:517926  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'RES-MADT-DETALLE',            promedio_llamadas:1.60, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4573,  total_llamadas:404483  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'SINOPCION_CABECERA',          promedio_llamadas:1.28, min_llamadas_x_cliente:1, max_llamadas_x_cliente:331,   total_llamadas:326376  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'RES-SALDOOPAGOS',             promedio_llamadas:1.82, min_llamadas_x_cliente:1, max_llamadas_x_cliente:494,   total_llamadas:319869  },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'DESBORDE_PROMOCIONAL',        promedio_llamadas:1.72, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3074,  total_llamadas:263180  },
+      // Puebla Q03_25
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'NUMERO TELMEX',               promedio_llamadas:1.66, min_llamadas_x_cliente:1, max_llamadas_x_cliente:43,   total_llamadas:52010   },
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'DESBORDE_CABECERA',           promedio_llamadas:1.87, min_llamadas_x_cliente:1, max_llamadas_x_cliente:41,   total_llamadas:40896   },
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',               promedio_llamadas:1.33, min_llamadas_x_cliente:1, max_llamadas_x_cliente:131,  total_llamadas:39331   },
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'RES_FALLA_STOP',              promedio_llamadas:1.51, min_llamadas_x_cliente:1, max_llamadas_x_cliente:28,   total_llamadas:36932   },
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'RES-CONTRATACIONINFINITUM_2024', promedio_llamadas:1.58, min_llamadas_x_cliente:1, max_llamadas_x_cliente:110, total_llamadas:35754 },
+    ]
+
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
+    return { status: 200, data: rows }
+  }
+
+  _handleUniqueClients(params) {
+    const ALL = [
+      { trimestre: 'Q01_25', segmento: 'Nacional_B', clientes_unicos: 3056531 },
+      { trimestre: 'Q01_25', segmento: 'Puebla',     clientes_unicos: 155507  },
+      { trimestre: 'Q02_25', segmento: 'Nacional_B', clientes_unicos: 1234307 },
+      { trimestre: 'Q02_25', segmento: 'Puebla',     clientes_unicos: 266185  },
+      { trimestre: 'Q02_25', segmento: 'Nacional_A', clientes_unicos: 2440333 },
+      { trimestre: 'Q03_25', segmento: 'Nacional_B', clientes_unicos: 36756   },
+      { trimestre: 'Q03_25', segmento: 'Puebla',     clientes_unicos: 132377  },
+      { trimestre: 'Q03_25', segmento: 'Nacional_A', clientes_unicos: 2296002 },
+    ]
+    const rows = ALL.filter((r) => {
+      if (params.trimestre && r.trimestre !== params.trimestre) return false
+      if (params.segmento  && r.segmento  !== params.segmento)  return false
+      return true
+    })
+    return { status: 200, data: rows }
+  }
+
+  _handleAgentsReport(params) {
+    const tri = params.trimestre || 'Q01_25'
+    const seg = params.segmento  || 'Nacional'
+    const ALL = [
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.82, min_llamadas_x_cliente:1, max_llamadas_x_cliente:7320,  total_llamadas:2507905 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',      promedio_llamadas:2.01, min_llamadas_x_cliente:1, max_llamadas_x_cliente:5103,  total_llamadas:1514344 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'VACIO',                  promedio_llamadas:1.47, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3317,  total_llamadas:1013259 },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-FALLAINTERNET',      promedio_llamadas:1.56, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4367,  total_llamadas:806020  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-MADT-DETALLE',       promedio_llamadas:1.60, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4573,  total_llamadas:721424  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'SINOPCION_CABECERA',     promedio_llamadas:1.28, min_llamadas_x_cliente:1, max_llamadas_x_cliente:331,   total_llamadas:596843  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'RES-SALDOOPAGOS',        promedio_llamadas:1.82, min_llamadas_x_cliente:1, max_llamadas_x_cliente:494,   total_llamadas:481621  },
+      { trimestre:'Q01_25', segmento:'Nacional', cMenu:'DESBORDE_PROMOCIONAL',   promedio_llamadas:1.72, min_llamadas_x_cliente:1, max_llamadas_x_cliente:3074,  total_llamadas:341839  },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'NUMERO TELMEX',          promedio_llamadas:1.66, min_llamadas_x_cliente:1, max_llamadas_x_cliente:43,   total_llamadas:52010   },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'DESBORDE_CABECERA',      promedio_llamadas:1.87, min_llamadas_x_cliente:1, max_llamadas_x_cliente:41,   total_llamadas:40896   },
+      { trimestre:'Q01_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.33, min_llamadas_x_cliente:1, max_llamadas_x_cliente:131,  total_llamadas:39331   },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.79, min_llamadas_x_cliente:1, max_llamadas_x_cliente:6990,  total_llamadas:2350120 },
+      { trimestre:'Q02_25', segmento:'Nacional', cMenu:'DESBORDE_CABECERA',      promedio_llamadas:1.98, min_llamadas_x_cliente:1, max_llamadas_x_cliente:4800,  total_llamadas:1420000 },
+      { trimestre:'Q02_25', segmento:'Puebla',   cMenu:'NUMERO TELMEX',          promedio_llamadas:1.62, min_llamadas_x_cliente:1, max_llamadas_x_cliente:38,   total_llamadas:48500   },
+      { trimestre:'Q03_25', segmento:'Nacional', cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.85, min_llamadas_x_cliente:1, max_llamadas_x_cliente:7100,  total_llamadas:2480000 },
+      { trimestre:'Q03_25', segmento:'Puebla',   cMenu:'CLIENTE_COLGO',          promedio_llamadas:1.35, min_llamadas_x_cliente:1, max_llamadas_x_cliente:125,  total_llamadas:37200   },
+    ]
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
+    return { status: 200, data: rows }
+  }
+
+  _handleQueuesReport(params) {
+    const tri = params.trimestre || 'Q01_25'
+    const seg = params.segmento  || 'Nacional'
+    const ALL = [
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020086', total_llamadas:901808,  misma_linea:78589,  linea_diferente:177548, no_digito_telefono:645671 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020032', total_llamadas:756432,  misma_linea:65210,  linea_diferente:148320, no_digito_telefono:542902 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020018', total_llamadas:612877,  misma_linea:54100,  linea_diferente:122400, no_digito_telefono:436377 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020051', total_llamadas:489230,  misma_linea:43500,  linea_diferente:96800,  no_digito_telefono:348930 },
+      { trimestre:'Q01_25', segmento:'Nacional', centro_transferencia:'19020074', total_llamadas:378910,  misma_linea:34200,  linea_diferente:74500,  no_digito_telefono:270210 },
+      { trimestre:'Q01_25', segmento:'Puebla',   centro_transferencia:'22020011', total_llamadas:98450,   misma_linea:9200,   linea_diferente:19800,  no_digito_telefono:69450  },
+      { trimestre:'Q01_25', segmento:'Puebla',   centro_transferencia:'22020025', total_llamadas:75320,   misma_linea:6800,   linea_diferente:15200,  no_digito_telefono:53320  },
+      { trimestre:'Q02_25', segmento:'Nacional', centro_transferencia:'19020086', total_llamadas:880000,  misma_linea:75000,  linea_diferente:172000, no_digito_telefono:633000 },
+      { trimestre:'Q02_25', segmento:'Nacional', centro_transferencia:'19020032', total_llamadas:740000,  misma_linea:63000,  linea_diferente:145000, no_digito_telefono:532000 },
+      { trimestre:'Q02_25', segmento:'Puebla',   centro_transferencia:'22020011', total_llamadas:95000,   misma_linea:8900,   linea_diferente:19000,  no_digito_telefono:67100  },
+      { trimestre:'Q03_25', segmento:'Nacional', centro_transferencia:'19020086', total_llamadas:860000,  misma_linea:73000,  linea_diferente:168000, no_digito_telefono:619000 },
+      { trimestre:'Q03_25', segmento:'Puebla',   centro_transferencia:'22020011', total_llamadas:92000,   misma_linea:8600,   linea_diferente:18500,  no_digito_telefono:64900  },
+    ]
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
+    return { status: 200, data: rows }
+  }
+
+  _handleCampaignsReport(params) {
+    const tri = params.trimestre || 'Q01_25'
+    const seg = params.segmento  || 'Nacional'
+    const ALL = [
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:312450, promedio_llamadas:2.14 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'NOTMX-CONT-PORTABILIDAD',     total_llamadas:187320, promedio_llamadas:1.98 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'RES-CONTRATACIONINFINITUM',   total_llamadas:145600, promedio_llamadas:2.31 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'DESBORDE_PROMOCIONAL',        total_llamadas:341839, promedio_llamadas:1.72 },
+      { trimestre:'Q01_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION_B2B', total_llamadas:89200,  promedio_llamadas:2.45 },
+      { trimestre:'Q01_25', segmento:'Puebla',   campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:28500,  promedio_llamadas:1.87 },
+      { trimestre:'Q01_25', segmento:'Puebla',   campana:'RES-CONTRATACIONINFINITUM_2024', total_llamadas:35754, promedio_llamadas:1.58 },
+      { trimestre:'Q02_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:298700, promedio_llamadas:2.08 },
+      { trimestre:'Q02_25', segmento:'Nacional', campana:'NOTMX-CONT-PORTABILIDAD',     total_llamadas:178400, promedio_llamadas:1.91 },
+      { trimestre:'Q02_25', segmento:'Puebla',   campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:26800,  promedio_llamadas:1.82 },
+      { trimestre:'Q03_25', segmento:'Nacional', campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:285000, promedio_llamadas:2.01 },
+      { trimestre:'Q03_25', segmento:'Nacional', campana:'NOTMX-CONT-PORTABILIDAD',     total_llamadas:170000, promedio_llamadas:1.88 },
+      { trimestre:'Q03_25', segmento:'Puebla',   campana:'NOTMX-CONT-CONTRATACION',     total_llamadas:24500,  promedio_llamadas:1.75 },
+    ]
+    const rows = ALL.filter((r) => r.segmento === seg && r.trimestre === tri)
+    return { status: 200, data: rows }
+  }
+
+  _handleReportHistory(params) {
+    const periodo = params.periodo || 'last_7d'
+    const seg = params.segmento || ''
+    const ALL = [
+      { periodo: 'last_7d',  segmento: 'Nacional', dimension: 'menu',     total_llamadas: 88500,  fecha_inicio: '2026-04-29', fecha_fin: '2026-05-06' },
+      { periodo: 'last_7d',  segmento: 'Nacional', dimension: 'campana',  total_llamadas: 42300,  fecha_inicio: '2026-04-29', fecha_fin: '2026-05-06' },
+      { periodo: 'last_7d',  segmento: 'Puebla',   dimension: 'menu',     total_llamadas: 9200,   fecha_inicio: '2026-04-29', fecha_fin: '2026-05-06' },
+      { periodo: 'last_30d', segmento: 'Nacional', dimension: 'menu',     total_llamadas: 362000, fecha_inicio: '2026-04-06', fecha_fin: '2026-05-06' },
+      { periodo: 'last_30d', segmento: 'Nacional', dimension: 'campana',  total_llamadas: 178500, fecha_inicio: '2026-04-06', fecha_fin: '2026-05-06' },
+      { periodo: 'last_30d', segmento: 'Puebla',   dimension: 'menu',     total_llamadas: 38900,  fecha_inicio: '2026-04-06', fecha_fin: '2026-05-06' },
+      { periodo: 'last_24h', segmento: 'Nacional', dimension: 'menu',     total_llamadas: 12800,  fecha_inicio: '2026-05-05', fecha_fin: '2026-05-06' },
+      { periodo: 'last_90d', segmento: 'Nacional', dimension: 'menu',     total_llamadas: 1020000, fecha_inicio: '2026-02-05', fecha_fin: '2026-05-06' },
+      { periodo: 'year-to-date', segmento: 'Nacional', dimension: 'menu', total_llamadas: 2507905, fecha_inicio: '2026-01-01', fecha_fin: '2026-05-06' },
+    ]
+    const rows = ALL.filter((r) =>
+      r.periodo === periodo && (seg === '' || r.segmento === seg)
+    )
+    return { status: 200, data: rows }
+  }
+
+  // ====== REPORTS — SAVED VIEWS HANDLER (UC-RPT-10) ======
+
+  _handleSavedViews(method, url) {
+    const VIEWS = [
+      { id: 1, name: 'Agentes Nacional Q01_25',  report_type: 'agents',    filters: { segmento: 'Nacional', trimestre: 'Q01_25' }, created_at: '2026-01-15T10:00:00Z' },
+      { id: 2, name: 'Colas Puebla Q01_25',       report_type: 'queues',    filters: { segmento: 'Puebla',   trimestre: 'Q01_25' }, created_at: '2026-02-01T08:30:00Z' },
+      { id: 3, name: 'Campañas Nacional Q02_25',  report_type: 'campaigns', filters: { segmento: 'Nacional', trimestre: 'Q02_25' }, created_at: '2026-03-10T14:00:00Z' },
+    ]
+    if (method === 'GET') {
+      return { status: 200, data: { results: VIEWS, count: VIEWS.length } }
+    }
+    if (method === 'DELETE') {
+      const id = parseInt(url.split('/').filter(Boolean).pop(), 10)
+      return { status: 204, data: null }
+    }
+    return this._error(405, 'Method not allowed')
+  }
+
+  // ====== ADMIN — RBAC CATALOG HANDLERS (ITER-C: GET only) ======
+
+  _handleAdminFunctions(url, method, body) {
+    if (method === 'POST') {
+      if (!body || !body.codename || !body.name) {
+        return this._error(400, 'codename and name are required')
+      }
+      const existing = this._handleAdminFunctions(url, 'GET', null).data
+      if (existing.some(f => f.codename === body.codename)) {
+        return { status: 409, data: { error: 'Codename ya existe', code: 'DUPLICATE_CODENAME' } }
+      }
+      return {
+        status: 201,
+        data: {
+          id: Math.floor(Math.random() * 900) + 100,
+          codename: body.codename,
+          name: body.name,
+          description: body.description || '',
+          domain: body.domain || '',
+          active: true,
+        },
+      }
+    }
+    if (method === 'PATCH') {
+      if (body?.active === false) {
+        const CODENAMES_WITH_ASSIGNMENTS = ['pipeline:execute', 'users:manage', 'access:assign']
+        const id = parseInt(url.match(/\/api\/admin\/functions\/(\d+)\//)?.[1], 10)
+        const all = this._handleAdminFunctions(url, 'GET', null).data
+        const fn = all.find(f => f.id === id)
+        if (fn && CODENAMES_WITH_ASSIGNMENTS.includes(fn.codename)) {
+          return {
+            status: 202,
+            data: { id, codename: fn.codename, active: false, warnings: ['function_has_active_assignments'], affected_users: 3 },
+          }
+        }
+      }
+      return {
+        status: 200,
+        data: { ...body, active: body.active !== false },
+      }
+    }
+    if (method !== 'GET') {
+      return this._error(405, 'Method not allowed')
+    }
+    const FUNCTIONS = [
+      // MOD_Pipeline (8)
+      { id:  1, codename: 'pipeline:view_status',  name: 'Ver estado del pipeline',         domain: 'pipeline', active: true },
+      { id:  2, codename: 'pipeline:execute',      name: 'Ejecutar pipeline',               domain: 'pipeline', active: true },
+      { id:  3, codename: 'pipeline:stop',         name: 'Detener pipeline',                domain: 'pipeline', active: true },
+      { id:  4, codename: 'pipeline:request',      name: 'Solicitar ejecución',             domain: 'pipeline', active: true },
+      { id:  5, codename: 'pipeline:view_data',    name: 'Ver datos del pipeline',          domain: 'pipeline', active: true },
+      { id:  6, codename: 'pipeline:view_logs',    name: 'Ver logs del pipeline',           domain: 'pipeline', active: true },
+      { id:  7, codename: 'pipeline:view_errors',  name: 'Ver errores del pipeline',        domain: 'pipeline', active: true },
+      { id:  8, codename: 'pipeline:availability', name: 'Ver disponibilidad de datos',     domain: 'pipeline', active: true },
+      // MOD_Users (10)
+      { id:  9, codename: 'users:view',            name: 'Ver usuarios',                    domain: 'users',    active: true },
+      { id: 10, codename: 'users:manage',          name: 'Gestionar usuarios',              domain: 'users',    active: true },
+      { id: 11, codename: 'users:create',          name: 'Crear usuarios',                  domain: 'users',    active: true },
+      { id: 12, codename: 'users:edit',            name: 'Editar usuarios',                 domain: 'users',    active: true },
+      { id: 13, codename: 'users:delete',          name: 'Eliminar usuarios',               domain: 'users',    active: true },
+      { id: 14, codename: 'users:list',            name: 'Listar usuarios',                 domain: 'users',    active: true },
+      { id: 15, codename: 'users:search',          name: 'Buscar usuarios',                 domain: 'users',    active: true },
+      { id: 16, codename: 'users:block',           name: 'Bloquear usuarios',               domain: 'users',    active: true },
+      { id: 17, codename: 'users:unblock',         name: 'Desbloquear usuarios',            domain: 'users',    active: true },
+      { id: 18, codename: 'users:reactivate',      name: 'Reactivar usuarios',              domain: 'users',    active: true },
+      // MOD_Access (12)
+      { id: 19, codename: 'access:view',           name: 'Ver asignaciones',                domain: 'access',   active: true },
+      { id: 20, codename: 'access:assign',         name: 'Asignar funciones',               domain: 'access',   active: true },
+      { id: 21, codename: 'access:assign_function',name: 'Asignar función individual',      domain: 'access',   active: true },
+      { id: 22, codename: 'access:revoke_function',name: 'Revocar función individual',      domain: 'access',   active: true },
+      { id: 23, codename: 'access:revoke_group',   name: 'Revocar grupo de funciones',      domain: 'access',   active: true },
+      { id: 24, codename: 'access:grant_exceptional',name:'Otorgar permiso excepcional',    domain: 'access',   active: true },
+      { id: 25, codename: 'access:revoke',         name: 'Revocar funciones',               domain: 'access',   active: true },
+      { id: 26, codename: 'access:assign_group',   name: 'Asignar grupo de funciones',      domain: 'access',   active: true },
+      { id: 27, codename: 'access:assign_to_group',name: 'Agregar usuario a grupo',         domain: 'access',   active: true },
+      { id: 28, codename: 'access:update_separation_rule',  name: 'Actualizar regla de separación',  domain: 'access',   active: true },
+      { id: 29, codename: 'access:disable_separation_rule', name: 'Desactivar regla de separación',  domain: 'access',   active: true },
+      { id: 30, codename: 'access:revoke_exceptional', name: 'Revocar permiso excepcional', domain: 'access',   active: true },
+      // MOD_Audit (4)
+      { id: 31, codename: 'audit:view',            name: 'Ver log de auditoría',            domain: 'audit',    active: true },
+      { id: 32, codename: 'audit:search',          name: 'Buscar en auditoría',             domain: 'audit',    active: true },
+      { id: 33, codename: 'audit:export',          name: 'Exportar auditoría',              domain: 'audit',    active: true },
+      { id: 34, codename: 'audit:compliance',      name: 'Generar reporte de cumplimiento', domain: 'audit',    active: true },
+      // MOD_Alerts (10)
+      { id: 35, codename: 'alerts:view',           name: 'Ver alertas',                     domain: 'alerts',   active: true },
+      { id: 36, codename: 'alerts:configure',      name: 'Configurar alertas',              domain: 'alerts',   active: true },
+      { id: 37, codename: 'alerts:config_team',    name: 'Configurar alertas de equipo',    domain: 'alerts',   active: true },
+      { id: 38, codename: 'alerts:pause',          name: 'Pausar alertas',                  domain: 'alerts',   active: true },
+      { id: 39, codename: 'alerts:disable',        name: 'Deshabilitar alertas',            domain: 'alerts',   active: true },
+      { id: 40, codename: 'alerts:history',        name: 'Ver historial de alertas',        domain: 'alerts',   active: true },
+      { id: 41, codename: 'alerts:acknowledge',    name: 'Reconocer alerta',                domain: 'alerts',   active: true },
+      { id: 42, codename: 'alerts:subscribe',      name: 'Suscribirse a alertas',           domain: 'alerts',   active: true },
+      { id: 43, codename: 'alerts:unsubscribe',    name: 'Desuscribirse de alertas',        domain: 'alerts',   active: true },
+      { id: 44, codename: 'alerts:config_severity',name: 'Configurar severidad de alertas', domain: 'alerts',   active: true },
+      // MOD_Reports (4)
+      { id: 45, codename: 'reports:dashboard',     name: 'Ver dashboard',                   domain: 'reports',  active: true },
+      { id: 46, codename: 'reports:view',          name: 'Ver reportes',                    domain: 'reports',  active: true },
+      { id: 47, codename: 'reports:kpis',          name: 'Ver KPIs',                        domain: 'reports',  active: true },
+      { id: 48, codename: 'reports:export',        name: 'Exportar reportes',               domain: 'reports',  active: true },
+      // MOD_Logs (5)
+      { id: 49, codename: 'logs:view_app',         name: 'Ver logs de aplicación',          domain: 'logs',     active: true },
+      { id: 50, codename: 'logs:view_etl',         name: 'Ver logs ETL/pipeline',           domain: 'logs',     active: true },
+      { id: 51, codename: 'logs:view_infra',       name: 'Ver logs de infraestructura',     domain: 'logs',     active: true },
+      { id: 52, codename: 'logs:view_health',      name: 'Ver salud del sistema',           domain: 'logs',     active: true },
+      { id: 53, codename: 'logs:view_metrics',     name: 'Ver métricas técnicas',           domain: 'logs',     active: true },
+      // MOD_Auth (5)
+      { id: 54, codename: 'auth:view_own_sessions',name: 'Ver sesiones propias',            domain: 'auth',     active: true },
+      { id: 55, codename: 'auth:manage_sessions',  name: 'Gestionar sesiones',              domain: 'auth',     active: true },
+      { id: 56, codename: 'auth:view_all_sessions',name: 'Ver todas las sesiones',          domain: 'auth',     active: true },
+      { id: 57, codename: 'auth:close_session',    name: 'Cerrar sesión de usuario',        domain: 'auth',     active: true },
+      { id: 58, codename: 'auth:reset_password',   name: 'Resetear contraseña',             domain: 'auth',     active: true },
+      // MOD_Admin (9)
+      { id: 59, codename: 'adm:manage_menu',       name: 'Gestionar menú',                  domain: 'admin',    active: true },
+      { id: 60, codename: 'adm:manage_catalog',    name: 'Gestionar catálogo RBAC',         domain: 'admin',    active: true },
+      { id: 61, codename: 'adm:manage_functions',  name: 'Gestionar funciones RBAC',        domain: 'admin',    active: true },
+      { id: 62, codename: 'adm:manage_groups',     name: 'Gestionar grupos RBAC',           domain: 'admin',    active: true },
+      { id: 63, codename: 'adm:view_system',       name: 'Ver configuración del sistema',   domain: 'admin',    active: true },
+      { id: 64, codename: 'adm:manage_menu_catalog',name:'Gestionar catálogo de menú',      domain: 'admin',    active: true },
+      { id: 65, codename: 'adm:manage_menu_lifecycle',name:'Gestionar ciclo de vida menú',  domain: 'admin',    active: true },
+      { id: 66, codename: 'adm:manage_is_critical',name: 'Gestionar criticidad de menú',   domain: 'admin',    active: true },
+      { id: 67, codename: 'adm:create_separation_rule',     name: 'Crear regla de separación',       domain: 'admin',    active: true },
+    ]
+    return { status: 200, data: { results: FUNCTIONS, count: FUNCTIONS.length } }
+  }
+
+  _handleAdminAGR(method, body) {
+    if (method === 'POST') {
+      if (!body || !body.codename || !body.name) {
+        return this._error(400, 'codename and name are required')
+      }
+      return {
+        status: 201,
+        data: {
+          id: Math.floor(Math.random() * 900) + 100,
+          codename: body.codename,
+          name: body.name,
+          description: body.description || '',
+          functions_count: 0,
+          active: true,
+        },
+      }
+    }
+    if (method === 'PATCH') {
+      return {
+        status: 200,
+        data: { ...body },
+      }
+    }
+    if (method !== 'GET') {
+      return this._error(405, 'Method not allowed')
+    }
+    const AGRS = [
+      { id:  1, codename: 'basic_operator_group',      name: 'Operador Básico',           description: 'Operador básico de call center',       functions_count: 6,  active: true, is_system: true },
+      { id:  2, codename: 'report_viewer_group',        name: 'Visualizador de Reportes',  description: 'Visualizador de reportes IVR',         functions_count: 8,  active: true, is_system: true },
+      { id:  3, codename: 'quality_supervisor_group',   name: 'Supervisor de Calidad',     description: 'Supervisor de calidad',                functions_count: 11, active: true, is_system: true },
+      { id:  4, codename: 'data_exporter_group',        name: 'Exportador de Datos',       description: 'Exportador de datos y reportes',       functions_count: 14, active: true, is_system: true },
+      { id:  5, codename: 'alert_manager_group',        name: 'Gestor de Alertas',         description: 'Gestor de alertas y notificaciones',   functions_count: 6,  active: true, is_system: true },
+      { id:  6, codename: 'user_admin_group',           name: 'Admin de Usuarios',         description: 'Administrador de usuarios',            functions_count: 9,  active: true, is_system: true },
+      { id:  7, codename: 'permission_admin_group',     name: 'Admin de Permisos',         description: 'Administrador de permisos',            functions_count: 5,  active: true, is_system: true },
+      { id:  8, codename: 'auditor_group',              name: 'Auditor',                   description: 'Auditor de cumplimiento',              functions_count: 4,  active: true, is_system: true },
+      { id:  9, codename: 'pipeline_admin_group',       name: 'Admin de Pipeline',         description: 'Administrador de pipelines ETL',       functions_count: 4,  active: true, is_system: true },
+      { id: 10, codename: 'system_admin_group',         name: 'Admin del Sistema',         description: 'Administrador del sistema RBAC',       functions_count: 9,  active: true, is_system: true },
+      { id: 20, codename: 'custom_user_group',          name: 'Grupo de Usuario Custom',   description: 'Grupo definido por usuario',           functions_count: 0,  active: true, is_system: false },
+    ]
+    return { status: 200, data: { results: AGRS, count: AGRS.length } }
+  }
+
+  _handleGrantExceptionalPermission(url, body) {
+    const match = url.match(/\/api\/users\/(\d+)\/exceptional-permissions\//);
+    const targetUserId = match ? parseInt(match[1], 10) : null;
+
+    if (!body || !body.justification || body.justification.trim().length === 0) {
+      return this._error(422, 'justification is required');
+    }
+    if (body.justification.trim().length < 20) {
+      return this._error(422, 'justification must be at least 20 characters', 'JUSTIFICATION_TOO_SHORT');
+    }
+    if (!body.expires_at) {
+      return this._error(422, 'expires_at is required');
+    }
+    if (new Date(body.expires_at) <= new Date()) {
+      return this._error(400, 'expires_at must be in the future', 'EXPIRES_AT_IN_PAST');
+    }
+    // Anti-self P-11: detected via invoker_id in body (set by frontend)
+    if (body.invoker_id && body.invoker_id === targetUserId) {
+      return this._error(403, 'Cannot grant exceptional permission to yourself (P-11 anti-self)');
+    }
+
+    return {
+      status: 201,
+      data: {
+        id: Date.now(),
+        user_id: targetUserId,
+        permission_code: body.permission_code || null,
+        justification: body.justification,
+        expires_at: body.expires_at,
+        granted_at: new Date().toISOString(),
+        granted_by: body.invoker_id || 'current-user',
+        supervisor_notified: true,
+        audit_event: 'EXCEPTIONAL_PERMISSION_GRANTED',
+      },
+    };
+  }
+
+  _handleListExceptionalPermissions(url) {
+    const match = url.match(/\/api\/users\/(\d+)\/exceptional-permissions\//);
+    const userId = match ? parseInt(match[1], 10) : null;
+    return {
+      status: 200,
+      data: [
+        {
+          id: 1001,
+          user_id: userId,
+          permission_code: 'access:assign_function_groups',
+          justification: 'Cobertura temporal por ausencia del responsable de acceso.',
+          expires_at: '2026-06-01T23:59:00.000Z',
+          granted_at: '2026-05-01T10:00:00.000Z',
+          granted_by: 'admin.sistema',
+          supervisor_notified: true,
+        },
+        {
+          id: 1002,
+          user_id: userId,
+          permission_code: 'audit:export',
+          justification: 'Acceso temporal para auditoría de Q1.',
+          expires_at: '2026-05-20T18:00:00.000Z',
+          granted_at: '2026-05-05T09:00:00.000Z',
+          granted_by: 'admin.sistema',
+          supervisor_notified: true,
+        },
+      ],
+    };
+  }
+
+  _handleValidateGroupAssignment(body) {
+    // Simula SOFT conflict si user_id termina en '9' para facilitar pruebas
+    const userId = String(body?.user_id || '');
+    if (userId.endsWith('9')) {
+      return {
+        status: 200,
+        data: {
+          valid: false,
+          conflicts: [{
+            rule: 'SR-003',
+            severity: 'SOFT',
+            message: 'El grupo incluye funciones de acceso que pueden solapar con funciones de auditoría ya asignadas.',
+            setA: ['access:assign'],
+            setB: ['audit:view'],
+          }],
+        },
+      };
+    }
+    return { status: 200, data: { valid: true, conflicts: [] } };
+  }
+
+  _handleGroupCascadeImpact(url) {
+    const params = url.includes('add_function_ids=') ? url.split('add_function_ids=')[1] : '';
+    const functionCount = params ? params.split(',').length : 0;
+    return {
+      status: 200,
+      data: {
+        cascade_affected_user_count: functionCount > 0 ? 2 : 0,
+        conflicts: [],
+      },
+    };
+  }
+
+  _handleValidateSeparationRules(body) {
+    const functionIds = body?.function_ids || [];
+    if (functionIds.length === 0) {
+      return { status: 200, data: { valid: true, conflicts: [] } };
+    }
+    return { status: 200, data: { valid: true, conflicts: [] } };
+  }
+
+  _separationRulesData() {
+    return [
+      { id: 1, code: 'SR-001', name: 'Pipeline vs Auditoría',  description: 'Quien ejecuta pipelines no puede auditarlos', group_a: ['pipeline:view_status', 'pipeline:view_data', 'pipeline:request'], group_b: ['audit:view', 'audit:search', 'audit:export', 'audit:compliance'], isActive: true, violations: 0 },
+      { id: 2, code: 'SR-002', name: 'Usuarios vs Auditoría',  description: 'Quien gestiona usuarios no puede auditarlos',  group_a: ['users:manage', 'users:create', 'users:edit'],                       group_b: ['audit:view', 'audit:search', 'audit:export'],                      isActive: true, violations: 0 },
+      { id: 3, code: 'SR-003', name: 'Acceso vs Auditoría',    description: 'Quien asigna funciones no puede auditarlas',   group_a: ['access:assign', 'access:assign_function', 'access:revoke_function'],  group_b: ['audit:view', 'audit:search', 'audit:export'],                      isActive: true, violations: 0 },
+    ]
+  }
+
+  _handleSeparationRules() {
+    return { status: 200, data: this._separationRulesData() }
+  }
+
+  _handleAdminSeparationRules(method, url, body) {
+    const rules = this._separationRulesData()
+    if (method === 'GET') {
+      return { status: 200, data: rules }
+    }
+    if (method === 'POST') {
+      if (body?.name && rules.some(r => r.name === body.name)) {
+        return { status: 409, data: { error: 'Nombre de regla duplicado', code: 'DUPLICATE_NAME' } }
+      }
+      const groupA = body?.group_a ?? []
+      const groupB = body?.group_b ?? []
+      const overlap = groupA.filter(f => groupB.includes(f))
+      if (overlap.length > 0) {
+        return {
+          status: 400,
+          data: {
+            error: 'Los grupos A y B no pueden tener funciones en común',
+            code: 'NON_DISJOINT_GROUPS',
+            overlap,
+          },
+        }
+      }
+      const newRule = { id: rules.length + 1, code: `SR-00${rules.length + 1}`, isActive: true, violations: 0, ...body }
+      return { status: 201, data: newRule }
+    }
+    const match = url.match(/\/api\/admin\/separation-rules\/(\d+)\//)
+    const id = parseInt(match?.[1], 10)
+    const rule = rules.find(r => r.id === id) || rules[0]
+    if (method === 'PUT' || method === 'PATCH' && body && Object.keys(body).length > 0) {
+      const groupA = body?.group_a ?? []
+      const groupB = body?.group_b ?? []
+      const overlap = groupA.filter(f => groupB.includes(f))
+      if (overlap.length > 0) {
+        return {
+          status: 400,
+          data: {
+            error: 'Los grupos A y B no pueden tener funciones en común',
+            code: 'NON_DISJOINT_GROUPS',
+            overlap,
+          },
+        }
+      }
+      return { status: 200, data: { ...rule, ...body } }
+    }
+    if (method === 'PATCH') {
+      if (!rule.isActive) {
+        return { status: 409, data: { error: 'Regla ya inactiva', code: 'ALREADY_INACTIVE' } }
+      }
+      return { status: 200, data: { ...rule, isActive: !rule.isActive } }
+    }
+    return this._error(405, 'Method not allowed')
+  }
+
+  // ====== PERMISOS HANDLERS ======
+
+  _handlePermisosCapacidades(url) {
+    const match = url.match(/\/api\/permisos\/verificar\/(\d+)\/capacidades\//)
+    const userId = parseInt(match[1], 10)
+    const data = PERMISOS_BY_USER_ID[userId]
+
+    if (!data) {
+      return this._error(404, `Usuario ${userId} no encontrado en mock`)
+    }
+
+    return {
+      status: 200,
+      data: {
+        user_id: userId,
+        capacidades: data.capacidades,
+        access_groups: data.user.grupos.map((g) => g.codigo),
+        expires_at: null,
+      },
+    }
+  }
+
   // ====== ALERT HANDLERS ======
 
   _handleGetAlerts(url) {
@@ -479,23 +1675,1091 @@ class MockInterceptor {
         alerts: [
           {
             id: 'alert-1',
-            title: 'New User Login',
-            message: 'User logged in from new device',
-            severity: 'info',
-            timestamp: new Date().toISOString(),
-            isRead: false
+            rule_id: 'rule-sl-queues',
+            name: 'SL colas < 80%',
+            metric: 'SL',
+            scope: 'queue',
+            severity: 'critical',
+            threshold: 80,
+            window: 10,
+            cooldown_minutes: 15,
+            fired_at: new Date().toISOString(),
+            state: this._acknowledgedAlerts.has('alert-1') ? 'acknowledged' : 'firing',
           },
           {
             id: 'alert-2',
-            title: 'Security Alert',
-            message: 'Multiple failed login attempts detected',
+            rule_id: 'rule-logins',
+            name: 'Fallos de login excesivos',
+            metric: 'login_failures',
+            scope: 'segment',
             severity: 'warning',
-            timestamp: new Date(Date.now() - 60000).toISOString(),
-            isRead: false
-          }
-        ]
+            threshold: 5,
+            window: 5,
+            cooldown_minutes: 30,
+            fired_at: new Date(Date.now() - 60000).toISOString(),
+            state: this._acknowledgedAlerts.has('alert-2') ? 'acknowledged' : 'firing',
+          },
+          {
+            id: 'alert-3',
+            rule_id: 'rule-abandon',
+            name: 'Tasa de abandono > 20%',
+            metric: 'abandon_rate',
+            scope: 'campaign',
+            severity: 'info',
+            threshold: 20,
+            window: 15,
+            cooldown_minutes: 60,
+            fired_at: new Date(Date.now() - 300000).toISOString(),
+            state: 'resolved',
+          },
+        ],
+      },
+    }
+  }
+
+  _handleAlertHistory() {
+    return {
+      status: 200,
+      data: [
+        {
+          id: 'hist-1',
+          name: 'SL colas < 80%',
+          rule_id: 'rule-sl-queues',
+          severity: 'critical',
+          state: 'resolved',
+          fired_at: new Date(Date.now() - 3600000).toISOString(),
+          time_to_ack: 5,
+          time_to_resolve: 42,
+        },
+        {
+          id: 'hist-2',
+          name: 'Fallos de login excesivos',
+          rule_id: 'rule-logins',
+          severity: 'warning',
+          state: 'acknowledged',
+          fired_at: new Date(Date.now() - 7200000).toISOString(),
+          time_to_ack: 12,
+          time_to_resolve: null,
+        },
+      ],
+    }
+  }
+
+  _handleAlertRule(url, method, body) {
+    if (method === 'POST') {
+      return {
+        status: 201,
+        data: { ...body, id: `rule-${Date.now()}`, status: body.status ?? 'active' },
       }
+    }
+    const match = url.match(/\/api\/alerts\/rules\/([^/]+)\//)
+    const ruleId = match ? match[1] : null
+    if (method === 'PATCH') {
+      return { status: 200, data: { id: ruleId, ...body } }
+    }
+    return { status: 200, data: { ...body, id: ruleId } }
+  }
+
+  _handleValidateCondition(body) {
+    const { metric, threshold } = body ?? {}
+    if (!metric || threshold === undefined || threshold === '') {
+      return this._error(400, 'metric y threshold son requeridos')
+    }
+    return {
+      status: 200,
+      data: { valid: true, metric, threshold, sample_value: Number(threshold) * 0.9 },
+    }
+  }
+
+  _handleAlertSubscription(url, method, body) {
+    if (method === 'POST') {
+      return {
+        status: 201,
+        data: { id: `sub-${Date.now()}`, ...body },
+      }
+    }
+    return { status: 204, data: null }
+  }
+
+  _handleGetMySubscriptions() {
+    return {
+      status: 200,
+      data: [
+        {
+          id: 'sub-1',
+          subscription_type: 'severity_filter',
+          severity_filter: 'critical',
+          subscribed_at: '2026-04-20',
+        },
+        {
+          id: 'sub-2',
+          subscription_type: 'rule_id',
+          rule_id: 'rule-sl-queues',
+          subscribed_at: '2026-04-15',
+        },
+      ],
+    }
+  }
+
+  _handleAcknowledgeAlert(url, body) {
+    const match = url.match(/\/api\/alerts\/([^/]+)\/ack\//)
+    const alertId = match ? match[1] : null
+
+    // EX-03: unknown alert
+    if (!this._knownAlertIds.has(alertId)) {
+      return this._error(404, `Alerta ${alertId} no encontrada`)
+    }
+
+    // EX-06: note > 500 chars
+    if (body?.note && body.note.length > 500) {
+      return this._error(400, 'La nota no puede superar 500 caracteres', 'NOTE_TOO_LONG')
+    }
+
+    // FA-02: already resolved → 409
+    if (this._resolvedAlerts.has(alertId)) {
+      return { status: 409, data: { error: 'La alerta ya fue resuelta', code: 'ALREADY_RESOLVED' } }
+    }
+
+    // already acknowledged → 409
+    if (this._acknowledgedAlerts.has(alertId)) {
+      return { status: 409, data: { error: 'Ya reconocida', code: 'ALREADY_ACKNOWLEDGED' } }
+    }
+
+    this._acknowledgedAlerts.add(alertId)
+    return {
+      status: 200,
+      data: {
+        id: alertId,
+        state: 'acknowledged',
+        acknowledged_by: 'demo',
+        acknowledged_at: new Date().toISOString(),
+        note: body?.note ?? null,
+      },
+    }
+  }
+
+  _handleBulkAcknowledgeAlerts(body) {
+    const alertIds = body?.alert_ids ?? []
+    const acknowledged = []
+    const skipped = []
+    for (const alertId of alertIds) {
+      if (!this._knownAlertIds.has(alertId) || this._acknowledgedAlerts.has(alertId) || this._resolvedAlerts.has(alertId)) {
+        skipped.push(alertId)
+      } else {
+        this._acknowledgedAlerts.add(alertId)
+        acknowledged.push(alertId)
+      }
+    }
+    return { status: 200, data: { acknowledged, skipped } }
+  }
+
+  _handlePermisosMenu(url) {
+    const match = url.match(/\/api\/permisos\/verificar\/(\d+)\/menu\//)
+    const userId = parseInt(match[1], 10)
+    const data = PERMISOS_BY_USER_ID[userId]
+    if (!data) {
+      return this._error(404, `Usuario ${userId} no encontrado en mock`)
+    }
+    const capacidades = data.capacidades
+    const allMenuItems = [
+      { key: 'dashboard',   label: 'Dashboard',          required: 'reports:dashboard',     path: '/dashboard' },
+      { key: 'pipeline',    label: 'Pipeline',           required: 'pipeline:view_status',  path: '/pipeline' },
+      { key: 'logs',        label: 'Logs',               required: 'logs:view_app',         path: '/logs' },
+      { key: 'reports',     label: 'Reportes',           required: 'reports:view',          path: '/reports' },
+      { key: 'alerts',      label: 'Alertas',            required: 'alerts:view',           path: '/alerts' },
+      { key: 'audit',       label: 'Auditoría',          required: 'audit:view',            path: '/audit' },
+      { key: 'users',       label: 'Usuarios',           required: 'users:view',            path: '/users' },
+      { key: 'access',      label: 'Control de Acceso',  required: 'access:view',           path: '/access' },
+    ]
+    const allowedMenu = allMenuItems.filter((item) => capacidades.includes(item.required))
+    return { status: 200, data: { menu: allowedMenu } }
+  }
+
+  _handleDashboardMetrics() {
+    return {
+      status: 200,
+      data: {
+        queue_count: 12,
+        agents_busy: 8,
+        agents_idle: 4,
+        answered_per_hour: 143,
+        abandon_rate_5min: 3.2,
+        service_level_15min: 87.5,
+        lag_seconds: 5,
+        timestamp: new Date().toISOString(),
+        schema_version: 1,
+      },
+    }
+  }
+
+  _handleGetSessions() {
+    return {
+      status: 200,
+      data: [
+        {
+          id: 'session-1',
+          device: 'Chrome on MacOS',
+          ip: '192.168.1.100',
+          location: 'San Francisco, CA',
+          lastActive: new Date(Date.now() - 300_000).toISOString(),
+          isCurrent: true,
+        },
+        {
+          id: 'session-2',
+          device: 'Safari on iPhone',
+          ip: '192.168.1.101',
+          location: 'San Francisco, CA',
+          lastActive: new Date(Date.now() - 3_600_000).toISOString(),
+          isCurrent: false,
+        },
+        {
+          id: 'session-3',
+          device: 'Firefox on Windows',
+          ip: '192.168.1.102',
+          location: 'New York, NY',
+          lastActive: new Date(Date.now() - 86_400_000).toISOString(),
+          isCurrent: false,
+        },
+      ],
+    }
+  }
+
+  _handleRevokeSession(url) {
+    const sessionId = url.split('/').filter(Boolean).pop()
+    return { status: 204, data: { revoked: true, id: sessionId } }
+  }
+
+  _handlePipelineStatus(url) {
+    let testEstado = 'ok'
+    try {
+      testEstado = new URL(url, 'http://localhost').searchParams.get('test_estado') ?? 'ok'
+    } catch (_) { /* URL relativa sin hostname — continuar con valor por defecto */ }
+
+    if (testEstado === 'stale') {
+      return {
+        status: 200,
+        data: {
+          estado_general: 'stale',
+          ultima_ejecucion_exitosa: null,
+          ejecucion_en_curso: null,
+          ultima_ejecucion_fallida: null,
+          total_exitosas_24h: 0,
+          total_fallidas_24h: 0,
+        },
+      }
+    }
+    if (testEstado === 'degradado') {
+      return {
+        status: 200,
+        data: {
+          estado_general: 'degradado',
+          ultima_ejecucion_exitosa: {
+            trimestre: 'Q1_26',
+            finished_at: new Date(Date.now() - 8 * 3_600_000).toISOString(),
+            base_records: 987_654,
+          },
+          ejecucion_en_curso: null,
+          ultima_ejecucion_fallida: {
+            trimestre: 'Q1_26',
+            started_at: new Date(Date.now() - 6 * 3_600_000).toISOString(),
+          },
+          total_exitosas_24h: 1,
+          total_fallidas_24h: 1,
+        },
+      }
+    }
+    if (testEstado === 'critico') {
+      return {
+        status: 200,
+        data: {
+          estado_general: 'critico',
+          ultima_ejecucion_exitosa: {
+            trimestre: 'Q4_25',
+            finished_at: new Date(Date.now() - 36 * 3_600_000).toISOString(),
+            base_records: 500_000,
+          },
+          ejecucion_en_curso: null,
+          ultima_ejecucion_fallida: {
+            trimestre: 'Q1_26',
+            started_at: new Date(Date.now() - 4 * 3_600_000).toISOString(),
+          },
+          total_exitosas_24h: 0,
+          total_fallidas_24h: 3,
+        },
+      }
+    }
+    return {
+      status: 200,
+      data: {
+        estado_general: 'ok',
+        ultima_ejecucion_exitosa: {
+          trimestre: 'Q2_26',
+          finished_at: new Date(Date.now() - 2 * 3_600_000).toISOString(),
+          base_records: 1_234_567,
+        },
+        ejecucion_en_curso: null,
+        ultima_ejecucion_fallida: null,
+        total_exitosas_24h: 2,
+        total_fallidas_24h: 0,
+      },
+    }
+  }
+
+  _handlePipelineErrors(url) {
+    let params = {}
+    try {
+      const sp = new URL(url, 'http://localhost').searchParams
+      params = { error_type: sp.get('error_type'), trimestre: sp.get('trimestre') }
+    } catch (_) { /* URL relativa sin hostname — continuar con valor por defecto */ }
+
+    const errors = [
+      {
+        id: 1,
+        pipeline_name: 'etl-ivr-nacional',
+        trimestre: 'Q1_26',
+        started_at: new Date(Date.now() - 6 * 3_600_000).toISOString(),
+        finished_at: new Date(Date.now() - 5.8 * 3_600_000).toISOString(),
+        error_message: 'Pipeline timed out after 720s waiting for source extract',
+        error_type: 'TIMEOUT',
+        correlation_id: 'corr-001-timeout',
+      },
+      {
+        id: 2,
+        pipeline_name: 'etl-ivr-puebla',
+        trimestre: 'Q1_26',
+        started_at: new Date(Date.now() - 12 * 3_600_000).toISOString(),
+        finished_at: new Date(Date.now() - 11.9 * 3_600_000).toISOString(),
+        error_message: 'Validation failed: campo promedio_llamadas contiene valores negativos (3 filas)',
+        error_type: 'DATA_VALIDATION',
+        correlation_id: 'corr-002-validation',
+      },
+      {
+        id: 3,
+        pipeline_name: 'etl-ivr-nacional',
+        trimestre: 'Q4_25',
+        started_at: new Date(Date.now() - 36 * 3_600_000).toISOString(),
+        finished_at: new Date(Date.now() - 35.8 * 3_600_000).toISOString(),
+        error_message: 'Pipeline timed out after 720s — source DB unreachable',
+        error_type: 'TIMEOUT',
+        correlation_id: 'corr-003-timeout',
+      },
+    ]
+
+    let results = errors
+    if (params.error_type) {
+      results = results.filter((e) => e.error_type === params.error_type)
+    }
+    if (params.trimestre) {
+      results = results.filter((e) => e.trimestre === params.trimestre)
+    }
+
+    return { status: 200, data: results }
+  }
+
+  _handleETLAvailability(url) {
+    let testState = null
+    try {
+      testState = new URL(url, 'http://localhost').searchParams.get('test_state')
+    } catch (_) { /* URL relativa sin hostname — continuar con valor por defecto */ }
+
+    const frescoDataset = {
+      dataset: 'ivr_llamadas_nacional',
+      trimestre: 'Q2_26',
+      minutos_desde_etl: 45,
+      estado_frescura: 'fresco',
+      ultima_actualizacion: new Date(Date.now() - 45 * 60_000).toISOString(),
+      registros_disponibles: 1_234_567,
+    }
+    const vencidoDataset = {
+      dataset: 'ivr_llamadas_puebla',
+      trimestre: 'Q1_26',
+      minutos_desde_etl: 1_560,
+      estado_frescura: 'vencido',
+      ultima_actualizacion: new Date(Date.now() - 1_560 * 60_000).toISOString(),
+      registros_disponibles: 404_483,
+    }
+
+    if (testState === 'vencido') {
+      return {
+        status: 200,
+        data: [
+          { ...frescoDataset, estado_frescura: 'vencido', minutos_desde_etl: 900 },
+          vencidoDataset,
+        ],
+      }
+    }
+
+    return { status: 200, data: [frescoDataset, vencidoDataset] }
+  }
+
+  resetSharesStore() {
+    const now = new Date().toISOString()
+    const future = new Date(Date.now() + 7 * 86_400_000).toISOString()
+    const past = new Date(Date.now() - 2 * 86_400_000).toISOString()
+    this._sharesSentStore = [
+      {
+        id: 100, view_id: 1, owner_id: 1,
+        target_type: 'user', target_id: 2, permission: 'read',
+        expires_at: future, revoked_at: null, created_at: now,
+        view_name: 'Filtro Nacional Q1',
+      },
+      {
+        id: 101, view_id: 2, owner_id: 1,
+        target_type: 'agr', target_id: 5, permission: 'clone',
+        expires_at: past, revoked_at: null, created_at: now,
+        view_name: 'Puebla Semanal',
+      },
+    ]
+    this._sharesReceivedStore = [
+      {
+        id: 200, view_id: 10, owner_id: 3,
+        target_type: 'user', target_id: 1, permission: 'read',
+        expires_at: future, revoked_at: null, created_at: now,
+        view_name: 'Nacional Mensual', owner_name: 'Ana López',
+      },
+      {
+        id: 201, view_id: 11, owner_id: 4,
+        target_type: 'user', target_id: 1, permission: 'clone',
+        expires_at: null, revoked_at: past, created_at: now,
+        view_name: 'Resumen Q4', owner_name: 'Carlos Rivera',
+      },
+    ]
+    this._sharesNextId = 102
+  }
+
+  _handleShares(url, method, body) {
+    if (url.includes('/sent/')) {
+      return { status: 200, data: this._sharesSentStore }
+    }
+    if (url.includes('/received/')) {
+      return { status: 200, data: this._sharesReceivedStore }
+    }
+
+    const idMatch = url.match(/\/api\/me\/shares\/(\d+)\//)
+
+    if (method === 'DELETE' && idMatch) {
+      const id = parseInt(idMatch[1], 10)
+      const share = this._sharesSentStore.find((s) => s.id === id)
+      if (!share) return this._error(404, 'Share not found')
+      share.revoked_at = new Date().toISOString()
+      return { status: 204, data: null }
+    }
+
+    if (method === 'POST') {
+      const { target_type, target_id, expires_at } = body ?? {}
+      if (target_type === 'user' && parseInt(target_id, 10) === 1) {
+        return this._error(400, 'Self-share not allowed', 'SELF_SHARE')
+      }
+      if (expires_at && new Date(expires_at) < new Date()) {
+        return this._error(400, 'expires_at must be in the future', 'INVALID_EXPIRES')
+      }
+      const newShare = {
+        id: this._sharesNextId++,
+        view_id: body.view_id,
+        owner_id: 1,
+        target_type,
+        target_id: body.target_id,
+        permission: body.permission ?? 'read',
+        expires_at: body.expires_at ?? null,
+        revoked_at: null,
+        created_at: new Date().toISOString(),
+        view_name: body.view_name ?? '',
+      }
+      this._sharesSentStore.unshift(newShare)
+      return { status: 201, data: newShare }
+    }
+
+    return this._error(405, 'Method not allowed')
+  }
+
+  _handleRetryPipeline(url, body) {
+    const match = url.match(/\/api\/etl\/logs\/(\d+)\/retry\//)
+    const logId = match ? parseInt(match[1], 10) : null
+    const motivo = body?.motivo ?? ''
+    if (motivo.length < 20) {
+      return { status: 422, data: { error: 'Motivo demasiado corto', min_length: 20 } }
+    }
+    if (this._pipelineRunning) {
+      return { status: 409, data: { error: 'Ya hay una ejecución activa' } }
+    }
+    return {
+      status: 202,
+      data: {
+        message: 'Pipeline iniciado',
+        job_id: `manual-${logId}`,
+        trimestre: body?.trimestre ?? null,
+        executed_by: 'manual',
+      },
+    }
+  }
+
+  _handleScheduleSubAction(url, method) {
+    const parts = url.split('/').filter(Boolean)
+    const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
+    if (method === 'DELETE') {
+      return { status: 204, data: { id, deleted: true } }
+    }
+    const action = parts[parts.indexOf('scheduled') + 2]
+    if (action === 'pause') return { status: 200, data: { id, status: 'paused' } }
+    if (action === 'resume') return { status: 200, data: { id, status: 'active' } }
+    if (action === 'run') return { status: 202, data: { id, jobId: `job-${Date.now()}`, status: 'running' } }
+    return this._error(404, 'Unknown schedule action')
+  }
+
+  _handleScheduleDetail(url) {
+    const parts = url.split('/').filter(Boolean)
+    const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
+    const all = this._handleScheduledReports(url, 'GET', null).data.results
+    const schedule = all.find((s) => s.id === id)
+    if (!schedule) return this._error(404, 'Scheduled report not found')
+    return { status: 200, data: schedule }
+  }
+
+  resetSavedFilters() {
+    this._savedFiltersStore = [
+      { id: 1, name: 'Filtro Nacional Q1', filters: { trimestre: 'Q01_25', segmento: 'Nacional' }, is_default: true,  created_at: '2026-01-10T10:00:00Z' },
+      { id: 2, name: 'Puebla Semanal',     filters: { trimestre: 'Q02_25', segmento: 'Puebla'   }, is_default: false, created_at: '2026-02-15T14:30:00Z' },
+    ]
+    this._savedFiltersNextId = 3
+  }
+
+  _handleSavedFilters(url, method, body) {
+    const idMatch = url.match(/\/api\/me\/filters\/(\d+)\//)
+    const id = idMatch ? parseInt(idMatch[1], 10) : null
+
+    if (method === 'GET') {
+      return { status: 200, data: { results: this._savedFiltersStore, count: this._savedFiltersStore.length } }
+    }
+
+    if (method === 'POST') {
+      const name = body?.name
+      if (!name) return this._error(400, 'name is required')
+      if (this._savedFiltersStore.some((f) => f.name === name)) {
+        return { status: 400, data: { error: 'Nombre duplicado', code: 'NAME_DUPLICATE' } }
+      }
+      const newFilter = {
+        id: this._savedFiltersNextId++,
+        name,
+        filters: body.filters ?? {},
+        is_default: body.is_default ?? false,
+        created_at: new Date().toISOString(),
+      }
+      this._savedFiltersStore.push(newFilter)
+      return { status: 201, data: newFilter }
+    }
+
+    if (method === 'PATCH') {
+      if (!id) return this._error(400, 'id required')
+      const idx = this._savedFiltersStore.findIndex((f) => f.id === id)
+      if (idx === -1) return this._error(404, 'Saved filter not found')
+      if (body?.is_default === true) {
+        this._savedFiltersStore = this._savedFiltersStore.map((f) => ({ ...f, is_default: f.id === id }))
+      } else {
+        this._savedFiltersStore[idx] = { ...this._savedFiltersStore[idx], ...body }
+      }
+      return { status: 200, data: this._savedFiltersStore.find((f) => f.id === id) }
+    }
+
+    if (method === 'DELETE') {
+      if (!id) return this._error(400, 'id required')
+      const before = this._savedFiltersStore.length
+      this._savedFiltersStore = this._savedFiltersStore.filter((f) => f.id !== id)
+      if (this._savedFiltersStore.length === before) return this._error(404, 'Saved filter not found')
+      return { status: 204, data: null }
+    }
+
+    return this._error(405, 'Method not allowed')
+  }
+
+  _handleScheduleHistory(url) {
+    const parts = url.split('/').filter(Boolean)
+    const id = parseInt(parts[parts.indexOf('scheduled') + 1], 10)
+    return {
+      status: 200,
+      data: {
+        items: [
+          {
+            id: '1',
+            scheduled_report_id: id,
+            started_at: new Date(Date.now() - 86_400_000).toISOString(),
+            completed_at: new Date(Date.now() - 86_400_000 + 42_000).toISOString(),
+            status: 'ok',
+            export_job_id: 'job-abc-1',
+            error_code: null,
+          },
+          {
+            id: '2',
+            scheduled_report_id: id,
+            started_at: new Date(Date.now() - 172_800_000).toISOString(),
+            completed_at: new Date(Date.now() - 172_800_000 + 38_000).toISOString(),
+            status: 'ok',
+            export_job_id: 'job-abc-2',
+            error_code: null,
+          },
+          {
+            id: '3',
+            scheduled_report_id: id,
+            started_at: new Date(Date.now() - 259_200_000).toISOString(),
+            completed_at: new Date(Date.now() - 259_200_000 + 300_000).toISOString(),
+            status: 'failed',
+            export_job_id: null,
+            error_code: 'TIMEOUT',
+            rows_processed: 0,
+          },
+        ],
+        pagination: { page: 1, page_size: 20, total: 3 },
+      },
+    }
+  }
+
+  _scheduledReportsData() {
+    return [
+      { id: 1, name: 'Reporte Diario KPIs',       frequency: 'DAILY',   format: 'PDF',  active: true,  status: 'active',   last_run: new Date(Date.now() - 86400000).toISOString(),   next_run: new Date(Date.now() + 3600000).toISOString() },
+      { id: 2, name: 'Reporte Semanal Auditoría', frequency: 'WEEKLY',  format: 'XLSX', active: true,  status: 'active',   last_run: new Date(Date.now() - 604800000).toISOString(),  next_run: new Date(Date.now() + 86400000).toISOString() },
+      { id: 3, name: 'Cumplimiento Mensual',      frequency: 'MONTHLY', format: 'PDF',  active: false, status: 'inactive', last_run: null, next_run: null },
+    ]
+  }
+
+  _handleScheduledReports(url, method, body) {
+    if (method === 'POST') {
+      if (!body || !body.name || !body.frequency) {
+        return this._error(400, 'name and frequency are required')
+      }
+      return {
+        status: 201,
+        data: {
+          id: Math.floor(Math.random() * 900) + 100,
+          name: body.name,
+          frequency: body.frequency,
+          format: body.format || 'PDF',
+          recipients: body.recipients || [],
+          active: true,
+          status: 'active',
+          last_run: null,
+          next_run: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        },
+      }
+    }
+    let results = this._scheduledReportsData()
+    try {
+      const params = new URL(url, 'http://localhost').searchParams
+      const statusFilter = params.get('status')
+      const frequencyFilter = params.get('frequency')
+      if (statusFilter) results = results.filter((r) => r.status === statusFilter)
+      if (frequencyFilter) results = results.filter((r) => r.frequency === frequencyFilter)
+    } catch (_) { /* URL may not have query string */ }
+    return { status: 200, data: { results, count: results.length } }
+  }
+
+  // ====== ADMIN MENU ITEMS (UC-ADM-04/05) ======
+
+  _menuItemsData() {
+    return [
+      { id: 1, label: 'Dashboard',   icon: 'grid-alt',  route_path: '/dashboard',  display_order: 1, parent: null, status: 'ACTIVE',       function_codename: 'reports:view',  is_critical: false },
+      { id: 2, label: 'Usuarios',    icon: 'users',     route_path: '/users',       display_order: 2, parent: null, status: 'ACTIVE',       function_codename: 'users:view',    is_critical: false },
+      { id: 3, label: 'Reportes',    icon: 'chart-bar', route_path: '/reports',     display_order: 3, parent: null, status: 'ACTIVE',       function_codename: 'reports:view',  is_critical: false },
+      { id: 4, label: 'Admin',       icon: 'shield',    route_path: '/admin',       display_order: 8, parent: null, status: 'ACTIVE',       function_codename: 'adm:manage_catalog', is_critical: true },
+      { id: 5, label: 'Beta Feature',icon: 'flask',     route_path: '/beta',        display_order: 9, parent: null, status: 'DRAFT',        function_codename: 'reports:view',  is_critical: false },
+      { id: 6, label: 'Legacy View', icon: 'archive',   route_path: '/legacy',      display_order: 10,parent: null, status: 'DEPRECATED',   function_codename: 'reports:view',  is_critical: false },
+    ]
+  }
+
+  _handleAdminMenuItems(method, url, body) {
+    let items = this._menuItemsData()
+    if (method === 'GET') {
+      const params = new URL(url, 'http://localhost').searchParams
+      const statusFilter = params.get('status')
+      const moduleFilter = params.get('module')
+      if (statusFilter) items = items.filter(i => i.status === statusFilter)
+      if (moduleFilter) items = items.filter(i => i.function_codename?.startsWith(moduleFilter + ':'))
+      return { status: 200, data: items }
+    }
+    if (method === 'POST') {
+      const existing = items.find(i => i.function_codename === body?.function_codename)
+      if (existing) {
+        return {
+          status: 409,
+          data: { error: 'function_already_has_menu_item', existing_menu_item_id: existing.id },
+        }
+      }
+      return { status: 201, data: { id: items.length + 1, status: 'DRAFT', ...body } }
+    }
+    const match = url.match(/\/api\/admin\/menu-items\/(\d+)\//)
+    const id = parseInt(match?.[1], 10)
+    const item = items.find(i => i.id === id) || items[0]
+    if (method === 'PUT') {
+      return { status: 200, data: { ...item, ...body } }
+    }
+    if (method === 'PATCH') {
+      const transitions = { DRAFT: 'ACTIVE', ACTIVE: 'DEPRECATED', DEPRECATED: 'ARCHIVED', ARCHIVED: 'ACTIVE' }
+      const newStatus = body?.status || transitions[item.status] || 'ACTIVE'
+      return { status: 200, data: { ...item, status: newStatus } }
+    }
+    return this._error(405, 'Method not allowed')
+  }
+
+  _menuItemById(url) {
+    const id = parseInt(url.match(/\/menu-items\/(\d+)\//)?.[1], 10)
+    return this._menuItemsData().find(i => i.id === id) || { id }
+  }
+
+  _handleMenuItemPublish(url) {
+    const item = this._menuItemById(url)
+    return { status: 200, data: { ...item, status: 'ACTIVE', deprecated_at: null, archived_at: null } }
+  }
+
+  _handleMenuItemDeprecate(url) {
+    const item = this._menuItemById(url)
+    return { status: 200, data: { ...item, status: 'DEPRECATED', deprecated_at: new Date().toISOString() } }
+  }
+
+  _handleMenuItemReactivate(url) {
+    const item = this._menuItemById(url)
+    return {
+      status: 200,
+      data: {
+        ...item,
+        status: 'ACTIVE',
+        deprecated_at: null,
+        archived_at: null,
+        block_auto_archive: false,
+        block_reason: '',
+        block_set_by: null,
+        block_set_at: null,
+      },
+    }
+  }
+
+  _handleMenuItemArchive(url) {
+    const item = this._menuItemById(url)
+    return {
+      status: 200,
+      data: {
+        ...item,
+        status: 'ARCHIVED',
+        archived_at: new Date().toISOString(),
+        block_auto_archive: false,
+        block_reason: '',
+        block_set_by: null,
+        block_set_at: null,
+      },
+    }
+  }
+
+  // ====== ACCESS HANDLERS (UC-ACC-01/03/09) ======
+
+  _handleGetAllFunctions() {
+    return {
+      status: 200,
+      data: [
+        { id: 1,  codename: 'reports:view',              name: 'Ver reportes',               domain: 'reports', active: true },
+        { id: 2,  codename: 'reports:export',            name: 'Exportar reportes',          domain: 'reports', active: true },
+        { id: 3,  codename: 'reports:schedule',          name: 'Programar reportes',         domain: 'reports', active: true },
+        { id: 4,  codename: 'reports:share',             name: 'Compartir reportes',         domain: 'reports', active: true },
+        { id: 5,  codename: 'access:view',               name: 'Ver acceso',                 domain: 'access',  active: true },
+        { id: 6,  codename: 'access:assign',             name: 'Asignar funciones',          domain: 'access',  active: true },
+        { id: 7,  codename: 'access:revoke',             name: 'Revocar funciones',          domain: 'access',  active: true },
+        { id: 8,  codename: 'access:create_group',       name: 'Crear grupos de acceso',     domain: 'access',  active: true },
+        { id: 9,  codename: 'access:assign_group',       name: 'Asignar agrupador',          domain: 'access',  active: true },
+        { id: 10, codename: 'access:view_separation_rules',     name: 'Ver reglas SoD',             domain: 'access',  active: true },
+        { id: 11, codename: 'audit:view',                name: 'Ver auditoría',              domain: 'audit',   active: true },
+        { id: 12, codename: 'audit:search',              name: 'Buscar auditoría',           domain: 'audit',   active: true },
+        { id: 13, codename: 'alerts:view',               name: 'Ver alertas',                domain: 'alerts',  active: true },
+        { id: 14, codename: 'pipeline:view_status',      name: 'Ver estado ETL',             domain: 'pipeline',active: true },
+        { id: 15, codename: 'pipeline:retry',            name: 'Reintentar pipeline',        domain: 'pipeline',active: true },
+      ],
+    }
+  }
+
+  _handleGetUserPermissions(url) {
+    const match = url.match(/\/api\/access\/permissions\/(\d+)/)
+    const userId = parseInt(match?.[1], 10)
+    const allPerms = [
+      { id: 1, codename: 'reports:view',    name: 'Ver reportes',    domain: 'reports', granted_at: '2026-01-15', expires_at: null, is_temporary: false },
+      { id: 2, codename: 'access:view',     name: 'Ver acceso',      domain: 'access',  granted_at: '2026-01-15', expires_at: null, is_temporary: false },
+      { id: 3, codename: 'audit:view',      name: 'Ver auditoría',   domain: 'audit',   granted_at: '2026-02-01', expires_at: null, is_temporary: false },
+    ]
+    return { status: 200, data: userId === 1 ? allPerms : allPerms.slice(0, 1) }
+  }
+
+  // UC-AUD-01 / UC-AUTH-05-C: logs de auditoría (filtrables por type, user)
+  _handleGetAuditLogs(url) {
+    const urlObj = new URL(url, 'http://localhost');
+    const type = urlObj.searchParams.get('type');
+    const allLogs = [
+      { id: '1', timestamp: new Date(Date.now() - 300_000).toISOString(),  device: 'Chrome on MacOS',   ip: '192.168.1.100', location: 'San Francisco, CA', status: 'success', event_type: 'LOGIN' },
+      { id: '2', timestamp: new Date(Date.now() - 3_600_000).toISOString(), device: 'Safari on iPhone',  ip: '192.168.1.101', location: 'San Francisco, CA', status: 'success', event_type: 'LOGIN' },
+      { id: '3', timestamp: new Date(Date.now() - 86_400_000).toISOString(), device: 'Unknown Browser',  ip: '203.0.113.50',  location: 'Unknown',           status: 'failed',  event_type: 'LOGIN' },
+    ];
+    const data = type ? allLogs.filter((l) => l.event_type === type) : allLogs;
+    return { status: 200, data };
+  }
+
+  // UC-AUTH-03: recuperar contraseña
+  _handleRecoverPassword(body) {
+    const knownUsers = ['demo', 'admin', 'first_login_user'];
+    if (!body?.username) {
+      return this._error(400, 'username is required');
+    }
+    if (!knownUsers.includes(body.username)) {
+      return this._error(404, 'Usuario no encontrado');
+    }
+    return {
+      status: 200,
+      data: { message: 'Correo de recuperación enviado' },
     };
+  }
+
+  // UC-AUTH-04: cambiar contraseña
+  _handleChangePassword(body) {
+    if (!body?.current_password || !body?.new_password) {
+      return this._error(400, 'current_password and new_password are required');
+    }
+    const validCurrentPasswords = ['demo123', 'admin123', 'changeme'];
+    if (!validCurrentPasswords.includes(body.current_password)) {
+      return this._error(400, 'Contraseña actual incorrecta');
+    }
+    return {
+      status: 200,
+      data: { message: 'Contraseña actualizada', next_step: null },
+    };
+  }
+
+  // ====== UC-ADM-03: AGR COMPOSITION HANDLERS (system-groups) ======
+
+  _handleAGRFunctions(url, method, body) {
+    const id = parseInt(url.match(/\/system-groups\/(\d+)\//)[1])
+    const fns = this._systemGroupFunctions.get(id) || new Set()
+    if (method === 'GET') {
+      return { status: 200, data: { functions: [...fns], count: fns.size } }
+    }
+    if (method === 'POST') {
+      const allAGRs = this._handleAdminAGR('GET', null).data.results
+      const agr = allAGRs.find(a => a.id === id)
+      if (agr && agr.is_system === false) {
+        return { status: 403, data: { error: 'AGR no es de sistema', code: 'NOT_SYSTEM_AGR' } }
+      }
+      const codename = body?.function_codename
+      if (!codename) return this._error(400, 'function_codename required')
+      if (fns.has(codename)) {
+        return { status: 409, data: { error: 'Función ya asignada al AGR', code: 'ALREADY_ASSIGNED' } }
+      }
+      const srData = this._separationRulesData()
+      for (const rule of srData) {
+        if (!rule.isActive) continue
+        const ruleA = rule.group_a ?? []
+        const ruleB = rule.group_b ?? []
+        const fnsList = [...fns]
+        if (ruleA.includes(codename) && fnsList.some(f => ruleB.includes(f))) {
+          return { status: 400, data: { error: 'Conflicto SoD', code: 'SOD_CONFLICT', rule_code: rule.code, conflicting_function: fnsList.find(f => ruleB.includes(f)) } }
+        }
+        if (ruleB.includes(codename) && fnsList.some(f => ruleA.includes(f))) {
+          return { status: 400, data: { error: 'Conflicto SoD', code: 'SOD_CONFLICT', rule_code: rule.code, conflicting_function: fnsList.find(f => ruleA.includes(f)) } }
+        }
+      }
+      fns.add(codename)
+      this._systemGroupFunctions.set(id, fns)
+      return { status: 201, data: { agr_id: id, function_codename: codename, assigned_at: new Date().toISOString() } }
+    }
+    return this._error(405, 'Method not allowed')
+  }
+
+  _handleAGRRemoveFunction(url) {
+    const match = url.match(/\/system-groups\/(\d+)\/functions\/([^/]+)\//)
+    const groupId = parseInt(match[1])
+    const codename = match[2]
+    const fns = this._systemGroupFunctions.get(groupId)
+    if (fns) fns.delete(codename)
+    return { status: 204, data: null }
+  }
+
+  _handleAGRImpact(url) {
+    const id = parseInt(url.match(/\/system-groups\/(\d+)\//)[1])
+    const fns = this._systemGroupFunctions.get(id) || new Set()
+    return {
+      status: 200,
+      data: {
+        agr_id: id,
+        affected_users: fns.size * 2,
+        preview_function_count: fns.size,
+        functions_preview: [...fns].slice(0, 5),
+      },
+    }
+  }
+
+  // ====== UC-ADM-04 CA-08: BULK REORDER HANDLER ======
+
+  _handleMenuItemsBulkReorder(body) {
+    const items = body?.items ?? []
+    if (!Array.isArray(items) || items.length === 0) {
+      return this._error(400, 'items array required')
+    }
+    const validIds = new Set(this._menuItemsData().map(i => i.id))
+    const invalidIds = items.filter(i => !validIds.has(i.id)).map(i => i.id)
+    if (invalidIds.length > 0) {
+      return { status: 422, data: { error: 'invalid_ids', invalid_ids: invalidIds } }
+    }
+    const updated = items.map(({ id, display_order }) => ({
+      ...this._menuItemsData().find(i => i.id === id),
+      display_order,
+    }))
+    return { status: 200, data: { items: updated, audit: 'MENU_ITEM_BULK_REORDERED' } }
+  }
+
+  // ====== UC-ADM-05 CA-07: BLOCK AUTO-ARCHIVE HANDLER ======
+
+  _handleBlockAutoArchive(url, body) {
+    const id = parseInt(url.match(/\/menu-items\/(\d+)\//)[1])
+    const reason = body?.block_reason ?? ''
+    if (reason.length < 20) {
+      return {
+        status: 422,
+        data: {
+          error: 'block_reason_too_short',
+          message: `La razón debe tener al menos 20 caracteres (actual: ${reason.length})`,
+          min_length: 20,
+        },
+      }
+    }
+    this._blockedMenuItems.set(id, {
+      block_auto_archive: true,
+      block_reason: reason,
+      block_set_by: 'demo',
+      block_set_at: new Date().toISOString(),
+    })
+    const item = this._menuItemsData().find(i => i.id === id) || { id }
+    return {
+      status: 200,
+      data: {
+        ...item,
+        block_auto_archive: true,
+        block_reason: reason,
+        block_set_by: 'demo',
+        block_set_at: new Date().toISOString(),
+      },
+    }
+  }
+
+  _handleUnblockAutoArchive(url) {
+    const id = parseInt(url.match(/\/menu-items\/(\d+)\//)[1])
+    const item = this._menuItemsData().find(i => i.id === id) || { id }
+    return {
+      status: 200,
+      data: {
+        ...item,
+        block_auto_archive: false,
+        block_reason: '',
+        block_set_by: null,
+        block_set_at: null,
+      },
+    }
+  }
+
+  // ====== EXISTING ACCESS AUDIT LOG ======
+
+  _handleGetAccessAuditLog(url) {
+    const match = url.match(/\/api\/access\/audit\/(\d+)/)
+    const userId = match ? parseInt(match[1], 10) : null
+    if (userId === null) {
+      // All-scope: events from multiple users (GAP-ACC-05 + GAP-PERM-11 fix)
+      return {
+        status: 200,
+        data: [
+          { id: 1, action: 'ASSIGN_FUNCTION',                  codename: 'reports:view',    performed_by: 'admin', performed_at: '2026-05-01T10:00:00Z', target_user_id: 1, reason: 'Onboarding user1' },
+          { id: 2, action: 'REVOKE_FUNCTION',                  codename: 'access:assign',   performed_by: 'admin', performed_at: '2026-04-15T09:30:00Z', target_user_id: 2, reason: 'Role change user2' },
+          { id: 3, action: 'AGR_ASSIGNED',                     codename: 'auditores_group', performed_by: 'admin', performed_at: '2026-05-05T08:00:00Z', target_user_id: 2, reason: 'AGR bulk assignment' },
+          { id: 4, action: 'EXCEPTIONAL_PERMISSION_GRANTED',   codename: 'PIP-005',         performed_by: 'admin', performed_at: '2026-05-07T11:00:00Z', target_user_id: 1, reason: 'Incident coverage' },
+          { id: 5, action: 'EXCEPTIONAL_PERMISSION_REVOKED',   codename: 'PIP-005',         performed_by: 'admin', performed_at: '2026-05-08T09:00:00Z', target_user_id: 1, reason: 'Coverage ended' },
+        ],
+      }
+    }
+    return {
+      status: 200,
+      data: [
+        { id: 1, action: 'ASSIGN_FUNCTION',  codename: 'reports:view',  performed_by: 'admin', performed_at: '2026-05-01T10:00:00Z', target_user_id: userId, reason: 'Onboarding' },
+        { id: 2, action: 'REVOKE_FUNCTION',  codename: 'access:assign', performed_by: 'admin', performed_at: '2026-04-15T09:30:00Z', target_user_id: userId, reason: 'Role change' },
+        { id: 3, action: 'ASSIGN_FUNCTION',  codename: 'audit:view',    performed_by: 'admin', performed_at: '2026-03-20T14:00:00Z', target_user_id: userId, reason: 'Compliance team' },
+      ],
+    }
+  }
+
+  // ====== UC_PERM_05: Access Groups (non-system) CRUD ======
+
+  _ACCESS_GROUPS = [
+    { id: 10, code: 'admins_group',     name: 'Administradores', description: 'Grupo de administradores del sistema', is_predefined: true,  state: 'ACTIVE' },
+    { id: 11, code: 'auditores_group',  name: 'Auditores',       description: 'Grupo de auditores internos',          is_predefined: false, state: 'ACTIVE' },
+    { id: 12, code: 'operadores_group', name: 'Operadores',       description: 'Grupo de operadores de plataforma',   is_predefined: false, state: 'ACTIVE' },
+  ]
+
+  _handleAccessGroupsCRUD(method, body) {
+    if (method === 'GET') {
+      const active = this._ACCESS_GROUPS.filter(g => g.state !== 'RETIRED');
+      return { status: 200, data: { results: active, count: active.length } };
+    }
+    if (method === 'POST') {
+      const { code, name, description } = body || {};
+      if (this._ACCESS_GROUPS.some(g => g.code === code)) {
+        return { status: 409, data: { error: 'Código ya existe', code: 'CODE_DUPLICATE' } };
+      }
+      const newGroup = {
+        id: 100 + this._ACCESS_GROUPS.length,
+        code,
+        name,
+        description: description || '',
+        is_predefined: false,
+        state: 'ACTIVE',
+      };
+      this._ACCESS_GROUPS.push(newGroup);
+      return { status: 201, data: newGroup };
+    }
+    return { status: 405, data: { error: 'Method not allowed' } };
+  }
+
+  _handleUpdateGroup(url, body) {
+    const id = parseInt(url.match(/\/api\/access\/groups\/(\d+)\//)[1]);
+    const group = this._ACCESS_GROUPS.find(g => g.id === id);
+    if (!group) return { status: 404, data: { error: 'Group not found' } };
+    if (group.is_predefined) {
+      return { status: 400, data: { error: 'Grupo predefinido no puede ser modificado', code: 'PREDEFINED_NOT_MUTABLE' } };
+    }
+    if (body && 'code' in body) {
+      return { status: 400, data: { error: 'El código del grupo es inmutable', code: 'CODE_IMMUTABLE' } };
+    }
+    if (body?.name) group.name = body.name;
+    if (body?.description !== undefined) group.description = body.description;
+    return { status: 200, data: { ...group } };
+  }
+
+  _handleRetireGroup(url, body) {
+    const id = parseInt(url.match(/\/api\/access\/groups\/(\d+)\//)[1]);
+    const group = this._ACCESS_GROUPS.find(g => g.id === id);
+    if (!group) return { status: 404, data: { error: 'Group not found' } };
+    if (group.is_predefined) {
+      return { status: 400, data: { error: 'Grupo predefinido no puede ser retirado', code: 'PREDEFINED_NOT_MUTABLE' } };
+    }
+    if (!body?.retire_reason || body.retire_reason.trim() === '') {
+      return { status: 400, data: { error: 'retire_reason requerido', code: 'RETIRE_REASON_REQUIRED' } };
+    }
+    if (body.retire_reason.trim().length < 20) {
+      return { status: 400, data: { error: 'retire_reason debe tener al menos 20 caracteres', code: 'RETIRE_REASON_TOO_SHORT' } };
+    }
+    group.state = 'RETIRED';
+    return { status: 200, data: { state: 'RETIRED', retired_at: new Date().toISOString() } };
+  }
+
+  _handleAssignFunctionsToGroup(url, body) {
+    const { function_ids, change_reason } = body || {};
+    if (!change_reason || change_reason.trim() === '') {
+      return { status: 400, data: { error: 'change_reason requerido', code: 'CHANGE_REASON_REQUIRED' } };
+    }
+    if (change_reason.trim().length < 10) {
+      return { status: 400, data: { error: 'change_reason muy corto (mínimo 10 chars)', code: 'CHANGE_REASON_TOO_SHORT' } };
+    }
+    return { status: 200, data: { assigned: function_ids?.length ?? 0 } };
+  }
+
+  _handleGetGroupFunctions(url) {
+    return { status: 200, data: { results: [], count: 0 } };
   }
 }
 

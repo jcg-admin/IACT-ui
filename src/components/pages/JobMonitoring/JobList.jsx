@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export default function JobList({ jobs, loading, onDownload, onRetry, onViewDetails }) {
   if (loading) {
@@ -78,4 +79,11 @@ export default function JobList({ jobs, loading, onDownload, onRetry, onViewDeta
       </table>
     </div>
   )
+}
+JobList.propTypes = {
+  jobs:          PropTypes.array,
+  loading:       PropTypes.bool,
+  onDownload:    PropTypes.func,
+  onRetry:       PropTypes.func,
+  onViewDetails: PropTypes.func,
 }

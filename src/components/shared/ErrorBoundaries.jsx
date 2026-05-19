@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { logError } from '@utils/apiErrors';
+import { logError } from '@shared/apiErrors';
 
 class RootErrorBoundary extends React.Component {
   constructor(props) {

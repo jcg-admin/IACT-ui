@@ -1,0 +1,85 @@
+{
+  "user": {
+    "id": 99,
+    "username": "sistema.admin",
+    "email": "sistema.admin@callcenter.com",
+    "grupos": [
+      {
+        "id": 10,
+        "codigo": "AGR-010",
+        "codename": "system_admin_group",
+        "nombre_display": "Administrador del Sistema",
+        "descripcion": "Acceso completo a administración RBAC"
+      }
+    ]
+  },
+  "capacidades": [
+    "AUTH-001",
+    "AUTH-002",
+    "AUTH-003",
+    "AUTH-004",
+    "LOG-001",
+    "LOG-002",
+    "ADM-001",
+    "ACC-011",
+    "ACC-007"
+  ],
+  "funciones_accesibles": [
+    {
+      "id": 1,
+      "nombre": "view_own_sessions",
+      "module": "auth",
+      "dominio": "autenticacion",
+      "icono": "security",
+      "orden_menu": 10
+    },
+    {
+      "id": 2,
+      "nombre": "view_all_sessions",
+      "module": "auth",
+      "dominio": "autenticacion",
+      "icono": "manage_accounts",
+      "orden_menu": 15
+    },
+    {
+      "id": 3,
+      "nombre": "view_app_logs",
+      "module": "logs",
+      "dominio": "observabilidad",
+      "icono": "terminal",
+      "orden_menu": 20
+    },
+    {
+      "id": 4,
+      "nombre": "export_logs",
+      "module": "logs",
+      "dominio": "observabilidad",
+      "icono": "download",
+      "orden_menu": 25
+    },
+    {
+      "id": 5,
+      "nombre": "manage_catalog",
+      "module": "adm",
+      "dominio": "administracion",
+      "icono": "admin_panel_settings",
+      "orden_menu": 30
+    },
+    {
+      "id": 6,
+      "nombre": "create_sod",
+      "module": "adm",
+      "dominio": "administracion",
+      "icono": "rule",
+      "orden_menu": 35
+    },
+    {
+      "id": 7,
+      "nombre": "assign_to_group",
+      "module": "access",
+      "dominio": "acceso",
+      "icono": "group_add",
+      "orden_menu": 40
+    }
+  ]
+}
