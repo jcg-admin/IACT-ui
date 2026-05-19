@@ -1,5 +1,5 @@
 /**
- * UserForm Tests — UC-USR-04 baja lógica + state enum
+ * UserForm Tests — UC_USR_04 baja lógica + state enum
  */
 
 import React from 'react'

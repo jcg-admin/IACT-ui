@@ -1,7 +1,7 @@
 /**
  * LoginHistory Component
  *
- * Display login attempts and history — UC-AUTH-05
+ * Display login attempts and history — UC_AUTH_05
  * Connected to /api/audit/logs?type=LOGIN&user=current via auditSlice
  */
 

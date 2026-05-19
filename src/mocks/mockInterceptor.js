@@ -34,7 +34,7 @@ class MockInterceptor {
     // UC_RPT_11: shares store (mutable, initialized from fixture)
     this.resetSharesStore()
 
-    // UC-ADM-03: composición de funciones por AGR de sistema
+    // UC_ADM_03: composición de funciones por AGR de sistema
     this._systemGroupFunctions = new Map();
     const defaultCompositions = {
       1: ['pipeline:view_status', 'pipeline:execute'],
@@ -151,31 +151,31 @@ class MockInterceptor {
       return this._handleJobCancel(url);
     }
 
-    // ACCESS — UC-ACC-01: catálogo de funciones disponibles
+    // ACCESS — UC_ACC_01: catálogo de funciones disponibles
     if (url.includes('/api/access/functions') && method === 'GET') {
       return this._handleGetAllFunctions();
     }
 
-    // ACCESS — UC-ACC-03: permisos efectivos de un usuario
+    // ACCESS — UC_ACC_03: permisos efectivos de un usuario
     if (url.match(/\/api\/access\/permissions\/\d+/) && method === 'GET') {
       return this._handleGetUserPermissions(url);
     }
 
-    // ACCESS — UC-ACC-09: auditoría sin filtro de usuario (all-scope)
+    // ACCESS — UC_ACC_09: auditoría sin filtro de usuario (all-scope)
     if (url === '/api/access/audit/' && method === 'GET') {
       return this._handleGetAccessAuditLog(url);
     }
-    // ACCESS — UC-ACC-09: auditoría filtrada por usuario
+    // ACCESS — UC_ACC_09: auditoría filtrada por usuario
     if (url.match(/\/api\/access\/audit\/\d+/) && method === 'GET') {
       return this._handleGetAccessAuditLog(url);
     }
 
-    // ACCESS — UC-ACC-01: asignar funciones (bulk)
+    // ACCESS — UC_ACC_01: asignar funciones (bulk)
     if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'POST') {
       return this._handleAssignFunctions(body);
     }
 
-    // ACCESS — UC-ACC-02: revocar funciones (bulk)
+    // ACCESS — UC_ACC_02: revocar funciones (bulk)
     if (url.match(/\/api\/users\/\d+\/functions\/$/) && method === 'DELETE') {
       return this._handleRevokeFunctions(body);
     }
@@ -233,12 +233,12 @@ class MockInterceptor {
       return this._handleValidateSeparationRules(body);
     }
 
-    // ACCESS — UC-ACC-04: asignar grupo de acceso (AGR)
+    // ACCESS — UC_ACC_04: asignar grupo de acceso (AGR)
     if (url.match(/\/api\/users\/\d+\/access-groups\/$/)) {
       return this._handleAssignAccessGroup(body);
     }
 
-    // REPORTS — UC-RPT-04: exportar reporte (async job)
+    // REPORTS — UC_RPT_04: exportar reporte (async job)
     if (url.includes('/api/reports/export/')) {
       const errorCode = options?.params?.test_error || body?.test_error
       if (errorCode === 'ROW_LIMIT_EXCEEDED') {
@@ -259,12 +259,12 @@ class MockInterceptor {
       }
     }
 
-    // UC-PERM-02 FA-06: preview impacto de revocación (no persiste)
+    // UC_PERM_02 FA-06: preview impacto de revocación (no persiste)
     if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/preview-revoke\//) && method === 'GET') {
       return this._handlePreviewRevoke(url);
     }
 
-    // ACCESS — UC-PERM-02: revocar grupo de usuario
+    // ACCESS — UC_PERM_02: revocar grupo de usuario
     if (url.match(/\/api\/users\/[^/]+\/access-groups\/[^/]+\/$/) && method === 'DELETE') {
       if (!body?.revoke_reason || body.revoke_reason.trim() === '') {
         return { status: 400, data: { error: 'revoke_reason requerido', code: 'REVOKE_REASON_REQUIRED' } }
@@ -275,7 +275,7 @@ class MockInterceptor {
       return { status: 200, data: { revoked: true } }
     }
 
-    // AUDIT — UC-AUD-03: exportar auditoría (async)
+    // AUDIT — UC_AUD_03: exportar auditoría (async)
     if (url.includes('/api/audit/export/')) {
       return this._handleAuditExport(body);
     }
@@ -321,17 +321,17 @@ class MockInterceptor {
       return this._handleReportHistory(params)
     }
 
-    // REPORTS — UC-RPT-10: vistas guardadas
+    // REPORTS — UC_RPT_10: vistas guardadas
     if (url.includes('/api/reports/saved-views/')) {
       return this._handleSavedViews(method, url)
     }
 
-    // ADMIN — UC-ADM-02: catálogo de funciones RBAC
+    // ADMIN — UC_ADM_02: catálogo de funciones RBAC
     if (url.includes('/api/admin/functions/')) {
       return this._handleAdminFunctions(url, method, body)
     }
 
-    // ADMIN — UC-ADM-03: composición de funciones de AGR de sistema
+    // ADMIN — UC_ADM_03: composición de funciones de AGR de sistema
     // Rutas específicas ANTES del bloque genérico agr/
     if (url.match(/\/api\/admin\/system-groups\/(\d+)\/impact\//) && method === 'GET') {
       return this._handleAGRImpact(url)
@@ -343,24 +343,24 @@ class MockInterceptor {
       return this._handleAGRFunctions(url, method, body)
     }
 
-    // ADMIN — UC-ADM-03: catálogo de AGRs
+    // ADMIN — UC_ADM_03: catálogo de AGRs
     if (url.includes('/api/admin/agr/')) {
       return this._handleAdminAGR(method, body)
     }
 
-    // ADMIN — UC-ADM-04 CA-08: bulk reorder atómico (ANTES del bloque genérico)
+    // ADMIN — UC_ADM_04 CA-08: bulk reorder atómico (ANTES del bloque genérico)
     if (url.includes('/api/admin/menu-items/bulk-reorder/') && method === 'PATCH') {
       return this._handleMenuItemsBulkReorder(body)
     }
-    // ADMIN — UC-ADM-05 CA-07: bloquear archivado automático
+    // ADMIN — UC_ADM_05 CA-07: bloquear archivado automático
     if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'POST') {
       return this._handleBlockAutoArchive(url, body)
     }
-    // ADMIN — UC-ADM-05 FA-06: desactivar block_auto_archive
+    // ADMIN — UC_ADM_05 FA-06: desactivar block_auto_archive
     if (url.match(/\/api\/admin\/menu-items\/(\d+)\/block-archive\//) && method === 'DELETE') {
       return this._handleUnblockAutoArchive(url)
     }
-    // ADMIN — UC-ADM-05: endpoints de transición de lifecycle (ANTES del handler genérico)
+    // ADMIN — UC_ADM_05: endpoints de transición de lifecycle (ANTES del handler genérico)
     if (url.match(/\/api\/admin\/menu-items\/\d+\/publish\//) && method === 'POST') {
       return this._handleMenuItemPublish(url)
     }
@@ -373,7 +373,7 @@ class MockInterceptor {
     if (url.match(/\/api\/admin\/menu-items\/\d+\/archive\//) && method === 'POST') {
       return this._handleMenuItemArchive(url)
     }
-    // ADMIN — UC-ADM-04/05: catálogo + lifecycle de MenuItems
+    // ADMIN — UC_ADM_04/05: catálogo + lifecycle de MenuItems
     if (url.includes('/api/admin/menu-items/')) {
       return this._handleAdminMenuItems(method, url, body)
     }
@@ -382,7 +382,7 @@ class MockInterceptor {
       return this._handleAdminSeparationRules(method, url, body)
     }
 
-    // PERMISOS — UC-PERM-07/08: capacidades del usuario (SP-01 — ADR-BACK-005)
+    // PERMISOS — UC_PERM_07/08: capacidades del usuario (SP-01 — ADR-BACK-005)
     if (url.match(/\/api\/permisos\/verificar\/(\d+)\/capacidades\//)) {
       return this._handlePermisosCapacidades(url)
     }
@@ -510,7 +510,7 @@ class MockInterceptor {
       };
     }
 
-    // UC-AUTH-01 FA-01: primer login — backend indica que debe cambiar contraseña
+    // UC_AUTH_01 FA-01: primer login — backend indica que debe cambiar contraseña
     if (credentials.username === 'first_login_user' && credentials.password === 'changeme') {
       return {
         status: 200,
@@ -644,7 +644,7 @@ class MockInterceptor {
    */
   _generateMockUsers(count) {
     const sampleGroups = [['AGR-001'], ['AGR-002'], ['AGR-001', 'AGR-003'], []];
-    // UC-USR-01: campo state con enum ACTIVE/INACTIVE/BLOCKED/ELIMINATED
+    // UC_USR_01: campo state con enum ACTIVE/INACTIVE/BLOCKED/ELIMINATED
     const states = ['ACTIVE', 'ACTIVE', 'ACTIVE', 'ACTIVE', 'INACTIVE', 'BLOCKED'];
     const users = [];
 
@@ -1003,7 +1003,7 @@ class MockInterceptor {
     };
   }
 
-  // ====== ACCESS HANDLERS (UC-ACC-01, UC-ACC-02, UC-ACC-04) ======
+  // ====== ACCESS HANDLERS (UC_ACC_01, UC_ACC_02, UC_ACC_04) ======
 
   _handleAssignFunctions(body) {
     if (!body || !body.function_ids || !Array.isArray(body.function_ids)) {
@@ -1286,7 +1286,7 @@ class MockInterceptor {
     return { status: 200, data: rows }
   }
 
-  // ====== REPORTS — SAVED VIEWS HANDLER (UC-RPT-10) ======
+  // ====== REPORTS — SAVED VIEWS HANDLER (UC_RPT_10) ======
 
   _handleSavedViews(method, url) {
     const VIEWS = [
@@ -2351,7 +2351,7 @@ class MockInterceptor {
     return { status: 200, data: { results, count: results.length } }
   }
 
-  // ====== ADMIN MENU ITEMS (UC-ADM-04/05) ======
+  // ====== ADMIN MENU ITEMS (UC_ADM_04/05) ======
 
   _menuItemsData() {
     return [
@@ -2446,7 +2446,7 @@ class MockInterceptor {
     }
   }
 
-  // ====== ACCESS HANDLERS (UC-ACC-01/03/09) ======
+  // ====== ACCESS HANDLERS (UC_ACC_01/03/09) ======
 
   _handleGetAllFunctions() {
     return {
@@ -2482,7 +2482,7 @@ class MockInterceptor {
     return { status: 200, data: userId === 1 ? allPerms : allPerms.slice(0, 1) }
   }
 
-  // UC-AUD-01 / UC-AUTH-05-C: logs de auditoría (filtrables por type, user)
+  // UC_AUD_01 / UC_AUTH_05-C: logs de auditoría (filtrables por type, user)
   _handleGetAuditLogs(url) {
     const urlObj = new URL(url, 'http://localhost');
     const type = urlObj.searchParams.get('type');
@@ -2495,7 +2495,7 @@ class MockInterceptor {
     return { status: 200, data };
   }
 
-  // UC-AUTH-03: recuperar contraseña
+  // UC_AUTH_03: recuperar contraseña
   _handleRecoverPassword(body) {
     const knownUsers = ['demo', 'admin', 'first_login_user'];
     if (!body?.username) {
@@ -2510,7 +2510,7 @@ class MockInterceptor {
     };
   }
 
-  // UC-AUTH-04: cambiar contraseña
+  // UC_AUTH_04: cambiar contraseña
   _handleChangePassword(body) {
     if (!body?.current_password || !body?.new_password) {
       return this._error(400, 'current_password and new_password are required');
@@ -2525,7 +2525,7 @@ class MockInterceptor {
     };
   }
 
-  // ====== UC-ADM-03: AGR COMPOSITION HANDLERS (system-groups) ======
+  // ====== UC_ADM_03: AGR COMPOSITION HANDLERS (system-groups) ======
 
   _handleAGRFunctions(url, method, body) {
     const id = parseInt(url.match(/\/system-groups\/(\d+)\//)[1])
@@ -2587,7 +2587,7 @@ class MockInterceptor {
     }
   }
 
-  // ====== UC-ADM-04 CA-08: BULK REORDER HANDLER ======
+  // ====== UC_ADM_04 CA-08: BULK REORDER HANDLER ======
 
   _handleMenuItemsBulkReorder(body) {
     const items = body?.items ?? []
@@ -2606,7 +2606,7 @@ class MockInterceptor {
     return { status: 200, data: { items: updated, audit: 'MENU_ITEM_BULK_REORDERED' } }
   }
 
-  // ====== UC-ADM-05 CA-07: BLOCK AUTO-ARCHIVE HANDLER ======
+  // ====== UC_ADM_05 CA-07: BLOCK AUTO-ARCHIVE HANDLER ======
 
   _handleBlockAutoArchive(url, body) {
     const id = parseInt(url.match(/\/menu-items\/(\d+)\//)[1])

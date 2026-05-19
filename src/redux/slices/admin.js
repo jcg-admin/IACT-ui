@@ -108,7 +108,7 @@ export const deactivateAGR = createAsyncThunk(
   }
 )
 
-// ── Thunks — Reglas SoD (UC-ADM-01) ─────────────────────────────────────────
+// ── Thunks — Reglas SoD (UC_ADM_01) ─────────────────────────────────────────
 
 export const fetchAdminSeparationRules = createAsyncThunk(
   'admin/fetchAdminSeparationRules',
@@ -154,7 +154,7 @@ export const toggleSeparationRuleStatus = createAsyncThunk(
   }
 )
 
-// ── Thunks — MenuItems (UC-ADM-04/05) ────────────────────────────────────────
+// ── Thunks — MenuItems (UC_ADM_04/05) ────────────────────────────────────────
 
 export const fetchMenuItems = createAsyncThunk(
   'admin/fetchMenuItems',
@@ -233,7 +233,7 @@ export const archiveMenuItem = createAsyncThunk(
   }
 )
 
-// ── Thunks — Composición de AGR de sistema (UC-ADM-03) ───────────────────────
+// ── Thunks — Composición de AGR de sistema (UC_ADM_03) ───────────────────────
 
 export const fetchAGRComposition = createAsyncThunk(
   'admin/fetchAGRComposition',
@@ -283,7 +283,7 @@ export const fetchAGRImpact = createAsyncThunk(
   }
 )
 
-// ── Thunks — Bulk reorder + block-archive (UC-ADM-04/05) ─────────────────────
+// ── Thunks — Bulk reorder + block-archive (UC_ADM_04/05) ─────────────────────
 
 export const bulkReorderMenuItems = createAsyncThunk(
   'admin/bulkReorderMenuItems',

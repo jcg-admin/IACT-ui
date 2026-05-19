@@ -23,7 +23,7 @@ export default function RealTimeMetrics() {
         <div>
           <h1>Métricas en Tiempo Real</h1>
           <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-            UC-RPT-02 — Actualización automática cada 30 segundos
+            UC_RPT_02 — Actualización automática cada 30 segundos
           </p>
         </div>
         {metrics && (

@@ -7,11 +7,8 @@
  * UC_USR_04: Baja lógica    → DELETE /api/users/{id}/ (state→ELIMINATED, BR-009)
  * UC_USR_05: Bloquear       → POST /api/users/{id}/block/
  * UC_USR_06: Desbloquear    → POST /api/users/{id}/unblock/
+ * UC_USR_07: Perfil propio  → GET/PATCH /api/users/me/profile/ (alias /profile/)
  * UC_AUTH_03: Reset password → POST /api/users/{id}/reset-password/
- *
- * ELIMINADOS (sin endpoint canónico en IACT-api):
- *   updateMyProfile() → PATCH /api/users/me/profile/ no existe
- *   getMyProfile()    → cubierto por authGateway.getCurrentUser() → GET /api/auth/me/
  */
 import apiService from './apiClient'
 
@@ -94,6 +91,18 @@ class UserService {
   /** UC_USR_06: POST /api/users/{id}/unblock/ — desbloquear */
   async unblockUser(id) {
     return apiService.post(`/api/users/${id}/unblock/`)
+  }
+
+  // ── Perfil propio (UC_USR_07) ─────────────────────────────────────────────
+
+  /** UC_USR_07: GET /api/users/me/profile/ — perfil del usuario autenticado */
+  async getMyProfile() {
+    return apiService.get('/api/users/me/profile/')
+  }
+
+  /** UC_USR_07: PATCH /api/users/me/profile/ — actualizar perfil propio */
+  async updateMyProfile(data) {
+    return apiService.patch('/api/users/me/profile/', data)
   }
 
   // ── Contraseña ────────────────────────────────────────────────────────────

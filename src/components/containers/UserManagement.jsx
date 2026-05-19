@@ -55,7 +55,7 @@ function UserManagement() {
     const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit)
 
     const handleDeactivate = (userId) => {
-        if (window.confirm('¿Dar de baja este usuario? (baja lógica UC-USR-04)')) {
+        if (window.confirm('¿Dar de baja este usuario? (baja lógica UC_USR_04)')) {
             dispatch(deactivateUser(userId))
         }
     }

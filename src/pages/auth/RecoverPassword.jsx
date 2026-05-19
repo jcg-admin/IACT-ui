@@ -1,5 +1,5 @@
 /**
- * RecoverPasswordPage — UC-AUTH-03
+ * RecoverPasswordPage — UC_AUTH_03
  * Solicitar recuperación de contraseña por username.
  */
 import React, { useState } from 'react'

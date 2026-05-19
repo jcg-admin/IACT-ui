@@ -67,7 +67,7 @@ export default function PipelineStatus() {
       <div className="page-header">
         <h1>Estado del Pipeline ETL</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-PIP-01 — Salud del ETL de Analytics · refresco cada 30 s
+          UC_PIP_01 — Salud del ETL de Analytics · refresco cada 30 s
         </p>
       </div>
 

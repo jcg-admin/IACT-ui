@@ -1,6 +1,6 @@
 /**
  * UserForm Component
- * Formulario de creación/edición de usuarios con baja lógica (UC-USR-04).
+ * Formulario de creación/edición de usuarios con baja lógica (UC_USR_04).
  */
 
 import PropTypes from 'prop-types'
