@@ -96,6 +96,14 @@ module.exports = (env, argv) => {
         '@config':     path.resolve(__dirname, 'src/config'),
         '@layouts':    path.resolve(__dirname, 'src/layouts'),
         '@decorators': path.resolve(__dirname, 'src/decorators'),
+        // Aliases que existian solo en jest.config.cjs y faltaban aqui —
+        // su ausencia hacia que `npm run build` rompiera con 44 errores
+        // "Module not found" aunque jest pasara los 2381 tests.
+        '@store':      path.resolve(__dirname, 'src/redux'),
+        '@lib':        path.resolve(__dirname, 'src/lib'),
+        '@facades':    path.resolve(__dirname, 'src/facades'),
+        '@utils':      path.resolve(__dirname, 'src/utils'),
+        '@':           path.resolve(__dirname, 'src'),
       },
     },
 
