@@ -1,3 +1,7 @@
+/**
+ * AgentsReport — UC_RPT_12 (reporte de rendimiento de agentes).
+ * Marker canonico alineado con apps/reports/analytics_views.py.
+ */
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import ReportTable from '../../components/reports/ReportTable'
