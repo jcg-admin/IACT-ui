@@ -229,26 +229,76 @@ const verifyToken = withCaching(
 )
 
 /**
- * Reset / recuperar contraseña (envía email de recuperación).
- * POST /api/auth/reset_password/
+ * UC_AUTH_03 — Recuperar Password mediante PREGUNTAS DE SEGURIDAD.
+ *
+ * Flujo de 3 pasos (CNST-001: SIN email):
+ *   1. getSecurityQuestions(): GET /api/auth/security_questions/
+ *      -> lista de preguntas disponibles
+ *   2. verifySecurityAnswers({username, answers}):
+ *      POST /api/auth/verify_security_answers/
+ *      -> {verified: true} si las respuestas son correctas
+ *   3. resetPassword({username, answers, new_password, confirm_password}):
+ *      POST /api/auth/reset_password/
+ *      -> 200 OK + el usuario debe cambiar la contrasena al siguiente login
+ *
+ * Cada respuesta: {question_id: int, answer: string}.
+ * Numero requerido: 5 (constante SECURITY_QUESTIONS_REQUIRED en API).
  */
-async function resetPasswordBase(username) {
-  const response = await apiService.post('/api/auth/reset_password/', { username })
-  return response
+async function getSecurityQuestionsBase() {
+  return apiService.get('/api/auth/security_questions/')
 }
+
+async function verifySecurityAnswersBase({ username, answers }) {
+  return apiService.post('/api/auth/verify_security_answers/', { username, answers })
+}
+
+async function resetPasswordBase({ username, answers, new_password, confirm_password }) {
+  return apiService.post('/api/auth/reset_password/', {
+    username,
+    answers,
+    new_password,
+    confirm_password,
+  })
+}
+
+const getSecurityQuestions = withLogging(
+  getSecurityQuestionsBase,
+  'authService.getSecurityQuestions'
+)
+
+const verifySecurityAnswers = withLogging(
+  withValidation(
+    verifySecurityAnswersBase,
+    (payload) => {
+      if (!payload?.username) return { valid: false, message: 'username required' }
+      if (!Array.isArray(payload?.answers) || payload.answers.length === 0) {
+        return { valid: false, message: 'answers (array) required' }
+      }
+      return { valid: true }
+    },
+    { fnName: 'authService.verifySecurityAnswers' }
+  ),
+  'authService.verifySecurityAnswers'
+)
 
 const resetPassword = withLogging(
   withValidation(
     resetPasswordBase,
-    (username) => {
-      if (!username || typeof username !== 'string') {
-        return { valid: false, message: 'Username or email required' }
+    (payload) => {
+      if (!payload?.username) return { valid: false, message: 'username required' }
+      if (!Array.isArray(payload?.answers) || payload.answers.length === 0) {
+        return { valid: false, message: 'answers (array) required' }
+      }
+      if (!payload?.new_password) return { valid: false, message: 'new_password required' }
+      if (payload.new_password !== payload.confirm_password) {
+        return { valid: false, message: 'confirm_password no coincide' }
       }
       return { valid: true }
     },
     { fnName: 'authService.resetPassword' }
   ),
-  'authService.resetPassword'
+  'authService.resetPassword',
+  { logArgs: false } // No loguear new_password en argumentos
 )
 
 /**
@@ -313,6 +363,8 @@ const authService = {
   getCurrentUser,
   register,
   verifyToken,
+  getSecurityQuestions,
+  verifySecurityAnswers,
   resetPassword,
   changePassword,
   getActiveSessions,
@@ -325,4 +377,21 @@ const authService = {
 }
 
 export default authService
-export { login, logout, getCurrentUser, register, verifyToken, resetPassword, changePassword, getActiveSessions, getSessions, revokeSession, getOwnSessions, closeSession, closeAllSessions, getMyMenu }
+export {
+  login,
+  logout,
+  getCurrentUser,
+  register,
+  verifyToken,
+  getSecurityQuestions,
+  verifySecurityAnswers,
+  resetPassword,
+  changePassword,
+  getActiveSessions,
+  getSessions,
+  revokeSession,
+  getOwnSessions,
+  closeSession,
+  closeAllSessions,
+  getMyMenu,
+}

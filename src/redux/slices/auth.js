@@ -51,11 +51,41 @@ export const getCurrentUser = createAsyncThunk(
   }
 )
 
+/**
+ * UC_AUTH_03 — Recuperar Password con preguntas de seguridad (CNST-001 SIN email).
+ *
+ * 3 thunks para los 3 pasos del flujo:
+ *   - fetchSecurityQuestions: lista preguntas disponibles (publico)
+ *   - verifyAnswers: valida respuestas del usuario
+ *   - recoverPassword: reset final con nueva contrasena
+ */
+export const fetchSecurityQuestions = createAsyncThunk(
+  'auth/fetchSecurityQuestions',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await authGateway.getSecurityQuestions()
+    } catch (error) {
+      return rejectWithValue({ message: error.message || 'Error al cargar preguntas', statusCode: null })
+    }
+  }
+)
+
+export const verifyAnswers = createAsyncThunk(
+  'auth/verifyAnswers',
+  async ({ username, answers }, { rejectWithValue }) => {
+    try {
+      return await authGateway.verifySecurityAnswers({ username, answers })
+    } catch (error) {
+      return rejectWithValue({ message: error.message || 'Respuestas invalidas', statusCode: null })
+    }
+  }
+)
+
 export const recoverPassword = createAsyncThunk(
   'auth/recoverPassword',
-  async (username, { rejectWithValue }) => {
+  async ({ username, answers, new_password, confirm_password }, { rejectWithValue }) => {
     try {
-      return await authGateway.resetPassword(username)
+      return await authGateway.resetPassword({ username, answers, new_password, confirm_password })
     } catch (error) {
       return rejectWithValue({ message: error.message || 'Error al recuperar contraseña', statusCode: null })
     }
