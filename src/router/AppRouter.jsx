@@ -325,7 +325,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Gestión de usuarios — UC-USR-01..04 */}
+          {/* Gestión de usuarios — UC_USR_01..04 */}
           <Route
             path="/users"
             element={
@@ -337,7 +337,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Analytics / reportes — UC-RPT-01, 04, 07, 08 */}
+          {/* Analytics / reportes — UC_RPT_01, 04, 07, 08 */}
           <Route
             path="/reports"
             element={
@@ -358,7 +358,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Sesiones activas — UC-AUTH-05 */}
+          {/* Sesiones activas — UC_AUTH_05 */}
           <Route
             path="/profile/sessions"
             element={
@@ -403,7 +403,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Auditoría — búsqueda avanzada (UC-AUD-02) */}
+          {/* Auditoría — búsqueda avanzada (UC_AUD_02) */}
           <Route
             path="/audit/search"
             element={
@@ -415,7 +415,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Auditoría — exportación (UC-AUD-03) */}
+          {/* Auditoría — exportación (UC_AUD_03) */}
           <Route
             path="/audit/export"
             element={
@@ -427,7 +427,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Auditoría — cumplimiento (UC-AUD-04) */}
+          {/* Auditoría — cumplimiento (UC_AUD_04) */}
           <Route
             path="/audit/compliance"
             element={
@@ -450,7 +450,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Cambio de contraseña — requiere sesión (UC-AUTH-04) */}
+          {/* Cambio de contraseña — requiere sesión (UC_AUTH_04) */}
           <Route
             path="/change-password"
             element={
@@ -460,7 +460,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — grupos y composición (UC-PERM-05, UC-PERM-06) */}
+          {/* Acceso — grupos y composición (UC_PERM_05, UC_PERM_06) */}
           <Route
             path="/access/groups"
             element={
@@ -482,7 +482,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — agrupadores de funciones (UC-ACC-04) */}
+          {/* Acceso — agrupadores de funciones (UC_ACC_04) */}
           <Route
             path="/access/groupers"
             element={
@@ -494,7 +494,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — reglas de separación de funciones (UC-ACC-05) */}
+          {/* Acceso — reglas de separación de funciones (UC_ACC_05) */}
           <Route
             path="/access/separation-rules"
             element={
@@ -506,7 +506,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — segmentos (UC-ACC-06, UC-ACC-07) */}
+          {/* Acceso — segmentos (UC_ACC_06, UC_ACC_07) */}
           <Route
             path="/access/segments"
             element={
@@ -518,7 +518,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Permisos — auditoría (UC-PERM-10) */}
+          {/* Permisos — auditoría (UC_PERM_10) */}
           <Route
             path="/access/audit/permissions"
             element={
@@ -541,7 +541,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Alertas — plantillas (UC-ALR-05) */}
+          {/* Alertas — plantillas (UC_ALR_05) */}
           <Route
             path="/alerts/templates"
             element={
@@ -553,7 +553,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Alertas — configuración (UC-ALR-03) */}
+          {/* Alertas — configuración (UC_ALR_03) */}
           <Route
             path="/alerts/config"
             element={
@@ -565,7 +565,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Alertas — historial (UC-ALR-04) */}
+          {/* Alertas — historial (UC_ALR_04) */}
           <Route
             path="/alerts/history"
             element={
@@ -577,7 +577,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Alertas — suscripciones (UC-ALR-06) */}
+          {/* Alertas — suscripciones (UC_ALR_06) */}
           <Route
             path="/alerts/subscriptions"
             element={
@@ -589,7 +589,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Observabilidad — logs (UC-LOG-01..07) */}
+          {/* Observabilidad — logs (UC_LOG_01..07) */}
           <Route
             path="/logs"
             element={
@@ -753,7 +753,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* UC-RPT-07/08 — Reportes programados */}
+          {/* UC_RPT_07/08 — Reportes programados */}
           <Route
             path="/reports/scheduled"
             element={
@@ -764,7 +764,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* UC-RPT-02 — Métricas en tiempo real */}
+          {/* UC_RPT_02 — Métricas en tiempo real */}
           <Route
             path="/reports/realtime"
             element={
@@ -775,7 +775,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* UC-RPT-03 — Reportes históricos */}
+          {/* UC_RPT_03 — Reportes históricos */}
           <Route
             path="/reports/historical"
             element={
@@ -786,7 +786,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* UC-RPT-04 — Exportar reporte (async job) */}
+          {/* UC_RPT_04 — Exportar reporte (async job) */}
           <Route
             path="/reports/export"
             element={
@@ -797,7 +797,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* UC-RPT-10 — Vistas guardadas */}
+          {/* UC_RPT_10 — Vistas guardadas */}
           <Route
             path="/reports/saved"
             element={
@@ -808,7 +808,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* UC-RPT-11 — Vistas compartidas */}
+          {/* UC_RPT_11 — Vistas compartidas */}
           <Route
             path="/reports/shares"
             element={
@@ -820,7 +820,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Permisos — UC-PERM-01: asignar grupo (mismo componente que /access/assign-group) */}
+          {/* Permisos — UC_PERM_01: asignar grupo (mismo componente que /access/assign-group) */}
           <Route
             path="/permissions/assign-group"
             element={
@@ -831,7 +831,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* Permisos — UC-PERM-02: revocar grupo */}
+          {/* Permisos — UC_PERM_02: revocar grupo */}
           <Route
             path="/permissions/revoke-group"
             element={
@@ -842,7 +842,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* Permisos — UC-ACC-08: permisos temporales con fecha de expiración */}
+          {/* Permisos — UC_ACC_08: permisos temporales con fecha de expiración */}
           <Route
             path="/permissions/temp-permissions"
             element={
@@ -853,7 +853,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* Permisos — UC-PERM-03: conceder permiso excepcional (justificación + anti-self P-11) */}
+          {/* Permisos — UC_PERM_03: conceder permiso excepcional (justificación + anti-self P-11) */}
           <Route
             path="/permissions/exceptional-permission"
             element={
@@ -876,7 +876,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — asignar/revocar funciones (UC-ACC-01, UC-ACC-02) */}
+          {/* Acceso — asignar/revocar funciones (UC_ACC_01, UC_ACC_02) */}
           <Route
             path="/access/assign-functions"
             element={
@@ -888,7 +888,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — permisos efectivos de usuario (UC-ACC-03) */}
+          {/* Acceso — permisos efectivos de usuario (UC_ACC_03) */}
           <Route
             path="/access/permissions"
             element={
@@ -900,7 +900,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Acceso — auditoría de cambios de acceso (UC-ACC-09) */}
+          {/* Acceso — auditoría de cambios de acceso (UC_ACC_09) */}
           <Route
             path="/access/audit/access"
             element={
@@ -912,7 +912,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Administración del sistema — MANAGE_CATALOG (UC-ADM-01..05) */}
+          {/* Administración del sistema — MANAGE_CATALOG (UC_ADM_01..05) */}
           <Route
             path="/admin/functions"
             element={
@@ -933,7 +933,7 @@ function RoutesWithTransitions() {
               </ProtectedRoute>
             }
           />
-          {/* Admin — ciclo de vida reglas SoD (UC-ADM-01) */}
+          {/* Admin — ciclo de vida reglas SoD (UC_ADM_01) */}
           <Route
             path="/admin/separation-rules"
             element={
@@ -945,7 +945,7 @@ function RoutesWithTransitions() {
             }
           />
 
-          {/* Admin — catálogo + lifecycle de MenuItems (UC-ADM-04, UC-ADM-05) */}
+          {/* Admin — catálogo + lifecycle de MenuItems (UC_ADM_04, UC_ADM_05) */}
           <Route
             path="/admin/menu-items"
             element={

@@ -116,7 +116,7 @@ class AdminService {
     return apiService.patch(`/api/access/separation-rules/${id}/`, {})
   }
 
-  // ── Composición de AGR de sistema (UC-ADM-03) ────────────────────────────
+  // ── Composición de AGR de sistema (UC_ADM_03) ────────────────────────────
 
   async getAGRComposition(agrId) {
     return apiService.get(`/api/access/system-groups/${agrId}/functions/`)
@@ -136,7 +136,7 @@ class AdminService {
     return apiService.get(`/api/access/system-groups/${agrId}/impact/`)
   }
 
-  // ── Catálogo de MenuItems (UC-ADM-04/05) ────────────────────────────────
+  // ── Catálogo de MenuItems (UC_ADM_04/05) ────────────────────────────────
 
   async getMenuItems({ status, module: mod } = {}) {
     const params = {}

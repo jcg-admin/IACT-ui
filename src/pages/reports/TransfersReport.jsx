@@ -1,3 +1,7 @@
+/**
+ * TransfersReport — UC_RPT_15 (reporte de transferencias IVR).
+ * Marker canonico alineado con apps/reports/analytics_views.py.
+ */
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import ReportFilters from '../../components/reports/ReportFilters'

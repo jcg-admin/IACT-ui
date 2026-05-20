@@ -81,7 +81,13 @@ describe('userGateway — URLs canónicas (T2.2)', () => {
     expect(u('delete')).toBe('/api/users/5/')
   })
 
-  test('updateMyProfile() no existe — /api/users/me/profile/ no existe en API', () => {
-    expect(typeof gw.updateMyProfile).toBe('undefined')
+  test('getMyProfile() GET /api/users/me/profile/ (UC_USR_07)', async () => {
+    await gw.getMyProfile()
+    expect(u('get')).toBe('/api/users/me/profile/')
+  })
+
+  test('updateMyProfile() PATCH /api/users/me/profile/ (UC_USR_07)', async () => {
+    await gw.updateMyProfile({ first_name: 'Nuevo' })
+    expect(u('patch')).toBe('/api/users/me/profile/')
   })
 })

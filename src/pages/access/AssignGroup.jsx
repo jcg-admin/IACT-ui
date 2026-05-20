@@ -1,7 +1,7 @@
 /**
  * AssignGroup.jsx — IACT v2
  *
- * UC-ACC-04 / UC-PERM-01 — Asignación de grupo de acceso a usuario.
+ * UC_ACC_04 / UC_PERM_01 — Asignación de grupo de acceso a usuario.
  *
  * CORRECCIÓN T4.1: validateGroupAssignment eliminado en T1.5 y T3.2.
  * El endpoint /api/access/groups/{id}/validate-for-user no existe en IACT-api.
@@ -60,7 +60,7 @@ export default function AssignGroup() {
       <div className="page-header">
         <h1>Asignar grupo a usuario</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-ACC-04 / UC-PERM-01 — Asignación de grupo de acceso
+          UC_ACC_04 / UC_PERM_01 — Asignación de grupo de acceso
         </p>
       </div>
 

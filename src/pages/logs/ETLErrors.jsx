@@ -70,7 +70,7 @@ export default function ETLErrors() {
       <div className="page-header">
         <h1>Errores del Pipeline ETL</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-PIP-02 — Ejecuciones fallidas del ETL de Analytics
+          UC_PIP_02 — Ejecuciones fallidas del ETL de Analytics
         </p>
       </div>
 

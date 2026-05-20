@@ -10,6 +10,7 @@
  *   3. Reset — el usuario ingresa nueva contrasena + confirmacion.
  *      Si las respuestas son correctas, el API la cambia y fuerza
  *      cambio en proximo login (FR-003-05).
+ * Solicitar recuperación de contraseña por username.
  */
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'

@@ -88,7 +88,7 @@ describe('SeparationRulesCatalog', () => {
   })
 })
 
-describe('SeparationRulesCatalog — validación disjunción (UC-ADM-01)', () => {
+describe('SeparationRulesCatalog — validación disjunción (UC_ADM_01)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({

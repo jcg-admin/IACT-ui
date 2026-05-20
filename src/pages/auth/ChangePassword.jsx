@@ -1,6 +1,8 @@
 /**
- * ChangePasswordPage — UC-AUTH-04
+ * ChangePasswordPage — UC_AUTH_04
  * Cambiar contraseña con validación de fortaleza.
+ *
+ * Marker canónico: UC_AUTH_04 (con underscores, como en API).
  */
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'

@@ -1,3 +1,7 @@
+/**
+ * CampaignsReport — UC_RPT_14 (reporte de campanas).
+ * Marker canonico alineado con apps/reports/analytics_views.py.
+ */
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import ReportTable from '../../components/reports/ReportTable'

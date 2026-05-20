@@ -204,7 +204,7 @@ export default function ScheduledReport() {
         <div>
           <h1>Reportes Programados</h1>
           <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-            UC-RPT-07/08 — Programar y gestionar reportes recurrentes
+            UC_RPT_07/08 — Programar y gestionar reportes recurrentes
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowCreate((v) => !v)}>

@@ -110,7 +110,7 @@ export default function UserManagement() {
   }
 
   /**
-   * Handle deactivate user (baja lógica — UC-USR-04)
+   * Handle deactivate user (baja lógica — UC_USR_04)
    */
   const handleDeactivateUser = (userId) => {
     setDeactivateModal({ isOpen: true, userId })

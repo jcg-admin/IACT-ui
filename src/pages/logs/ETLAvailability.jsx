@@ -56,7 +56,7 @@ export default function ETLAvailability() {
       <div className="page-header">
         <h1>Disponibilidad de Datos ETL</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-PIP-03 — Frescura de datasets IVR
+          UC_PIP_03 — Frescura de datasets IVR
         </p>
       </div>
 
