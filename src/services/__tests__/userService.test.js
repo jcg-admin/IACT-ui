@@ -147,11 +147,22 @@ describe('resetUserPassword(id)', () => {
   })
 })
 
-// ── updateMyProfile eliminado ─────────────────────────────────────────────────
+// ── UC_USR_07 — perfil propio ─────────────────────────────────────────────────
 
-describe('updateMyProfile', () => {
-  it('no existe — PATCH /api/users/me/profile/ no existe en IACT-api', () => {
-    expect(typeof userService.updateMyProfile).toBe('undefined')
+describe('getMyProfile()', () => {
+  it('GET /api/users/me/profile/ (UC_USR_07)', async () => {
+    await userService.getMyProfile()
+    expect(apiService.get).toHaveBeenCalledWith('/api/users/me/profile/')
+  })
+})
+
+describe('updateMyProfile(data)', () => {
+  it('PATCH /api/users/me/profile/ con datos parciales (UC_USR_07)', async () => {
+    await userService.updateMyProfile({ first_name: 'Nuevo' })
+    expect(apiService.patch).toHaveBeenCalledWith(
+      '/api/users/me/profile/',
+      expect.objectContaining({ first_name: 'Nuevo' })
+    )
   })
 })
 

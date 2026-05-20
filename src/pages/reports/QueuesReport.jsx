@@ -1,3 +1,7 @@
+/**
+ * QueuesReport — UC_RPT_13 (reporte de colas de atencion).
+ * Marker canonico alineado con apps/reports/analytics_views.py.
+ */
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import ReportTable from '../../components/reports/ReportTable'

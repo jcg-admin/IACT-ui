@@ -53,7 +53,7 @@ function wrapper(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
-describe('AGRCatalog — Composición (UC-ADM-03)', () => {
+describe('AGRCatalog — Composición (UC_ADM_03)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({

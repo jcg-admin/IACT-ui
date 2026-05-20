@@ -87,7 +87,7 @@ describe('UserManagement — estado de carga', () => {
     });
 });
 
-describe('UserManagement — state badge (UC-USR-01)', () => {
+describe('UserManagement — state badge (UC_USR_01)', () => {
     it('muestra badge ACTIVE para usuarios activos', () => {
         renderComponent();
         const activeBadges = screen.getAllByText('ACTIVE');

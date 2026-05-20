@@ -41,7 +41,7 @@ export default function PermissionsAudit() {
                 Auditoría de Permisos
             </h1>
             <p style={{ color: '#9ca3af', margin: '0 0 24px 0', fontSize: '14px' }}>
-                UC-PERM-10 — Historial de cambios de permisos y grupos
+                UC_PERM_10 — Historial de cambios de permisos y grupos
             </p>
 
             {error && (

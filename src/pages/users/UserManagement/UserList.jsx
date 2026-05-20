@@ -1,6 +1,6 @@
 /**
  * UserList Component
- * Muestra usuarios en tabla con ordenamiento, paginación y baja lógica (UC-USR-04).
+ * Muestra usuarios en tabla con ordenamiento, paginación y baja lógica (UC_USR_04).
  * UC_USR_05/06: botones Bloquear/Desbloquear con modal de confirmación.
  */
 

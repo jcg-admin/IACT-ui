@@ -133,7 +133,7 @@ describe('MenuItemCatalog', () => {
   })
 })
 
-describe('MenuItemCatalog — bulk reorder (UC-ADM-04 CA-08)', () => {
+describe('MenuItemCatalog — bulk reorder (UC_ADM_04 CA-08)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({
@@ -185,7 +185,7 @@ describe('MenuItemCatalog — bulk reorder (UC-ADM-04 CA-08)', () => {
   })
 })
 
-describe('MenuItemCatalog — edit guards (UC-ADM-04)', () => {
+describe('MenuItemCatalog — edit guards (UC_ADM_04)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({
@@ -229,7 +229,7 @@ describe('MenuItemCatalog — edit guards (UC-ADM-04)', () => {
   })
 })
 
-describe('MenuItemCatalog — transition thunk routing (UC-ADM-05 GAP-01)', () => {
+describe('MenuItemCatalog — transition thunk routing (UC_ADM_05 GAP-01)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({
@@ -279,7 +279,7 @@ describe('MenuItemCatalog — transition thunk routing (UC-ADM-05 GAP-01)', () =
   })
 })
 
-describe('MenuItemCatalog — block-archive (UC-ADM-05 CA-07)', () => {
+describe('MenuItemCatalog — block-archive (UC_ADM_05 CA-07)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({
@@ -369,7 +369,7 @@ describe('MenuItemCatalog — block-archive (UC-ADM-05 CA-07)', () => {
   })
 })
 
-describe('MenuItemCatalog — unblock-archive (UC-ADM-05 FA-06 GAP-02)', () => {
+describe('MenuItemCatalog — unblock-archive (UC_ADM_05 FA-06 GAP-02)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     mockDispatch.mockImplementation((action) => ({

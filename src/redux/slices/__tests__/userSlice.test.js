@@ -112,7 +112,7 @@ describe('updateUser thunk', () => {
 // ── deactivateUser ────────────────────────────────────────────────────────
 
 describe('deactivateUser thunk', () => {
-  it('cambia el state del usuario a ELIMINATED (baja lógica UC-USR-04)', async () => {
+  it('cambia el state del usuario a ELIMINATED (baja lógica UC_USR_04)', async () => {
     const existing = [{ id: 3, username: 'carlos', state: 'ACTIVE' }]
     userService.deactivateUser.mockResolvedValue({ target_user_id: 3, state: 'ELIMINATED' })
     const store = buildStore({ users: existing, loading: false, error: null, total: 1 })

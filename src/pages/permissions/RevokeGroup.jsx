@@ -89,7 +89,7 @@ export default function RevokeGroup() {
       <div className="page-header">
         <h1>Revocar grupo de usuario</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-PERM-02 — Revocación de agrupador de acceso con motivo obligatorio
+          UC_PERM_02 — Revocación de agrupador de acceso con motivo obligatorio
         </p>
       </div>
 

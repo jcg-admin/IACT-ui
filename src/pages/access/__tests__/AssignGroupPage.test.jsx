@@ -47,7 +47,7 @@ function wrap() {
   return render(<MemoryRouter><AssignGroup /></MemoryRouter>)
 }
 
-describe('AssignGroup — UC-ACC-04 (flujo directo sin validateGroupAssignment)', () => {
+describe('AssignGroup — UC_ACC_04 (flujo directo sin validateGroupAssignment)', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
     assignGroupToUser.mockClear()

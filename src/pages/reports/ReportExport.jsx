@@ -92,7 +92,7 @@ export default function ReportExport() {
       <div className="page-header">
         <h1>Exportar reporte</h1>
         <p style={{ color: '#9ca3af', margin: 0, fontSize: '14px' }}>
-          UC-RPT-04 — Solicitar exportación asíncrona (CSV / XLSX / JSON / PDF)
+          UC_RPT_04 — Solicitar exportación asíncrona (CSV / XLSX / JSON / PDF)
         </p>
       </div>
 

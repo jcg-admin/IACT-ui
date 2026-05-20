@@ -1,5 +1,5 @@
 /**
- * UserList Tests — UC-USR-04 baja lógica
+ * UserList Tests — UC_USR_04 baja lógica
  */
 
 import React from 'react'
@@ -55,7 +55,7 @@ describe('UserList — renderizado básico', () => {
   })
 })
 
-describe('UserList — badges de estado (UC-USR-01)', () => {
+describe('UserList — badges de estado (UC_USR_01)', () => {
   it('badge ACTIVE tiene clase status-active', () => {
     const { container } = render(
       <UserList {...defaultProps} users={[buildUser({ state: 'ACTIVE' })]} />
@@ -85,7 +85,7 @@ describe('UserList — badges de estado (UC-USR-01)', () => {
   })
 })
 
-describe('UserList — baja lógica (UC-USR-04)', () => {
+describe('UserList — baja lógica (UC_USR_04)', () => {
   it('botón "Dar de baja" visible para usuario ACTIVE', () => {
     render(<UserList {...defaultProps} users={[buildUser({ state: 'ACTIVE' })]} />)
     expect(screen.getByTitle('Dar de baja')).toBeInTheDocument()
