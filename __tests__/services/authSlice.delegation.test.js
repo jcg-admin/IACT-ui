@@ -60,9 +60,15 @@ describe('auth.slice — delega todo a authGateway (T1.3)', () => {
     expect(authGateway.getCurrentUser).toHaveBeenCalled()
   })
 
-  test('recoverPassword → authGateway.resetPassword(username)', async () => {
-    await store.dispatch(recoverPassword('nestor@iact.mx'))
-    expect(authGateway.resetPassword).toHaveBeenCalledWith('nestor@iact.mx')
+  test('recoverPassword → authGateway.resetPassword({username, answers, new_password, confirm_password}) — UC_AUTH_03 preguntas seguridad (CNST-001 SIN email)', async () => {
+    const payload = {
+      username: 'nestor',
+      answers: [{ question_id: 1, answer: 'firulais' }],
+      new_password: 'NuevaPass123',
+      confirm_password: 'NuevaPass123',
+    }
+    await store.dispatch(recoverPassword(payload))
+    expect(authGateway.resetPassword).toHaveBeenCalledWith(payload)
   })
 
   test('changePassword → authGateway.changePassword(current, new)', async () => {
